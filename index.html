@@ -1248,7 +1248,7 @@ async function fetchAllSubscriptions() {
   try {
     // Phase 1: Get all subscriptions
     do {
-      const url = `https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&maxResults=50&pageToken=${nextPage}`;
+      const url = `https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&maxResults=50${nextPage ? '&pageToken=' + nextPage : ''}`;
       const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
 
       if (resp.status === 401) {
