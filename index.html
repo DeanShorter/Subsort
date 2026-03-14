@@ -158,6 +158,57 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .btn-add-category svg{width:14px;height:14px}
 .btn-auto-cat:hover{border-color:#60a5fa;color:#60a5fa;background:rgba(59,130,246,.1)}
 
+/* ─── Subcategories Strip ─── */
+.subcategories-strip{
+  display:flex;align-items:center;gap:.5rem;
+  margin-top:.625rem;padding:.5rem 0;
+  border-top:1px solid var(--border-subtle);
+  overflow-x:auto;scrollbar-width:none;
+}
+.subcategories-strip::-webkit-scrollbar{display:none}
+.subcategories-track{display:flex;gap:.375rem;align-items:center;flex-wrap:wrap}
+.subcat-pill{
+  display:inline-flex;align-items:center;gap:.25rem;
+  padding:.3rem .75rem;border-radius:20px;
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  color:var(--text-secondary);font:500 .6875rem/1 var(--font-body);
+  cursor:pointer;transition:all .2s var(--transition);
+  white-space:nowrap;flex-shrink:0;
+}
+.subcat-pill:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
+.subcat-pill.active{
+  background:var(--accent-soft);border-color:var(--accent);color:var(--accent);
+  font-weight:600;
+}
+.subcat-pill .subcat-count{
+  font-size:.5625rem;font-weight:700;
+  background:var(--bg-surface-raised);color:var(--text-muted);
+  padding:.0625rem .3125rem;border-radius:8px;
+  transition:all .2s;
+}
+.subcat-pill.active .subcat-count{background:var(--accent);color:#fff}
+.subcat-pill-all{
+  color:var(--text-muted);font-weight:500;
+}
+.subcat-pill-all.active{color:var(--accent)}
+.btn-add-subcat{
+  display:inline-flex;align-items:center;gap:.25rem;
+  padding:.25rem .5rem;border-radius:20px;
+  background:none;border:1px dashed var(--border-subtle);
+  color:var(--text-muted);font:500 .625rem/1 var(--font-body);
+  cursor:pointer;transition:all .2s var(--transition);
+  white-space:nowrap;flex-shrink:0;
+}
+.btn-add-subcat:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.btn-add-subcat svg{width:10px;height:10px}
+.subcat-pill .btn-subcat-edit{
+  display:none;background:none;border:none;color:var(--text-muted);
+  cursor:pointer;padding:0;margin-left:.125rem;line-height:1;
+}
+.subcat-pill:hover .btn-subcat-edit{display:inline-flex}
+.subcat-pill .btn-subcat-edit:hover{color:var(--accent)}
+.subcat-pill .btn-subcat-edit svg{width:10px;height:10px}
+
 /* ─── Discover Similar ─── */
 .btn-discover{
   display:inline-flex;align-items:center;gap:.375rem;
@@ -410,6 +461,12 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;
   padding:.25rem .5rem;border-radius:6px;
   background:var(--accent-soft);color:var(--accent);
+}
+.card-subcat-tag{
+  display:inline-flex;align-items:center;gap:.25rem;
+  font-size:.625rem;font-weight:500;
+  padding:.25rem .5rem;border-radius:6px;
+  background:rgba(251,191,36,.1);color:#fbbf24;
 }
 .card-topic-tag{
   display:inline-flex;align-items:center;
@@ -1413,6 +1470,10 @@ input[type=range]::-webkit-slider-thumb{
   <div class="categories-track-wrap">
     <div class="categories-track" id="categoriesTrack"></div>
   </div>
+  <!-- Subcategory strip (appears when a primary category is selected) -->
+  <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
+    <div class="subcategories-track" id="subcategoriesTrack"></div>
+  </div>
   <div class="categories-add-row">
     <button class="btn-add-category" onclick="openModal('addCategoryModal')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1667,7 +1728,11 @@ input[type=range]::-webkit-slider-thumb{
     <p class="subtitle" id="editChannelName"></p>
     <div class="form-group">
       <label>Category</label>
-      <select id="editChannelCategory" class="sort-select"></select>
+      <select id="editChannelCategory" class="sort-select" onchange="updateEditSubcategoryOptions()"></select>
+    </div>
+    <div class="form-group" id="editSubcatGroup" style="display:none">
+      <label>Subcategory</label>
+      <select id="editChannelSubcategory" class="sort-select"></select>
     </div>
     <div class="form-group">
       <label>Notes</label>
@@ -1768,6 +1833,10 @@ input[type=range]::-webkit-slider-thumb{
         <label>Category</label>
         <select id="detailCategorySelect" onchange="updateDetailCategory(this.value)"></select>
       </div>
+      <div class="detail-category-row" id="detailSubcatRow" style="display:none">
+        <label>Subcategory</label>
+        <select id="detailSubcategorySelect" onchange="updateDetailSubcategory(this.value)"></select>
+      </div>
 
       <div id="detailTopics" class="detail-tags"></div>
 
@@ -1789,9 +1858,11 @@ input[type=range]::-webkit-slider-thumb{
    ═══════════════════════════════════════════ */
 let channels = JSON.parse(localStorage.getItem('subsort_channels') || '[]');
 let categories = JSON.parse(localStorage.getItem('subsort_categories') || '[]');
+let subcategories = JSON.parse(localStorage.getItem('subsort_subcategories') || '{}');
 let settings = JSON.parse(localStorage.getItem('subsort_settings') || '{}');
 const GOOGLE_CLIENT_ID = '916513934955-1noko2b7uubrmu9qtgvf45kk9l9stv6t.apps.googleusercontent.com';
 let activeCategory = 'all';
+let activeSubcategory = null;
 let editingChannelId = null;
 let editingCategoryIdx = null;
 let aiResults = null;
@@ -1823,6 +1894,7 @@ function getIcon(cat) {
 function save() {
   localStorage.setItem('subsort_channels', JSON.stringify(channels));
   localStorage.setItem('subsort_categories', JSON.stringify(categories));
+  localStorage.setItem('subsort_subcategories', JSON.stringify(subcategories));
 }
 
 /* ═══════════════════════════════════════════
@@ -1842,6 +1914,83 @@ function renderCategories() {
       <span class="chip-count">${c.count}</span>
     </div>
   `).join('');
+
+  renderSubcategories();
+}
+
+function renderSubcategories() {
+  const strip = document.getElementById('subcategoriesStrip');
+  const track = document.getElementById('subcategoriesTrack');
+
+  // Only show when a real category is selected
+  if (activeCategory === 'all' || activeCategory === '__uncat__') {
+    strip.style.display = 'none';
+    return;
+  }
+
+  const subs = subcategories[activeCategory] || [];
+  // Always show the strip if there are subcats, or to let users add one
+  strip.style.display = '';
+
+  const catChannels = channels.filter(ch => ch.category === activeCategory);
+  const allCount = catChannels.length;
+
+  let html = `<span class="subcat-pill subcat-pill-all ${!activeSubcategory ? 'active' : ''}" onclick="setSubcategory(null)">All <span class="subcat-count">${allCount}</span></span>`;
+
+  for (const sub of subs) {
+    const count = catChannels.filter(ch => ch.subcategory === sub).length;
+    const safeSub = sub.replace(/'/g, "\\'");
+    html += `<span class="subcat-pill ${activeSubcategory === sub ? 'active' : ''}" onclick="setSubcategory('${safeSub}')">
+      ${sub} <span class="subcat-count">${count}</span>
+      <button class="btn-subcat-edit" onclick="event.stopPropagation();editSubcategory('${safeSub}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+    </span>`;
+  }
+
+  html += `<button class="btn-add-subcat" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>`;
+
+  track.innerHTML = html;
+}
+
+function setSubcategory(sub) {
+  activeSubcategory = sub;
+  renderSubcategories();
+  renderChannels();
+}
+
+function addSubcategory() {
+  const name = prompt('New subcategory name for "' + activeCategory + '":');
+  if (!name || !name.trim()) return;
+  const trimmed = name.trim();
+  if (!subcategories[activeCategory]) subcategories[activeCategory] = [];
+  if (subcategories[activeCategory].includes(trimmed)) { toast('Subcategory already exists'); return; }
+  subcategories[activeCategory].push(trimmed);
+  save();
+  renderSubcategories();
+  toast('Subcategory added');
+}
+
+function editSubcategory(oldName) {
+  const action = prompt(`Rename or type "delete" to remove "${oldName}":`, oldName);
+  if (action === null) return;
+  const subs = subcategories[activeCategory] || [];
+  const idx = subs.indexOf(oldName);
+  if (idx === -1) return;
+
+  if (action.toLowerCase().trim() === 'delete') {
+    subs.splice(idx, 1);
+    channels.forEach(ch => { if (ch.category === activeCategory && ch.subcategory === oldName) ch.subcategory = ''; });
+    if (activeSubcategory === oldName) activeSubcategory = null;
+    toast('Subcategory deleted');
+  } else {
+    const newName = action.trim();
+    if (!newName) return;
+    subs[idx] = newName;
+    channels.forEach(ch => { if (ch.category === activeCategory && ch.subcategory === oldName) ch.subcategory = newName; });
+    if (activeSubcategory === oldName) activeSubcategory = newName;
+    toast('Subcategory renamed');
+  }
+  save();
+  renderAll();
 }
 
 function setCategory(key) {
@@ -1850,6 +1999,7 @@ function setCategory(key) {
     hideDiscover();
   }
   activeCategory = key;
+  activeSubcategory = null;
   renderCategories();
   renderChannels();
   // Restore cached discover results for this category
@@ -1941,6 +2091,11 @@ function renderChannels() {
   if (activeCategory !== 'all') {
     if (activeCategory === '__uncat__') filtered = filtered.filter(c => !c.category);
     else filtered = filtered.filter(c => c.category === activeCategory);
+  }
+
+  // Subcategory filter
+  if (activeSubcategory) {
+    filtered = filtered.filter(c => c.subcategory === activeSubcategory);
   }
 
   // Text search
@@ -2050,6 +2205,7 @@ function renderChannels() {
         </div>
         <div style="display:flex;gap:.375rem;flex-wrap:wrap;align-items:center">
           ${ch.category ? `<div class="card-category-tag">${ch.category}</div>` : ''}
+          ${ch.subcategory ? `<div class="card-subcat-tag">${ch.subcategory}</div>` : ''}
           ${topicTag}
         </div>
         <div class="card-actions">
@@ -2129,6 +2285,7 @@ function importJSON(input) {
       const data = JSON.parse(e.target.result);
       if (data.channels) channels = data.channels;
       if (data.categories) categories = data.categories;
+      if (data.subcategories) subcategories = data.subcategories;
       save(); renderAll();
       toast('JSON backup imported');
     } catch(e) { toast('Invalid JSON file'); }
@@ -2138,7 +2295,7 @@ function importJSON(input) {
 }
 
 function exportJSON() {
-  const blob = new Blob([JSON.stringify({channels, categories}, null, 2)], {type:'application/json'});
+  const blob = new Blob([JSON.stringify({channels, categories, subcategories}, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'subsort-backup.json';
@@ -2156,14 +2313,36 @@ function editChannel(id) {
   document.getElementById('editChannelName').textContent = ch.name;
   const sel = document.getElementById('editChannelCategory');
   sel.innerHTML = '<option value="">None</option>' + categories.map(c => `<option value="${c}" ${ch.category===c?'selected':''}>${c}</option>`).join('');
+  updateEditSubcategoryOptions(ch.subcategory);
   document.getElementById('editChannelNotes').value = ch.notes || '';
   openModal('editChannelModal');
+}
+
+function updateEditSubcategoryOptions(currentSubcat) {
+  const cat = document.getElementById('editChannelCategory').value;
+  const group = document.getElementById('editSubcatGroup');
+  const sel = document.getElementById('editChannelSubcategory');
+  const subs = subcategories[cat] || [];
+  if (!cat || !subs.length) {
+    group.style.display = 'none';
+    sel.innerHTML = '';
+    return;
+  }
+  group.style.display = '';
+  // Resolve current value: passed param or from editing channel
+  const current = currentSubcat !== undefined ? currentSubcat : (channels.find(c => c.id === editingChannelId)?.subcategory || '');
+  sel.innerHTML = '<option value="">None</option>' + subs.map(s => `<option value="${s}" ${current===s?'selected':''}>${s}</option>`).join('');
 }
 
 function saveChannelEdit() {
   const ch = channels.find(c => c.id === editingChannelId);
   if (!ch) return;
-  ch.category = document.getElementById('editChannelCategory').value;
+  const newCat = document.getElementById('editChannelCategory').value;
+  // Clear subcategory if category changed
+  if (newCat !== ch.category) ch.subcategory = '';
+  ch.category = newCat;
+  const subSel = document.getElementById('editChannelSubcategory');
+  if (subSel.options.length) ch.subcategory = subSel.value;
   ch.notes = document.getElementById('editChannelNotes').value;
   save(); renderAll();
   closeModal('editChannelModal');
@@ -2217,10 +2396,14 @@ function openDetail(id) {
     `<option value="${c}" ${ch.category===c?'selected':''}>${c}</option>`
   ).join('');
 
+  // Subcategory select
+  populateDetailSubcategory(ch.category, ch.subcategory);
+
   // Topics
   const topicsEl = document.getElementById('detailTopics');
   let topicsHtml = '';
   if (ch.category) topicsHtml += `<span class="detail-tag">${ch.category}</span>`;
+  if (ch.subcategory) topicsHtml += `<span class="detail-tag" style="background:rgba(251,191,36,.1);color:#fbbf24">${ch.subcategory}</span>`;
   if (ch.topics && ch.topics.length) {
     topicsHtml += ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
   }
@@ -2302,16 +2485,52 @@ function toggleDetailDesc() {
 function updateDetailCategory(value) {
   const ch = channels.find(c => c.id === detailChannelId);
   if (!ch) return;
+  // Clear subcategory if category changed
+  if (value !== ch.category) ch.subcategory = '';
   ch.category = value;
+  save();
+  renderAll();
+  // Update subcategory dropdown
+  populateDetailSubcategory(value, ch.subcategory);
+  // Refresh topics display
+  const topicsEl = document.getElementById('detailTopics');
+  let html = '';
+  if (value) html += `<span class="detail-tag">${value}</span>`;
+  if (ch.subcategory) html += `<span class="detail-tag" style="background:rgba(251,191,36,.1);color:#fbbf24">${ch.subcategory}</span>`;
+  if (ch.topics && ch.topics.length) html += ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
+  topicsEl.innerHTML = html;
+  toast('Category updated');
+}
+
+function populateDetailSubcategory(cat, currentSub) {
+  const row = document.getElementById('detailSubcatRow');
+  const sel = document.getElementById('detailSubcategorySelect');
+  const subs = subcategories[cat] || [];
+  if (!cat || !subs.length) {
+    row.style.display = 'none';
+    sel.innerHTML = '';
+    return;
+  }
+  row.style.display = '';
+  sel.innerHTML = '<option value="">None</option>' + subs.map(s =>
+    `<option value="${s}" ${currentSub===s?'selected':''}>${s}</option>`
+  ).join('');
+}
+
+function updateDetailSubcategory(value) {
+  const ch = channels.find(c => c.id === detailChannelId);
+  if (!ch) return;
+  ch.subcategory = value;
   save();
   renderAll();
   // Refresh topics display
   const topicsEl = document.getElementById('detailTopics');
   let html = '';
-  if (value) html += `<span class="detail-tag">${value}</span>`;
+  if (ch.category) html += `<span class="detail-tag">${ch.category}</span>`;
+  if (value) html += `<span class="detail-tag" style="background:rgba(251,191,36,.1);color:#fbbf24">${value}</span>`;
   if (ch.topics && ch.topics.length) html += ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
   topicsEl.innerHTML = html;
-  toast('Category updated');
+  toast('Subcategory updated');
 }
 
 function confirmUnsubscribe(id) {
@@ -2337,6 +2556,11 @@ function saveCategory() {
   if (editingCategoryIdx !== null) {
     const old = categories[editingCategoryIdx];
     channels.forEach(ch => { if (ch.category === old) ch.category = name; });
+    // Migrate subcategories to new name
+    if (subcategories[old]) {
+      subcategories[name] = subcategories[old];
+      delete subcategories[old];
+    }
     categories[editingCategoryIdx] = name;
   } else {
     if (!categories.includes(name)) categories.push(name);
@@ -2350,8 +2574,10 @@ function saveCategory() {
 function deleteCategory() {
   if (editingCategoryIdx === null) return;
   const name = categories[editingCategoryIdx];
-  channels.forEach(ch => { if (ch.category === name) ch.category = ''; });
+  channels.forEach(ch => { if (ch.category === name) { ch.category = ''; ch.subcategory = ''; } });
   categories.splice(editingCategoryIdx, 1);
+  delete subcategories[name];
+  if (activeCategory === name) { activeCategory = 'all'; activeSubcategory = null; }
   save(); renderAll();
   closeModal('addCategoryModal');
   toast('Category deleted');
