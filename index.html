@@ -766,11 +766,6 @@ input[type=range]::-webkit-slider-thumb{
     <h2>Settings</h2>
     <p class="subtitle">Configure your API credentials — stored only in your browser.</p>
     <div class="form-group">
-      <label>Google OAuth Client ID</label>
-      <input type="text" id="clientIdInput" placeholder="Your Client ID">
-      <p class="hint">Create a project in Google Cloud Console, enable YouTube Data API v3, then create an OAuth 2.0 Web Client ID.</p>
-    </div>
-    <div class="form-group">
       <label>Anthropic API Key <span style="opacity:.5">optional</span></label>
       <input type="password" id="apiKeyInput" placeholder="sk-ant-…">
       <p class="hint">Your key never leaves your browser. Used only to call the Anthropic API directly.</p>
@@ -872,6 +867,7 @@ input[type=range]::-webkit-slider-thumb{
 let channels = JSON.parse(localStorage.getItem('subsort_channels') || '[]');
 let categories = JSON.parse(localStorage.getItem('subsort_categories') || '[]');
 let settings = JSON.parse(localStorage.getItem('subsort_settings') || '{}');
+const GOOGLE_CLIENT_ID = '916513934955-1noko2b7uubrmu9qtgvf45kk9l9stv6t.apps.googleusercontent.com';
 let activeCategory = 'all';
 let editingChannelId = null;
 let editingCategoryIdx = null;
@@ -1166,7 +1162,6 @@ function deleteCategory() {
    SETTINGS
    ═══════════════════════════════════════════ */
 function saveSettings() {
-  settings.clientId = document.getElementById('clientIdInput').value.trim();
   settings.apiKey = document.getElementById('apiKeyInput').value.trim();
   localStorage.setItem('subsort_settings', JSON.stringify(settings));
   closeModal('settingsModal');
@@ -1179,12 +1174,6 @@ function saveSettings() {
 let accessToken = null;
 
 function connectYouTube() {
-  if (!settings.clientId) {
-    openModal('settingsModal');
-    toast('Add your Google OAuth Client ID in settings first');
-    return;
-  }
-
   // Show progress immediately
   document.getElementById('ytConnectCard').style.display = 'none';
   document.getElementById('ytProgressCard').style.display = '';
@@ -1192,7 +1181,7 @@ function connectYouTube() {
 
   try {
     const tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: settings.clientId,
+      client_id: GOOGLE_CLIENT_ID,
       scope: 'https://www.googleapis.com/auth/youtube.readonly',
       callback: async (tokenResponse) => {
         if (tokenResponse.error) {
@@ -1437,7 +1426,6 @@ function resetAIModal() {
 function openModal(id) {
   document.getElementById(id).classList.add('open');
   if (id === 'settingsModal') {
-    document.getElementById('clientIdInput').value = settings.clientId || '';
     document.getElementById('apiKeyInput').value = settings.apiKey || '';
   }
   if (id === 'addCategoryModal') {
