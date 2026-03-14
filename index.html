@@ -146,7 +146,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   transition:all .2s;
 }
 .category-chip.active .chip-count{background:var(--accent);color:#fff}
-.categories-add-row{margin-top:.75rem}
+.categories-add-row{margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap}
 .btn-add-category{
   display:inline-flex;align-items:center;gap:.375rem;
   background:none;border:1px dashed var(--border-subtle);
@@ -156,6 +156,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 }
 .btn-add-category:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 .btn-add-category svg{width:14px;height:14px}
+.btn-auto-cat:hover{border-color:#60a5fa;color:#60a5fa;background:rgba(59,130,246,.1)}
 
 /* ─── Main Layout ─── */
 .main-layout{display:flex;gap:1.5rem;padding:1.5rem 2.5rem 3rem}
@@ -839,6 +840,10 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add category
     </button>
+    <button class="btn-add-category btn-auto-cat" onclick="autoCategorise()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg>
+      Auto-Categorise
+    </button>
   </div>
 </section>
 
@@ -1515,6 +1520,198 @@ function deleteCategory() {
   closeModal('addCategoryModal');
   toast('Category deleted');
   editingCategoryIdx = null;
+}
+
+/* ═══════════════════════════════════════════
+   AUTO-CATEGORISE (topic & keyword based)
+   ═══════════════════════════════════════════ */
+
+// Map YouTube's verbose Wikipedia topics to clean category names
+const TOPIC_MAP = {
+  'Music': 'Music',
+  'Music of Asia': 'Music',
+  'Music of Latin America': 'Music',
+  'Electronic music': 'Music',
+  'Hip hop music': 'Music',
+  'Independent music': 'Music',
+  'Pop music': 'Music',
+  'Rock music': 'Music',
+  'Soul music': 'Music',
+  'Christian music': 'Music',
+  'Classical music': 'Music',
+  'Country music': 'Music',
+  'Jazz': 'Music',
+  'Rhythm and blues': 'Music',
+  'Reggae': 'Music',
+  'Gaming': 'Gaming',
+  'Video game culture': 'Gaming',
+  'Action game': 'Gaming',
+  'Action-adventure game': 'Gaming',
+  'Role-playing video game': 'Gaming',
+  'Casual game': 'Gaming',
+  'Puzzle video game': 'Gaming',
+  'Strategy video game': 'Gaming',
+  'Simulation video game': 'Gaming',
+  'Sports game': 'Gaming',
+  'Massively multiplayer online role-playing game': 'Gaming',
+  'Entertainment': 'Entertainment',
+  'Entertainment (TV)': 'Entertainment',
+  'Humor': 'Entertainment',
+  'Television program': 'Entertainment',
+  'Film': 'Film & TV',
+  'Movies': 'Film & TV',
+  'Television': 'Film & TV',
+  'TV shows': 'Film & TV',
+  'Performing arts': 'Arts & Performance',
+  'Professional wrestling': 'Sports',
+  'Sport': 'Sports',
+  'Sports': 'Sports',
+  'Association football': 'Sports',
+  'American football': 'Sports',
+  'Baseball': 'Sports',
+  'Basketball': 'Sports',
+  'Boxing': 'Sports',
+  'Cricket': 'Sports',
+  'Golf': 'Sports',
+  'Ice hockey': 'Sports',
+  'Mixed martial arts': 'Sports',
+  'Motorsport': 'Sports',
+  'Tennis': 'Sports',
+  'Volleyball': 'Sports',
+  'Technology': 'Technology',
+  'Science': 'Science & Education',
+  'Knowledge': 'Science & Education',
+  'Lifestyle': 'Lifestyle',
+  'Lifestyle (sociology)': 'Lifestyle',
+  'Health': 'Health & Fitness',
+  'Fitness': 'Health & Fitness',
+  'Physical fitness': 'Health & Fitness',
+  'Food': 'Food & Cooking',
+  'Cooking': 'Food & Cooking',
+  'Cuisine': 'Food & Cooking',
+  'Fashion': 'Fashion & Beauty',
+  'Beauty': 'Fashion & Beauty',
+  'Hobby': 'Hobbies & DIY',
+  'DIY': 'Hobbies & DIY',
+  'Vehicles': 'Automotive',
+  'Automobile': 'Automotive',
+  'Motorsport': 'Automotive',
+  'Tourism': 'Travel',
+  'Travel': 'Travel',
+  'Pet': 'Pets & Animals',
+  'Pets': 'Pets & Animals',
+  'Animal': 'Pets & Animals',
+  'Politics': 'News & Politics',
+  'Society': 'News & Politics',
+  'Business': 'Business',
+  'Marketing': 'Business',
+  'Entrepreneurship': 'Business',
+  'Religion': 'Religion & Spirituality',
+  'Christianity': 'Religion & Spirituality',
+  'Islam': 'Religion & Spirituality',
+  'Buddhism': 'Religion & Spirituality',
+  'Animated cartoon': 'Animation',
+  'Animation': 'Animation',
+  'Anime': 'Animation',
+  'Comics': 'Animation',
+  'Children\'s music': 'Kids & Family',
+  'Children\'s film': 'Kids & Family',
+  'Family': 'Kids & Family',
+  'Military': 'History & Military',
+  'History': 'History & Military',
+};
+
+// Keyword patterns that suggest a category
+const KEYWORD_PATTERNS = [
+  { pattern: /\b(game|gaming|gamer|playthrough|lets?\s*play|xbox|playstation|nintendo|steam)\b/i, category: 'Gaming' },
+  { pattern: /\b(music|song|album|singer|band|rap|hip\s*hop|edm|guitar|piano|dj)\b/i, category: 'Music' },
+  { pattern: /\b(tech|software|hardware|programming|code|coding|developer|computer|ai|gadget)\b/i, category: 'Technology' },
+  { pattern: /\b(cook|recipe|food|baking|chef|kitchen|meal|eat)\b/i, category: 'Food & Cooking' },
+  { pattern: /\b(fitness|workout|gym|exercise|muscle|health|yoga|weight)\b/i, category: 'Health & Fitness' },
+  { pattern: /\b(travel|adventure|explore|trip|vacation|destination|backpack)\b/i, category: 'Travel' },
+  { pattern: /\b(fashion|beauty|makeup|skincare|style|outfit|clothing)\b/i, category: 'Fashion & Beauty' },
+  { pattern: /\b(news|politic|journalist|report|current\s*events|debate)\b/i, category: 'News & Politics' },
+  { pattern: /\b(science|physics|chemistry|biology|space|nasa|research|experiment)\b/i, category: 'Science & Education' },
+  { pattern: /\b(learn|education|tutorial|teach|course|lesson|study|how\s*to)\b/i, category: 'Science & Education' },
+  { pattern: /\b(film|movie|cinema|director|actor|review|trailer)\b/i, category: 'Film & TV' },
+  { pattern: /\b(sport|football|soccer|basketball|tennis|cricket|rugby|mma|boxing|f1)\b/i, category: 'Sports' },
+  { pattern: /\b(car|auto|vehicle|motor|drive|engine|racing)\b/i, category: 'Automotive' },
+  { pattern: /\b(diy|craft|build|woodwork|maker|project|handmade)\b/i, category: 'Hobbies & DIY' },
+  { pattern: /\b(anime|manga|otaku|waifu|weeb|vtuber)\b/i, category: 'Animation' },
+  { pattern: /\b(business|entrepreneur|startup|invest|finance|money|stock|crypto)\b/i, category: 'Business' },
+  { pattern: /\b(comedy|funny|humor|laugh|skit|parody|meme|prank)\b/i, category: 'Entertainment' },
+  { pattern: /\b(cat|dog|pet|animal|puppy|kitten|wildlife)\b/i, category: 'Pets & Animals' },
+  { pattern: /\b(kid|child|family|parent|baby|toddler)\b/i, category: 'Kids & Family' },
+];
+
+function autoCategorise() {
+  if (!channels.length) { toast('No channels to categorise'); return; }
+
+  // Check if we have topic data
+  const hasTopics = channels.some(ch => ch.topics && ch.topics.length);
+  if (!hasTopics) {
+    toast('No topic data found — hit Sync first to fetch from YouTube');
+    return;
+  }
+
+  let assigned = 0;
+  let skipped = 0;
+
+  for (const ch of channels) {
+    // Skip already categorised channels
+    if (ch.category) { skipped++; continue; }
+
+    let bestCategory = null;
+
+    // Step 1: Try topics (most reliable)
+    if (ch.topics && ch.topics.length) {
+      const categoryCounts = {};
+      for (const topic of ch.topics) {
+        const mapped = TOPIC_MAP[topic];
+        if (mapped) {
+          categoryCounts[mapped] = (categoryCounts[mapped] || 0) + 1;
+        }
+      }
+      // Pick the most frequent mapped category
+      let maxCount = 0;
+      for (const [cat, count] of Object.entries(categoryCounts)) {
+        if (count > maxCount) { maxCount = count; bestCategory = cat; }
+      }
+    }
+
+    // Step 2: Fall back to keyword matching on name + description + keywords
+    if (!bestCategory) {
+      const text = [ch.name, ch.description, ch.keywords].filter(Boolean).join(' ');
+      for (const { pattern, category } of KEYWORD_PATTERNS) {
+        if (pattern.test(text)) {
+          bestCategory = category;
+          break;
+        }
+      }
+    }
+
+    // Step 3: If still nothing, mark as "Other"
+    if (!bestCategory) {
+      bestCategory = 'Other';
+    }
+
+    ch.category = bestCategory;
+    assigned++;
+
+    // Ensure the category exists
+    if (!categories.includes(bestCategory)) {
+      categories.push(bestCategory);
+    }
+  }
+
+  // Clean up: remove empty categories
+  categories = categories.filter(cat =>
+    channels.some(ch => ch.category === cat)
+  );
+
+  save();
+  renderAll();
+  toast(`Auto-categorised ${assigned} channels (${skipped} already had categories)`);
 }
 
 /* ═══════════════════════════════════════════
