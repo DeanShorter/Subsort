@@ -1165,8 +1165,13 @@ function signOut() {
     google.accounts.oauth2.revoke(accessToken, () => {});
   }
   accessToken = null;
+  channels = [];
+  categories = [];
+  activeCategory = 'all';
   localStorage.removeItem('subsort_yt_token');
-  updateAuthUI();
+  save();
+  renderAll();
+  showView('import');
   toast('Signed out');
 }
 
