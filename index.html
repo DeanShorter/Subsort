@@ -1228,9 +1228,17 @@ function renderCategories() {
 }
 
 function setCategory(key) {
+  // Hide discover if switching away from a category that had it
+  if (activeCategory !== key) {
+    hideDiscover();
+  }
   activeCategory = key;
   renderCategories();
   renderChannels();
+  // Restore cached discover results for this category
+  if (!restoreDiscover(key)) {
+    document.getElementById('discoverSection').style.display = 'none';
+  }
 }
 
 function scrollCats(dir) {
@@ -2010,6 +2018,13 @@ async function discoverSimilar() {
     updateDiscoverCounter(1, suggestions.length);
     moveCarousel(0);
 
+    // Cache results for this category
+    discoverCache[activeCategory] = {
+      suggestions,
+      html: carousel.innerHTML,
+      index: 0
+    };
+
   } catch(e) {
     carousel.innerHTML = `<div class="discover-loading"><p style="font-size:.8125rem;color:#f87171">Search failed: ${e.message}</p></div>`;
     subtitle.textContent = 'Error';
@@ -2019,6 +2034,7 @@ async function discoverSimilar() {
 /* Carousel navigation */
 let discoverIndex = 0;
 let discoverSuggestions = [];
+const discoverCache = {}; // category → { suggestions, html, index }
 
 function scrollDiscover(dir) {
   const total = discoverSuggestions.length;
@@ -2026,6 +2042,8 @@ function scrollDiscover(dir) {
   discoverIndex = Math.max(0, Math.min(total - 1, discoverIndex + dir));
   moveCarousel(discoverIndex);
   updateDiscoverCounter(discoverIndex + 1, total);
+  // Update cache index
+  if (discoverCache[activeCategory]) discoverCache[activeCategory].index = discoverIndex;
 }
 
 function moveCarousel(idx) {
@@ -2056,6 +2074,34 @@ function addSuggested(channelId, name, thumbnail, subs, videos) {
 
 function closeDiscover() {
   document.getElementById('discoverSection').style.display = 'none';
+  // Remove from cache so it doesn't reappear
+  delete discoverCache[activeCategory];
+  discoverSuggestions = [];
+}
+
+function hideDiscover() {
+  // Hide without clearing cache
+  document.getElementById('discoverSection').style.display = 'none';
+}
+
+function restoreDiscover(category) {
+  const cached = discoverCache[category];
+  if (!cached) return false;
+
+  const section = document.getElementById('discoverSection');
+  const carousel = document.getElementById('discoverCarousel');
+  const title = document.getElementById('discoverTitle');
+  const subtitle = document.getElementById('discoverSubtitle');
+
+  section.style.display = '';
+  title.textContent = `Discover: ${category}`;
+  subtitle.textContent = `${cached.suggestions.length} channels you might like`;
+  carousel.innerHTML = cached.html;
+  discoverSuggestions = cached.suggestions;
+  discoverIndex = cached.index || 0;
+  moveCarousel(discoverIndex);
+  updateDiscoverCounter(discoverIndex + 1, cached.suggestions.length);
+  return true;
 }
 
 /* ═══════════════════════════════════════════
