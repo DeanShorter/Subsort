@@ -1896,7 +1896,7 @@ async function discoverSimilar() {
   // Build search queries
   // Query 1: Use topicId if available
   // Query 2: Use keyword-based search
-  const suggestions = [];
+  let suggestions = [];
 
   try {
     // Search 1: Topic-based
