@@ -728,6 +728,92 @@ input[type=range]::-webkit-slider-thumb{
 .top-channel-rank.silver{background:rgba(148,163,184,.15);color:#94a3b8}
 .top-channel-rank.bronze{background:rgba(180,83,9,.15);color:#d97706}
 
+/* ─── Premium Watch History Card ─── */
+.analytics-premium-card{
+  position:relative;
+  background:var(--bg-card);
+  border:1px solid rgba(251,191,36,.25);
+  border-radius:var(--radius-xl);
+  padding:2.5rem 2rem;
+  margin-top:1.5rem;
+  overflow:hidden;
+}
+.premium-glow{
+  position:absolute;top:-80px;right:-80px;width:260px;height:260px;
+  background:radial-gradient(circle,rgba(251,191,36,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.premium-content{position:relative;z-index:1;text-align:center;max-width:560px;margin:0 auto}
+.premium-badge{
+  display:inline-flex;align-items:center;gap:.375rem;
+  font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:.375rem .875rem;border-radius:20px;
+  background:rgba(251,191,36,.1);color:#fbbf24;
+  margin-bottom:1.25rem;
+}
+.premium-title{
+  font-family:var(--font-display);font-size:1.5rem;font-weight:700;
+  letter-spacing:-.02em;margin-bottom:.5rem;color:var(--text-primary);
+}
+.premium-title em{font-style:italic;color:#fbbf24}
+.premium-desc{
+  font-size:.875rem;color:var(--text-secondary);line-height:1.6;
+  margin-bottom:1.75rem;
+}
+.premium-steps{
+  display:flex;flex-direction:column;gap:.75rem;
+  text-align:left;margin-bottom:1.75rem;
+}
+.premium-step{
+  display:flex;gap:.875rem;align-items:flex-start;
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);padding:.875rem 1rem;
+  font-size:.8125rem;color:var(--text-secondary);line-height:1.5;
+  transition:border-color .2s;
+}
+.premium-step:hover{border-color:rgba(251,191,36,.3)}
+.premium-step strong{color:var(--text-primary);font-weight:600}
+.premium-step-num{
+  flex-shrink:0;width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;
+  display:grid;place-items:center;
+  font-size:.6875rem;font-weight:800;
+}
+.premium-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+.btn-premium{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.75rem 1.5rem;border-radius:var(--radius-sm);
+  font:600 .875rem/1 var(--font-body);cursor:pointer;
+  background:linear-gradient(135deg,#fbbf24,#f59e0b);border:none;color:#000;
+  transition:all .2s var(--transition);
+  box-shadow:0 2px 12px rgba(251,191,36,.25);
+}
+.btn-premium:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 20px rgba(251,191,36,.35)}
+.btn-premium-secondary{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.75rem 1.5rem;border-radius:var(--radius-sm);
+  font:500 .875rem/1 var(--font-body);cursor:pointer;
+  background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);
+  text-decoration:none;transition:all .2s var(--transition);
+}
+.btn-premium-secondary:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
+.premium-hint{font-size:.6875rem;color:var(--text-muted);margin-top:.5rem}
+
+/* Premium loaded header */
+.analytics-premium-loaded-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:2rem;margin-bottom:1rem;padding-top:1.5rem;
+  border-top:1px solid rgba(251,191,36,.15);
+}
+.btn-wh-reupload{
+  display:inline-flex;align-items:center;gap:.375rem;
+  background:none;border:1px solid var(--border-subtle);
+  color:var(--text-muted);font:500 .75rem/1 var(--font-body);
+  padding:.375rem .75rem;border-radius:var(--radius-sm);cursor:pointer;
+  transition:all .15s;
+}
+.btn-wh-reupload:hover{border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,.05)}
+
 /* ─── Marketplace Page ─── */
 .marketplace-page{display:none;padding:2rem 2.5rem 3rem}
 .marketplace-page.active{display:block}
@@ -971,6 +1057,8 @@ input[type=range]::-webkit-slider-thumb{
   .mp-how-grid,.mp-pricing-grid{grid-template-columns:1fr}
   .analytics-score-card{flex-direction:column;text-align:center}
   .analytics-page,.marketplace-page{padding:1.5rem 1.25rem}
+  .analytics-premium-card{padding:1.75rem 1.25rem}
+  .analytics-premium-loaded-header{flex-direction:column;gap:.75rem;align-items:flex-start}
 }
 @media(max-width:600px){
   .topnav{padding:.625rem 1rem}
@@ -1044,131 +1132,55 @@ input[type=range]::-webkit-slider-thumb{
 <div class="import-page" id="importPage">
   <div class="import-page-inner">
 
-    <!-- Signed-out state: original import flow -->
-    <div id="importSignedOut">
-      <div class="onboarding-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
-      </div>
-      <h2 class="import-heading">Organise your <em>subscriptions</em></h2>
-      <p class="import-subtitle">Connect your YouTube account to import subscriptions automatically, or upload a CSV from Google Takeout.</p>
+    <div class="onboarding-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+    </div>
+    <h2 class="import-heading">Organise your <em>subscriptions</em></h2>
+    <p class="import-subtitle">Connect your YouTube account to import subscriptions automatically, or upload a CSV from Google Takeout.</p>
 
-      <div class="import-card import-card-primary" id="ytConnectCard">
-        <div class="import-card-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
-        </div>
-        <div class="import-card-body">
-          <h3>Connect with YouTube</h3>
-          <p>Sign in with Google to automatically fetch all your subscriptions, avatars, and channel stats.</p>
-        </div>
-        <button class="btn-lg btn-youtube" id="ytConnectBtn" onclick="connectYouTube()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Sign in with Google
-        </button>
+    <div class="import-card import-card-primary" id="ytConnectCard">
+      <div class="import-card-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
       </div>
-
-      <div class="import-card import-card-progress" id="ytProgressCard" style="display:none">
-        <div class="sync-progress">
-          <div class="sync-spinner"></div>
-          <div class="sync-status">
-            <span class="sync-label" id="syncLabel">Connecting to YouTube…</span>
-            <span class="sync-detail" id="syncDetail">Authorising your account</span>
-          </div>
-        </div>
-        <div class="sync-bar-wrap">
-          <div class="sync-bar" id="syncBar"></div>
-        </div>
+      <div class="import-card-body">
+        <h3>Connect with YouTube</h3>
+        <p>Sign in with Google to automatically fetch all your subscriptions, avatars, and channel stats.</p>
       </div>
-
-      <div class="import-divider"><span>or</span></div>
-
-      <div class="import-card import-card-secondary">
-        <div class="import-card-body">
-          <h3>Import from Google Takeout</h3>
-          <p>Export your YouTube data at takeout.google.com, then upload the subscriptions CSV here.</p>
-        </div>
-        <div class="import-card-actions">
-          <button class="btn-lg btn-primary" onclick="document.getElementById('csvFileInput').click()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Upload CSV
-          </button>
-          <a class="btn-lg btn-secondary" href="https://takeout.google.com" target="_blank">Google Takeout ↗</a>
-        </div>
-      </div>
-      <p class="import-hint">Your data stays in your browser. Nothing is sent to any server except YouTube and Anthropic APIs.</p>
+      <button class="btn-lg btn-youtube" id="ytConnectBtn" onclick="connectYouTube()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Sign in with Google
+      </button>
     </div>
 
-    <!-- Signed-in state: watch history upload -->
-    <div id="importSignedIn" style="display:none">
-      <div class="onboarding-icon" style="background:rgba(59,130,246,.1)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5" width="36" height="36"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <h2 class="import-heading">Upload <em>Watch History</em></h2>
-      <p class="import-subtitle">Upload your YouTube watch history from Google Takeout to unlock deeper analytics — see your most-watched channels, discover viewing patterns, and find channels you watch but haven't subscribed to.</p>
-
-      <div class="onboarding-steps">
-        <div class="onboarding-step">
-          <span class="step-num" style="background:#60a5fa">1</span>
-          <span class="step-text">Go to <strong>takeout.google.com</strong> — select YouTube only, then <strong>history</strong> only</span>
-        </div>
-        <div class="onboarding-step">
-          <span class="step-num" style="background:#60a5fa">2</span>
-          <span class="step-text">Choose <strong>JSON</strong> format, export and unzip</span>
-        </div>
-        <div class="onboarding-step">
-          <span class="step-num" style="background:#60a5fa">3</span>
-          <span class="step-text">Find <strong>watch-history.json</strong> in the YouTube folder and upload it below</span>
+    <div class="import-card import-card-progress" id="ytProgressCard" style="display:none">
+      <div class="sync-progress">
+        <div class="sync-spinner"></div>
+        <div class="sync-status">
+          <span class="sync-label" id="syncLabel">Connecting to YouTube…</span>
+          <span class="sync-detail" id="syncDetail">Authorising your account</span>
         </div>
       </div>
+      <div class="sync-bar-wrap">
+        <div class="sync-bar" id="syncBar"></div>
+      </div>
+    </div>
 
-      <div class="import-card import-card-primary" style="border-color:rgba(59,130,246,.3)">
-        <div class="import-card-icon" style="background:rgba(59,130,246,.15)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5" width="24" height="24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <div class="import-card-body">
-          <h3>Upload Watch History</h3>
-          <p>Your history is parsed locally — nothing leaves your browser.</p>
-        </div>
-        <button class="btn-lg btn-primary" style="background:#60a5fa" onclick="document.getElementById('historyFileInput').click()">
+    <div class="import-divider"><span>or</span></div>
+
+    <div class="import-card import-card-secondary">
+      <div class="import-card-body">
+        <h3>Import from Google Takeout</h3>
+        <p>Export your YouTube data at takeout.google.com, then upload the subscriptions CSV here.</p>
+      </div>
+      <div class="import-card-actions">
+        <button class="btn-lg btn-primary" onclick="document.getElementById('csvFileInput').click()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Choose watch-history.json
+          Upload CSV
         </button>
+        <a class="btn-lg btn-secondary" href="https://takeout.google.com" target="_blank">Google Takeout ↗</a>
       </div>
-
-      <!-- Watch history stats (shown after upload) -->
-      <div id="watchHistoryStats" style="display:none">
-        <div class="import-divider"><span>Your watch history</span></div>
-        <div class="analytics-stats-row" id="whStatsRow" style="margin-bottom:1rem"></div>
-
-        <div class="analytics-section" style="margin-bottom:1rem">
-          <div class="analytics-section-header">
-            <h3>Most Watched Channels</h3>
-            <p>Channels you watch the most based on your history.</p>
-          </div>
-          <div id="whTopChannels"></div>
-        </div>
-
-        <div class="analytics-section" style="margin-bottom:1rem">
-          <div class="analytics-section-header">
-            <h3>Not Subscribed — But You Watch Them</h3>
-            <p>Channels that appear in your history but aren't in your subscriptions.</p>
-          </div>
-          <div id="whMissingSubs"></div>
-        </div>
-
-        <div class="analytics-section">
-          <div class="analytics-section-header">
-            <h3>Watch Activity</h3>
-            <p>When you watch YouTube the most.</p>
-          </div>
-          <div class="analytics-bars" id="whDayBars"></div>
-        </div>
-      </div>
-
-      <p class="import-hint" style="margin-top:1.5rem">
-        <a href="https://takeout.google.com" target="_blank" style="color:#60a5fa">Go to Google Takeout ↗</a>
-        &nbsp;·&nbsp; Your history never leaves your browser.
-      </p>
     </div>
+    <p class="import-hint">Your data stays in your browser. Nothing is sent to any server except YouTube and Anthropic APIs.</p>
 
   </div>
 </div>
@@ -1228,6 +1240,89 @@ input[type=range]::-webkit-slider-thumb{
       </div>
       <div class="analytics-top-list" id="topChannelsList"></div>
     </div>
+
+    <!-- ══ Premium: Watch History ══ -->
+    <div id="premiumWatchHistorySection">
+
+      <!-- Upload prompt (shown when no watch history loaded) -->
+      <div id="whUploadPrompt" class="analytics-premium-card">
+        <div class="premium-glow"></div>
+        <div class="premium-content">
+          <div class="premium-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Premium Analytics
+          </div>
+          <h3 class="premium-title">Unlock <em>Watch History</em> Analytics</h3>
+          <p class="premium-desc">Upload your YouTube watch history to discover your most-watched channels, viewing patterns, and find channels you watch but haven't subscribed to.</p>
+          <div class="premium-steps">
+            <div class="premium-step">
+              <span class="premium-step-num">1</span>
+              <span>Go to <strong>takeout.google.com</strong> — select YouTube only, then <strong>history</strong> only</span>
+            </div>
+            <div class="premium-step">
+              <span class="premium-step-num">2</span>
+              <span>Choose <strong>JSON</strong> format, export and unzip</span>
+            </div>
+            <div class="premium-step">
+              <span class="premium-step-num">3</span>
+              <span>Find <strong>watch-history.json</strong> in the YouTube folder and upload below</span>
+            </div>
+          </div>
+          <div class="premium-actions">
+            <button class="btn-premium" onclick="document.getElementById('historyFileInput').click()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload watch-history.json
+            </button>
+            <a class="btn-premium-secondary" href="https://takeout.google.com" target="_blank">
+              Google Takeout ↗
+            </a>
+          </div>
+          <p class="premium-hint">Your history is parsed locally — nothing leaves your browser.</p>
+        </div>
+      </div>
+
+      <!-- Watch history analytics (shown after upload) -->
+      <div id="whAnalyticsLoaded" style="display:none">
+        <div class="analytics-premium-loaded-header">
+          <div class="premium-badge" style="margin-bottom:0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Watch History Analytics
+          </div>
+          <button class="btn-wh-reupload" onclick="document.getElementById('historyFileInput').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+            Re-upload
+          </button>
+        </div>
+
+        <div class="analytics-stats-row" id="whStatsRow" style="margin-bottom:1rem"></div>
+
+        <div class="analytics-section" style="margin-bottom:1.25rem">
+          <div class="analytics-section-header">
+            <h3>Most Watched Channels</h3>
+            <p>Channels you watch the most based on your history.</p>
+          </div>
+          <div id="whTopChannels"></div>
+        </div>
+
+        <div class="analytics-section" style="margin-bottom:1.25rem">
+          <div class="analytics-section-header">
+            <h3>Not Subscribed — But You Watch Them</h3>
+            <p>Channels that appear in your history but aren't in your subscriptions.</p>
+          </div>
+          <div id="whMissingSubs"></div>
+        </div>
+
+        <div class="analytics-section">
+          <div class="analytics-section-header">
+            <h3>Watch Activity</h3>
+            <p>When you watch YouTube the most.</p>
+          </div>
+          <div class="analytics-bars" id="whDayBars"></div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </div>
 
@@ -2553,13 +2648,6 @@ function updateAuthUI() {
   document.getElementById('btnSignOut').style.display = signedIn ? '' : 'none';
   document.getElementById('btnSync').style.display = signedIn ? '' : 'none';
   document.getElementById('btnAI').style.display = channels.length ? '' : 'none';
-
-  // Toggle import page content
-  document.getElementById('importSignedOut').style.display = signedIn ? 'none' : '';
-  document.getElementById('importSignedIn').style.display = signedIn ? '' : 'none';
-
-  // Update nav label
-  document.getElementById('navImport').textContent = signedIn ? 'Watch History' : 'Import';
 }
 
 function signOut() {
@@ -2966,7 +3054,9 @@ function renderWatchHistory() {
   if (!watchHistory) return;
   const wh = watchHistory;
 
-  document.getElementById('watchHistoryStats').style.display = '';
+  // Toggle between upload prompt and loaded analytics
+  document.getElementById('whUploadPrompt').style.display = 'none';
+  document.getElementById('whAnalyticsLoaded').style.display = '';
 
   // Stats row
   const dateFrom = wh.dateRange?.from ? new Date(wh.dateRange.from).toLocaleDateString('en-GB', {month:'short',year:'numeric'}) : '—';
@@ -3033,8 +3123,7 @@ function renderWatchHistory() {
   }).join('');
 }
 
-// Render stored watch history on page load
-if (watchHistory) setTimeout(renderWatchHistory, 100);
+// Watch history is now rendered within renderAnalytics when the analytics view is shown
 
 /* ═══════════════════════════════════════════
    MODALS & DROPDOWNS
@@ -3209,6 +3298,16 @@ function renderAnalytics() {
       </div>
     </div>`;
   }).join('');
+
+  // ── Watch history premium section ──
+  if (watchHistory) {
+    document.getElementById('whUploadPrompt').style.display = 'none';
+    document.getElementById('whAnalyticsLoaded').style.display = '';
+    renderWatchHistory();
+  } else {
+    document.getElementById('whUploadPrompt').style.display = '';
+    document.getElementById('whAnalyticsLoaded').style.display = 'none';
+  }
 }
 
 function findDeadChannels() {
