@@ -412,24 +412,24 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .card-actions button:hover{background:var(--accent);border-color:var(--accent);color:#fff}
 .card-actions button svg{width:13px;height:13px}
 
-/* ─── Import Page (full-page) ─── */
-.import-page{
-  display:none;
-  min-height:calc(100vh - 56px);
+/* ─── Onboarding Empty State ─── */
+.onboarding-empty{
+  display:flex;
   justify-content:center;align-items:center;
+  min-height:calc(100vh - 200px);
+  padding:2rem 0;
 }
-.import-page.active{display:flex}
-.import-page-inner{
-  text-align:center;padding:3rem 2rem 4rem;
+.onboarding-empty-inner{
+  text-align:center;padding:2rem;
   max-width:520px;width:100%;
 }
-.import-page .onboarding-icon{
+.onboarding-empty .onboarding-icon{
   width:80px;height:80px;border-radius:50%;
   background:var(--accent-soft);
   display:grid;place-items:center;
   margin:0 auto 2rem;
 }
-.import-page .onboarding-icon svg{width:36px;height:36px;color:var(--accent)}
+.onboarding-empty .onboarding-icon svg{width:36px;height:36px;color:var(--accent)}
 .import-heading{font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:.625rem;letter-spacing:-.02em}
 .import-heading em{font-style:italic;color:var(--accent)}
 .import-subtitle{color:var(--text-secondary);font-size:.9375rem;line-height:1.6;margin-bottom:2.25rem}
@@ -1102,7 +1102,6 @@ input[type=range]::-webkit-slider-thumb{
     <button id="navChannels" onclick="showView('channels')">Channels</button>
     <button id="navAnalytics" onclick="showView('analytics')">Analytics</button>
     <button id="navMarketplace" onclick="showView('marketplace')">Marketplace</button>
-    <button id="navImport" onclick="showView('import')">Import</button>
   </div>
   <div class="nav-search">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -1127,63 +1126,6 @@ input[type=range]::-webkit-slider-thumb{
     </button>
   </div>
 </nav>
-
-<!-- ═══ Import / Watch History Page ═══ -->
-<div class="import-page" id="importPage">
-  <div class="import-page-inner">
-
-    <div class="onboarding-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
-    </div>
-    <h2 class="import-heading">Organise your <em>subscriptions</em></h2>
-    <p class="import-subtitle">Connect your YouTube account to import subscriptions automatically, or upload a CSV from Google Takeout.</p>
-
-    <div class="import-card import-card-primary" id="ytConnectCard">
-      <div class="import-card-icon">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
-      </div>
-      <div class="import-card-body">
-        <h3>Connect with YouTube</h3>
-        <p>Sign in with Google to automatically fetch all your subscriptions, avatars, and channel stats.</p>
-      </div>
-      <button class="btn-lg btn-youtube" id="ytConnectBtn" onclick="connectYouTube()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        Sign in with Google
-      </button>
-    </div>
-
-    <div class="import-card import-card-progress" id="ytProgressCard" style="display:none">
-      <div class="sync-progress">
-        <div class="sync-spinner"></div>
-        <div class="sync-status">
-          <span class="sync-label" id="syncLabel">Connecting to YouTube…</span>
-          <span class="sync-detail" id="syncDetail">Authorising your account</span>
-        </div>
-      </div>
-      <div class="sync-bar-wrap">
-        <div class="sync-bar" id="syncBar"></div>
-      </div>
-    </div>
-
-    <div class="import-divider"><span>or</span></div>
-
-    <div class="import-card import-card-secondary">
-      <div class="import-card-body">
-        <h3>Import from Google Takeout</h3>
-        <p>Export your YouTube data at takeout.google.com, then upload the subscriptions CSV here.</p>
-      </div>
-      <div class="import-card-actions">
-        <button class="btn-lg btn-primary" onclick="document.getElementById('csvFileInput').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Upload CSV
-        </button>
-        <a class="btn-lg btn-secondary" href="https://takeout.google.com" target="_blank">Google Takeout ↗</a>
-      </div>
-    </div>
-    <p class="import-hint">Your data stays in your browser. Nothing is sent to any server except YouTube and Anthropic APIs.</p>
-
-  </div>
-</div>
 
 <!-- ═══ Analytics Page ═══ -->
 <div class="analytics-page" id="analyticsPage">
@@ -1543,6 +1485,62 @@ input[type=range]::-webkit-slider-thumb{
     </div>
 
     <div class="channel-grid" id="channelGrid"></div>
+
+    <!-- Empty state: onboarding (shown when no channels) -->
+    <div class="onboarding-empty" id="onboardingEmpty" style="display:none">
+      <div class="onboarding-empty-inner">
+        <div class="onboarding-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+        </div>
+        <h2 class="import-heading">Organise your <em>subscriptions</em></h2>
+        <p class="import-subtitle">Connect your YouTube account to import subscriptions automatically, or upload a CSV from Google Takeout.</p>
+
+        <div class="import-card import-card-primary" id="ytConnectCard">
+          <div class="import-card-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+          </div>
+          <div class="import-card-body">
+            <h3>Connect with YouTube</h3>
+            <p>Sign in with Google to automatically fetch all your subscriptions, avatars, and channel stats.</p>
+          </div>
+          <button class="btn-lg btn-youtube" id="ytConnectBtn" onclick="connectYouTube()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Sign in with Google
+          </button>
+        </div>
+
+        <div class="import-card import-card-progress" id="ytProgressCard" style="display:none">
+          <div class="sync-progress">
+            <div class="sync-spinner"></div>
+            <div class="sync-status">
+              <span class="sync-label" id="syncLabel">Connecting to YouTube…</span>
+              <span class="sync-detail" id="syncDetail">Authorising your account</span>
+            </div>
+          </div>
+          <div class="sync-bar-wrap">
+            <div class="sync-bar" id="syncBar"></div>
+          </div>
+        </div>
+
+        <div class="import-divider"><span>or</span></div>
+
+        <div class="import-card import-card-secondary">
+          <div class="import-card-body">
+            <h3>Import from Google Takeout</h3>
+            <p>Export your YouTube data at takeout.google.com, then upload the subscriptions CSV here.</p>
+          </div>
+          <div class="import-card-actions">
+            <button class="btn-lg btn-primary" onclick="document.getElementById('csvFileInput').click()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload CSV
+            </button>
+            <a class="btn-lg btn-secondary" href="https://takeout.google.com" target="_blank">Google Takeout ↗</a>
+          </div>
+        </div>
+        <p class="import-hint">Your data stays in your browser. Nothing is sent to any server except YouTube and Anthropic APIs.</p>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -1761,7 +1759,7 @@ function scrollCats(dir) {
 function renderChannels() {
   const grid = document.getElementById('channelGrid');
   const toolbar = document.getElementById('channelsToolbar');
-  const importPage = document.getElementById('importPage');
+  const onboarding = document.getElementById('onboardingEmpty');
   const sidebar = document.getElementById('sidebar');
   const catsSection = document.getElementById('categoriesSection');
   const mainLayout = document.querySelector('.main-layout');
@@ -1772,18 +1770,20 @@ function renderChannels() {
   const filterUncat = document.getElementById('filterUncategorised').checked;
 
   if (!channels.length) {
-    importPage.classList.add('active');
     catsSection.style.display = 'none';
-    mainLayout.style.display = 'none';
+    mainLayout.style.display = '';
+    sidebar.style.display = 'none';
+    toolbar.style.display = 'none';
     document.getElementById('analyticsPage').classList.remove('active');
     document.getElementById('marketplacePage').classList.remove('active');
     document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
-    document.getElementById('navImport').classList.add('active');
+    document.getElementById('navChannels').classList.add('active');
     grid.innerHTML = '';
+    onboarding.style.display = '';
     return;
   }
 
-  importPage.classList.remove('active');
+  onboarding.style.display = 'none';
   document.getElementById('analyticsPage').classList.remove('active');
   document.getElementById('marketplacePage').classList.remove('active');
   catsSection.style.display = '';
@@ -2661,7 +2661,7 @@ function signOut() {
   localStorage.removeItem('subsort_yt_token');
   save();
   renderAll();
-  showView('import');
+  showView('channels');
   toast('Signed out');
 }
 
@@ -3356,29 +3356,25 @@ function findDeadChannels() {
 }
 
 function showView(view) {
-  const importPage = document.getElementById('importPage');
   const catsSection = document.getElementById('categoriesSection');
   const mainLayout = document.querySelector('.main-layout');
   const analyticsPage = document.getElementById('analyticsPage');
   const marketplacePage = document.getElementById('marketplacePage');
+  const onboarding = document.getElementById('onboardingEmpty');
 
   // Hide everything first
-  importPage.classList.remove('active');
   catsSection.style.display = 'none';
   mainLayout.style.display = 'none';
   analyticsPage.classList.remove('active');
   marketplacePage.classList.remove('active');
+  if (onboarding) onboarding.style.display = 'none';
 
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
 
   switch(view) {
-    case 'import':
-      importPage.classList.add('active');
-      document.getElementById('navImport').classList.add('active');
-      break;
     case 'analytics':
-      if (!channels.length) { showView('import'); return; }
+      if (!channels.length) { showView('channels'); return; }
       analyticsPage.classList.add('active');
       document.getElementById('navAnalytics').classList.add('active');
       renderAnalytics();
@@ -3392,10 +3388,15 @@ function showView(view) {
       if (channels.length) {
         catsSection.style.display = '';
         mainLayout.style.display = '';
+        if (onboarding) onboarding.style.display = 'none';
+        document.getElementById('sidebar').style.display = '';
         document.getElementById('navChannels').classList.add('active');
       } else {
-        importPage.classList.add('active');
-        document.getElementById('navImport').classList.add('active');
+        mainLayout.style.display = '';
+        document.getElementById('sidebar').style.display = 'none';
+        document.getElementById('channelsToolbar').style.display = 'none';
+        if (onboarding) onboarding.style.display = '';
+        document.getElementById('navChannels').classList.add('active');
       }
       break;
   }
