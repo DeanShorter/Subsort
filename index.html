@@ -637,6 +637,169 @@ input[type=range]::-webkit-slider-thumb{
 /* File input */
 .file-input{display:none}
 
+/* ─── Analytics Page ─── */
+.analytics-page{display:none;padding:2rem 2.5rem 3rem}
+.analytics-page.active{display:block}
+.analytics-inner{max-width:900px;margin:0 auto}
+.analytics-hero{text-align:center;margin-bottom:2rem}
+
+.analytics-score-card{
+  display:flex;align-items:center;gap:2rem;
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xl);padding:2rem;margin-bottom:1.5rem;
+}
+.score-ring-wrap{position:relative;width:120px;height:120px;flex-shrink:0}
+.score-ring{width:100%;height:100%}
+.score-value{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--text-primary);
+}
+.score-details{flex:1}
+.score-details h3{font-family:var(--font-display);font-size:1.125rem;font-weight:700;margin-bottom:.25rem}
+.score-grade{font-size:.875rem;color:var(--text-secondary);margin-bottom:.75rem}
+.score-factors{display:flex;flex-wrap:wrap;gap:.5rem}
+.score-factor{
+  font-size:.6875rem;padding:.3rem .625rem;border-radius:20px;
+  display:inline-flex;align-items:center;gap:.25rem;
+}
+.score-factor.good{background:rgba(16,185,129,.1);color:#34d399}
+.score-factor.warn{background:rgba(245,158,11,.1);color:#f59e0b}
+.score-factor.bad{background:rgba(239,68,68,.1);color:#f87171}
+
+.analytics-stats-row{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;
+  margin-bottom:1.5rem;
+}
+.analytics-stat-card{
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);padding:1rem 1.25rem;text-align:center;
+}
+.analytics-stat-card .stat-num{font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--text-primary)}
+.analytics-stat-card .stat-lbl{font-size:.6875rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-top:.125rem}
+
+.analytics-section{
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.25rem;
+}
+.analytics-section-header{margin-bottom:1rem}
+.analytics-section-header h3{font-family:var(--font-display);font-size:1rem;font-weight:700}
+.analytics-section-header p{font-size:.8125rem;color:var(--text-muted);margin-top:.125rem}
+.analytics-empty{font-size:.8125rem;color:var(--text-muted);padding:.5rem 0}
+
+/* Category bars */
+.analytics-bars{display:flex;flex-direction:column;gap:.625rem}
+.analytics-bar-row{display:flex;align-items:center;gap:.75rem}
+.analytics-bar-label{width:120px;font-size:.75rem;font-weight:500;color:var(--text-secondary);text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.analytics-bar-track{flex:1;height:24px;background:var(--bg-surface);border-radius:4px;overflow:hidden;position:relative}
+.analytics-bar-fill{height:100%;border-radius:4px;transition:width .6s var(--transition);display:flex;align-items:center;padding:0 .5rem}
+.analytics-bar-fill span{font-size:.625rem;font-weight:600;color:#fff;white-space:nowrap}
+.analytics-bar-count{font-size:.75rem;color:var(--text-muted);width:40px;flex-shrink:0}
+
+/* Dead channels list */
+.dead-channel-row{
+  display:flex;align-items:center;gap:.875rem;
+  padding:.75rem 0;border-bottom:1px solid var(--border-subtle);
+}
+.dead-channel-row:last-child{border-bottom:none}
+.dead-channel-avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--bg-surface-raised)}
+.dead-channel-avatar img{width:100%;height:100%;object-fit:cover}
+.dead-channel-info{flex:1;min-width:0}
+.dead-channel-name{font-size:.8125rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dead-channel-reason{font-size:.6875rem;color:var(--text-muted)}
+.dead-channel-tag{
+  font-size:.5625rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;
+  padding:.2rem .5rem;border-radius:10px;flex-shrink:0;
+}
+.dead-channel-tag.dead{background:rgba(239,68,68,.1);color:#f87171}
+.dead-channel-tag.slow{background:rgba(245,158,11,.1);color:#f59e0b}
+
+/* Top channels */
+.top-channel-row{
+  display:flex;align-items:center;gap:.875rem;
+  padding:.75rem 0;border-bottom:1px solid var(--border-subtle);
+}
+.top-channel-row:last-child{border-bottom:none}
+.top-channel-rank{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--bg-surface-raised);display:grid;place-items:center;
+  font-size:.6875rem;font-weight:700;color:var(--text-muted);flex-shrink:0;
+}
+.top-channel-rank.gold{background:rgba(245,158,11,.15);color:#f59e0b}
+.top-channel-rank.silver{background:rgba(148,163,184,.15);color:#94a3b8}
+.top-channel-rank.bronze{background:rgba(180,83,9,.15);color:#d97706}
+
+/* ─── Marketplace Page ─── */
+.marketplace-page{display:none;padding:2rem 2.5rem 3rem}
+.marketplace-page.active{display:block}
+.marketplace-inner{max-width:900px;margin:0 auto}
+.marketplace-hero{text-align:center;margin-bottom:2.5rem}
+.mp-badge{
+  display:inline-block;font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:.375rem .875rem;border-radius:20px;
+  background:rgba(59,130,246,.1);color:#60a5fa;
+  margin-bottom:1rem;
+}
+
+.mp-section{margin-bottom:2.5rem}
+.mp-section-title{font-family:var(--font-display);font-size:1.25rem;font-weight:700;margin-bottom:.375rem;letter-spacing:-.01em}
+.mp-section-desc{font-size:.875rem;color:var(--text-secondary);margin-bottom:1.25rem}
+
+.mp-how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.mp-how-card{
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:1.5rem;text-align:center;
+  transition:border-color .2s;
+}
+.mp-how-card:hover{border-color:#444}
+.mp-how-icon{
+  width:56px;height:56px;border-radius:14px;
+  display:grid;place-items:center;margin:0 auto 1rem;
+}
+.mp-how-card h4{font-size:.9375rem;font-weight:600;margin-bottom:.375rem}
+.mp-how-card p{font-size:.8125rem;color:var(--text-secondary);line-height:1.5}
+
+/* Pricing */
+.mp-pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.mp-pricing-card{
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:1.75rem;
+  display:flex;flex-direction:column;position:relative;
+  transition:border-color .2s;
+}
+.mp-pricing-card:hover{border-color:#444}
+.mp-pricing-featured{border-color:var(--accent);background:linear-gradient(180deg,rgba(230,57,70,.04),transparent)}
+.mp-pricing-popular{
+  position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  font-size:.5625rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:.25rem .75rem;border-radius:10px;
+  background:var(--accent);color:#fff;
+}
+.mp-pricing-tier{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:.5rem}
+.mp-pricing-price{font-family:var(--font-display);font-size:2.25rem;font-weight:800;margin-bottom:1rem}
+.mp-pricing-price span{font-size:.875rem;font-weight:400;color:var(--text-muted)}
+.mp-pricing-features{list-style:none;margin-bottom:1.5rem;flex:1}
+.mp-pricing-features li{
+  font-size:.8125rem;color:var(--text-secondary);
+  padding:.375rem 0;padding-left:1.25rem;position:relative;
+}
+.mp-pricing-features li::before{
+  content:'✓';position:absolute;left:0;color:var(--accent);font-weight:700;font-size:.75rem;
+}
+.mp-notify-btn{width:100%;justify-content:center;text-align:center}
+
+/* Preview card */
+.mp-preview-card{
+  position:relative;
+  background:var(--bg-surface);border:1px solid rgba(59,130,246,.2);
+  border-radius:var(--radius-lg);padding:1rem;overflow:hidden;
+}
+.mp-preview-badge{
+  position:absolute;top:1.25rem;left:1.25rem;z-index:2;
+  font-size:.5625rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:.2rem .5rem;border-radius:6px;
+  background:rgba(59,130,246,.15);color:#60a5fa;
+}
+
 /* ─── Channel Detail Panel ─── */
 .detail-overlay{
   position:fixed;inset:0;z-index:200;
@@ -805,6 +968,9 @@ input[type=range]::-webkit-slider-thumb{
   .main-layout{padding:1.25rem;flex-direction:column}
   .sidebar{position:static;flex:none}
   .channel-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .mp-how-grid,.mp-pricing-grid{grid-template-columns:1fr}
+  .analytics-score-card{flex-direction:column;text-align:center}
+  .analytics-page,.marketplace-page{padding:1.5rem 1.25rem}
 }
 @media(max-width:600px){
   .topnav{padding:.625rem 1rem}
@@ -819,6 +985,7 @@ input[type=range]::-webkit-slider-thumb{
   .detail-actions{flex-direction:column}
   .discover-card{flex-direction:column}
   .discover-card-left{flex:0 0 120px;width:100%}
+  .analytics-page,.marketplace-page{padding:1rem}
 }
 
 /* ─── Animations ─── */
@@ -845,6 +1012,8 @@ input[type=range]::-webkit-slider-thumb{
   </a>
   <div class="topnav-links">
     <button id="navChannels" onclick="showView('channels')">Channels</button>
+    <button id="navAnalytics" onclick="showView('analytics')">Analytics</button>
+    <button id="navMarketplace" onclick="showView('marketplace')">Marketplace</button>
     <button id="navImport" onclick="showView('import')">Import</button>
   </div>
   <div class="nav-search">
@@ -930,6 +1099,179 @@ input[type=range]::-webkit-slider-thumb{
     </div>
 
     <p class="import-hint">Your data stays in your browser. Nothing is sent to any server except YouTube and Anthropic APIs.</p>
+  </div>
+</div>
+
+<!-- ═══ Analytics Page ═══ -->
+<div class="analytics-page" id="analyticsPage">
+  <div class="analytics-inner">
+    <div class="analytics-hero">
+      <h2 class="import-heading">Feed <em>Analytics</em></h2>
+      <p class="import-subtitle">Understand your subscription habits and keep your feed healthy.</p>
+    </div>
+
+    <!-- Health Score -->
+    <div class="analytics-score-card" id="healthScoreCard">
+      <div class="score-ring-wrap">
+        <svg class="score-ring" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border-subtle)" stroke-width="8"/>
+          <circle id="scoreArc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1s ease"/>
+        </svg>
+        <div class="score-value" id="scoreValue">—</div>
+      </div>
+      <div class="score-details">
+        <h3>Feed Health Score</h3>
+        <p class="score-grade" id="scoreGrade">Sync your subscriptions to see your score</p>
+        <div class="score-factors" id="scoreFactors"></div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="analytics-stats-row" id="analyticsStatsRow"></div>
+
+    <!-- Dead channels -->
+    <div class="analytics-section">
+      <div class="analytics-section-header">
+        <h3>Dead & Inactive Channels</h3>
+        <p>Channels that haven't uploaded recently or have very low activity.</p>
+      </div>
+      <div class="analytics-dead-list" id="deadChannelsList">
+        <p class="analytics-empty">Sync your subscriptions to detect inactive channels.</p>
+      </div>
+    </div>
+
+    <!-- Category breakdown -->
+    <div class="analytics-section">
+      <div class="analytics-section-header">
+        <h3>Category Breakdown</h3>
+        <p>How your subscriptions are distributed.</p>
+      </div>
+      <div class="analytics-bars" id="categoryBars"></div>
+    </div>
+
+    <!-- Top channels -->
+    <div class="analytics-section">
+      <div class="analytics-section-header">
+        <h3>Your Biggest Channels</h3>
+        <p>The most popular channels in your subscriptions.</p>
+      </div>
+      <div class="analytics-top-list" id="topChannelsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Marketplace Page ═══ -->
+<div class="marketplace-page" id="marketplacePage">
+  <div class="marketplace-inner">
+    <div class="marketplace-hero">
+      <div class="mp-badge">Coming Soon</div>
+      <h2 class="import-heading">Creator <em>Marketplace</em></h2>
+      <p class="import-subtitle">A space for creators to reach new audiences, and for viewers to discover quality content tailored to their interests.</p>
+    </div>
+
+    <!-- How it works -->
+    <div class="mp-section">
+      <h3 class="mp-section-title">How it works</h3>
+      <div class="mp-how-grid">
+        <div class="mp-how-card">
+          <div class="mp-how-icon" style="background:var(--accent-soft);color:var(--accent)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h4>For Creators</h4>
+          <p>Submit your channel to be featured in Discover carousels. Set a budget, target categories, and reach viewers who already love content like yours.</p>
+        </div>
+        <div class="mp-how-card">
+          <div class="mp-how-icon" style="background:rgba(59,130,246,.1);color:#60a5fa">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6m-3-3h6"/></svg>
+          </div>
+          <h4>For Viewers</h4>
+          <p>Promoted channels appear in your Discover results, clearly labelled. They pass the same quality filters — minimum subscribers, videos, and engagement.</p>
+        </div>
+        <div class="mp-how-card">
+          <div class="mp-how-icon" style="background:rgba(16,185,129,.1);color:#34d399">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h4>Quality Guaranteed</h4>
+          <p>Every promoted channel must meet our quality thresholds: 1K+ subscribers, 10+ videos, 50K+ views, and a real description. No spam, no filler.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing preview -->
+    <div class="mp-section">
+      <h3 class="mp-section-title">Creator Pricing</h3>
+      <div class="mp-pricing-grid">
+        <div class="mp-pricing-card">
+          <div class="mp-pricing-tier">Starter</div>
+          <div class="mp-pricing-price">£29<span>/month</span></div>
+          <ul class="mp-pricing-features">
+            <li>Featured in 1 category</li>
+            <li>Up to 500 impressions/month</li>
+            <li>Basic analytics</li>
+            <li>"Promoted" label</li>
+          </ul>
+          <button class="btn-lg btn-secondary mp-notify-btn" onclick="toast('We\\'ll notify you when Marketplace launches!')">Notify me</button>
+        </div>
+        <div class="mp-pricing-card mp-pricing-featured">
+          <div class="mp-pricing-popular">Most Popular</div>
+          <div class="mp-pricing-tier">Growth</div>
+          <div class="mp-pricing-price">£79<span>/month</span></div>
+          <ul class="mp-pricing-features">
+            <li>Featured in up to 5 categories</li>
+            <li>Up to 2,500 impressions/month</li>
+            <li>Priority placement in carousel</li>
+            <li>Detailed click & add analytics</li>
+            <li>A/B test channel descriptions</li>
+          </ul>
+          <button class="btn-lg btn-primary mp-notify-btn" onclick="toast('We\\'ll notify you when Marketplace launches!')">Notify me</button>
+        </div>
+        <div class="mp-pricing-card">
+          <div class="mp-pricing-tier">Pro</div>
+          <div class="mp-pricing-price">£199<span>/month</span></div>
+          <ul class="mp-pricing-features">
+            <li>Featured in all categories</li>
+            <li>Unlimited impressions</li>
+            <li>Top carousel position</li>
+            <li>Dedicated account manager</li>
+            <li>Custom audience targeting</li>
+            <li>API access for bulk management</li>
+          </ul>
+          <button class="btn-lg btn-secondary mp-notify-btn" onclick="toast('We\\'ll notify you when Marketplace launches!')">Notify me</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview of how promoted cards look -->
+    <div class="mp-section">
+      <h3 class="mp-section-title">What promoted channels look like</h3>
+      <p class="mp-section-desc">Promoted channels appear in Discover carousels with a subtle label. They blend naturally with organic results.</p>
+      <div class="mp-preview-card">
+        <div class="mp-preview-badge">Promoted</div>
+        <div class="discover-card" style="flex:none;width:100%">
+          <div class="discover-card-left card-banner-placeholder ph-1" style="flex:0 0 200px">
+            <div class="discover-card-avatar-overlay">
+              <div class="discover-card-avatar-placeholder">CR</div>
+            </div>
+          </div>
+          <div class="discover-card-right">
+            <div class="discover-card-name">Creator Example Channel</div>
+            <div class="discover-card-stats">
+              <span>12.5K subscribers</span>
+              <span>284 videos</span>
+            </div>
+            <div class="discover-card-desc">This is an example of how a promoted channel would appear in the Discover carousel. The channel passes all quality filters and is relevant to the viewer's selected category.</div>
+            <div class="discover-card-footer">
+              <button class="btn-sub" disabled>+ Add to Gaming</button>
+              <a class="btn-yt" href="#" onclick="event.preventDefault()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                YouTube
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1266,19 +1608,23 @@ function renderChannels() {
     importPage.classList.add('active');
     catsSection.style.display = 'none';
     mainLayout.style.display = 'none';
+    document.getElementById('analyticsPage').classList.remove('active');
+    document.getElementById('marketplacePage').classList.remove('active');
+    document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
     document.getElementById('navImport').classList.add('active');
-    document.getElementById('navChannels').classList.remove('active');
     grid.innerHTML = '';
     return;
   }
 
   importPage.classList.remove('active');
+  document.getElementById('analyticsPage').classList.remove('active');
+  document.getElementById('marketplacePage').classList.remove('active');
   catsSection.style.display = '';
   mainLayout.style.display = '';
   toolbar.style.display = 'flex';
   sidebar.style.display = '';
+  document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
   document.getElementById('navChannels').classList.add('active');
-  document.getElementById('navImport').classList.remove('active');
 
   // Show discover button only when a real category is selected
   const discoverBtn = document.getElementById('btnDiscover');
@@ -2465,32 +2811,225 @@ function toast(msg) {
   t._timeout = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+/* ═══════════════════════════════════════════
+   ANALYTICS
+   ═══════════════════════════════════════════ */
+function renderAnalytics() {
+  if (!channels.length) return;
+
+  // ── Feed Health Score ──
+  let score = 100;
+  const factors = [];
+
+  // Factor: categorisation coverage
+  const categorised = channels.filter(c => c.category).length;
+  const catPct = Math.round((categorised / channels.length) * 100);
+  if (catPct >= 80) { factors.push({t:`${catPct}% categorised`,c:'good'}); }
+  else if (catPct >= 40) { score -= 15; factors.push({t:`${catPct}% categorised`,c:'warn'}); }
+  else { score -= 30; factors.push({t:`Only ${catPct}% categorised`,c:'bad'}); }
+
+  // Factor: dead channels
+  const deadChannels = findDeadChannels();
+  const deadPct = Math.round((deadChannels.length / channels.length) * 100);
+  if (deadPct <= 5) { factors.push({t:'Few inactive channels',c:'good'}); }
+  else if (deadPct <= 20) { score -= 10; factors.push({t:`${deadChannels.length} inactive channels`,c:'warn'}); }
+  else { score -= 25; factors.push({t:`${deadChannels.length} inactive channels`,c:'bad'}); }
+
+  // Factor: category diversity
+  const catCounts = {};
+  channels.forEach(ch => { if (ch.category) catCounts[ch.category] = (catCounts[ch.category]||0)+1; });
+  const catKeys = Object.keys(catCounts);
+  if (catKeys.length >= 5) { factors.push({t:`${catKeys.length} categories — diverse`,c:'good'}); }
+  else if (catKeys.length >= 2) { score -= 5; factors.push({t:`${catKeys.length} categories`,c:'warn'}); }
+  else { score -= 15; factors.push({t:'Needs more categories',c:'bad'}); }
+
+  // Factor: category balance
+  if (catKeys.length > 1) {
+    const max = Math.max(...Object.values(catCounts));
+    const concentration = max / channels.length;
+    if (concentration > 0.5) { score -= 10; factors.push({t:`${Math.round(concentration*100)}% in one category`,c:'warn'}); }
+    else { factors.push({t:'Balanced distribution',c:'good'}); }
+  }
+
+  // Factor: subscription count
+  if (channels.length > 500) { score -= 10; factors.push({t:`${channels.length} subs — consider pruning`,c:'warn'}); }
+  else if (channels.length > 200) { factors.push({t:`${channels.length} subscriptions`,c:'good'}); }
+  else { factors.push({t:`${channels.length} subscriptions`,c:'good'}); }
+
+  score = Math.max(0, Math.min(100, score));
+
+  // Render score ring
+  const arc = document.getElementById('scoreArc');
+  const circumference = 2 * Math.PI * 52; // r=52
+  arc.style.strokeDashoffset = circumference - (score / 100) * circumference;
+  arc.style.stroke = score >= 70 ? '#34d399' : score >= 40 ? '#f59e0b' : '#f87171';
+
+  document.getElementById('scoreValue').textContent = score;
+  const gradeText = score >= 80 ? 'Excellent — your feed is well organised!' :
+                    score >= 60 ? 'Good — a few improvements could help.' :
+                    score >= 40 ? 'Fair — your feed needs some attention.' :
+                    'Needs work — time for a subscription audit.';
+  document.getElementById('scoreGrade').textContent = gradeText;
+
+  document.getElementById('scoreFactors').innerHTML = factors.map(f =>
+    `<span class="score-factor ${f.c}">${f.c === 'good' ? '✓' : f.c === 'warn' ? '⚠' : '✗'} ${f.t}</span>`
+  ).join('');
+
+  // ── Stats row ──
+  const totalSubs = channels.reduce((s,c) => s + (c.subscriberCount||0), 0);
+  const totalViews = channels.reduce((s,c) => s + (c.viewCount||0), 0);
+  const avgSubs = channels.length ? Math.round(totalSubs / channels.length) : 0;
+
+  document.getElementById('analyticsStatsRow').innerHTML = [
+    {n: channels.length, l:'Subscriptions'},
+    {n: formatCount(totalSubs), l:'Combined Subs'},
+    {n: formatCount(totalViews), l:'Combined Views'},
+    {n: formatCount(avgSubs), l:'Avg Subs/Channel'},
+    {n: categories.length, l:'Categories'},
+    {n: deadChannels.length, l:'Inactive'},
+  ].map(s => `<div class="analytics-stat-card"><div class="stat-num">${s.n}</div><div class="stat-lbl">${s.l}</div></div>`).join('');
+
+  // ── Dead channels ──
+  const deadList = document.getElementById('deadChannelsList');
+  if (deadChannels.length) {
+    deadList.innerHTML = deadChannels.slice(0, 20).map(d => `
+      <div class="dead-channel-row">
+        <div class="dead-channel-avatar">${d.ch.thumbnail ? `<img src="${d.ch.thumbnail}">` : ''}</div>
+        <div class="dead-channel-info">
+          <div class="dead-channel-name">${d.ch.name}</div>
+          <div class="dead-channel-reason">${d.reason}</div>
+        </div>
+        <span class="dead-channel-tag ${d.severity}">${d.severity === 'dead' ? 'Inactive' : 'Slow'}</span>
+      </div>
+    `).join('');
+  } else {
+    deadList.innerHTML = '<p class="analytics-empty">No inactive channels detected — nice!</p>';
+  }
+
+  // ── Category bars ──
+  const barColors = ['#e63946','#60a5fa','#34d399','#f59e0b','#a78bfa','#f472b6','#fb923c','#38bdf8','#4ade80','#e879f9'];
+  const sortedCats = Object.entries(catCounts).sort((a,b) => b[1]-a[1]);
+  const maxCat = sortedCats[0]?.[1] || 1;
+  const uncatCount = channels.filter(c => !c.category).length;
+  if (uncatCount) sortedCats.push(['Uncategorised', uncatCount]);
+
+  document.getElementById('categoryBars').innerHTML = sortedCats.map(([name, count], i) => {
+    const pct = Math.round((count / channels.length) * 100);
+    const color = name === 'Uncategorised' ? '#666' : barColors[i % barColors.length];
+    return `
+    <div class="analytics-bar-row">
+      <span class="analytics-bar-label">${name}</span>
+      <div class="analytics-bar-track">
+        <div class="analytics-bar-fill" style="width:${pct}%;background:${color}"><span>${pct}%</span></div>
+      </div>
+      <span class="analytics-bar-count">${count}</span>
+    </div>`;
+  }).join('');
+
+  // ── Top channels ──
+  const topChs = [...channels].sort((a,b) => (b.subscriberCount||0)-(a.subscriberCount||0)).slice(0, 10);
+  document.getElementById('topChannelsList').innerHTML = topChs.map((ch, i) => {
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    return `
+    <div class="top-channel-row" onclick="openDetail('${ch.id}')" style="cursor:pointer">
+      <span class="top-channel-rank ${rankClass}">${i+1}</span>
+      <div class="dead-channel-avatar">${ch.thumbnail ? `<img src="${ch.thumbnail}">` : ''}</div>
+      <div class="dead-channel-info">
+        <div class="dead-channel-name">${ch.name}</div>
+        <div class="dead-channel-reason">${formatCount(ch.subscriberCount)} subs · ${formatCount(ch.videoCount)} videos${ch.category ? ' · '+ch.category : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function findDeadChannels() {
+  const dead = [];
+  for (const ch of channels) {
+    const issues = [];
+    let severity = null;
+
+    // Very low video count for the age
+    if (ch.videoCount !== undefined && ch.videoCount < 3) {
+      issues.push('Fewer than 3 videos');
+      severity = 'dead';
+    }
+
+    // Low subscriber count relative to age
+    if (ch.subscriberCount !== undefined && ch.subscriberCount < 100 && ch.videoCount > 0) {
+      issues.push(`Only ${ch.subscriberCount} subscribers`);
+      severity = severity || 'slow';
+    }
+
+    // Very low views relative to content
+    if (ch.viewCount !== undefined && ch.videoCount > 10 && ch.viewCount < 1000) {
+      issues.push('Very low total views');
+      severity = severity || 'dead';
+    }
+
+    // No videos at all
+    if (ch.videoCount === 0) {
+      issues.push('No videos uploaded');
+      severity = 'dead';
+    }
+
+    // Subscriber-to-video ratio is very low (low engagement)
+    if (ch.videoCount > 50 && ch.subscriberCount < 500) {
+      issues.push('High output, low engagement');
+      severity = severity || 'slow';
+    }
+
+    if (severity) {
+      dead.push({ ch, reason: issues.join(' · '), severity });
+    }
+  }
+  // Sort: dead first, then slow
+  dead.sort((a,b) => (a.severity === 'dead' ? 0 : 1) - (b.severity === 'dead' ? 0 : 1));
+  return dead;
+}
+
 function showView(view) {
   const importPage = document.getElementById('importPage');
   const catsSection = document.getElementById('categoriesSection');
   const mainLayout = document.querySelector('.main-layout');
-  const navChannels = document.getElementById('navChannels');
-  const navImport = document.getElementById('navImport');
+  const analyticsPage = document.getElementById('analyticsPage');
+  const marketplacePage = document.getElementById('marketplacePage');
 
-  if (view === 'import') {
-    importPage.classList.add('active');
-    catsSection.style.display = 'none';
-    mainLayout.style.display = 'none';
-    navChannels.classList.remove('active');
-    navImport.classList.add('active');
-  } else {
-    importPage.classList.remove('active');
-    if (channels.length) {
-      catsSection.style.display = '';
-      mainLayout.style.display = '';
-    } else {
-      // No channels yet — stay on import
+  // Hide everything first
+  importPage.classList.remove('active');
+  catsSection.style.display = 'none';
+  mainLayout.style.display = 'none';
+  analyticsPage.classList.remove('active');
+  marketplacePage.classList.remove('active');
+
+  // Clear all nav active states
+  document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
+
+  switch(view) {
+    case 'import':
       importPage.classList.add('active');
-      catsSection.style.display = 'none';
-      mainLayout.style.display = 'none';
-    }
-    navChannels.classList.add('active');
-    navImport.classList.remove('active');
+      document.getElementById('navImport').classList.add('active');
+      break;
+    case 'analytics':
+      if (!channels.length) { showView('import'); return; }
+      analyticsPage.classList.add('active');
+      document.getElementById('navAnalytics').classList.add('active');
+      renderAnalytics();
+      break;
+    case 'marketplace':
+      marketplacePage.classList.add('active');
+      document.getElementById('navMarketplace').classList.add('active');
+      break;
+    case 'channels':
+    default:
+      if (channels.length) {
+        catsSection.style.display = '';
+        mainLayout.style.display = '';
+        document.getElementById('navChannels').classList.add('active');
+      } else {
+        importPage.classList.add('active');
+        document.getElementById('navImport').classList.add('active');
+      }
+      break;
   }
 }
 
