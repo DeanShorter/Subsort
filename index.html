@@ -1378,14 +1378,15 @@ function openDetail(id) {
 
   // Topics
   const topicsEl = document.getElementById('detailTopics');
+  let topicsHtml = '';
+  if (ch.category) topicsHtml += `<span class="detail-tag">${ch.category}</span>`;
   if (ch.topics && ch.topics.length) {
-    topicsEl.innerHTML = ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
-    if (ch.category) topicsEl.innerHTML = `<span class="detail-tag">${ch.category}</span>` + topicsEl.innerHTML;
-  } else if (ch.category) {
-    topicsEl.innerHTML = `<span class="detail-tag">${ch.category}</span>`;
-  } else {
-    topicsEl.innerHTML = '';
+    topicsHtml += ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
   }
+  if (!topicsHtml) {
+    topicsHtml = '<span style="font-size:.75rem;color:var(--text-muted)">No topics — hit Sync to fetch topic data from YouTube</span>';
+  }
+  topicsEl.innerHTML = topicsHtml;
 
   // Description
   const descEl = document.getElementById('detailDescription');
@@ -1395,12 +1396,12 @@ function openDetail(id) {
   expandBtn.style.display = (ch.description && ch.description.length > 200) ? '' : 'none';
   expandBtn.textContent = 'Show more';
 
-  // Info grid
+  // Info grid — always show with available data
   const infoItems = [];
-  if (ch.country) infoItems.push({l:'Country', v: ch.country});
-  if (ch.subscribedAt) infoItems.push({l:'Subscribed since', v: new Date(ch.subscribedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})});
-  if (ch.channelCreatedAt) infoItems.push({l:'Channel created', v: new Date(ch.channelCreatedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})});
-  if (ch.viewCount) infoItems.push({l:'Lifetime views', v: ch.viewCount.toLocaleString()});
+  infoItems.push({l:'Country', v: ch.country || '—'});
+  infoItems.push({l:'Subscribed since', v: ch.subscribedAt ? new Date(ch.subscribedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) : '—'});
+  infoItems.push({l:'Channel created', v: ch.channelCreatedAt ? new Date(ch.channelCreatedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) : '—'});
+  infoItems.push({l:'Lifetime views', v: ch.viewCount ? ch.viewCount.toLocaleString() : '—'});
   if (ch.videoCount && ch.subscriberCount) {
     const ratio = (ch.subscriberCount / ch.videoCount).toFixed(0);
     infoItems.push({l:'Subs per video', v: formatCount(parseInt(ratio))});
@@ -1415,7 +1416,7 @@ function openDetail(id) {
   if (ch.keywords) {
     kwEl.innerHTML = `<strong style="color:var(--text-secondary)">Keywords:</strong> ${ch.keywords}`;
   } else {
-    kwEl.innerHTML = '';
+    kwEl.innerHTML = '<span style="font-size:.75rem;color:var(--text-muted)">No keywords available — hit Sync to fetch latest data</span>';
   }
 
   // Actions
