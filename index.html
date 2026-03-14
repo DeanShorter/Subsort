@@ -2906,8 +2906,11 @@ function importWatchHistory(input) {
       let earliest = null, latest = null;
 
       for (const entry of entries) {
+        // Skip entries with no channel name (deleted/private videos, ads, system entries)
+        if (!entry.channelName || entry.channelName.trim() === '') continue;
+
         // Count by channel
-        const chName = entry.channelName || 'Unknown';
+        const chName = entry.channelName;
         if (!channelCounts[chName]) {
           channelCounts[chName] = { count: 0, channelUrl: entry.channelUrl, channelName: chName };
         }
