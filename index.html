@@ -306,6 +306,24 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .filter-option .filter-label{font-size:.8125rem;color:var(--text-secondary);transition:color .15s}
 .filter-option:hover .filter-label{color:var(--text-primary)}
 .filter-option input:checked~.filter-label{color:var(--text-primary)}
+.filter-tag{
+  font-size:.5625rem;font-weight:600;
+  padding:.125rem .375rem;border-radius:8px;
+  background:var(--bg-surface-raised);color:var(--text-muted);
+  margin-left:.25rem;
+}
+.filter-dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  margin-left:.25rem;vertical-align:middle;
+}
+.btn-clear-filters{
+  display:flex;align-items:center;gap:.375rem;width:100%;
+  background:none;border:1px solid var(--border-subtle);
+  color:var(--text-muted);font:500 .75rem/1 var(--font-body);
+  padding:.5rem .75rem;border-radius:var(--radius-sm);cursor:pointer;
+  transition:all .15s;margin-top:1rem;justify-content:center;
+}
+.btn-clear-filters:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 
 /* Sort Dropdown */
 .sort-section{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border-subtle)}
@@ -1413,29 +1431,121 @@ input[type=range]::-webkit-slider-thumb{
   <aside class="sidebar" id="sidebar">
     <h3>Filters</h3>
 
-    <div class="filter-group" id="filterHasSubs">
+    <!-- Channel Size -->
+    <div class="filter-group">
       <div class="filter-group-header open" onclick="toggleFilterGroup(this)">
-        <span>Channel Info</span>
+        <span>Channel Size</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="filter-group-body open">
         <label class="filter-option">
-          <input type="checkbox" id="filterHasAvatar" onchange="renderChannels()">
+          <input type="checkbox" data-filter="size" value="mega" onchange="renderChannels()">
           <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-          <span class="filter-label">Has avatar</span>
+          <span class="filter-label">Mega <span class="filter-tag">1M+</span></span>
         </label>
         <label class="filter-option">
-          <input type="checkbox" id="filterHasCategory" onchange="renderChannels()">
+          <input type="checkbox" data-filter="size" value="large" onchange="renderChannels()">
           <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-          <span class="filter-label">Has category</span>
+          <span class="filter-label">Large <span class="filter-tag">100K–1M</span></span>
         </label>
         <label class="filter-option">
-          <input type="checkbox" id="filterUncategorised" onchange="renderChannels()">
+          <input type="checkbox" data-filter="size" value="mid" onchange="renderChannels()">
           <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-          <span class="filter-label">Uncategorised</span>
+          <span class="filter-label">Mid <span class="filter-tag">10K–100K</span></span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-filter="size" value="small" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Small <span class="filter-tag">&lt;10K</span></span>
         </label>
       </div>
     </div>
+
+    <!-- Activity & Health -->
+    <div class="filter-group">
+      <div class="filter-group-header open" onclick="toggleFilterGroup(this)">
+        <span>Activity</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="filter-group-body open">
+        <label class="filter-option">
+          <input type="checkbox" data-filter="health" value="active" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Active <span class="filter-dot" style="background:#34d399"></span></span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-filter="health" value="slow" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Slowing down <span class="filter-dot" style="background:#f59e0b"></span></span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-filter="health" value="dead" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Inactive <span class="filter-dot" style="background:#f87171"></span></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Your Relationship -->
+    <div class="filter-group">
+      <div class="filter-group-header" onclick="toggleFilterGroup(this)">
+        <span>Subscription Age</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="filter-group-body">
+        <label class="filter-option">
+          <input type="checkbox" data-filter="age" value="recent" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Recent <span class="filter-tag">&lt;90 days</span></span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-filter="age" value="established" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Established <span class="filter-tag">90d–1yr</span></span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-filter="age" value="longtime" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Long-time <span class="filter-tag">1yr+</span></span>
+        </label>
+        <label class="filter-option" id="filterMostWatchedWrap" style="display:none">
+          <input type="checkbox" data-filter="watched" value="mostwatched" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Most watched <span class="filter-dot" style="background:#60a5fa"></span></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Action Needed -->
+    <div class="filter-group">
+      <div class="filter-group-header" onclick="toggleFilterGroup(this)">
+        <span>Needs Attention</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="filter-group-body">
+        <label class="filter-option">
+          <input type="checkbox" data-filter="action" value="uncategorised" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Uncategorised</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-filter="action" value="missingdata" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Missing data</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" data-filter="action" value="unsub" onchange="renderChannels()">
+          <span class="filter-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="filter-label">Unsub candidates</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Clear filters -->
+    <button class="btn-clear-filters" id="btnClearFilters" onclick="clearAllFilters()" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Clear all filters
+    </button>
 
     <div class="sort-section">
       <label>Sort by</label>
@@ -1765,9 +1875,21 @@ function renderChannels() {
   const mainLayout = document.querySelector('.main-layout');
   const search = (document.getElementById('searchInput').value || '').toLowerCase();
   const sort = document.getElementById('sortSelect').value;
-  const filterAvatar = document.getElementById('filterHasAvatar').checked;
-  const filterCat = document.getElementById('filterHasCategory').checked;
-  const filterUncat = document.getElementById('filterUncategorised').checked;
+
+  // Gather active filters by group
+  const activeFilters = {};
+  document.querySelectorAll('#sidebar input[data-filter]:checked').forEach(el => {
+    const group = el.dataset.filter;
+    if (!activeFilters[group]) activeFilters[group] = [];
+    activeFilters[group].push(el.value);
+  });
+
+  // Show/hide clear button
+  const hasFilters = Object.keys(activeFilters).length > 0;
+  document.getElementById('btnClearFilters').style.display = hasFilters ? '' : 'none';
+
+  // Show "most watched" filter only if watch history is loaded
+  document.getElementById('filterMostWatchedWrap').style.display = watchHistory ? '' : 'none';
 
   if (!channels.length) {
     catsSection.style.display = 'none';
@@ -1797,15 +1919,100 @@ function renderChannels() {
   const discoverBtn = document.getElementById('btnDiscover');
   discoverBtn.style.display = (activeCategory !== 'all' && activeCategory !== '__uncat__') ? '' : 'none';
 
+  // Pre-compute dead channel set for health filters
+  const deadMap = new Map();
+  if (activeFilters.health || activeFilters.action) {
+    for (const d of findDeadChannels()) {
+      deadMap.set(d.ch.id, d.severity);
+    }
+  }
+
+  // Pre-compute most-watched set
+  const mostWatchedNames = new Set();
+  if (activeFilters.watched && watchHistory) {
+    for (const wc of watchHistory.topChannels.slice(0, 30)) {
+      mostWatchedNames.add((wc.channelName || '').toLowerCase());
+    }
+  }
+
   let filtered = [...channels];
+
+  // Category chip filter
   if (activeCategory !== 'all') {
     if (activeCategory === '__uncat__') filtered = filtered.filter(c => !c.category);
     else filtered = filtered.filter(c => c.category === activeCategory);
   }
+
+  // Text search
   if (search) filtered = filtered.filter(c => (c.name || '').toLowerCase().includes(search));
-  if (filterAvatar) filtered = filtered.filter(c => c.thumbnail);
-  if (filterCat) filtered = filtered.filter(c => c.category);
-  if (filterUncat) filtered = filtered.filter(c => !c.category);
+
+  // Size filter (OR within group)
+  if (activeFilters.size) {
+    filtered = filtered.filter(c => {
+      const s = c.subscriberCount || 0;
+      return activeFilters.size.some(tier => {
+        if (tier === 'mega') return s >= 1000000;
+        if (tier === 'large') return s >= 100000 && s < 1000000;
+        if (tier === 'mid') return s >= 10000 && s < 100000;
+        if (tier === 'small') return s < 10000;
+        return false;
+      });
+    });
+  }
+
+  // Health filter (OR within group)
+  if (activeFilters.health) {
+    filtered = filtered.filter(c => {
+      const severity = deadMap.get(c.id);
+      return activeFilters.health.some(h => {
+        if (h === 'active') return !severity;
+        if (h === 'slow') return severity === 'slow';
+        if (h === 'dead') return severity === 'dead';
+        return false;
+      });
+    });
+  }
+
+  // Subscription age filter (OR within group)
+  if (activeFilters.age) {
+    const now = Date.now();
+    const DAY = 86400000;
+    filtered = filtered.filter(c => {
+      if (!c.subscribedAt) return false;
+      const age = now - new Date(c.subscribedAt).getTime();
+      return activeFilters.age.some(a => {
+        if (a === 'recent') return age < 90 * DAY;
+        if (a === 'established') return age >= 90 * DAY && age < 365 * DAY;
+        if (a === 'longtime') return age >= 365 * DAY;
+        return false;
+      });
+    });
+  }
+
+  // Most watched filter
+  if (activeFilters.watched) {
+    filtered = filtered.filter(c =>
+      mostWatchedNames.has((c.name || '').toLowerCase())
+    );
+  }
+
+  // Action needed filter (OR within group)
+  if (activeFilters.action) {
+    filtered = filtered.filter(c => {
+      return activeFilters.action.some(a => {
+        if (a === 'uncategorised') return !c.category;
+        if (a === 'missingdata') return !c.thumbnail || !c.description;
+        if (a === 'unsub') {
+          const severity = deadMap.get(c.id);
+          if (!severity) return false;
+          // Unsub candidate: inactive AND not in most-watched
+          if (watchHistory) return !mostWatchedNames.has((c.name || '').toLowerCase());
+          return true;
+        }
+        return false;
+      });
+    });
+  }
 
   // Sort
   filtered.sort((a, b) => {
@@ -3159,6 +3366,13 @@ document.addEventListener('click', e => { if (!e.target.closest('.dropdown')) cl
 function toggleFilterGroup(header) {
   header.classList.toggle('open');
   header.nextElementSibling.classList.toggle('open');
+}
+
+function clearAllFilters() {
+  document.querySelectorAll('#sidebar input[data-filter]:checked').forEach(el => {
+    el.checked = false;
+  });
+  renderChannels();
 }
 
 function toast(msg) {
