@@ -284,6 +284,12 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   padding:.25rem .5rem;border-radius:6px;
   background:var(--accent-soft);color:var(--accent);
 }
+.card-topic-tag{
+  display:inline-flex;align-items:center;
+  font-size:.625rem;font-weight:500;
+  padding:.25rem .5rem;border-radius:6px;
+  background:rgba(59,130,246,.1);color:#60a5fa;
+}
 .card-actions{
   display:flex;gap:.375rem;margin-top:.75rem;
 }
@@ -522,6 +528,165 @@ input[type=range]::-webkit-slider-thumb{
 /* File input */
 .file-input{display:none}
 
+/* ─── Channel Detail Panel ─── */
+.detail-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  display:none;opacity:0;transition:opacity .25s;
+  overflow-y:auto;
+}
+.detail-overlay.open{display:block;opacity:1}
+.detail-panel{
+  max-width:720px;margin:2rem auto;
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xl);overflow:hidden;
+  transform:translateY(20px);transition:transform .3s var(--transition);
+}
+.detail-overlay.open .detail-panel{transform:translateY(0)}
+.detail-banner{
+  height:180px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#1a1a2e,#0f3460);
+}
+.detail-banner img{width:100%;height:100%;object-fit:cover;opacity:.85}
+.detail-banner-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.7) 100%);
+}
+.detail-close{
+  position:absolute;top:1rem;right:1rem;z-index:2;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
+  border:none;color:#fff;cursor:pointer;
+  display:grid;place-items:center;
+  transition:background .15s;
+}
+.detail-close:hover{background:var(--accent)}
+.detail-close svg{width:18px;height:18px}
+.detail-header{
+  display:flex;align-items:flex-end;gap:1.25rem;
+  padding:0 2rem;margin-top:-40px;position:relative;z-index:1;
+}
+.detail-avatar{
+  width:80px;height:80px;border-radius:50%;
+  border:4px solid var(--bg-card);overflow:hidden;
+  background:var(--bg-surface-raised);flex-shrink:0;
+}
+.detail-avatar img{width:100%;height:100%;object-fit:cover}
+.detail-avatar-placeholder{
+  width:100%;height:100%;display:grid;place-items:center;
+  font-weight:700;font-size:1.5rem;color:var(--text-muted);
+  background:linear-gradient(135deg,#333,#222);
+}
+.detail-title-area{padding-bottom:.5rem;min-width:0}
+.detail-name{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detail-custom-url{font-size:.8125rem;color:var(--text-muted)}
+
+.detail-body{padding:1.5rem 2rem 2rem}
+
+/* Stats row */
+.detail-stats{
+  display:flex;gap:1.5rem;flex-wrap:wrap;
+  padding:1rem 0;margin-bottom:1.25rem;
+  border-bottom:1px solid var(--border-subtle);
+}
+.detail-stat{display:flex;flex-direction:column;gap:.125rem}
+.detail-stat .stat-value{font-size:1.125rem;font-weight:700;color:var(--text-primary)}
+.detail-stat .stat-label{font-size:.6875rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
+
+/* Info grid */
+.detail-info-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;
+  margin-bottom:1.25rem;
+}
+.detail-info-item{
+  background:var(--bg-surface);border-radius:var(--radius-sm);
+  padding:.875rem 1rem;
+}
+.detail-info-item .info-label{
+  font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text-muted);margin-bottom:.375rem;
+}
+.detail-info-item .info-value{font-size:.8125rem;color:var(--text-primary);line-height:1.4}
+
+/* Topics / Tags */
+.detail-tags{display:flex;flex-wrap:wrap;gap:.375rem;margin-bottom:1.25rem}
+.detail-tag{
+  font-size:.6875rem;font-weight:500;
+  padding:.3rem .625rem;border-radius:20px;
+  background:var(--accent-soft);color:var(--accent);
+}
+.detail-tag.topic{background:rgba(59,130,246,.12);color:#60a5fa}
+
+/* Description */
+.detail-description{
+  font-size:.8125rem;color:var(--text-secondary);line-height:1.65;
+  margin-bottom:1.25rem;
+  max-height:120px;overflow:hidden;position:relative;
+  transition:max-height .3s;
+}
+.detail-description.expanded{max-height:none}
+.detail-description::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:40px;
+  background:linear-gradient(transparent,var(--bg-card));
+  pointer-events:none;transition:opacity .2s;
+}
+.detail-description.expanded::after{opacity:0}
+.btn-expand{
+  background:none;border:none;color:var(--accent);
+  font:500 .75rem/1 var(--font-body);cursor:pointer;
+  padding:.25rem 0;margin-bottom:1.25rem;
+}
+.btn-expand:hover{text-decoration:underline}
+
+/* Keywords */
+.detail-keywords{
+  font-size:.75rem;color:var(--text-muted);line-height:1.5;
+  margin-bottom:1.25rem;word-break:break-word;
+}
+
+/* Actions */
+.detail-actions{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  padding-top:1.25rem;border-top:1px solid var(--border-subtle);
+}
+.detail-actions button,.detail-actions a{
+  display:inline-flex;align-items:center;gap:.375rem;
+  padding:.625rem 1rem;border-radius:var(--radius-sm);
+  font:500 .8125rem/1 var(--font-body);cursor:pointer;
+  transition:all .15s;text-decoration:none;
+}
+.detail-actions .btn-action{
+  background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);
+}
+.detail-actions .btn-action:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
+.detail-actions .btn-action svg{width:14px;height:14px}
+.detail-actions .btn-action-primary{
+  background:var(--accent);border:1px solid var(--accent);color:#fff;
+}
+.detail-actions .btn-action-primary:hover{filter:brightness(1.15)}
+.detail-actions .btn-action-danger{
+  background:transparent;border:1px solid #b91c1c;color:#f87171;
+}
+.detail-actions .btn-action-danger:hover{background:#b91c1c;color:#fff}
+
+/* Category select in detail */
+.detail-category-row{
+  display:flex;align-items:center;gap:.75rem;
+  margin-bottom:1.25rem;
+}
+.detail-category-row label{
+  font-size:.625rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text-muted);flex-shrink:0;
+}
+.detail-category-row select{
+  flex:1;background:var(--bg-surface);border:1px solid var(--border-subtle);
+  color:var(--text-primary);font:500 .8125rem/1 var(--font-body);
+  padding:.5rem .75rem;border-radius:var(--radius-sm);
+  cursor:pointer;outline:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .75rem center;
+}
+
 /* ─── Responsive ─── */
 @media(max-width:900px){
   .topnav{padding:.75rem 1.25rem;gap:1rem}
@@ -538,6 +703,11 @@ input[type=range]::-webkit-slider-thumb{
   .main-layout{padding:1rem}
   .channel-grid{grid-template-columns:1fr}
   .onboarding-actions{flex-direction:column;align-items:stretch}
+  .detail-panel{margin:1rem;border-radius:var(--radius-lg)}
+  .detail-header{padding:0 1.25rem;gap:1rem}
+  .detail-body{padding:1.25rem}
+  .detail-info-grid{grid-template-columns:1fr}
+  .detail-actions{flex-direction:column}
 }
 
 /* ─── Animations ─── */
@@ -851,6 +1021,42 @@ input[type=range]::-webkit-slider-thumb{
 <!-- ═══ Toast ═══ -->
 <div class="toast" id="toast"></div>
 
+<!-- ═══ Channel Detail Panel ═══ -->
+<div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-panel">
+    <div class="detail-banner" id="detailBanner">
+      <div class="detail-banner-overlay"></div>
+      <button class="detail-close" onclick="closeDetail()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="detail-header">
+      <div class="detail-avatar" id="detailAvatar"></div>
+      <div class="detail-title-area">
+        <div class="detail-name" id="detailName"></div>
+        <div class="detail-custom-url" id="detailCustomUrl"></div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-stats" id="detailStats"></div>
+
+      <div class="detail-category-row">
+        <label>Category</label>
+        <select id="detailCategorySelect" onchange="updateDetailCategory(this.value)"></select>
+      </div>
+
+      <div id="detailTopics" class="detail-tags"></div>
+
+      <div class="detail-description" id="detailDescription"></div>
+      <button class="btn-expand" id="detailExpandBtn" onclick="toggleDetailDesc()" style="display:none">Show more</button>
+
+      <div class="detail-info-grid" id="detailInfoGrid"></div>
+
+      <div class="detail-keywords" id="detailKeywords"></div>
+
+      <div class="detail-actions" id="detailActions"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════
    STATE
@@ -983,8 +1189,9 @@ function renderChannels() {
   grid.innerHTML = filtered.map((ch, idx) => {
     const initials = (ch.name || '?').substring(0,2).toUpperCase();
     const phClass = 'ph-' + (idx % 5);
+    const topicTag = (ch.topics && ch.topics.length) ? `<span class="card-topic-tag">${ch.topics[0]}</span>` : '';
     return `
-    <div class="channel-card" ondblclick="editChannel('${ch.id}')">
+    <div class="channel-card" onclick="openDetail('${ch.id}')">
       <div class="card-banner">
         ${ch.bannerUrl ? `<img src="${ch.bannerUrl}" alt="">` : `<div class="card-banner-placeholder ${phClass}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div>`}
       </div>
@@ -1000,7 +1207,10 @@ function renderChannels() {
           ${ch.videoCount ? `<span>${formatCount(ch.videoCount)} videos</span>` : ''}
           ${ch.subscribedAt ? `<span>Subscribed ${new Date(ch.subscribedAt).toLocaleDateString()}</span>` : ''}
         </div>
-        ${ch.category ? `<div class="card-category-tag">${ch.category}</div>` : ''}
+        <div style="display:flex;gap:.375rem;flex-wrap:wrap;align-items:center">
+          ${ch.category ? `<div class="card-category-tag">${ch.category}</div>` : ''}
+          ${topicTag}
+        </div>
         <div class="card-actions">
           <button title="Edit" onclick="event.stopPropagation();editChannel('${ch.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
           <button title="Open on YouTube" onclick="event.stopPropagation();window.open('https://youtube.com/channel/${ch.channelId}','_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
@@ -1117,6 +1327,163 @@ function saveChannelEdit() {
   save(); renderAll();
   closeModal('editChannelModal');
   toast('Channel updated');
+}
+
+/* ═══════════════════════════════════════════
+   CHANNEL DETAIL PANEL
+   ═══════════════════════════════════════════ */
+let detailChannelId = null;
+
+function openDetail(id) {
+  const ch = channels.find(c => c.id === id);
+  if (!ch) return;
+  detailChannelId = id;
+
+  // Banner
+  const banner = document.getElementById('detailBanner');
+  const phIdx = channels.indexOf(ch) % 5;
+  if (ch.bannerUrl) {
+    banner.innerHTML = `<img src="${ch.bannerUrl}" alt=""><div class="detail-banner-overlay"></div><button class="detail-close" onclick="closeDetail()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  } else {
+    banner.innerHTML = `<div class="detail-banner-overlay"></div><button class="detail-close" onclick="closeDetail()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    banner.className = `detail-banner card-banner-placeholder ph-${phIdx}`;
+  }
+
+  // Avatar
+  const initials = (ch.name || '?').substring(0,2).toUpperCase();
+  document.getElementById('detailAvatar').innerHTML = ch.thumbnail
+    ? `<img src="${ch.thumbnailHigh || ch.thumbnail}" alt="${ch.name}">`
+    : `<div class="detail-avatar-placeholder">${initials}</div>`;
+
+  // Title
+  document.getElementById('detailName').textContent = ch.name || 'Unknown';
+  document.getElementById('detailCustomUrl').textContent = ch.customUrl || '';
+
+  // Stats
+  const stats = [];
+  if (ch.subscriberCount && !ch.hiddenSubscriberCount) stats.push({v: formatCount(ch.subscriberCount), l: 'Subscribers'});
+  if (ch.videoCount) stats.push({v: formatCount(ch.videoCount), l: 'Videos'});
+  if (ch.viewCount) stats.push({v: formatCount(ch.viewCount), l: 'Total views'});
+  if (ch.subscribedAt) stats.push({v: new Date(ch.subscribedAt).toLocaleDateString(), l: 'Subscribed'});
+  if (ch.channelCreatedAt) stats.push({v: new Date(ch.channelCreatedAt).toLocaleDateString(), l: 'Channel created'});
+  document.getElementById('detailStats').innerHTML = stats.map(s =>
+    `<div class="detail-stat"><span class="stat-value">${s.v}</span><span class="stat-label">${s.l}</span></div>`
+  ).join('');
+
+  // Category select
+  const sel = document.getElementById('detailCategorySelect');
+  sel.innerHTML = '<option value="">Uncategorised</option>' + categories.map(c =>
+    `<option value="${c}" ${ch.category===c?'selected':''}>${c}</option>`
+  ).join('');
+
+  // Topics
+  const topicsEl = document.getElementById('detailTopics');
+  if (ch.topics && ch.topics.length) {
+    topicsEl.innerHTML = ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
+    if (ch.category) topicsEl.innerHTML = `<span class="detail-tag">${ch.category}</span>` + topicsEl.innerHTML;
+  } else if (ch.category) {
+    topicsEl.innerHTML = `<span class="detail-tag">${ch.category}</span>`;
+  } else {
+    topicsEl.innerHTML = '';
+  }
+
+  // Description
+  const descEl = document.getElementById('detailDescription');
+  const expandBtn = document.getElementById('detailExpandBtn');
+  descEl.textContent = ch.description || 'No description available.';
+  descEl.classList.remove('expanded');
+  expandBtn.style.display = (ch.description && ch.description.length > 200) ? '' : 'none';
+  expandBtn.textContent = 'Show more';
+
+  // Info grid
+  const infoItems = [];
+  if (ch.country) infoItems.push({l:'Country', v: ch.country});
+  if (ch.subscribedAt) infoItems.push({l:'Subscribed since', v: new Date(ch.subscribedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})});
+  if (ch.channelCreatedAt) infoItems.push({l:'Channel created', v: new Date(ch.channelCreatedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})});
+  if (ch.viewCount) infoItems.push({l:'Lifetime views', v: ch.viewCount.toLocaleString()});
+  if (ch.videoCount && ch.subscriberCount) {
+    const ratio = (ch.subscriberCount / ch.videoCount).toFixed(0);
+    infoItems.push({l:'Subs per video', v: formatCount(parseInt(ratio))});
+  }
+  if (ch.notes) infoItems.push({l:'Your notes', v: ch.notes});
+  document.getElementById('detailInfoGrid').innerHTML = infoItems.map(i =>
+    `<div class="detail-info-item"><div class="info-label">${i.l}</div><div class="info-value">${i.v}</div></div>`
+  ).join('');
+
+  // Keywords
+  const kwEl = document.getElementById('detailKeywords');
+  if (ch.keywords) {
+    kwEl.innerHTML = `<strong style="color:var(--text-secondary)">Keywords:</strong> ${ch.keywords}`;
+  } else {
+    kwEl.innerHTML = '';
+  }
+
+  // Actions
+  document.getElementById('detailActions').innerHTML = `
+    <a class="btn-action-primary" href="https://youtube.com/channel/${ch.channelId}" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open on YouTube
+    </a>
+    ${ch.uploadsPlaylistId ? `<a class="btn-action" href="https://youtube.com/playlist?list=${ch.uploadsPlaylistId}" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+      View uploads
+    </a>` : ''}
+    <button class="btn-action" onclick="editChannel('${ch.id}');closeDetail()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit / Notes
+    </button>
+    <button class="btn-action-danger" onclick="confirmUnsubscribe('${ch.id}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      Unsubscribe
+    </button>
+  `;
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  // Reset banner class in case we changed it
+  const banner = document.getElementById('detailBanner');
+  banner.className = 'detail-banner';
+}
+
+function toggleDetailDesc() {
+  const el = document.getElementById('detailDescription');
+  const btn = document.getElementById('detailExpandBtn');
+  el.classList.toggle('expanded');
+  btn.textContent = el.classList.contains('expanded') ? 'Show less' : 'Show more';
+}
+
+function updateDetailCategory(value) {
+  const ch = channels.find(c => c.id === detailChannelId);
+  if (!ch) return;
+  ch.category = value;
+  save();
+  renderAll();
+  // Refresh topics display
+  const topicsEl = document.getElementById('detailTopics');
+  let html = '';
+  if (value) html += `<span class="detail-tag">${value}</span>`;
+  if (ch.topics && ch.topics.length) html += ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
+  topicsEl.innerHTML = html;
+  toast('Category updated');
+}
+
+function confirmUnsubscribe(id) {
+  const ch = channels.find(c => c.id === id);
+  if (!ch) return;
+  document.getElementById('confirmMessage').textContent = `Remove "${ch.name}" from your local list? This won't unsubscribe you on YouTube — visit the channel to do that.`;
+  document.getElementById('confirmBtn').onclick = () => {
+    channels = channels.filter(c => c.id !== id);
+    save(); renderAll();
+    closeModal('confirmModal');
+    closeDetail();
+    toast(`${ch.name} removed`);
+  };
+  openModal('confirmModal');
 }
 
 /* ═══════════════════════════════════════════
@@ -1303,7 +1670,7 @@ async function fetchAllSubscriptions() {
     for (let i = 0; i < idsToFetch.length; i += 50) {
       const batch = idsToFetch.slice(i, i + 50).join(',');
       const batchNum = Math.floor(i / 50) + 1;
-      const url = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,brandingSettings&id=${batch}`;
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,brandingSettings,topicDetails,contentDetails&id=${batch}`;
       const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
       const data = await resp.json();
 
@@ -1311,16 +1678,28 @@ async function fetchAllSubscriptions() {
         for (const item of data.items) {
           const ch = channels.find(c => c.channelId === item.id);
           if (!ch) continue;
+          // Statistics
           ch.subscriberCount = parseInt(item.statistics?.subscriberCount || '0');
           ch.videoCount = parseInt(item.statistics?.videoCount || '0');
+          ch.viewCount = parseInt(item.statistics?.viewCount || '0');
+          ch.hiddenSubscriberCount = item.statistics?.hiddenSubscriberCount || false;
+          // Branding
           ch.bannerUrl = item.brandingSettings?.image?.bannerExternalUrl || '';
-          // Better thumbnails from channels endpoint
-          if (item.snippet?.thumbnails?.medium?.url) {
-            ch.thumbnail = item.snippet.thumbnails.medium.url;
-          }
-          if (!ch.description && item.snippet?.description) {
-            ch.description = item.snippet.description;
-          }
+          ch.country = item.brandingSettings?.channel?.country || item.snippet?.country || '';
+          ch.keywords = item.brandingSettings?.channel?.keywords || '';
+          ch.customUrl = item.snippet?.customUrl || '';
+          // Thumbnails
+          ch.thumbnail = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || ch.thumbnail || '';
+          ch.thumbnailHigh = item.snippet?.thumbnails?.high?.url || '';
+          // Description
+          ch.description = item.snippet?.description || ch.description || '';
+          // Topics — extract readable names from Wikipedia URLs
+          const topicUrls = item.topicDetails?.topicCategories || [];
+          ch.topics = topicUrls.map(url => decodeURIComponent(url.split('/wiki/')[1] || '').replace(/_/g, ' '));
+          // Uploads playlist
+          ch.uploadsPlaylistId = item.contentDetails?.relatedPlaylists?.uploads || '';
+          // Published date (channel creation)
+          ch.channelCreatedAt = item.snippet?.publishedAt || '';
         }
       }
 
