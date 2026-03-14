@@ -1011,7 +1011,7 @@ function renderChannels() {
         <div class="card-meta">
           ${ch.subscriberCount ? `<span>${formatCount(ch.subscriberCount)} subs</span>` : ''}
           ${ch.videoCount ? `<span>${formatCount(ch.videoCount)} videos</span>` : ''}
-          ${ch.subscribedAt ? `<span>${new Date(ch.subscribedAt).toLocaleDateString()}</span>` : ''}
+          ${ch.subscribedAt ? `<span>Subscribed ${new Date(ch.subscribedAt).toLocaleDateString()}</span>` : ''}
         </div>
         ${ch.category ? `<div class="card-category-tag">${ch.category}</div>` : ''}
         <div class="card-actions">
