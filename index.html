@@ -1963,6 +1963,8 @@ async function discoverSimilar() {
           if (s) {
             s.subscriberCount = parseInt(item.statistics?.subscriberCount || '0');
             s.videoCount = parseInt(item.statistics?.videoCount || '0');
+            s.viewCount = parseInt(item.statistics?.viewCount || '0');
+            s.hiddenSubscriberCount = item.statistics?.hiddenSubscriberCount === true;
             s.description = item.snippet?.description || s.description || '';
             s.thumbnail = item.snippet?.thumbnails?.medium?.url || s.thumbnail || '';
           }
@@ -1970,17 +1972,37 @@ async function discoverSimilar() {
       }
     }
 
+    // Quality filter — moderate thresholds
+    const MIN_SUBS = 1000;
+    const MIN_VIDEOS = 10;
+    const MIN_VIEWS = 50000;
+
+    const beforeFilter = suggestions.length;
+    suggestions = suggestions.filter(s => {
+      if (s.hiddenSubscriberCount) return false;
+      if (s.subscriberCount < MIN_SUBS) return false;
+      if (s.videoCount < MIN_VIDEOS) return false;
+      if (s.viewCount < MIN_VIEWS) return false;
+      if (!s.description || s.description.trim().length < 10) return false;
+      return true;
+    });
+
+    // Sort by subscriber count descending — surface the best first
+    suggestions.sort((a, b) => (b.subscriberCount || 0) - (a.subscriberCount || 0));
+
+    const filtered = beforeFilter - suggestions.length;
+
     // Render
     if (!suggestions.length) {
-      carousel.innerHTML = '<div class="discover-loading" style="justify-content:center"><p style="font-size:.8125rem;color:var(--text-muted)">No new channels found for this category. Try syncing to update topic data.</p></div>';
-      subtitle.textContent = 'No results found';
+      carousel.innerHTML = `<div class="discover-loading" style="justify-content:center"><p style="font-size:.8125rem;color:var(--text-muted)">No quality channels found (${beforeFilter} checked, ${filtered} filtered out). Try a different category.</p></div>`;
+      subtitle.textContent = 'No results passed quality filters';
       updateDiscoverCounter(0, 0);
       return;
     }
 
     discoverSuggestions = suggestions;
     discoverIndex = 0;
-    subtitle.textContent = `${suggestions.length} channels you might like`;
+    subtitle.textContent = `${suggestions.length} quality channels${filtered ? ` (${filtered} filtered out)` : ''}`;
 
     carousel.innerHTML = suggestions.map((s, idx) => {
       const initials = (s.name || '?').substring(0,2).toUpperCase();
