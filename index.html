@@ -158,6 +158,71 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .btn-add-category svg{width:14px;height:14px}
 .btn-auto-cat:hover{border-color:#60a5fa;color:#60a5fa;background:rgba(59,130,246,.1)}
 
+/* ─── Discover Similar ─── */
+.btn-discover{
+  display:inline-flex;align-items:center;gap:.375rem;
+  background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);
+  color:#60a5fa;font:500 .8125rem/1 var(--font-body);
+  padding:.5rem .875rem;border-radius:var(--radius-sm);
+  cursor:pointer;transition:all .2s var(--transition);
+}
+.btn-discover:hover{background:rgba(59,130,246,.2);border-color:#60a5fa}
+.btn-discover svg{width:14px;height:14px}
+.discover-section{
+  margin-bottom:1.5rem;
+  background:var(--bg-card);border:1px solid rgba(59,130,246,.2);
+  border-radius:var(--radius-lg);padding:1.25rem;
+}
+.discover-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
+.discover-header h3{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--text-primary)}
+.discover-subtitle{font-size:.75rem;color:var(--text-muted);margin-top:.125rem}
+.discover-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem;
+}
+.discover-card{
+  display:flex;align-items:center;gap:.875rem;
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);padding:.875rem 1rem;
+  transition:all .2s var(--transition);
+}
+.discover-card:hover{border-color:#444;background:var(--bg-surface-raised)}
+.discover-card-avatar{
+  width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;
+  background:var(--bg-surface-raised);
+}
+.discover-card-avatar img{width:100%;height:100%;object-fit:cover}
+.discover-card-avatar-placeholder{
+  width:100%;height:100%;display:grid;place-items:center;
+  font-weight:700;font-size:.75rem;color:var(--text-muted);
+  background:linear-gradient(135deg,#333,#222);
+}
+.discover-card-body{flex:1;min-width:0}
+.discover-card-name{font-size:.8125rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.discover-card-meta{font-size:.6875rem;color:var(--text-muted);margin-top:.125rem}
+.discover-card-actions{display:flex;gap:.375rem;flex-shrink:0}
+.discover-card-actions button{
+  padding:.375rem .625rem;border-radius:6px;
+  font:500 .6875rem/1 var(--font-body);cursor:pointer;
+  transition:all .15s;display:inline-flex;align-items:center;gap:.25rem;
+}
+.discover-card-actions .btn-sub{
+  background:var(--accent);border:none;color:#fff;
+}
+.discover-card-actions .btn-sub:hover{filter:brightness(1.15)}
+.discover-card-actions .btn-yt{
+  background:none;border:1px solid var(--border-subtle);color:var(--text-secondary);
+}
+.discover-card-actions .btn-yt:hover{border-color:#444;color:var(--text-primary)}
+.discover-loading{
+  display:flex;align-items:center;gap:.75rem;
+  padding:1rem;font-size:.8125rem;color:var(--text-secondary);
+}
+.discover-loading .spinner{
+  width:18px;height:18px;border:2px solid var(--border-subtle);
+  border-top-color:#60a5fa;border-radius:50%;
+  animation:spin .6s linear infinite;flex-shrink:0;
+}
+
 /* ─── Main Layout ─── */
 .main-layout{display:flex;gap:1.5rem;padding:1.5rem 2.5rem 3rem}
 
@@ -894,7 +959,11 @@ input[type=range]::-webkit-slider-thumb{
     <!-- Toolbar (shown when channels exist) -->
     <div class="channels-toolbar" id="channelsToolbar" style="display:none">
       <span class="results-count" id="resultsCount"></span>
-      <div style="display:flex;gap:.5rem">
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button class="btn-discover" id="btnDiscover" style="display:none" onclick="discoverSimilar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6m-3-3h6"/></svg>
+          Discover similar
+        </button>
         <div class="dropdown">
           <button class="topnav-actions" style="margin:0" onclick="toggleDropdown('importDropdown')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -928,6 +997,21 @@ input[type=range]::-webkit-slider-thumb{
           Add category
         </button>
       </div>
+    </div>
+
+    <!-- Discover suggestions -->
+    <div class="discover-section" id="discoverSection" style="display:none">
+      <div class="discover-header">
+        <div>
+          <h3 id="discoverTitle">Suggested channels</h3>
+          <p class="discover-subtitle" id="discoverSubtitle"></p>
+        </div>
+        <button class="btn-add-category" onclick="closeDiscover()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Dismiss
+        </button>
+      </div>
+      <div class="discover-grid" id="discoverGrid"></div>
     </div>
 
     <div class="channel-grid" id="channelGrid"></div>
@@ -1167,6 +1251,10 @@ function renderChannels() {
   sidebar.style.display = '';
   document.getElementById('navChannels').classList.add('active');
   document.getElementById('navImport').classList.remove('active');
+
+  // Show discover button only when a real category is selected
+  const discoverBtn = document.getElementById('btnDiscover');
+  discoverBtn.style.display = (activeCategory !== 'all' && activeCategory !== '__uncat__') ? '' : 'none';
 
   let filtered = [...channels];
   if (activeCategory !== 'all') {
@@ -1712,6 +1800,202 @@ function autoCategorise() {
   save();
   renderAll();
   toast(`Auto-categorised ${assigned} channels (${skipped} already had categories)`);
+}
+
+/* ═══════════════════════════════════════════
+   DISCOVER SIMILAR CHANNELS
+   ═══════════════════════════════════════════ */
+
+// Reverse map: clean category name → YouTube topicId (for search filtering)
+const CATEGORY_TOPIC_IDS = {
+  'Music': '/m/04rlf',
+  'Gaming': '/m/0bzvm2',
+  'Sports': '/m/06ntj',
+  'Entertainment': '/m/02jjt',
+  'Film & TV': '/m/02vxn',
+  'News & Politics': '/m/05qt0',
+  'Science & Education': '/m/01k8wb',
+  'Technology': '/m/07c1v',
+  'Lifestyle': '/m/019_rr',
+  'Fashion & Beauty': '/m/032tl',
+  'Food & Cooking': '/m/02wbm',
+  'Health & Fitness': '/m/027x7n',
+  'Travel': '/m/07bxq',
+  'Pets & Animals': '/m/068hy',
+  'Hobbies & DIY': '/m/019_rr',
+  'Automotive': '/m/0k4j',
+  'Animation': '/m/0jxy',
+  'Business': '/m/09s1f',
+  'Kids & Family': '/m/05qt0',
+};
+
+async function discoverSimilar() {
+  if (!accessToken) { toast('Sign in to discover channels'); return; }
+  if (activeCategory === 'all' || activeCategory === '__uncat__') return;
+
+  const section = document.getElementById('discoverSection');
+  const grid = document.getElementById('discoverGrid');
+  const title = document.getElementById('discoverTitle');
+  const subtitle = document.getElementById('discoverSubtitle');
+
+  section.style.display = '';
+  title.textContent = `Discover: ${activeCategory}`;
+  subtitle.textContent = 'Searching YouTube for similar channels…';
+  grid.innerHTML = '<div class="discover-loading"><span class="spinner"></span>Finding channels based on topics and keywords…</div>';
+
+  // Gather search signals from channels in this category
+  const catChannels = channels.filter(ch => ch.category === activeCategory);
+  const existingIds = new Set(channels.map(c => c.channelId));
+
+  // Collect all topics and keywords
+  const allTopics = [];
+  const keywordBag = [];
+  for (const ch of catChannels) {
+    if (ch.topics) allTopics.push(...ch.topics);
+    if (ch.keywords) keywordBag.push(ch.keywords);
+    if (ch.name) keywordBag.push(ch.name);
+  }
+
+  // Find the most common topic for topicId filtering
+  const topicFreq = {};
+  for (const t of allTopics) {
+    topicFreq[t] = (topicFreq[t] || 0) + 1;
+  }
+  const topTopic = Object.entries(topicFreq).sort((a,b) => b[1]-a[1])[0]?.[0];
+
+  // Build search queries
+  // Query 1: Use topicId if available
+  // Query 2: Use keyword-based search
+  const suggestions = [];
+
+  try {
+    // Search 1: Topic-based
+    const topicId = CATEGORY_TOPIC_IDS[activeCategory];
+    if (topicId) {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=10&topicId=${topicId}&relevanceLanguage=en&order=relevance`;
+      const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+      const data = await resp.json();
+      if (data.items) {
+        for (const item of data.items) {
+          const chId = item.snippet.channelId || item.id?.channelId;
+          if (chId && !existingIds.has(chId)) {
+            suggestions.push({
+              channelId: chId,
+              name: item.snippet.channelTitle || item.snippet.title,
+              description: item.snippet.description || '',
+              thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
+              source: 'topic'
+            });
+            existingIds.add(chId);
+          }
+        }
+      }
+    }
+
+    // Search 2: Keyword-based from top channel names
+    const topNames = catChannels
+      .sort((a,b) => (b.subscriberCount||0)-(a.subscriberCount||0))
+      .slice(0, 3)
+      .map(ch => ch.name)
+      .join(' ');
+    const searchQ = topTopic ? `${topTopic} ${activeCategory}` : activeCategory;
+
+    if (suggestions.length < 8) {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=10&q=${encodeURIComponent(searchQ)}&relevanceLanguage=en&order=relevance`;
+      const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+      const data = await resp.json();
+      if (data.items) {
+        for (const item of data.items) {
+          const chId = item.snippet.channelId || item.id?.channelId;
+          if (chId && !existingIds.has(chId)) {
+            suggestions.push({
+              channelId: chId,
+              name: item.snippet.channelTitle || item.snippet.title,
+              description: item.snippet.description || '',
+              thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
+              source: 'keyword'
+            });
+            existingIds.add(chId);
+          }
+        }
+      }
+    }
+
+    // Fetch subscriber counts for suggestions
+    if (suggestions.length) {
+      const ids = suggestions.map(s => s.channelId).join(',');
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${ids}`;
+      const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+      const data = await resp.json();
+      if (data.items) {
+        for (const item of data.items) {
+          const s = suggestions.find(s => s.channelId === item.id);
+          if (s) {
+            s.subscriberCount = parseInt(item.statistics?.subscriberCount || '0');
+            s.videoCount = parseInt(item.statistics?.videoCount || '0');
+          }
+        }
+      }
+    }
+
+    // Render
+    if (!suggestions.length) {
+      grid.innerHTML = '<p style="font-size:.8125rem;color:var(--text-muted);padding:.5rem">No new channels found for this category. Try syncing to update topic data.</p>';
+      subtitle.textContent = 'No results found';
+      return;
+    }
+
+    subtitle.textContent = `${suggestions.length} channels you might like`;
+    grid.innerHTML = suggestions.map(s => {
+      const initials = (s.name || '?').substring(0,2).toUpperCase();
+      return `
+      <div class="discover-card">
+        <div class="discover-card-avatar">
+          ${s.thumbnail ? `<img src="${s.thumbnail}" alt="${s.name}">` : `<div class="discover-card-avatar-placeholder">${initials}</div>`}
+        </div>
+        <div class="discover-card-body">
+          <div class="discover-card-name">${s.name}</div>
+          <div class="discover-card-meta">
+            ${s.subscriberCount ? formatCount(s.subscriberCount) + ' subs' : ''}
+            ${s.videoCount ? ' · ' + formatCount(s.videoCount) + ' videos' : ''}
+          </div>
+        </div>
+        <div class="discover-card-actions">
+          <button class="btn-yt" onclick="window.open('https://youtube.com/channel/${s.channelId}','_blank')" title="View on YouTube">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </button>
+          <button class="btn-sub" onclick="addSuggested('${s.channelId}',\`${s.name.replace(/`/g,'')}\`,\`${s.thumbnail.replace(/`/g,'')}\`,${s.subscriberCount||0},${s.videoCount||0});this.textContent='Added!';this.disabled=true" title="Add to subscriptions">
+            + Add
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    grid.innerHTML = `<p style="font-size:.8125rem;color:#f87171;padding:.5rem">Search failed: ${e.message}</p>`;
+    subtitle.textContent = 'Error';
+  }
+}
+
+function addSuggested(channelId, name, thumbnail, subs, videos) {
+  if (channels.find(c => c.channelId === channelId)) { toast('Already in your list'); return; }
+  channels.push({
+    id: channelId, channelId, name,
+    channelUrl: `https://www.youtube.com/channel/${channelId}`,
+    thumbnail, bannerUrl: '',
+    subscriberCount: subs, videoCount: videos, viewCount: 0,
+    subscribedAt: new Date().toISOString(),
+    description: '', category: activeCategory,
+    notes: '', topics: [], keywords: '', customUrl: '',
+    channelCreatedAt: '', uploadsPlaylistId: '', thumbnailHigh: ''
+  });
+  save();
+  renderAll();
+  toast(`${name} added to ${activeCategory}`);
+}
+
+function closeDiscover() {
+  document.getElementById('discoverSection').style.display = 'none';
 }
 
 /* ═══════════════════════════════════════════
