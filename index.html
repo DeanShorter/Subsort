@@ -3743,33 +3743,45 @@ function findDeadChannels() {
     const issues = [];
     let severity = null;
 
-    // Very low video count for the age
-    if (ch.videoCount !== undefined && ch.videoCount < 3) {
-      issues.push('Fewer than 3 videos');
-      severity = 'dead';
-    }
-
-    // Low subscriber count relative to age
-    if (ch.subscriberCount !== undefined && ch.subscriberCount < 100 && ch.videoCount > 0) {
-      issues.push(`Only ${ch.subscriberCount} subscribers`);
-      severity = severity || 'slow';
-    }
-
-    // Very low views relative to content
-    if (ch.viewCount !== undefined && ch.videoCount > 10 && ch.viewCount < 1000) {
-      issues.push('Very low total views');
-      severity = severity || 'dead';
-    }
-
     // No videos at all
     if (ch.videoCount === 0) {
       issues.push('No videos uploaded');
       severity = 'dead';
     }
 
-    // Subscriber-to-video ratio is very low (low engagement)
-    if (ch.videoCount > 50 && ch.subscriberCount < 500) {
+    // Very few videos
+    if (ch.videoCount !== undefined && ch.videoCount > 0 && ch.videoCount < 5) {
+      issues.push('Fewer than 5 videos');
+      severity = 'dead';
+    }
+
+    // Very low views relative to content — stricter threshold
+    if (ch.viewCount !== undefined && ch.videoCount > 5 && ch.viewCount < 5000) {
+      issues.push('Very low total views');
+      severity = severity || 'dead';
+    }
+
+    // Low views per video (poor reach even with more content)
+    if (ch.videoCount > 20 && ch.viewCount && (ch.viewCount / ch.videoCount) < 100) {
+      issues.push('Under 100 views per video');
+      severity = severity || 'dead';
+    }
+
+    // Low subscriber count — raised threshold
+    if (ch.subscriberCount !== undefined && ch.subscriberCount < 500 && ch.videoCount > 0) {
+      issues.push(`Only ${ch.subscriberCount} subscribers`);
+      severity = severity || 'slow';
+    }
+
+    // High output, low engagement — stricter
+    if (ch.videoCount > 30 && ch.subscriberCount < 1000) {
       issues.push('High output, low engagement');
+      severity = severity || 'slow';
+    }
+
+    // Low subscriber-to-view ratio (views exist but nobody sticks around)
+    if (ch.subscriberCount && ch.viewCount && ch.viewCount > 10000 && (ch.subscriberCount / ch.viewCount) < 0.005) {
+      issues.push('Very low subscriber conversion');
       severity = severity || 'slow';
     }
 
@@ -3818,6 +3830,7 @@ function showView(view) {
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = '';
         document.getElementById('navChannels').classList.add('active');
+        renderSubcategories();
       } else {
         mainLayout.style.display = '';
         document.getElementById('sidebar').style.display = 'none';
