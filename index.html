@@ -1013,7 +1013,7 @@ input[type=range]::-webkit-slider-thumb{
 .btn-wh-reupload:hover{border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,.05)}
 
 /* ─── Ad Placements ─── */
-.ad-slot{
+.promo-slot{
   position:relative;
   background:var(--bg-surface);
   border:2px dashed #333;
@@ -1023,7 +1023,7 @@ input[type=range]::-webkit-slider-thumb{
   letter-spacing:.06em;text-transform:uppercase;
   overflow:hidden;
 }
-.ad-slot::before{
+.promo-slot::before{
   content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(
     -45deg,
@@ -1032,15 +1032,15 @@ input[type=range]::-webkit-slider-thumb{
   );
   pointer-events:none;
 }
-.ad-slot-banner{
+.promo-slot-banner{
   height:90px;
   margin:0 2.5rem 1rem;
   width:calc(100% - 5rem);
 }
-.ad-slot-sidebar{
+.promo-slot-sidebar{
   height:250px;margin-top:1.5rem;
 }
-.ad-slot-inline{
+.promo-slot-inline{
   height:90px;margin-bottom:1.25rem;
 }
 
@@ -1396,9 +1396,8 @@ input[type=range]::-webkit-slider-thumb{
     </div>
 
     <!-- Ad: Analytics inline -->
-    <div class="ad-slot ad-slot-inline" id="adAnalytics">
+    <div class="promo-slot promo-slot-inline" id="promoAnalytics">
       <!-- Replace with AdSense unit: data-ad-slot="YOUR_SLOT_ID" -->
-      <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
       Advertisement
     </div>
 
@@ -1650,9 +1649,8 @@ input[type=range]::-webkit-slider-thumb{
 </section>
 
 <!-- Ad: Banner below categories -->
-<div class="ad-slot ad-slot-banner" id="adBanner">
+<div class="promo-slot promo-slot-banner" id="promoBanner">
   <!-- Replace with AdSense unit: data-ad-slot="YOUR_SLOT_ID" -->
-  <ins class="adsbygoogle" style="display:block" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16" style="opacity:.4"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
   Advertisement
 </div>
@@ -1790,9 +1788,8 @@ input[type=range]::-webkit-slider-thumb{
     </div>
 
     <!-- Ad: Sidebar -->
-    <div class="ad-slot ad-slot-sidebar" id="adSidebar">
+    <div class="promo-slot promo-slot-sidebar" id="promoSidebar">
       <!-- Replace with AdSense unit: data-ad-slot="YOUR_SLOT_ID" -->
-      <ins class="adsbygoogle" style="display:block" data-ad-format="vertical"></ins>
       Advertisement
     </div>
   </aside>
@@ -2236,7 +2233,7 @@ function renderChannels() {
     catsSection.style.display = 'none';
     mainLayout.style.display = 'none';
     toolbar.style.display = 'none';
-    document.getElementById('adBanner').style.display = 'none';
+    document.getElementById('promoBanner').style.display = 'none';
     document.getElementById('analyticsPage').classList.remove('active');
     document.getElementById('marketplacePage').classList.remove('active');
     document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
@@ -2252,7 +2249,7 @@ function renderChannels() {
   mainLayout.style.display = '';
   toolbar.style.display = 'flex';
   sidebar.style.display = '';
-  document.getElementById('adBanner').style.display = '';
+  document.getElementById('promoBanner').style.display = '';
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
   document.getElementById('navChannels').classList.add('active');
 
@@ -4002,7 +3999,7 @@ function showView(view) {
   const analyticsPage = document.getElementById('analyticsPage');
   const marketplacePage = document.getElementById('marketplacePage');
   const onboarding = document.getElementById('onboardingEmpty');
-  const adBanner = document.getElementById('adBanner');
+  const promoBanner = document.getElementById('promoBanner');
 
   // Hide everything first
   catsSection.style.display = 'none';
@@ -4010,7 +4007,7 @@ function showView(view) {
   analyticsPage.classList.remove('active');
   marketplacePage.classList.remove('active');
   if (onboarding) onboarding.style.display = 'none';
-  if (adBanner) adBanner.style.display = 'none';
+  if (promoBanner) promoBanner.style.display = 'none';
 
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
@@ -4031,7 +4028,7 @@ function showView(view) {
       if (channels.length) {
         catsSection.style.display = '';
         mainLayout.style.display = '';
-        if (adBanner) adBanner.style.display = '';
+        if (promoBanner) promoBanner.style.display = '';
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = '';
         document.getElementById('navChannels').classList.add('active');
