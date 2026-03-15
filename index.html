@@ -2845,6 +2845,7 @@ function openDetail(id) {
   ).join('');
 
   // Subcategory select
+  const currentCats = chCats(ch);
   populateDetailSubcategory(currentCats, ch.subcategory);
 
   // Tags (display only — editing is via the Edit Category button)
