@@ -493,24 +493,139 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .card-actions button:hover{background:var(--accent);border-color:var(--accent);color:#fff}
 .card-actions button svg{width:13px;height:13px}
 
-/* ─── Onboarding Empty State ─── */
-.onboarding-empty{
-  display:flex;
-  justify-content:center;align-items:center;
-  min-height:calc(100vh - 200px);
-  padding:2rem 0;
+/* ─── Landing Page ─── */
+.landing-page{
+  position:relative;
+  min-height:calc(100vh - 56px);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
 }
-.onboarding-empty-inner{
-  text-align:center;padding:2rem;
-  max-width:520px;width:100%;
+.landing-bg{
+  position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 20% 50%,#0f1b3d 0%,#0a0f1a 40%,#060608 80%);
 }
-.onboarding-empty .onboarding-icon{
-  width:80px;height:80px;border-radius:50%;
-  background:var(--accent-soft);
+.landing-stars{
+  position:absolute;inset:0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%,rgba(255,255,255,.4),transparent),
+    radial-gradient(1px 1px at 30% 65%,rgba(255,255,255,.3),transparent),
+    radial-gradient(1.5px 1.5px at 55% 15%,rgba(255,255,255,.5),transparent),
+    radial-gradient(1px 1px at 70% 45%,rgba(255,255,255,.25),transparent),
+    radial-gradient(1px 1px at 85% 75%,rgba(255,255,255,.35),transparent),
+    radial-gradient(1.5px 1.5px at 15% 80%,rgba(255,255,255,.3),transparent),
+    radial-gradient(1px 1px at 45% 90%,rgba(255,255,255,.2),transparent),
+    radial-gradient(1px 1px at 90% 10%,rgba(255,255,255,.4),transparent),
+    radial-gradient(1px 1px at 60% 55%,rgba(255,255,255,.15),transparent),
+    radial-gradient(1.5px 1.5px at 25% 40%,rgba(255,255,255,.45),transparent),
+    radial-gradient(1px 1px at 78% 28%,rgba(255,255,255,.3),transparent),
+    radial-gradient(1px 1px at 42% 72%,rgba(255,255,255,.2),transparent);
+  background-size:100% 100%;
+  animation:twinkle 8s ease-in-out infinite alternate;
+}
+@keyframes twinkle{0%{opacity:.6}100%{opacity:1}}
+.landing-glow{
+  position:absolute;border-radius:50%;
+  filter:blur(80px);opacity:.35;pointer-events:none;
+}
+.landing-glow-1{
+  width:500px;height:500px;
+  background:radial-gradient(circle,#e63946 0%,transparent 70%);
+  top:-10%;left:-5%;
+}
+.landing-glow-2{
+  width:400px;height:400px;
+  background:radial-gradient(circle,#1d4ed8 0%,transparent 70%);
+  bottom:-10%;right:5%;
+}
+.landing-content{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:4rem;
+  max-width:1100px;width:100%;
+  padding:3rem 2.5rem;
+}
+.landing-left{flex:1;min-width:0}
+.landing-right{flex:0 0 380px}
+.landing-badge{
+  display:inline-block;
+  font-size:.625rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  padding:.3rem .75rem;border-radius:20px;
+  background:rgba(230,57,70,.1);color:var(--accent);border:1px solid rgba(230,57,70,.2);
+  margin-bottom:1.5rem;
+}
+.landing-title{
+  font-family:var(--font-display);font-size:2.75rem;font-weight:800;
+  line-height:1.15;letter-spacing:-.03em;
+  color:var(--text-primary);margin-bottom:1.25rem;
+}
+.landing-title em{font-style:italic;color:var(--accent)}
+.landing-desc{
+  font-size:1rem;color:var(--text-secondary);line-height:1.7;
+  margin-bottom:1rem;max-width:520px;
+}
+.landing-features{
+  display:grid;grid-template-columns:1fr 1fr;gap:.625rem;
+  margin-top:1.75rem;
+}
+.landing-feature{
+  display:flex;align-items:center;gap:.5rem;
+  font-size:.8125rem;color:var(--text-secondary);
+}
+.landing-feature svg{width:18px;height:18px;color:var(--accent);flex-shrink:0}
+
+/* CTA Card */
+.landing-cta-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-xl);
+  padding:2.5rem 2rem;text-align:center;
+  backdrop-filter:blur(20px);
+}
+.landing-cta-icon{
+  width:64px;height:64px;border-radius:16px;
+  background:#ff0000;color:#fff;
   display:grid;place-items:center;
-  margin:0 auto 2rem;
+  margin:0 auto 1.5rem;
+  box-shadow:0 8px 32px rgba(255,0,0,.25);
 }
-.onboarding-empty .onboarding-icon svg{width:36px;height:36px;color:var(--accent)}
+.landing-cta-icon svg{width:32px;height:32px}
+.landing-cta-title{
+  font-family:var(--font-display);font-size:1.375rem;font-weight:700;
+  color:var(--text-primary);margin-bottom:.5rem;letter-spacing:-.01em;
+}
+.landing-cta-desc{
+  font-size:.875rem;color:var(--text-secondary);line-height:1.6;margin-bottom:1.75rem;
+}
+.btn-landing-cta{
+  display:inline-flex;align-items:center;gap:.625rem;
+  width:100%;justify-content:center;
+  padding:1rem 2rem;border-radius:var(--radius-md);
+  font:700 1rem/1 var(--font-body);cursor:pointer;
+  background:#fff;border:none;color:#111;
+  transition:all .25s var(--transition);
+  box-shadow:0 4px 20px rgba(255,255,255,.15);
+}
+.btn-landing-cta:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(255,255,255,.25);
+  background:#f0f0f0;
+}
+.btn-landing-cta svg{flex-shrink:0}
+.landing-cta-hint{
+  font-size:.6875rem;color:var(--text-muted);margin-top:1rem;
+}
+
+/* Landing responsive */
+@media(max-width:900px){
+  .landing-content{flex-direction:column;gap:2.5rem;padding:2rem 1.5rem}
+  .landing-right{flex:none;width:100%;max-width:400px}
+  .landing-title{font-size:2rem}
+  .landing-features{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .landing-content{padding:1.5rem 1rem}
+  .landing-title{font-size:1.625rem}
+  .landing-cta-card{padding:2rem 1.5rem}
+}
 .import-heading{font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:.625rem;letter-spacing:-.02em}
 .import-heading em{font-style:italic;color:var(--accent)}
 .import-subtitle{color:var(--text-secondary);font-size:.9375rem;line-height:1.6;margin-bottom:2.25rem}
@@ -1663,63 +1778,68 @@ input[type=range]::-webkit-slider-thumb{
     </div>
 
     <div class="channel-grid" id="channelGrid"></div>
+  </main>
+</div>
 
-    <!-- Empty state: onboarding (shown when no channels) -->
-    <div class="onboarding-empty" id="onboardingEmpty" style="display:none">
-      <div class="onboarding-empty-inner">
-        <div class="onboarding-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
-        </div>
-        <h2 class="import-heading">Organise your <em>subscriptions</em></h2>
-        <p class="import-subtitle">Connect your YouTube account to import subscriptions automatically, or upload a CSV from Google Takeout.</p>
-
-        <div class="import-card import-card-primary" id="ytConnectCard">
-          <div class="import-card-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
-          </div>
-          <div class="import-card-body">
-            <h3>Connect with YouTube</h3>
-            <p>Sign in with Google to automatically fetch all your subscriptions, avatars, and channel stats.</p>
-          </div>
-          <button class="btn-lg btn-youtube" id="ytConnectBtn" onclick="connectYouTube()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-            Sign in with Google
-          </button>
-        </div>
-
-        <div class="import-card import-card-progress" id="ytProgressCard" style="display:none">
-          <div class="sync-progress">
-            <div class="sync-spinner"></div>
-            <div class="sync-status">
-              <span class="sync-label" id="syncLabel">Connecting to YouTube…</span>
-              <span class="sync-detail" id="syncDetail">Authorising your account</span>
+<!-- ═══ Landing Page (shown when no channels) ═══ -->
+<div class="landing-page" id="onboardingEmpty" style="display:none">
+      <div class="landing-bg">
+        <div class="landing-stars"></div>
+        <div class="landing-glow landing-glow-1"></div>
+        <div class="landing-glow landing-glow-2"></div>
+      </div>
+      <div class="landing-content">
+        <div class="landing-left">
+          <div class="landing-badge">Free &amp; Open Source</div>
+          <h1 class="landing-title">Your YouTube subscriptions<br>are a <em>mess.</em></h1>
+          <p class="landing-desc">Let's be honest — you've subscribed to hundreds of channels over the years and have no idea what half of them even post anymore.</p>
+          <p class="landing-desc">Subsort pulls in all your subscriptions, lets you organise them into categories, flags the dead channels, and gives you analytics on your feed health. All in your browser, nothing stored on our servers.</p>
+          <div class="landing-features">
+            <div class="landing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              <span>Smart categorisation</span>
+            </div>
+            <div class="landing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <span>Feed health analytics</span>
+            </div>
+            <div class="landing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6m-3-3h6"/></svg>
+              <span>Discover new channels</span>
+            </div>
+            <div class="landing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>100% private — your data stays local</span>
             </div>
           </div>
-          <div class="sync-bar-wrap">
-            <div class="sync-bar" id="syncBar"></div>
-          </div>
         </div>
-
-        <div class="import-divider"><span>or</span></div>
-
-        <div class="import-card import-card-secondary">
-          <div class="import-card-body">
-            <h3>Import from Google Takeout</h3>
-            <p>Export your YouTube data at takeout.google.com, then upload the subscriptions CSV here.</p>
-          </div>
-          <div class="import-card-actions">
-            <button class="btn-lg btn-primary" onclick="document.getElementById('csvFileInput').click()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Upload CSV
+        <div class="landing-right">
+          <div class="landing-cta-card" id="ytConnectCard">
+            <div class="landing-cta-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+            </div>
+            <h2 class="landing-cta-title">Get started in seconds</h2>
+            <p class="landing-cta-desc">Sign in with your Google account and we'll import all your subscriptions automatically.</p>
+            <button class="btn-landing-cta" id="ytConnectBtn" onclick="connectYouTube()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Sign in with Google
             </button>
-            <a class="btn-lg btn-secondary" href="https://takeout.google.com" target="_blank">Google Takeout ↗</a>
+            <p class="landing-cta-hint">Read-only access · We never post or modify anything</p>
+          </div>
+          <div class="import-card import-card-progress" id="ytProgressCard" style="display:none">
+            <div class="sync-progress">
+              <div class="sync-spinner"></div>
+              <div class="sync-status">
+                <span class="sync-label" id="syncLabel">Connecting to YouTube…</span>
+                <span class="sync-detail" id="syncDetail">Authorising your account</span>
+              </div>
+            </div>
+            <div class="sync-bar-wrap">
+              <div class="sync-bar" id="syncBar"></div>
+            </div>
           </div>
         </div>
-        <p class="import-hint">Your data stays in your browser. Nothing is sent to any server except YouTube and Anthropic APIs.</p>
       </div>
-    </div>
-
-  </main>
 </div>
 
 <!-- ═══ Hidden File Inputs ═══ -->
@@ -2058,15 +2178,13 @@ function renderChannels() {
 
   if (!channels.length) {
     catsSection.style.display = 'none';
-    mainLayout.style.display = '';
-    sidebar.style.display = 'none';
+    mainLayout.style.display = 'none';
     toolbar.style.display = 'none';
     document.getElementById('analyticsPage').classList.remove('active');
     document.getElementById('marketplacePage').classList.remove('active');
     document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
-    document.getElementById('navChannels').classList.add('active');
     grid.innerHTML = '';
-    onboarding.style.display = '';
+    onboarding.style.display = 'flex';
     return;
   }
 
@@ -3085,10 +3203,15 @@ function restoreDiscover(category) {
    ═══════════════════════════════════════════ */
 function updateAuthUI() {
   const signedIn = !!accessToken;
+  const hasChannels = channels.length > 0;
   document.getElementById('btnSignIn').style.display = signedIn ? 'none' : '';
   document.getElementById('btnSignOut').style.display = signedIn ? '' : 'none';
   document.getElementById('btnSync').style.display = signedIn ? '' : 'none';
-  document.getElementById('btnAI').style.display = channels.length ? '' : 'none';
+  document.getElementById('btnAI').style.display = hasChannels ? '' : 'none';
+
+  // Hide nav links and search until user has channels
+  document.querySelector('.topnav-links').style.display = hasChannels ? '' : 'none';
+  document.querySelector('.nav-search').style.display = hasChannels ? '' : 'none';
 }
 
 function signOut() {
@@ -3853,11 +3976,8 @@ function showView(view) {
         document.getElementById('navChannels').classList.add('active');
         renderSubcategories();
       } else {
-        mainLayout.style.display = '';
-        document.getElementById('sidebar').style.display = 'none';
-        document.getElementById('channelsToolbar').style.display = 'none';
-        if (onboarding) onboarding.style.display = '';
-        document.getElementById('navChannels').classList.add('active');
+        mainLayout.style.display = 'none';
+        if (onboarding) onboarding.style.display = 'flex';
       }
       break;
   }
