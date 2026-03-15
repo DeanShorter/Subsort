@@ -1238,9 +1238,27 @@ input[type=range]::-webkit-slider-thumb{
   font-weight:700;font-size:1.5rem;color:var(--text-muted);
   background:linear-gradient(135deg,#333,#222);
 }
-.detail-title-area{padding-bottom:.5rem;min-width:0}
+.detail-title-area{padding-bottom:.5rem;min-width:0;flex:1}
 .detail-name{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .detail-custom-url{font-size:.8125rem;color:var(--text-muted)}
+.detail-header-actions{
+  display:flex;gap:.375rem;flex-shrink:0;padding-bottom:.5rem;
+}
+.detail-header-actions button,.detail-header-actions a{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.4rem .75rem;border-radius:var(--radius-sm);
+  font:500 .6875rem/1 var(--font-body);cursor:pointer;
+  transition:all .15s;text-decoration:none;white-space:nowrap;
+  background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);
+}
+.detail-header-actions button:hover,.detail-header-actions a:hover{
+  background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444;
+}
+.detail-header-actions button svg,.detail-header-actions a svg{width:12px;height:12px}
+.detail-header-actions .btn-header-yt{
+  background:var(--accent);border-color:var(--accent);color:#fff;
+}
+.detail-header-actions .btn-header-yt:hover{filter:brightness(1.15)}
 
 .detail-body{padding:1.5rem 2rem 2rem}
 
@@ -1370,7 +1388,8 @@ input[type=range]::-webkit-slider-thumb{
   .channel-grid{grid-template-columns:1fr}
   .onboarding-actions{flex-direction:column;align-items:stretch}
   .detail-panel{margin:1rem;border-radius:var(--radius-lg)}
-  .detail-header{padding:0 1.25rem;gap:1rem}
+  .detail-header{padding:0 1.25rem;gap:1rem;flex-wrap:wrap}
+  .detail-header-actions{width:100%;justify-content:flex-start}
   .detail-body{padding:1.25rem}
   .detail-info-grid{grid-template-columns:1fr}
   .detail-actions{flex-direction:column}
@@ -2085,6 +2104,24 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
+<!-- ═══ Notes Modal ═══ -->
+<div class="modal-overlay" id="notesModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('notesModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2>Notes</h2>
+    <p class="subtitle" id="notesChannelName" style="margin-top:.25rem"></p>
+    <div style="margin-top:1rem">
+      <div class="form-group">
+        <textarea id="notesInput" placeholder="Add your notes about this channel…" style="min-height:120px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('notesModal')">Cancel</button>
+      <button class="btn-save" onclick="saveNotes()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ Bulk Action Bar ═══ -->
 <div class="bulk-bar" id="bulkBar">
   <span class="bulk-bar-count" id="bulkCount">0 selected</span>
@@ -2137,20 +2174,17 @@ input[type=range]::-webkit-slider-thumb{
         <div class="detail-name" id="detailName"></div>
         <div class="detail-custom-url" id="detailCustomUrl"></div>
       </div>
+      <div class="detail-header-actions" id="detailHeaderActions"></div>
     </div>
     <div class="detail-body">
       <div class="detail-stats" id="detailStats"></div>
 
-      <div class="form-group" style="margin-bottom:1rem">
-        <label style="font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:.375rem;display:block">Categories</label>
-        <div class="cat-checkbox-list" id="detailCategoryList" style="max-height:120px"></div>
-      </div>
+      <div id="detailTopics" class="detail-tags"></div>
+
       <div class="detail-category-row" id="detailSubcatRow" style="display:none">
         <label>Subcategory</label>
         <select id="detailSubcategorySelect" onchange="updateDetailSubcategory(this.value)"></select>
       </div>
-
-      <div id="detailTopics" class="detail-tags"></div>
 
       <div class="detail-description" id="detailDescription"></div>
       <button class="btn-expand" id="detailExpandBtn" onclick="toggleDetailDesc()" style="display:none">Show more</button>
@@ -2748,6 +2782,27 @@ function saveChannelEdit() {
   toast('Channel updated');
 }
 
+/* ─── Notes Modal ─── */
+let notesChannelId = null;
+
+function openNotesModal(id) {
+  const ch = channels.find(c => c.id === id);
+  if (!ch) return;
+  notesChannelId = id;
+  document.getElementById('notesChannelName').textContent = ch.name;
+  document.getElementById('notesInput').value = ch.notes || '';
+  openModal('notesModal');
+}
+
+function saveNotes() {
+  const ch = channels.find(c => c.id === notesChannelId);
+  if (!ch) return;
+  ch.notes = document.getElementById('notesInput').value;
+  save(); renderAll();
+  closeModal('notesModal');
+  toast('Notes saved');
+}
+
 /* ═══════════════════════════════════════════
    CHANNEL DETAIL PANEL
    ═══════════════════════════════════════════ */
@@ -2789,21 +2844,10 @@ function openDetail(id) {
     `<div class="detail-stat"><span class="stat-value">${s.v}</span><span class="stat-label">${s.l}</span></div>`
   ).join('');
 
-  // Category checkboxes
-  const catList = document.getElementById('detailCategoryList');
-  const currentCats = chCats(ch);
-  catList.innerHTML = categories.map(c => {
-    const checked = currentCats.includes(c);
-    return `<label class="cat-check-item ${checked?'checked':''}" onclick="this.classList.toggle('checked')">
-      <input type="checkbox" value="${c}" ${checked?'checked':''} onchange="this.parentElement.classList.toggle('checked',this.checked);updateDetailCategories()">
-      ${c}
-    </label>`;
-  }).join('');
-
   // Subcategory select
   populateDetailSubcategory(currentCats, ch.subcategory);
 
-  // Tags
+  // Tags (display only — editing is via the Edit Category button)
   const topicsEl = document.getElementById('detailTopics');
   let topicsHtml = currentCats.map(c => `<span class="detail-tag">${c}</span>`).join('');
   if (ch.subcategory) topicsHtml += `<span class="detail-tag" style="background:rgba(59,130,246,.12);color:#60a5fa">${ch.subcategory}</span>`;
@@ -2822,7 +2866,6 @@ function openDetail(id) {
 
   // Info grid — always show with available data
   const infoItems = [];
-  infoItems.push({l:'Country', v: ch.country || '—'});
   infoItems.push({l:'Subscribed since', v: ch.subscribedAt ? new Date(ch.subscribedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) : '—'});
   infoItems.push({l:'Channel created', v: ch.channelCreatedAt ? new Date(ch.channelCreatedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) : '—'});
   infoItems.push({l:'Lifetime views', v: ch.viewCount ? ch.viewCount.toLocaleString() : '—'});
@@ -2843,17 +2886,24 @@ function openDetail(id) {
     kwEl.innerHTML = '<span style="font-size:.75rem;color:var(--text-muted)">No keywords available — hit Sync to fetch latest data</span>';
   }
 
-  // Actions
-  document.getElementById('detailActions').innerHTML = `
-    <a class="btn-action-primary" href="https://youtube.com/channel/${ch.channelId}" target="_blank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      Open on YouTube
+  // Header action buttons (top-right next to channel name)
+  document.getElementById('detailHeaderActions').innerHTML = `
+    <a class="btn-header-yt" href="https://youtube.com/channel/${ch.channelId}" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      YouTube
     </a>
-    <button class="btn-action" onclick="editChannel('${ch.id}');closeDetail()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Edit / Notes
+    <button onclick="editChannel('${ch.id}');closeDetail()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>
+      Edit Category
+    </button>
+    <button onclick="openNotesModal('${ch.id}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Notes
     </button>
   `;
+
+  // Bottom actions (keep empty or minimal)
+  document.getElementById('detailActions').innerHTML = '';
 
   document.getElementById('detailOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -2872,23 +2922,6 @@ function toggleDetailDesc() {
   const btn = document.getElementById('detailExpandBtn');
   el.classList.toggle('expanded');
   btn.textContent = el.classList.contains('expanded') ? 'Show less' : 'Show more';
-}
-
-function updateDetailCategories() {
-  const ch = channels.find(c => c.id === detailChannelId);
-  if (!ch) return;
-  const newCats = [...document.querySelectorAll('#detailCategoryList input:checked')].map(i => i.value);
-  ch.categories = newCats;
-  ch.subcategory = ''; // Reset subcategory when categories change
-  save();
-  renderAll();
-  // Update subcategory dropdown
-  populateDetailSubcategory(newCats, '');
-  // Refresh tags display
-  const topicsEl = document.getElementById('detailTopics');
-  let html = newCats.map(c => `<span class="detail-tag">${c}</span>`).join('');
-  topicsEl.innerHTML = html || '<span style="font-size:.75rem;color:var(--text-muted)">No category assigned</span>';
-  toast('Categories updated');
 }
 
 function populateDetailSubcategory(cats, currentSub) {
