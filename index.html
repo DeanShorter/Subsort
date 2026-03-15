@@ -466,12 +466,6 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   display:inline-flex;align-items:center;gap:.25rem;
   font-size:.625rem;font-weight:500;
   padding:.25rem .5rem;border-radius:6px;
-  background:rgba(251,191,36,.1);color:#fbbf24;
-}
-.card-topic-tag{
-  display:inline-flex;align-items:center;
-  font-size:.625rem;font-weight:500;
-  padding:.25rem .5rem;border-radius:6px;
   background:rgba(59,130,246,.1);color:#60a5fa;
 }
 .card-actions{
@@ -2185,7 +2179,6 @@ function renderChannels() {
   grid.innerHTML = filtered.map((ch, idx) => {
     const initials = (ch.name || '?').substring(0,2).toUpperCase();
     const phClass = 'ph-' + (idx % 5);
-    const topicTag = (ch.topics && ch.topics.length) ? `<span class="card-topic-tag">${ch.topics[0]}</span>` : '';
     return `
     <div class="channel-card" onclick="openDetail('${ch.id}')">
       <div class="card-banner">
@@ -2206,7 +2199,6 @@ function renderChannels() {
         <div style="display:flex;gap:.375rem;flex-wrap:wrap;align-items:center">
           ${ch.category ? `<div class="card-category-tag">${ch.category}</div>` : ''}
           ${ch.subcategory ? `<div class="card-subcat-tag">${ch.subcategory}</div>` : ''}
-          ${topicTag}
         </div>
         <div class="card-actions">
           <button title="Edit" onclick="event.stopPropagation();editChannel('${ch.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
@@ -2399,16 +2391,13 @@ function openDetail(id) {
   // Subcategory select
   populateDetailSubcategory(ch.category, ch.subcategory);
 
-  // Topics
+  // Tags
   const topicsEl = document.getElementById('detailTopics');
   let topicsHtml = '';
   if (ch.category) topicsHtml += `<span class="detail-tag">${ch.category}</span>`;
-  if (ch.subcategory) topicsHtml += `<span class="detail-tag" style="background:rgba(251,191,36,.1);color:#fbbf24">${ch.subcategory}</span>`;
-  if (ch.topics && ch.topics.length) {
-    topicsHtml += ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
-  }
+  if (ch.subcategory) topicsHtml += `<span class="detail-tag" style="background:rgba(59,130,246,.12);color:#60a5fa">${ch.subcategory}</span>`;
   if (!topicsHtml) {
-    topicsHtml = '<span style="font-size:.75rem;color:var(--text-muted)">No topics — hit Sync to fetch topic data from YouTube</span>';
+    topicsHtml = '<span style="font-size:.75rem;color:var(--text-muted)">No category assigned</span>';
   }
   topicsEl.innerHTML = topicsHtml;
 
@@ -2492,12 +2481,11 @@ function updateDetailCategory(value) {
   renderAll();
   // Update subcategory dropdown
   populateDetailSubcategory(value, ch.subcategory);
-  // Refresh topics display
+  // Refresh tags display
   const topicsEl = document.getElementById('detailTopics');
   let html = '';
   if (value) html += `<span class="detail-tag">${value}</span>`;
-  if (ch.subcategory) html += `<span class="detail-tag" style="background:rgba(251,191,36,.1);color:#fbbf24">${ch.subcategory}</span>`;
-  if (ch.topics && ch.topics.length) html += ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
+  if (ch.subcategory) html += `<span class="detail-tag" style="background:rgba(59,130,246,.12);color:#60a5fa">${ch.subcategory}</span>`;
   topicsEl.innerHTML = html;
   toast('Category updated');
 }
@@ -2523,12 +2511,11 @@ function updateDetailSubcategory(value) {
   ch.subcategory = value;
   save();
   renderAll();
-  // Refresh topics display
+  // Refresh tags display
   const topicsEl = document.getElementById('detailTopics');
   let html = '';
   if (ch.category) html += `<span class="detail-tag">${ch.category}</span>`;
-  if (value) html += `<span class="detail-tag" style="background:rgba(251,191,36,.1);color:#fbbf24">${value}</span>`;
-  if (ch.topics && ch.topics.length) html += ch.topics.map(t => `<span class="detail-tag topic">${t}</span>`).join('');
+  if (value) html += `<span class="detail-tag" style="background:rgba(59,130,246,.12);color:#60a5fa">${value}</span>`;
   topicsEl.innerHTML = html;
   toast('Subcategory updated');
 }
