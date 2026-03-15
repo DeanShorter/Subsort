@@ -7,6 +7,8 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<!-- AdSense: Replace YOUR_PUB_ID with your actual publisher ID, then uncomment -->
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUB_ID" crossorigin="anonymous"></script> -->
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -1010,6 +1012,34 @@ input[type=range]::-webkit-slider-thumb{
 }
 .btn-wh-reupload:hover{border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,.05)}
 
+/* ─── Ad Placements ─── */
+.ad-slot{
+  background:var(--bg-card);border:1px dashed var(--border-subtle);
+  border-radius:var(--radius-md);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);font-size:.6875rem;font-weight:500;
+  letter-spacing:.04em;text-transform:uppercase;
+  overflow:hidden;position:relative;
+}
+.ad-slot-banner{
+  height:90px;margin:1rem 2.5rem;
+}
+.ad-slot-sidebar{
+  height:250px;margin-top:1.5rem;
+}
+.ad-slot-inline{
+  height:90px;margin-bottom:1.25rem;
+}
+.ad-slot::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -45deg,
+    transparent,transparent 8px,
+    rgba(255,255,255,.015) 8px,rgba(255,255,255,.015) 16px
+  );
+  pointer-events:none;
+}
+
 /* ─── Marketplace Page ─── */
 .marketplace-page{display:none;padding:2rem 2.5rem 3rem}
 .marketplace-page.active{display:block}
@@ -1361,6 +1391,13 @@ input[type=range]::-webkit-slider-thumb{
       </div>
     </div>
 
+    <!-- Ad: Analytics inline -->
+    <div class="ad-slot ad-slot-inline" id="adAnalytics">
+      <!-- Replace with AdSense unit: data-ad-slot="YOUR_SLOT_ID" -->
+      <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      Ad
+    </div>
+
     <!-- Category breakdown -->
     <div class="analytics-section">
       <div class="analytics-section-header">
@@ -1608,6 +1645,13 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </section>
 
+<!-- Ad: Banner below categories -->
+<div class="ad-slot ad-slot-banner" id="adBanner">
+  <!-- Replace with AdSense unit: data-ad-slot="YOUR_SLOT_ID" -->
+  <ins class="adsbygoogle" style="display:block" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+  Ad
+</div>
+
 <!-- ═══ Main Layout ═══ -->
 <div class="main-layout">
   <!-- Sidebar -->
@@ -1738,6 +1782,13 @@ input[type=range]::-webkit-slider-thumb{
         <option value="videoCount">Video count</option>
         <option value="subDate">Subscription date</option>
       </select>
+    </div>
+
+    <!-- Ad: Sidebar -->
+    <div class="ad-slot ad-slot-sidebar" id="adSidebar">
+      <!-- Replace with AdSense unit: data-ad-slot="YOUR_SLOT_ID" -->
+      <ins class="adsbygoogle" style="display:block" data-ad-format="vertical"></ins>
+      Ad
     </div>
   </aside>
 
@@ -2180,6 +2231,7 @@ function renderChannels() {
     catsSection.style.display = 'none';
     mainLayout.style.display = 'none';
     toolbar.style.display = 'none';
+    document.getElementById('adBanner').style.display = 'none';
     document.getElementById('analyticsPage').classList.remove('active');
     document.getElementById('marketplacePage').classList.remove('active');
     document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
@@ -2195,6 +2247,7 @@ function renderChannels() {
   mainLayout.style.display = '';
   toolbar.style.display = 'flex';
   sidebar.style.display = '';
+  document.getElementById('adBanner').style.display = '';
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
   document.getElementById('navChannels').classList.add('active');
 
@@ -3944,6 +3997,7 @@ function showView(view) {
   const analyticsPage = document.getElementById('analyticsPage');
   const marketplacePage = document.getElementById('marketplacePage');
   const onboarding = document.getElementById('onboardingEmpty');
+  const adBanner = document.getElementById('adBanner');
 
   // Hide everything first
   catsSection.style.display = 'none';
@@ -3951,6 +4005,7 @@ function showView(view) {
   analyticsPage.classList.remove('active');
   marketplacePage.classList.remove('active');
   if (onboarding) onboarding.style.display = 'none';
+  if (adBanner) adBanner.style.display = 'none';
 
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
@@ -3971,6 +4026,7 @@ function showView(view) {
       if (channels.length) {
         catsSection.style.display = '';
         mainLayout.style.display = '';
+        if (adBanner) adBanner.style.display = '';
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = '';
         document.getElementById('navChannels').classList.add('active');
