@@ -102,7 +102,8 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .categories-section{padding:1.75rem 2.5rem 0}
 .categories-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
 .categories-header h2{font-family:var(--font-display);font-size:1.75rem;font-weight:700;letter-spacing:-.02em}
-.categories-nav{display:flex;gap:.375rem}
+.categories-header-actions{display:flex;align-items:center;gap:.5rem}
+.categories-nav{display:flex;gap:.375rem;margin-left:.25rem}
 .categories-nav button{
   width:32px;height:32px;border-radius:50%;
   background:var(--bg-surface);border:1px solid var(--border-subtle);
@@ -114,7 +115,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .categories-track{
   display:flex;gap:.75rem;
   overflow-x:auto;scroll-snap-type:x mandatory;
-  padding-bottom:.5rem;
+  padding-bottom:1rem;
   scrollbar-width:none;
   cursor:grab;
   -webkit-overflow-scrolling:touch;
@@ -153,7 +154,6 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   transition:all .2s;
 }
 .category-chip.active .chip-count{background:var(--accent);color:#fff}
-.categories-add-row{margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap}
 .btn-add-category{
   display:inline-flex;align-items:center;gap:.375rem;
   background:none;border:1px dashed var(--border-subtle);
@@ -766,6 +766,11 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .form-group input::placeholder,.form-group textarea::placeholder{color:var(--text-muted)}
 .form-group textarea{resize:vertical;min-height:80px}
 .form-group .hint{font-size:.6875rem;color:var(--text-muted);margin-top:.25rem;line-height:1.4}
+.form-error{
+  font-size:.75rem;color:#f87171;margin-top:.375rem;line-height:1.4;
+  padding:.375rem .625rem;border-radius:var(--radius-sm);
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);
+}
 .modal-footer{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.5rem}
 .modal-footer button{
   padding:.5rem 1rem;border-radius:var(--radius-sm);
@@ -1628,9 +1633,19 @@ input[type=range]::-webkit-slider-thumb{
 <section class="categories-section" id="categoriesSection">
   <div class="categories-header">
     <h2>Categories</h2>
-    <div class="categories-nav">
-      <button onclick="scrollCats(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <button onclick="scrollCats(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="categories-header-actions">
+      <button class="btn-add-category" onclick="openModal('addCategoryModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add category
+      </button>
+      <button class="btn-add-category btn-auto-cat" onclick="autoCategorise()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg>
+        Auto-Categorise
+      </button>
+      <div class="categories-nav">
+        <button onclick="scrollCats(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button onclick="scrollCats(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
     </div>
   </div>
   <div class="categories-track-wrap">
@@ -1640,16 +1655,6 @@ input[type=range]::-webkit-slider-thumb{
   <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
     <span class="subcat-label">Sub:</span>
     <div class="subcategories-track" id="subcategoriesTrack"></div>
-  </div>
-  <div class="categories-add-row">
-    <button class="btn-add-category" onclick="openModal('addCategoryModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Add category
-    </button>
-    <button class="btn-add-category btn-auto-cat" onclick="autoCategorise()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg>
-      Auto-Categorise
-    </button>
   </div>
 </section>
 
@@ -1935,9 +1940,12 @@ input[type=range]::-webkit-slider-thumb{
   <div class="modal">
     <button class="modal-close" onclick="closeModal('addCategoryModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 id="categoryModalTitle">New category</h2>
-    <div class="form-group">
-      <label>Category name</label>
-      <input type="text" id="categoryNameInput" placeholder="e.g. Music, Gaming…">
+    <div style="margin-top:1.25rem">
+      <div class="form-group">
+        <label>Category name</label>
+        <input type="text" id="categoryNameInput" placeholder="e.g. Music, Gaming…">
+        <p class="form-error" id="categoryError" style="display:none"></p>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('addCategoryModal')">Cancel</button>
@@ -2781,8 +2789,38 @@ function confirmUnsubscribe(id) {
    CATEGORIES
    ═══════════════════════════════════════════ */
 function saveCategory() {
-  const name = document.getElementById('categoryNameInput').value.trim();
-  if (!name) return;
+  const input = document.getElementById('categoryNameInput');
+  const name = input.value.trim();
+  const errorEl = document.getElementById('categoryError');
+
+  // Clear previous error
+  errorEl.style.display = 'none';
+  errorEl.textContent = '';
+
+  // Validate empty
+  if (!name) {
+    errorEl.textContent = 'Category name can\'t be empty — give it a name!';
+    errorEl.style.display = '';
+    input.focus();
+    return;
+  }
+
+  // Validate duplicate (only when adding new, not editing)
+  if (editingCategoryIdx === null && categories.includes(name)) {
+    errorEl.textContent = `"${name}" already exists — try a different name.`;
+    errorEl.style.display = '';
+    input.focus();
+    return;
+  }
+
+  // Validate duplicate when renaming to an existing name
+  if (editingCategoryIdx !== null && categories[editingCategoryIdx] !== name && categories.includes(name)) {
+    errorEl.textContent = `"${name}" already exists — try a different name.`;
+    errorEl.style.display = '';
+    input.focus();
+    return;
+  }
+
   if (editingCategoryIdx !== null) {
     const old = categories[editingCategoryIdx];
     channels.forEach(ch => { if (ch.category === old) ch.category = name; });
@@ -2793,7 +2831,7 @@ function saveCategory() {
     }
     categories[editingCategoryIdx] = name;
   } else {
-    if (!categories.includes(name)) categories.push(name);
+    categories.push(name);
   }
   save(); renderAll();
   closeModal('addCategoryModal');
@@ -3802,6 +3840,8 @@ function openModal(id) {
     document.getElementById('categoryNameInput').value = '';
     document.getElementById('categoryModalTitle').textContent = 'New category';
     document.getElementById('deleteCategoryBtn').style.display = 'none';
+    document.getElementById('categoryError').style.display = 'none';
+    document.getElementById('categoryError').textContent = '';
     editingCategoryIdx = null;
   }
   if (id === 'aiModal') {
