@@ -116,7 +116,11 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   overflow-x:auto;scroll-snap-type:x mandatory;
   padding-bottom:.5rem;
   scrollbar-width:none;
+  cursor:grab;
+  -webkit-overflow-scrolling:touch;
+  user-select:none;-webkit-user-select:none;
 }
+.categories-track.dragging{cursor:grabbing;scroll-snap-type:none;scroll-behavior:auto}
 .categories-track::-webkit-scrollbar{display:none}
 .category-chip{
   flex:0 0 auto;scroll-snap-align:start;
@@ -128,6 +132,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   text-align:center;
 }
 .category-chip:hover{background:var(--bg-card-hover);border-color:#444;transform:translateY(-2px)}
+.categories-track.dragging .category-chip{pointer-events:none;transform:none}
 .category-chip.active{border-color:var(--accent);background:var(--accent-soft)}
 .category-chip .chip-icon{
   width:36px;height:36px;
@@ -2200,6 +2205,50 @@ function scrollCats(dir) {
   const track = document.getElementById('categoriesTrack');
   track.scrollBy({left: dir * 240, behavior: 'smooth'});
 }
+
+/* ─── Drag to scroll (categories) ─── */
+(function() {
+  const track = document.getElementById('categoriesTrack');
+  let isDown = false;
+  let startX, scrollLeft, moved;
+
+  function onStart(e) {
+    isDown = true;
+    moved = false;
+    track.classList.add('dragging');
+    startX = (e.pageX || e.touches[0].pageX) - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+  }
+
+  function onEnd() {
+    if (!isDown) return;
+    isDown = false;
+    track.classList.remove('dragging');
+  }
+
+  function onMove(e) {
+    if (!isDown) return;
+    const x = (e.pageX || e.touches[0].pageX) - track.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    if (Math.abs(walk) > 5) moved = true;
+    track.scrollLeft = scrollLeft - walk;
+  }
+
+  // Prevent chip clicks if user was dragging
+  track.addEventListener('click', function(e) {
+    if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; }
+  }, true);
+
+  // Mouse events
+  track.addEventListener('mousedown', onStart);
+  window.addEventListener('mouseup', onEnd);
+  window.addEventListener('mousemove', onMove);
+
+  // Touch events
+  track.addEventListener('touchstart', onStart, {passive: true});
+  window.addEventListener('touchend', onEnd);
+  window.addEventListener('touchmove', onMove, {passive: true});
+})();
 
 /* ═══════════════════════════════════════════
    CHANNEL GRID
