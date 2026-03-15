@@ -205,6 +205,14 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 }
 .btn-add-subcat:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 .btn-add-subcat svg{width:10px;height:10px}
+.btn-add-subcat-primary{
+  border-style:solid;border-color:var(--accent);color:var(--accent);
+  background:var(--accent-soft);padding:.3rem .75rem;font-size:.6875rem;
+}
+.btn-add-subcat-primary:hover{background:var(--accent);color:#fff}
+.subcat-empty-hint{
+  font-size:.6875rem;color:var(--text-muted);font-style:italic;flex-shrink:0;
+}
 .subcat-pill .btn-subcat-edit{
   display:none;background:none;border:none;color:var(--text-muted);
   cursor:pointer;padding:0;margin-left:.125rem;line-height:1;
@@ -1933,18 +1941,27 @@ function renderSubcategories() {
   const catChannels = channels.filter(ch => ch.category === activeCategory);
   const allCount = catChannels.length;
 
-  let html = `<span class="subcat-pill subcat-pill-all ${!activeSubcategory ? 'active' : ''}" onclick="setSubcategory(null)">All <span class="subcat-count">${allCount}</span></span>`;
+  let html = '';
 
-  for (const sub of subs) {
-    const count = catChannels.filter(ch => ch.subcategory === sub).length;
-    const safeSub = sub.replace(/'/g, "\\'");
-    html += `<span class="subcat-pill ${activeSubcategory === sub ? 'active' : ''}" onclick="setSubcategory('${safeSub}')">
-      ${sub} <span class="subcat-count">${count}</span>
-      <button class="btn-subcat-edit" onclick="event.stopPropagation();editSubcategory('${safeSub}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-    </span>`;
+  if (subs.length) {
+    // Has subcategories — show All pill + subcategory pills + add button
+    html += `<span class="subcat-pill subcat-pill-all ${!activeSubcategory ? 'active' : ''}" onclick="setSubcategory(null)">All <span class="subcat-count">${allCount}</span></span>`;
+
+    for (const sub of subs) {
+      const count = catChannels.filter(ch => ch.subcategory === sub).length;
+      const safeSub = sub.replace(/'/g, "\\'");
+      html += `<span class="subcat-pill ${activeSubcategory === sub ? 'active' : ''}" onclick="setSubcategory('${safeSub}')">
+        ${sub} <span class="subcat-count">${count}</span>
+        <button class="btn-subcat-edit" onclick="event.stopPropagation();editSubcategory('${safeSub}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      </span>`;
+    }
+
+    html += `<button class="btn-add-subcat" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>`;
+  } else {
+    // No subcategories yet — show a clear prompt
+    html += `<span class="subcat-empty-hint">No subcategories yet</span>`;
+    html += `<button class="btn-add-subcat btn-add-subcat-primary" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add subcategory</button>`;
   }
-
-  html += `<button class="btn-add-subcat" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>`;
 
   track.innerHTML = html;
 }
