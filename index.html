@@ -160,12 +160,16 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 
 /* ─── Subcategories Strip ─── */
 .subcategories-strip{
-  display:flex;align-items:center;gap:.5rem;
-  margin-top:.625rem;padding:.5rem 0;
+  display:flex;align-items:center;gap:.625rem;
+  margin-top:.75rem;padding:.625rem 0;
   border-top:1px solid var(--border-subtle);
   overflow-x:auto;scrollbar-width:none;
 }
 .subcategories-strip::-webkit-scrollbar{display:none}
+.subcat-label{
+  font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text-muted);flex-shrink:0;
+}
 .subcategories-track{display:flex;gap:.375rem;align-items:center;flex-wrap:wrap}
 .subcat-pill{
   display:inline-flex;align-items:center;gap:.25rem;
@@ -1466,6 +1470,7 @@ input[type=range]::-webkit-slider-thumb{
   </div>
   <!-- Subcategory strip (appears when a primary category is selected) -->
   <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
+    <span class="subcat-label">Sub:</span>
     <div class="subcategories-track" id="subcategoriesTrack"></div>
   </div>
   <div class="categories-add-row">
@@ -1923,8 +1928,7 @@ function renderSubcategories() {
   }
 
   const subs = subcategories[activeCategory] || [];
-  // Always show the strip if there are subcats, or to let users add one
-  strip.style.display = '';
+  strip.style.display = 'flex';
 
   const catChannels = channels.filter(ch => ch.category === activeCategory);
   const allCount = catChannels.length;
