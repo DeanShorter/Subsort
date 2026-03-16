@@ -1215,6 +1215,15 @@ input[type=range]::-webkit-slider-thumb{
   opacity:0;width:0;overflow:hidden;transition:all .2s;
 }
 .home-nav-primary.expanded .home-nav-item-label{opacity:1;width:auto}
+.home-nav-divider{
+  border:none;border-top:1px solid var(--border-subtle);
+  width:28px;margin:.5rem auto;
+}
+.home-nav-primary.expanded .home-nav-divider{width:calc(100% - 1rem);margin:.5rem .5rem}
+.home-nav-ai{
+  color:var(--accent) !important;
+}
+.home-nav-ai:hover{background:var(--accent-soft) !important}
 
 /* Secondary nav */
 .home-nav-secondary{
@@ -1757,13 +1766,27 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
       <span class="home-nav-item-label">Feeds</span>
     </button>
-    <button class="home-nav-item" data-nav="analytics" onclick="setHomeNav('analytics')">
+    <button class="home-nav-item" data-nav="channels" onclick="showView('channels')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+      <span class="home-nav-item-label">Channels</span>
+    </button>
+    <button class="home-nav-item" data-nav="analytics" onclick="showView('analytics')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
       <span class="home-nav-item-label">Analytics</span>
     </button>
-    <button class="home-nav-item" data-nav="channels" onclick="setHomeNav('channels')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
-      <span class="home-nav-item-label">Channels</span>
+    <hr class="home-nav-divider">
+    <button class="home-nav-item" data-nav="marketplace" onclick="showView('marketplace')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="home-nav-item-label">Marketplace</span>
+    </button>
+    <button class="home-nav-item" data-nav="pricing" onclick="showView('pricing')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span class="home-nav-item-label">Pricing</span>
+    </button>
+    <div style="flex:1"></div>
+    <button class="home-nav-item home-nav-ai" data-nav="ai" onclick="openModal('aiModal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10h16V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
+      <span class="home-nav-item-label">AI Categorise</span>
     </button>
   </nav>
 
@@ -4995,26 +5018,31 @@ function showView(view) {
 
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
 
   switch(view) {
     case 'home':
       homeView.classList.add('active');
       document.getElementById('navHome').classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="home"]')?.classList.add('active');
       setHomeNav('home');
       break;
     case 'analytics':
       if (!channels.length) { showView('channels'); return; }
       analyticsPage.classList.add('active');
       document.getElementById('navAnalytics').classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="analytics"]')?.classList.add('active');
       renderAnalytics();
       break;
     case 'marketplace':
       marketplacePage.classList.add('active');
       document.getElementById('navMarketplace').classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="marketplace"]')?.classList.add('active');
       break;
     case 'pricing':
       pricingPage.classList.add('active');
       document.getElementById('navPricing').classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="pricing"]')?.classList.add('active');
       break;
     case 'channels':
     default:
@@ -5025,6 +5053,7 @@ function showView(view) {
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = '';
         document.getElementById('navChannels').classList.add('active');
+        document.querySelector('.home-nav-item[data-nav="channels"]')?.classList.add('active');
         renderSubcategories();
       } else {
         mainLayout.style.display = 'none';
