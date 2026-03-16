@@ -1251,7 +1251,7 @@ input[type=range]::-webkit-slider-thumb{
   border-right:1px solid var(--border-subtle);
   transition:width .2s var(--transition);
 }
-.home-nav-secondary.open{width:200px;padding:1.25rem .75rem}
+.home-nav-secondary.open{width:200px;padding:1.25rem .75rem;overflow-y:auto}
 .home-nav-secondary-title{
   font-size:.5625rem;font-weight:700;text-transform:uppercase;
   letter-spacing:.08em;color:var(--text-muted);
@@ -1272,6 +1272,60 @@ input[type=range]::-webkit-slider-thumb{
   padding-left:1.75rem;font-size:.75rem;
 }
 .home-nav-secondary-subitem svg{width:12px;height:12px}
+
+/* Secondary nav: action buttons */
+.sec-nav-actions{display:flex;flex-direction:column;gap:.375rem;padding:0 .25rem}
+.sec-nav-action-btn{
+  display:flex;align-items:center;gap:.5rem;width:100%;
+  padding:.5rem .625rem;border-radius:var(--radius-sm);
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  color:var(--text-secondary);cursor:pointer;
+  font:500 .75rem/1 var(--font-body);transition:all .12s;
+}
+.sec-nav-action-btn:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
+.sec-nav-action-btn svg{flex-shrink:0}
+
+/* Secondary nav: filters */
+.sec-nav-filter-group{padding:0 .25rem;margin-bottom:.75rem}
+.sec-nav-filter-title{
+  font-size:.5625rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text-muted);
+  padding:0 .375rem .375rem;
+}
+.sec-nav-filter{
+  display:flex;align-items:center;gap:.375rem;
+  padding:.3rem .375rem;border-radius:4px;
+  font-size:.75rem;color:var(--text-secondary);
+  cursor:pointer;transition:all .1s;
+}
+.sec-nav-filter:hover{background:var(--bg-surface);color:var(--text-primary)}
+.sec-nav-filter input{display:none}
+.sec-nav-filter svg{opacity:0;flex-shrink:0;transition:opacity .1s;color:var(--accent)}
+.sec-nav-filter input:checked ~ svg{opacity:1}
+.sec-nav-filter input:checked ~ *{color:var(--text-primary)}
+.sec-nav-filter-tag{
+  font-size:.5625rem;padding:.1rem .375rem;border-radius:8px;
+  background:var(--bg-surface-raised);color:var(--text-muted);margin-left:auto;
+}
+.sec-nav-filter-dot{
+  width:6px;height:6px;border-radius:50%;display:inline-block;margin-left:.25rem;
+}
+.sec-nav-sort{
+  width:calc(100% - .75rem);margin:0 .375rem;
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  color:var(--text-primary);font:500 .75rem/1 var(--font-body);
+  padding:.4rem .5rem;border-radius:var(--radius-sm);
+  cursor:pointer;outline:none;
+}
+.sec-nav-clear-btn{
+  display:flex;align-items:center;gap:.375rem;
+  width:calc(100% - .5rem);margin:.5rem .25rem;
+  padding:.4rem .625rem;border-radius:var(--radius-sm);
+  background:none;border:1px solid rgba(239,68,68,.2);
+  color:#f87171;cursor:pointer;
+  font:500 .6875rem/1 var(--font-body);transition:all .12s;
+}
+.sec-nav-clear-btn:hover{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3)}
 .home-nav-secondary-divider{
   border:none;border-top:1px solid var(--border-subtle);margin:.625rem .5rem;
 }
@@ -3098,17 +3152,18 @@ function renderChannels() {
   const search = (document.getElementById('searchInput').value || '').toLowerCase();
   const sort = document.getElementById('sortSelect').value;
 
-  // Gather active filters by group
+  // Gather active filters by group (from old sidebar OR new secondary nav)
   const activeFilters = {};
-  document.querySelectorAll('#sidebar input[data-filter]:checked').forEach(el => {
+  document.querySelectorAll('#sidebar input[data-filter]:checked, #homeSecondaryContent input[data-filter]:checked').forEach(el => {
     const group = el.dataset.filter;
     if (!activeFilters[group]) activeFilters[group] = [];
     activeFilters[group].push(el.value);
   });
 
-  // Show/hide clear button
+  // Show/hide clear button (old sidebar)
   const hasFilters = Object.keys(activeFilters).length > 0;
-  document.getElementById('btnClearFilters').style.display = hasFilters ? '' : 'none';
+  const clearBtn = document.getElementById('btnClearFilters');
+  if (clearBtn) clearBtn.style.display = hasFilters ? '' : 'none';
 
   // Show "most watched" filter only if watch history is loaded
   document.getElementById('filterMostWatchedWrap').style.display = watchHistory ? '' : 'none';
@@ -4976,11 +5031,7 @@ const SECONDARY_NAV = {
   },
   channels: {
     title: 'Channels',
-    items: [
-      {label:'All Channels', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>', active:true},
-      {label:'Recently Added', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'},
-      {divider:true},
-    ]
+    custom: true // Handled by buildChannelsSecondaryNav
   }
 };
 
@@ -4993,59 +5044,140 @@ function setHomeNav(key) {
   document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
   document.querySelector(`.home-nav-item[data-nav="${key}"]`)?.classList.add('active');
 
-  // Build secondary nav
   const sec = document.getElementById('homeSecondaryNav');
   const content = document.getElementById('homeSecondaryContent');
   const nav = SECONDARY_NAV[key];
 
-  if (nav) {
-    let items = [...nav.items];
-    if (key === 'feeds' && categories.length) {
-      const folderIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>';
-      const subIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
-      for (const c of categories) {
-        items.push({ label: c, icon: folderIcon, feedCategory: c });
-        const subs = subcategories[c] || [];
-        for (const sub of subs) {
-          items.push({ label: sub, icon: subIcon, feedCategory: c, feedSubcategory: sub, indent: true });
-        }
-      }
-    }
-    if (key === 'channels' && categories.length) {
-      items = items.concat(categories.map(c => ({
-        label: c,
-        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>'
-      })));
-    }
-
-    content.innerHTML = `<div class="home-nav-secondary-title">${nav.title}</div>` +
-      items.map(item => {
-        if (item.divider) return '<hr class="home-nav-secondary-divider">';
-        // Feed category/subcategory items get a special onclick
-        let onclick = '';
-        if (item.feedSubcategory) {
-          onclick = `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}','${item.feedSubcategory.replace(/'/g,"\\'")}')`;
-        } else if (item.feedCategory) {
-          onclick = `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}')`;
-        } else if (item.label === 'All Subscriptions') {
-          onclick = `loadFeedAll()`;
-        }
-        const indentClass = item.indent ? ' home-nav-secondary-subitem' : '';
-        return `<button class="home-nav-secondary-item${indentClass} ${item.active?'active':''}" onclick="this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');${onclick}">
-          ${item.icon}
-          ${item.label}
-        </button>`;
-      }).join('');
-    sec.classList.add('open');
-  } else {
+  if (!nav) {
     sec.classList.remove('open');
     content.innerHTML = '';
+    return;
   }
+
+  // Custom handler for channels
+  if (nav.custom && key === 'channels') {
+    buildChannelsSecondaryNav(content);
+    sec.classList.add('open');
+    return;
+  }
+
+  // Standard nav builder
+  let items = [...nav.items];
+  if (key === 'feeds' && categories.length) {
+    const folderIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>';
+    const subIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+    for (const c of categories) {
+      items.push({ label: c, icon: folderIcon, feedCategory: c });
+      const subs = subcategories[c] || [];
+      for (const sub of subs) {
+        items.push({ label: sub, icon: subIcon, feedCategory: c, feedSubcategory: sub, indent: true });
+      }
+    }
+  }
+
+  content.innerHTML = `<div class="home-nav-secondary-title">${nav.title}</div>` +
+    items.map(item => {
+      if (item.divider) return '<hr class="home-nav-secondary-divider">';
+      let onclick = '';
+      if (item.feedSubcategory) {
+        onclick = `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}','${item.feedSubcategory.replace(/'/g,"\\'")}')`;
+      } else if (item.feedCategory) {
+        onclick = `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}')`;
+      } else if (item.label === 'All Subscriptions') {
+        onclick = `loadFeedAll()`;
+      }
+      const indentClass = item.indent ? ' home-nav-secondary-subitem' : '';
+      return `<button class="home-nav-secondary-item${indentClass} ${item.active?'active':''}" onclick="this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');${onclick}">
+        ${item.icon}
+        ${item.label}
+      </button>`;
+    }).join('');
+  sec.classList.add('open');
 
   // Update personality card
   document.getElementById('homePersonalityCount').textContent = channels.length;
   const topCats = categories.slice(0, 2).join(' & ') || '—';
   document.getElementById('homePersonalityTop').textContent = topCats;
+}
+
+function buildChannelsSecondaryNav(container) {
+  const checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  container.innerHTML = `
+    <div class="home-nav-secondary-title">Channels</div>
+
+    <div class="sec-nav-actions">
+      <button class="sec-nav-action-btn" onclick="openModal('autoCatConfirmModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg>
+        Auto-Categorise
+      </button>
+      <button class="sec-nav-action-btn" onclick="openModal('addCategoryModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Category
+      </button>
+      <button class="sec-nav-action-btn" onclick="addSubcategory()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Subcategory
+      </button>
+    </div>
+
+    <hr class="home-nav-secondary-divider">
+
+    <div class="sec-nav-filter-group">
+      <div class="sec-nav-filter-title">Channel Size</div>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="size" value="mega" onchange="renderChannels()">${checkIcon} Mega <span class="sec-nav-filter-tag">1M+</span></label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="size" value="large" onchange="renderChannels()">${checkIcon} Large <span class="sec-nav-filter-tag">100K–1M</span></label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="size" value="mid" onchange="renderChannels()">${checkIcon} Mid <span class="sec-nav-filter-tag">10K–100K</span></label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="size" value="small" onchange="renderChannels()">${checkIcon} Small <span class="sec-nav-filter-tag">&lt;10K</span></label>
+    </div>
+
+    <div class="sec-nav-filter-group">
+      <div class="sec-nav-filter-title">Activity</div>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="health" value="active" onchange="renderChannels()">${checkIcon} Active <span class="sec-nav-filter-dot" style="background:#34d399"></span></label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="health" value="slow" onchange="renderChannels()">${checkIcon} Slowing down <span class="sec-nav-filter-dot" style="background:#fbbf24"></span></label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="health" value="dead" onchange="renderChannels()">${checkIcon} Inactive <span class="sec-nav-filter-dot" style="background:#f87171"></span></label>
+    </div>
+
+    <div class="sec-nav-filter-group">
+      <div class="sec-nav-filter-title">Subscription Age</div>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="age" value="recent" onchange="renderChannels()">${checkIcon} Recent <span class="sec-nav-filter-tag">&lt;90d</span></label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="age" value="established" onchange="renderChannels()">${checkIcon} Established <span class="sec-nav-filter-tag">90d–1yr</span></label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="age" value="longtime" onchange="renderChannels()">${checkIcon} Long-time <span class="sec-nav-filter-tag">1yr+</span></label>
+    </div>
+
+    <div class="sec-nav-filter-group">
+      <div class="sec-nav-filter-title">Needs Attention</div>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="action" value="uncategorised" onchange="renderChannels()">${checkIcon} Uncategorised</label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="action" value="missingdata" onchange="renderChannels()">${checkIcon} Missing data</label>
+      <label class="sec-nav-filter"><input type="checkbox" data-filter="action" value="unsub" onchange="renderChannels()">${checkIcon} Unsub candidates</label>
+    </div>
+
+    <hr class="home-nav-secondary-divider">
+
+    <div class="sec-nav-filter-group">
+      <div class="sec-nav-filter-title">Sort by</div>
+      <select class="sec-nav-sort" id="secNavSort" onchange="document.getElementById('sortSelect').value=this.value;renderChannels()">
+        <option value="name">Name</option>
+        <option value="subscribers">Subscribers</option>
+        <option value="videoCount">Video count</option>
+        <option value="subDate">Subscription date</option>
+      </select>
+    </div>
+
+    <button class="sec-nav-clear-btn" onclick="clearAllSecNavFilters()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Clear all filters
+    </button>
+  `;
+}
+
+function clearAllSecNavFilters() {
+  document.querySelectorAll('#homeSecondaryContent input[data-filter]:checked').forEach(el => { el.checked = false; });
+  const sort = document.getElementById('secNavSort');
+  if (sort) sort.value = 'name';
+  const mainSort = document.getElementById('sortSelect');
+  if (mainSort) mainSort.value = 'name';
+  renderChannels();
 }
 
 /* ═══════════════════════════════════════════
@@ -5292,9 +5424,10 @@ function showView(view) {
         mainLayout.style.display = '';
         if (promoBanner) promoBanner.style.display = '';
         if (onboarding) onboarding.style.display = 'none';
-        document.getElementById('sidebar').style.display = '';
-        document.getElementById('navChannels').classList.add('active');
+        document.getElementById('sidebar').style.display = 'none';
+        document.getElementById('navChannels')?.classList.add('active');
         document.querySelector('.home-nav-item[data-nav="channels"]')?.classList.add('active');
+        setHomeNav('channels');
         renderSubcategories();
       } else {
         mainLayout.style.display = 'none';
