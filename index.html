@@ -1085,6 +1085,290 @@ input[type=range]::-webkit-slider-thumb{
 }
 .btn-wh-reupload:hover{border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,.05)}
 
+/* ─── Pricing Page ─── */
+.pricing-page{display:none;padding:2.5rem;max-width:1100px;margin:0 auto}
+.pricing-page.active{display:block}
+.pricing-hero{text-align:center;margin-bottom:3rem}
+.pricing-hero h2{font-family:var(--font-display);font-size:2.25rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.75rem}
+.pricing-hero p{font-size:1rem;color:var(--text-secondary);max-width:520px;margin:0 auto;line-height:1.6}
+.pricing-section{margin-bottom:3.5rem}
+.pricing-section-header{margin-bottom:1.5rem;display:flex;align-items:baseline;gap:.75rem}
+.pricing-section-header h3{font-family:var(--font-display);font-size:1.375rem;font-weight:700;letter-spacing:-.01em}
+.pricing-section-badge{
+  font-size:.5625rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  padding:.25rem .625rem;border-radius:20px;
+}
+.pricing-badge-viewer{background:var(--accent-soft);color:var(--accent)}
+.pricing-badge-creator{background:rgba(59,130,246,.1);color:#60a5fa}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.pricing-card{
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:1.75rem;
+  display:flex;flex-direction:column;
+  transition:all .25s var(--transition);position:relative;
+}
+.pricing-card:hover{border-color:#444;transform:translateY(-2px)}
+.pricing-card-featured{
+  border-color:var(--accent);
+  background:linear-gradient(180deg,rgba(230,57,70,.05) 0%,transparent 40%);
+}
+.pricing-card-popular{
+  position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#fff;
+  font-size:.5625rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:.25rem .75rem;border-radius:20px;
+}
+.pricing-card-tier{
+  font-size:.6875rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.04em;color:var(--text-muted);margin-bottom:.5rem;
+}
+.pricing-card-price{
+  font-family:var(--font-display);font-size:2.5rem;font-weight:800;
+  letter-spacing:-.03em;margin-bottom:.25rem;
+}
+.pricing-card-price span{font-size:.8125rem;font-weight:400;color:var(--text-muted)}
+.pricing-card-desc{font-size:.75rem;color:var(--text-secondary);line-height:1.5;margin-bottom:1.25rem}
+.pricing-features{list-style:none;margin-bottom:1.5rem;flex:1}
+.pricing-features li{
+  font-size:.8125rem;color:var(--text-secondary);line-height:1.5;
+  padding:.375rem 0 .375rem 1.25rem;position:relative;
+  border-bottom:1px solid rgba(255,255,255,.03);
+}
+.pricing-features li:last-child{border-bottom:none}
+.pricing-features li::before{
+  content:'✓';position:absolute;left:0;color:var(--accent);font-weight:700;font-size:.75rem;
+}
+.pricing-features li.feat-highlight{color:var(--text-primary);font-weight:500}
+.pricing-features li.feat-disabled{color:var(--text-muted);text-decoration:line-through;opacity:.5}
+.pricing-features li.feat-disabled::before{content:'—';color:var(--text-muted)}
+.pricing-btn{
+  display:block;width:100%;padding:.75rem;border-radius:var(--radius-sm);
+  font:600 .8125rem/1 var(--font-body);cursor:pointer;
+  text-align:center;transition:all .15s;text-decoration:none;
+  border:1px solid var(--border-subtle);background:var(--bg-surface);color:var(--text-primary);
+}
+.pricing-btn:hover{background:var(--bg-surface-raised);border-color:#444}
+.pricing-btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.pricing-btn-primary:hover{filter:brightness(1.15)}
+.pricing-divider{
+  border:none;border-top:1px solid var(--border-subtle);
+  margin:1rem 0 2.5rem;
+}
+.pricing-faq{margin-top:2rem}
+.pricing-faq h3{font-family:var(--font-display);font-size:1.375rem;font-weight:700;margin-bottom:1.25rem}
+.pricing-faq-item{
+  padding:1rem 0;border-bottom:1px solid var(--border-subtle);
+}
+.pricing-faq-q{font-size:.875rem;font-weight:600;color:var(--text-primary);margin-bottom:.375rem}
+.pricing-faq-a{font-size:.8125rem;color:var(--text-secondary);line-height:1.6}
+@media(max-width:768px){
+  .pricing-grid{grid-template-columns:1fr}
+  .pricing-hero h2{font-size:1.75rem}
+}
+
+/* ─── Home View: Three-Column Layout ─── */
+.home-view{display:none;height:calc(100vh - 56px);overflow:hidden}
+.home-view.active{display:flex}
+
+/* Primary nav rail */
+.home-nav-primary{
+  width:64px;flex-shrink:0;
+  background:var(--bg-secondary);
+  border-right:1px solid var(--border-subtle);
+  display:flex;flex-direction:column;align-items:center;
+  padding:.75rem 0;gap:.25rem;
+  transition:width .2s var(--transition);
+  overflow:hidden;
+}
+.home-nav-primary.expanded{width:180px;align-items:stretch;padding:.75rem .5rem}
+.home-nav-toggle{
+  width:40px;height:40px;border-radius:var(--radius-sm);
+  background:none;border:none;color:var(--text-muted);cursor:pointer;
+  display:grid;place-items:center;margin-bottom:.5rem;
+  transition:all .15s;
+}
+.home-nav-primary.expanded .home-nav-toggle{align-self:flex-end;margin-right:.25rem}
+.home-nav-toggle:hover{color:var(--text-primary);background:var(--bg-surface)}
+.home-nav-toggle svg{width:18px;height:18px;transition:transform .2s}
+.home-nav-primary.expanded .home-nav-toggle svg{transform:rotate(180deg)}
+.home-nav-item{
+  display:flex;align-items:center;gap:.625rem;
+  width:40px;height:40px;border-radius:var(--radius-sm);
+  background:none;border:none;color:var(--text-muted);cursor:pointer;
+  transition:all .15s;justify-content:center;
+  flex-shrink:0;position:relative;
+}
+.home-nav-primary.expanded .home-nav-item{
+  width:100%;justify-content:flex-start;padding:0 .75rem;
+}
+.home-nav-item:hover{color:var(--text-primary);background:var(--bg-surface)}
+.home-nav-item.active{color:var(--accent);background:var(--accent-soft)}
+.home-nav-item.active::before{
+  content:'';position:absolute;left:0;top:25%;bottom:25%;width:3px;
+  background:var(--accent);border-radius:0 3px 3px 0;
+}
+.home-nav-primary:not(.expanded) .home-nav-item.active::before{left:-12px}
+.home-nav-primary.expanded .home-nav-item.active::before{left:0;border-radius:3px}
+.home-nav-item svg{width:20px;height:20px;flex-shrink:0}
+.home-nav-item-label{
+  font-size:.8125rem;font-weight:500;white-space:nowrap;
+  opacity:0;width:0;overflow:hidden;transition:all .2s;
+}
+.home-nav-primary.expanded .home-nav-item-label{opacity:1;width:auto}
+
+/* Secondary nav */
+.home-nav-secondary{
+  width:0;flex-shrink:0;overflow:hidden;
+  background:var(--bg-primary);
+  border-right:1px solid var(--border-subtle);
+  transition:width .2s var(--transition);
+}
+.home-nav-secondary.open{width:200px;padding:1.25rem .75rem}
+.home-nav-secondary-title{
+  font-size:.5625rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text-muted);
+  padding:0 .5rem .625rem;
+}
+.home-nav-secondary-item{
+  display:flex;align-items:center;gap:.5rem;
+  width:100%;padding:.5rem .75rem;border-radius:var(--radius-sm);
+  background:none;border:none;color:var(--text-secondary);cursor:pointer;
+  font:400 .8125rem/1.3 var(--font-body);transition:all .12s;
+  text-align:left;
+}
+.home-nav-secondary-item:hover{color:var(--text-primary);background:var(--bg-surface)}
+.home-nav-secondary-item.active{color:var(--accent);background:var(--accent-soft);font-weight:500}
+.home-nav-secondary-item svg{width:16px;height:16px;flex-shrink:0;opacity:.6}
+.home-nav-secondary-item.active svg{opacity:1}
+.home-nav-secondary-divider{
+  border:none;border-top:1px solid var(--border-subtle);margin:.625rem .5rem;
+}
+
+/* Main content area */
+.home-main{
+  flex:1;min-width:0;overflow-y:auto;
+  padding:1.75rem 2rem;
+}
+.home-main-header{margin-bottom:1.75rem}
+.home-main-header h2{
+  font-family:var(--font-display);font-size:1.625rem;
+  font-weight:700;letter-spacing:-.02em;margin-bottom:.25rem;
+}
+.home-main-header p{font-size:.875rem;color:var(--text-secondary)}
+
+/* Content sections */
+.home-section{margin-bottom:2rem}
+.home-section-header{
+  display:flex;align-items:baseline;justify-content:space-between;
+  margin-bottom:.75rem;padding-bottom:.5rem;
+  border-bottom:1px solid var(--border-subtle);
+}
+.home-section-title{
+  font-family:var(--font-display);font-size:1.125rem;font-weight:700;
+  color:var(--accent);
+}
+.home-section-count{font-size:.75rem;color:var(--text-muted);font-weight:400}
+.home-video-row{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.625rem 0;border-bottom:1px solid rgba(255,255,255,.03);
+  cursor:pointer;transition:background .1s;
+}
+.home-video-row:hover{background:var(--bg-surface);margin:0 -.5rem;padding:.625rem .5rem;border-radius:var(--radius-sm)}
+.home-video-row:last-child{border-bottom:none}
+.home-video-play{color:var(--accent);flex-shrink:0}
+.home-video-play svg{width:14px;height:14px}
+.home-video-title{font-size:.8125rem;color:var(--text-primary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-video-thumb{
+  width:80px;height:45px;border-radius:6px;overflow:hidden;flex-shrink:0;
+  background:var(--bg-surface-raised);
+}
+.home-video-thumb img{width:100%;height:100%;object-fit:cover}
+.home-video-thumb-placeholder{
+  width:100%;height:100%;display:grid;place-items:center;
+  background:linear-gradient(135deg,#222,#1a1a1a);
+}
+.home-video-thumb-placeholder svg{width:20px;height:20px;color:var(--text-muted);opacity:.4}
+
+/* Right sidebar */
+.home-sidebar{
+  width:280px;flex-shrink:0;overflow-y:auto;
+  border-left:1px solid var(--border-subtle);
+  padding:1.25rem;display:flex;flex-direction:column;gap:1.25rem;
+}
+
+/* Trending channels card */
+.home-trending{
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);padding:1rem;
+}
+.home-trending h4{
+  font-size:.6875rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text-muted);margin-bottom:.75rem;
+  padding-bottom:.5rem;border-bottom:1px solid var(--border-subtle);
+}
+.home-trending-item{
+  display:flex;align-items:center;gap:.625rem;
+  padding:.5rem 0;cursor:pointer;transition:opacity .1s;
+}
+.home-trending-item:hover{opacity:.8}
+.home-trending-avatar{
+  width:32px;height:32px;border-radius:50%;overflow:hidden;flex-shrink:0;
+  background:var(--bg-surface-raised);
+}
+.home-trending-avatar img{width:100%;height:100%;object-fit:cover}
+.home-trending-avatar-placeholder{
+  width:100%;height:100%;display:grid;place-items:center;
+  border-radius:50%;font-size:.6875rem;font-weight:700;color:var(--text-muted);
+  background:linear-gradient(135deg,#333,#222);
+}
+.home-trending-name{font-size:.8125rem;color:var(--text-primary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-trending-arrow{color:var(--text-muted)}
+.home-trending-arrow svg{width:14px;height:14px}
+
+/* YouTube Personality card */
+.home-personality{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+  border:1px solid rgba(99,102,241,.2);
+  border-radius:var(--radius-md);padding:1.25rem;
+  text-align:center;position:relative;overflow:hidden;
+}
+.home-personality::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:radial-gradient(circle at 30% 40%,rgba(230,57,70,.06) 0%,transparent 50%),
+             radial-gradient(circle at 70% 60%,rgba(59,130,246,.06) 0%,transparent 50%);
+  pointer-events:none;
+}
+.home-personality-sparkle{
+  font-size:.625rem;color:var(--text-muted);letter-spacing:.1em;margin-bottom:.75rem;
+  position:relative;
+}
+.home-personality h4{
+  font-family:var(--font-display);font-size:1.25rem;font-weight:800;
+  color:var(--accent);margin-bottom:.75rem;position:relative;
+}
+.home-personality-stat{
+  font-size:.8125rem;color:var(--text-secondary);margin-bottom:.25rem;
+  position:relative;
+}
+.home-personality-stat strong{color:var(--text-primary)}
+.home-personality-btn{
+  display:inline-block;margin-top:1rem;
+  padding:.5rem 1.25rem;border-radius:20px;
+  font:600 .75rem/1 var(--font-body);cursor:pointer;
+  background:var(--accent);border:none;color:#fff;
+  transition:all .15s;position:relative;
+}
+.home-personality-btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+
+/* Responsive */
+@media(max-width:1024px){
+  .home-sidebar{display:none}
+}
+@media(max-width:768px){
+  .home-nav-secondary{display:none}
+  .home-main{padding:1rem}
+}
+
 /* ─── Ad Placements ─── */
 .promo-slot{
   position:relative;
@@ -1427,9 +1711,11 @@ input[type=range]::-webkit-slider-thumb{
     <span class="topnav-title">Subsort</span>
   </a>
   <div class="topnav-links">
+    <button id="navHome" onclick="showView('home')">Home</button>
     <button id="navChannels" onclick="showView('channels')">Channels</button>
     <button id="navAnalytics" onclick="showView('analytics')">Analytics</button>
     <button id="navMarketplace" onclick="showView('marketplace')">Marketplace</button>
+    <button id="navPricing" onclick="showView('pricing')">Pricing</button>
   </div>
   <div class="nav-search">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -1454,6 +1740,140 @@ input[type=range]::-webkit-slider-thumb{
     </button>
   </div>
 </nav>
+
+<!-- ═══ Home View (Three-Column Layout) ═══ -->
+<div class="home-view" id="homeView">
+
+  <!-- Primary Nav Rail -->
+  <nav class="home-nav-primary" id="homePrimaryNav">
+    <button class="home-nav-toggle" onclick="togglePrimaryNav()" title="Expand menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <button class="home-nav-item active" data-nav="home" onclick="setHomeNav('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="home-nav-item-label">Home</span>
+    </button>
+    <button class="home-nav-item" data-nav="feeds" onclick="setHomeNav('feeds')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+      <span class="home-nav-item-label">Feeds</span>
+    </button>
+    <button class="home-nav-item" data-nav="analytics" onclick="setHomeNav('analytics')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      <span class="home-nav-item-label">Analytics</span>
+    </button>
+    <button class="home-nav-item" data-nav="channels" onclick="setHomeNav('channels')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+      <span class="home-nav-item-label">Channels</span>
+    </button>
+  </nav>
+
+  <!-- Secondary Nav -->
+  <nav class="home-nav-secondary" id="homeSecondaryNav">
+    <div id="homeSecondaryContent"></div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="home-main" id="homeMain">
+    <div class="home-main-header">
+      <h2>Today's Videos</h2>
+      <p>Recent uploads from your subscriptions, sorted by category.</p>
+    </div>
+
+    <div class="home-section">
+      <div class="home-section-header">
+        <span class="home-section-title">Tech</span>
+        <span class="home-section-count">6 new videos</span>
+      </div>
+      <div class="home-video-row">
+        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+        <span class="home-video-title">Latest Gadget Reviews</span>
+        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      </div>
+      <div class="home-video-row">
+        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+        <span class="home-video-title">AI Breakthroughs 2026</span>
+        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      </div>
+      <div class="home-video-row">
+        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+        <span class="home-video-title">Coding Tips & Tricks</span>
+        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      </div>
+    </div>
+
+    <div class="home-section">
+      <div class="home-section-header">
+        <span class="home-section-title">Education</span>
+        <span class="home-section-count">4 new videos</span>
+      </div>
+      <div class="home-video-row">
+        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+        <span class="home-video-title">History of the Roman Empire</span>
+        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      </div>
+      <div class="home-video-row">
+        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+        <span class="home-video-title">Science Experiments for Kids</span>
+        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      </div>
+    </div>
+
+    <div class="home-section">
+      <div class="home-section-header">
+        <span class="home-section-title">Finance</span>
+        <span class="home-section-count">3 new videos</span>
+      </div>
+      <div class="home-video-row">
+        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+        <span class="home-video-title">Stock Market Updates</span>
+        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      </div>
+      <div class="home-video-row">
+        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+        <span class="home-video-title">Personal Finance Tips</span>
+        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Right Sidebar -->
+  <aside class="home-sidebar">
+    <!-- Trending Channels -->
+    <div class="home-trending">
+      <h4>Trending Channels</h4>
+      <div class="home-trending-item">
+        <div class="home-trending-avatar"><div class="home-trending-avatar-placeholder">ST</div></div>
+        <span class="home-trending-name">Smart Tech Lab</span>
+        <span class="home-trending-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+      </div>
+      <div class="home-trending-item">
+        <div class="home-trending-avatar"><div class="home-trending-avatar-placeholder">HU</div></div>
+        <span class="home-trending-name">History Uncovered</span>
+        <span class="home-trending-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+      </div>
+      <div class="home-trending-item">
+        <div class="home-trending-avatar"><div class="home-trending-avatar-placeholder">MW</div></div>
+        <span class="home-trending-name">MoneyWise</span>
+        <span class="home-trending-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+      </div>
+    </div>
+
+    <!-- YouTube Personality Card -->
+    <div class="home-personality">
+      <div class="home-personality-sparkle">~ My YouTube Personality ~</div>
+      <h4>The Curious Technologist</h4>
+      <div class="home-personality-stat">You follow <strong id="homePersonalityCount">0</strong> channels</div>
+      <div class="home-personality-stat">Top Categories: <strong id="homePersonalityTop">—</strong></div>
+      <div style="font-size:.625rem;color:var(--text-muted);margin-top:.625rem;position:relative">Generated by <strong style="color:var(--accent)">Subsort</strong></div>
+      <button class="home-personality-btn" onclick="toast('Share feature coming soon!')">Share My Profile</button>
+    </div>
+
+    <!-- Ad slot -->
+    <div class="promo-slot promo-slot-sidebar" id="promoHomeSidebar" style="height:200px">
+      Advertisement
+    </div>
+  </aside>
+</div>
 
 <!-- ═══ Analytics Page ═══ -->
 <div class="analytics-page" id="analyticsPage">
@@ -1714,6 +2134,172 @@ input[type=range]::-webkit-slider-thumb{
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ═══ Pricing Page ═══ -->
+<div class="pricing-page" id="pricingPage">
+  <div class="pricing-hero">
+    <h2>Simple, transparent <em>pricing</em></h2>
+    <p>Free forever for casual users. Upgrade for powerful analytics and Marketplace access for creators.</p>
+  </div>
+
+  <!-- Viewer Tiers -->
+  <div class="pricing-section">
+    <div class="pricing-section-header">
+      <h3>For Viewers</h3>
+      <span class="pricing-section-badge pricing-badge-viewer">Subscription Organiser</span>
+    </div>
+    <div class="pricing-grid">
+      <!-- Free -->
+      <div class="pricing-card">
+        <div class="pricing-card-tier">Free</div>
+        <div class="pricing-card-price">£0<span>/forever</span></div>
+        <div class="pricing-card-desc">Everything you need to tidy up your subscriptions.</div>
+        <ul class="pricing-features">
+          <li class="feat-highlight">Unlimited channel sync via YouTube API</li>
+          <li>Manual & auto-categorisation</li>
+          <li>Subcategories & multi-category tagging</li>
+          <li>Bulk channel management</li>
+          <li>Notes on any channel</li>
+          <li>Basic stats (subs, videos, activity)</li>
+          <li>Dead & inactive channel detection</li>
+          <li>Discover similar channels</li>
+          <li>Import / Export data (JSON)</li>
+          <li class="feat-disabled">Watch history analytics</li>
+          <li class="feat-disabled">AI-powered categorisation</li>
+          <li class="feat-disabled">Channel health reports (PDF)</li>
+        </ul>
+        <div class="pricing-btn" style="text-align:center;cursor:default;opacity:.7">Current plan</div>
+      </div>
+      <!-- Pro -->
+      <div class="pricing-card pricing-card-featured">
+        <div class="pricing-card-popular">Most Popular</div>
+        <div class="pricing-card-tier">Pro</div>
+        <div class="pricing-card-price">£4<span>/month</span></div>
+        <div class="pricing-card-desc">Deep insights into your viewing habits and smarter organisation.</div>
+        <ul class="pricing-features">
+          <li class="feat-highlight">Everything in Free, plus:</li>
+          <li class="feat-highlight">Watch history analytics (Google Takeout)</li>
+          <li>Most-watched channels breakdown</li>
+          <li>Viewing patterns by day & time</li>
+          <li>Channels you watch but aren't subscribed to</li>
+          <li class="feat-highlight">AI-powered categorisation (Claude)</li>
+          <li>Smart unsub candidates</li>
+          <li>Priority Discover results</li>
+          <li>Channel health report (PDF export)</li>
+          <li>Category breakdown visualisations</li>
+        </ul>
+        <button class="pricing-btn pricing-btn-primary" onclick="toast('Pro launches soon — we\\'ll let you know!')">Get Pro</button>
+      </div>
+      <!-- Power -->
+      <div class="pricing-card">
+        <div class="pricing-card-tier">Power</div>
+        <div class="pricing-card-price">£9<span>/month</span></div>
+        <div class="pricing-card-desc">For the serious YouTube power user who manages everything.</div>
+        <ul class="pricing-features">
+          <li class="feat-highlight">Everything in Pro, plus:</li>
+          <li class="feat-highlight">Bulk unsubscribe from inactive channels</li>
+          <li>Subscription migration tools</li>
+          <li>Spreadsheet export (XLSX)</li>
+          <li>API access for developers</li>
+          <li>Multi-account management</li>
+          <li>Custom category icons</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="pricing-btn" onclick="toast('Power plan launches soon — we\\'ll let you know!')">Get Power</button>
+      </div>
+    </div>
+  </div>
+
+  <hr class="pricing-divider">
+
+  <!-- Creator Tiers -->
+  <div class="pricing-section">
+    <div class="pricing-section-header">
+      <h3>For Creators</h3>
+      <span class="pricing-section-badge pricing-badge-creator">Marketplace</span>
+    </div>
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="pricing-card">
+        <div class="pricing-card-tier">Starter</div>
+        <div class="pricing-card-price">£29<span>/month</span></div>
+        <div class="pricing-card-desc">Get your channel in front of the right subscribers.</div>
+        <ul class="pricing-features">
+          <li>Featured in 1 category</li>
+          <li>Up to 500 impressions/month</li>
+          <li>Basic click & view analytics</li>
+          <li>"Promoted" label on Discover</li>
+          <li>Quality-filtered audience only</li>
+          <li class="feat-disabled">Priority carousel placement</li>
+          <li class="feat-disabled">A/B test descriptions</li>
+          <li class="feat-disabled">Audience targeting</li>
+        </ul>
+        <button class="pricing-btn" onclick="toast('Marketplace launches soon — we\\'ll let you know!')">Get started</button>
+      </div>
+      <!-- Growth -->
+      <div class="pricing-card pricing-card-featured">
+        <div class="pricing-card-popular">Most Popular</div>
+        <div class="pricing-card-tier">Growth</div>
+        <div class="pricing-card-price">£79<span>/month</span></div>
+        <div class="pricing-card-desc">Scale your reach across multiple categories with rich data.</div>
+        <ul class="pricing-features">
+          <li class="feat-highlight">Everything in Starter, plus:</li>
+          <li class="feat-highlight">Featured in up to 5 categories</li>
+          <li>Up to 2,500 impressions/month</li>
+          <li>Priority carousel placement</li>
+          <li>Detailed click & subscriber analytics</li>
+          <li>A/B test channel descriptions</li>
+          <li>Audience demographics (anonymised)</li>
+          <li class="feat-disabled">Dedicated account manager</li>
+        </ul>
+        <button class="pricing-btn pricing-btn-primary" onclick="toast('Marketplace launches soon — we\\'ll let you know!')">Get Growth</button>
+      </div>
+      <!-- Pro Creator -->
+      <div class="pricing-card">
+        <div class="pricing-card-tier">Pro</div>
+        <div class="pricing-card-price">£199<span>/month</span></div>
+        <div class="pricing-card-desc">Full access, top placement, and a dedicated growth partner.</div>
+        <ul class="pricing-features">
+          <li class="feat-highlight">Everything in Growth, plus:</li>
+          <li class="feat-highlight">Featured in all categories</li>
+          <li>Unlimited impressions</li>
+          <li>Top carousel position</li>
+          <li>Dedicated account manager</li>
+          <li>Custom audience targeting</li>
+          <li>Competitor benchmarking</li>
+          <li>API access for bulk management</li>
+        </ul>
+        <button class="pricing-btn" onclick="toast('Marketplace launches soon — we\\'ll let you know!')">Contact sales</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <hr class="pricing-divider">
+  <div class="pricing-faq">
+    <h3>Frequently asked questions</h3>
+    <div class="pricing-faq-item">
+      <div class="pricing-faq-q">Can I cancel anytime?</div>
+      <div class="pricing-faq-a">Yes — all plans are monthly with no lock-in. Cancel from your account settings and you'll keep access until the end of your billing period.</div>
+    </div>
+    <div class="pricing-faq-item">
+      <div class="pricing-faq-q">Is the free tier really free forever?</div>
+      <div class="pricing-faq-a">Absolutely. Categorisation, basic analytics, dead channel detection, and Discover will always be free. We want everyone to have a cleaner YouTube feed.</div>
+    </div>
+    <div class="pricing-faq-item">
+      <div class="pricing-faq-q">What's the difference between viewer and creator plans?</div>
+      <div class="pricing-faq-a">Viewer plans help you organise and understand your subscriptions. Creator plans let you promote your channel in the Marketplace so new subscribers discover you.</div>
+    </div>
+    <div class="pricing-faq-item">
+      <div class="pricing-faq-q">How does the watch history feature work?</div>
+      <div class="pricing-faq-a">You upload your YouTube watch history from Google Takeout. Everything is processed locally in your browser — your data never leaves your device.</div>
+    </div>
+    <div class="pricing-faq-item">
+      <div class="pricing-faq-q">Do I need to be a Pro viewer to list on the Marketplace?</div>
+      <div class="pricing-faq-a">No — viewer and creator plans are completely independent. You can use the free viewer tier and still list your channel as a creator.</div>
+    </div>
   </div>
 </div>
 
@@ -4296,11 +4882,104 @@ function findDeadChannels() {
   return dead;
 }
 
+/* ═══════════════════════════════════════════
+   HOME VIEW NAV
+   ═══════════════════════════════════════════ */
+const SECONDARY_NAV = {
+  home: {
+    title: 'Home',
+    items: [
+      {label:'Today\'s Videos', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>', active:true},
+      {label:'Watch Later', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'},
+      {label:'Liked Videos', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>'},
+    ]
+  },
+  feeds: {
+    title: 'My Feeds',
+    items: [
+      {label:'All Subscriptions', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>', active:true},
+      {divider:true},
+    ]
+  },
+  analytics: {
+    title: 'Analytics',
+    items: [
+      {label:'Overview', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>', active:true},
+      {label:'Feed Health', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>'},
+      {label:'Watch History', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'},
+      {label:'Category Breakdown', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>'},
+      {divider:true},
+      {label:'Dead Channels', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'},
+      {label:'Unsub Candidates', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>'},
+    ]
+  },
+  channels: {
+    title: 'Channels',
+    items: [
+      {label:'All Channels', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>', active:true},
+      {label:'Recently Added', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'},
+      {divider:true},
+    ]
+  }
+};
+
+function togglePrimaryNav() {
+  document.getElementById('homePrimaryNav').classList.toggle('expanded');
+}
+
+function setHomeNav(key) {
+  // Update primary nav active state
+  document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.home-nav-item[data-nav="${key}"]`)?.classList.add('active');
+
+  // Build secondary nav
+  const sec = document.getElementById('homeSecondaryNav');
+  const content = document.getElementById('homeSecondaryContent');
+  const nav = SECONDARY_NAV[key];
+
+  if (nav) {
+    // Add category items for feeds
+    let items = [...nav.items];
+    if (key === 'feeds' && categories.length) {
+      items = items.concat(categories.map(c => ({
+        label: c,
+        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>'
+      })));
+    }
+    if (key === 'channels' && categories.length) {
+      items = items.concat(categories.map(c => ({
+        label: c,
+        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>'
+      })));
+    }
+
+    content.innerHTML = `<div class="home-nav-secondary-title">${nav.title}</div>` +
+      items.map(item => {
+        if (item.divider) return '<hr class="home-nav-secondary-divider">';
+        return `<button class="home-nav-secondary-item ${item.active?'active':''}" onclick="this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active')">
+          ${item.icon}
+          ${item.label}
+        </button>`;
+      }).join('');
+    sec.classList.add('open');
+  } else {
+    sec.classList.remove('open');
+    content.innerHTML = '';
+  }
+
+  // Update personality card
+  document.getElementById('homePersonalityCount').textContent = channels.length;
+  const topCats = categories.slice(0, 2).join(' & ') || '—';
+  document.getElementById('homePersonalityTop').textContent = topCats;
+}
+
 function showView(view) {
   const catsSection = document.getElementById('categoriesSection');
   const mainLayout = document.querySelector('.main-layout');
   const analyticsPage = document.getElementById('analyticsPage');
   const marketplacePage = document.getElementById('marketplacePage');
+  const pricingPage = document.getElementById('pricingPage');
+  const homeView = document.getElementById('homeView');
   const onboarding = document.getElementById('onboardingEmpty');
   const promoBanner = document.getElementById('promoBanner');
 
@@ -4309,6 +4988,8 @@ function showView(view) {
   mainLayout.style.display = 'none';
   analyticsPage.classList.remove('active');
   marketplacePage.classList.remove('active');
+  pricingPage.classList.remove('active');
+  homeView.classList.remove('active');
   if (onboarding) onboarding.style.display = 'none';
   if (promoBanner) promoBanner.style.display = 'none';
 
@@ -4316,6 +4997,11 @@ function showView(view) {
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
 
   switch(view) {
+    case 'home':
+      homeView.classList.add('active');
+      document.getElementById('navHome').classList.add('active');
+      setHomeNav('home');
+      break;
     case 'analytics':
       if (!channels.length) { showView('channels'); return; }
       analyticsPage.classList.add('active');
@@ -4325,6 +5011,10 @@ function showView(view) {
     case 'marketplace':
       marketplacePage.classList.add('active');
       document.getElementById('navMarketplace').classList.add('active');
+      break;
+    case 'pricing':
+      pricingPage.classList.add('active');
+      document.getElementById('navPricing').classList.add('active');
       break;
     case 'channels':
     default:
