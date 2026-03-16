@@ -1312,6 +1312,10 @@ input[type=range]::-webkit-slider-thumb{
   border-radius:0 var(--radius-sm) var(--radius-sm) 0;
   white-space:pre-wrap;word-break:break-word;
 }
+.detail-notes-label{
+  display:block;font-size:.625rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text-muted);margin-bottom:.375rem;
+}
 .btn-expand{
   background:none;border:none;color:var(--accent);
   font:500 .75rem/1 var(--font-body);cursor:pointer;
@@ -2867,7 +2871,7 @@ function openDetail(id) {
   // User notes (display under tags)
   const notesDisplay = document.getElementById('detailNotes');
   if (ch.notes) {
-    notesDisplay.textContent = ch.notes;
+    notesDisplay.innerHTML = `<span class="detail-notes-label">📝 Your Notes</span>${ch.notes.replace(/</g,'&lt;').replace(/>/g,'&gt;')}`;
     notesDisplay.style.display = '';
   } else {
     notesDisplay.style.display = 'none';
@@ -2893,7 +2897,6 @@ function openDetail(id) {
     const ratio = (ch.subscriberCount / ch.videoCount).toFixed(0);
     infoItems.push({l:'Subs per video', v: formatCount(parseInt(ratio))});
   }
-  if (ch.notes) infoItems.push({l:'Your notes', v: ch.notes});
   document.getElementById('detailInfoGrid').innerHTML = infoItems.map(i =>
     `<div class="detail-info-item"><div class="info-label">${i.l}</div><div class="info-value">${i.v}</div></div>`
   ).join('');
