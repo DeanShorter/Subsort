@@ -1268,6 +1268,10 @@ input[type=range]::-webkit-slider-thumb{
 .home-nav-secondary-item.active{color:var(--accent);background:var(--accent-soft);font-weight:500}
 .home-nav-secondary-item svg{width:16px;height:16px;flex-shrink:0;opacity:.6}
 .home-nav-secondary-item.active svg{opacity:1}
+.home-nav-secondary-subitem{
+  padding-left:1.75rem;font-size:.75rem;
+}
+.home-nav-secondary-subitem svg{width:12px;height:12px}
 .home-nav-secondary-divider{
   border:none;border-top:1px solid var(--border-subtle);margin:.625rem .5rem;
 }
@@ -4997,11 +5001,15 @@ function setHomeNav(key) {
   if (nav) {
     let items = [...nav.items];
     if (key === 'feeds' && categories.length) {
-      items = items.concat(categories.map(c => ({
-        label: c,
-        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>',
-        feedCategory: c
-      })));
+      const folderIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>';
+      const subIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+      for (const c of categories) {
+        items.push({ label: c, icon: folderIcon, feedCategory: c });
+        const subs = subcategories[c] || [];
+        for (const sub of subs) {
+          items.push({ label: sub, icon: subIcon, feedCategory: c, feedSubcategory: sub, indent: true });
+        }
+      }
     }
     if (key === 'channels' && categories.length) {
       items = items.concat(categories.map(c => ({
@@ -5013,13 +5021,17 @@ function setHomeNav(key) {
     content.innerHTML = `<div class="home-nav-secondary-title">${nav.title}</div>` +
       items.map(item => {
         if (item.divider) return '<hr class="home-nav-secondary-divider">';
-        // Feed category items get a special onclick
-        const onclick = item.feedCategory
-          ? `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}')`
-          : item.label === 'All Subscriptions'
-            ? `loadFeedAll()`
-            : `this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active')`;
-        return `<button class="home-nav-secondary-item ${item.active?'active':''}" onclick="this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');${onclick}">
+        // Feed category/subcategory items get a special onclick
+        let onclick = '';
+        if (item.feedSubcategory) {
+          onclick = `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}','${item.feedSubcategory.replace(/'/g,"\\'")}')`;
+        } else if (item.feedCategory) {
+          onclick = `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}')`;
+        } else if (item.label === 'All Subscriptions') {
+          onclick = `loadFeedAll()`;
+        }
+        const indentClass = item.indent ? ' home-nav-secondary-subitem' : '';
+        return `<button class="home-nav-secondary-item${indentClass} ${item.active?'active':''}" onclick="this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');${onclick}">
           ${item.icon}
           ${item.label}
         </button>`;
@@ -5039,23 +5051,31 @@ function setHomeNav(key) {
 /* ═══════════════════════════════════════════
    FEED: LOAD VIDEOS BY CATEGORY
    ═══════════════════════════════════════════ */
-async function loadFeedCategory(category) {
+async function loadFeedCategory(category, subcategory) {
   const main = document.getElementById('homeMain');
-  const catChannels = channels.filter(ch => chHasCat(ch, category));
+  let catChannels = channels.filter(ch => chHasCat(ch, category));
+
+  // Filter by subcategory if specified
+  if (subcategory) {
+    catChannels = catChannels.filter(ch => ch.subcategory === subcategory);
+  }
+
+  const label = subcategory ? `${category} › ${subcategory}` : category;
+  const filterDesc = subcategory ? `in ${subcategory}` : '';
 
   if (!catChannels.length) {
     main.innerHTML = `
       <div class="home-main-header">
-        <h2>${category}</h2>
-        <p>No channels in this category yet.</p>
+        <h2>${label}</h2>
+        <p>No channels ${filterDesc ? filterDesc : 'in this category'} yet.</p>
       </div>`;
     return;
   }
 
   main.innerHTML = `
     <div class="home-main-header">
-      <h2>${category}</h2>
-      <p>Recent videos from ${catChannels.length} channel${catChannels.length > 1 ? 's' : ''}</p>
+      <h2>${label}</h2>
+      <p>Recent videos from ${catChannels.length} channel${catChannels.length > 1 ? 's' : ''} ${filterDesc}</p>
     </div>
     <div class="home-feed-loading">
       <span class="spinner"></span> Fetching latest videos…
@@ -5064,7 +5084,7 @@ async function loadFeedCategory(category) {
   if (!accessToken) {
     main.innerHTML = `
       <div class="home-main-header">
-        <h2>${category}</h2>
+        <h2>${label}</h2>
         <p>Sign in with YouTube to see recent videos from your subscriptions.</p>
       </div>`;
     return;
@@ -5072,11 +5092,11 @@ async function loadFeedCategory(category) {
 
   try {
     const videos = await fetchRecentVideos(catChannels);
-    renderFeedVideos(main, category, videos, catChannels.length);
+    renderFeedVideos(main, label, videos, catChannels.length);
   } catch (err) {
     main.innerHTML = `
       <div class="home-main-header">
-        <h2>${category}</h2>
+        <h2>${label}</h2>
         <p style="color:#f87171">Failed to load videos: ${err.message}</p>
       </div>`;
   }
