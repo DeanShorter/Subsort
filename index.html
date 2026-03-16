@@ -1166,8 +1166,12 @@ input[type=range]::-webkit-slider-thumb{
   .pricing-hero h2{font-size:1.75rem}
 }
 
+/* ─── App Shell ─── */
+.app-shell{display:flex;height:100vh;overflow:hidden}
+.app-content{flex:1;min-width:0;overflow-y:auto;display:flex;flex-direction:column}
+
 /* ─── Home View: Three-Column Layout ─── */
-.home-view{display:none;height:100vh;overflow:hidden}
+.home-view{display:none;flex:1;overflow:hidden}
 .home-view.active{display:flex}
 
 /* Primary nav rail */
@@ -1312,6 +1316,10 @@ input[type=range]::-webkit-slider-thumb{
   background:linear-gradient(135deg,#222,#1a1a1a);
 }
 .home-video-thumb-placeholder svg{width:20px;height:20px;color:var(--text-muted);opacity:.4}
+.home-feed-loading{
+  display:flex;align-items:center;gap:.75rem;
+  padding:2rem 0;color:var(--text-muted);font-size:.875rem;
+}
 
 /* Right sidebar */
 .home-sidebar{
@@ -1745,10 +1753,10 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
-<!-- ═══ Home View (Three-Column Layout) ═══ -->
-<div class="home-view" id="homeView">
+<!-- ═══ App Shell ═══ -->
+<div class="app-shell" id="appShell">
 
-  <!-- Primary Nav Rail -->
+  <!-- Primary Nav Rail (always visible) -->
   <nav class="home-nav-primary" id="homePrimaryNav">
     <div class="home-nav-brand">
       <div class="home-nav-brand-logo">S</div>
@@ -1757,11 +1765,11 @@ input[type=range]::-webkit-slider-thumb{
     <button class="home-nav-toggle" onclick="togglePrimaryNav()" title="Expand menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
-    <button class="home-nav-item active" data-nav="home" onclick="setHomeNav('home')">
+    <button class="home-nav-item active" data-nav="home" onclick="showView('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span class="home-nav-item-label">Home</span>
     </button>
-    <button class="home-nav-item" data-nav="feeds" onclick="setHomeNav('feeds')">
+    <button class="home-nav-item" data-nav="feeds" onclick="showView('home');setHomeNav('feeds')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
       <span class="home-nav-item-label">Feeds</span>
     </button>
@@ -1802,10 +1810,16 @@ input[type=range]::-webkit-slider-thumb{
     </button>
   </nav>
 
-  <!-- Secondary Nav -->
+  <!-- Secondary Nav (visible when Home/Feeds selected) -->
   <nav class="home-nav-secondary" id="homeSecondaryNav">
     <div id="homeSecondaryContent"></div>
   </nav>
+
+  <!-- Content area (all pages render here) -->
+  <div class="app-content" id="appContent">
+
+<!-- ═══ Home View ═══ -->
+<div class="home-view" id="homeView">
 
   <!-- Main Content -->
   <main class="home-main" id="homeMain">
@@ -2613,6 +2627,9 @@ input[type=range]::-webkit-slider-thumb{
         </div>
       </div>
 </div>
+
+  </div><!-- end .app-content -->
+</div><!-- end .app-shell -->
 
 <!-- ═══ Hidden File Inputs ═══ -->
 <input type="file" class="file-input" id="csvFileInput" accept=".csv" onchange="importCSV(this)">
@@ -4978,12 +4995,12 @@ function setHomeNav(key) {
   const nav = SECONDARY_NAV[key];
 
   if (nav) {
-    // Add category items for feeds
     let items = [...nav.items];
     if (key === 'feeds' && categories.length) {
       items = items.concat(categories.map(c => ({
         label: c,
-        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>'
+        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>',
+        feedCategory: c
       })));
     }
     if (key === 'channels' && categories.length) {
@@ -4996,7 +5013,13 @@ function setHomeNav(key) {
     content.innerHTML = `<div class="home-nav-secondary-title">${nav.title}</div>` +
       items.map(item => {
         if (item.divider) return '<hr class="home-nav-secondary-divider">';
-        return `<button class="home-nav-secondary-item ${item.active?'active':''}" onclick="this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active')">
+        // Feed category items get a special onclick
+        const onclick = item.feedCategory
+          ? `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}')`
+          : item.label === 'All Subscriptions'
+            ? `loadFeedAll()`
+            : `this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active')`;
+        return `<button class="home-nav-secondary-item ${item.active?'active':''}" onclick="this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');${onclick}">
           ${item.icon}
           ${item.label}
         </button>`;
@@ -5011,6 +5034,186 @@ function setHomeNav(key) {
   document.getElementById('homePersonalityCount').textContent = channels.length;
   const topCats = categories.slice(0, 2).join(' & ') || '—';
   document.getElementById('homePersonalityTop').textContent = topCats;
+}
+
+/* ═══════════════════════════════════════════
+   FEED: LOAD VIDEOS BY CATEGORY
+   ═══════════════════════════════════════════ */
+async function loadFeedCategory(category) {
+  const main = document.getElementById('homeMain');
+  const catChannels = channels.filter(ch => chHasCat(ch, category));
+
+  if (!catChannels.length) {
+    main.innerHTML = `
+      <div class="home-main-header">
+        <h2>${category}</h2>
+        <p>No channels in this category yet.</p>
+      </div>`;
+    return;
+  }
+
+  main.innerHTML = `
+    <div class="home-main-header">
+      <h2>${category}</h2>
+      <p>Recent videos from ${catChannels.length} channel${catChannels.length > 1 ? 's' : ''}</p>
+    </div>
+    <div class="home-feed-loading">
+      <span class="spinner"></span> Fetching latest videos…
+    </div>`;
+
+  if (!accessToken) {
+    main.innerHTML = `
+      <div class="home-main-header">
+        <h2>${category}</h2>
+        <p>Sign in with YouTube to see recent videos from your subscriptions.</p>
+      </div>`;
+    return;
+  }
+
+  try {
+    const videos = await fetchRecentVideos(catChannels);
+    renderFeedVideos(main, category, videos, catChannels.length);
+  } catch (err) {
+    main.innerHTML = `
+      <div class="home-main-header">
+        <h2>${category}</h2>
+        <p style="color:#f87171">Failed to load videos: ${err.message}</p>
+      </div>`;
+  }
+}
+
+async function loadFeedAll() {
+  const main = document.getElementById('homeMain');
+
+  if (!channels.length) {
+    main.innerHTML = `
+      <div class="home-main-header">
+        <h2>All Subscriptions</h2>
+        <p>Sync your YouTube account to see recent videos.</p>
+      </div>`;
+    return;
+  }
+
+  if (!accessToken) {
+    main.innerHTML = `
+      <div class="home-main-header">
+        <h2>All Subscriptions</h2>
+        <p>Sign in with YouTube to see recent videos from your subscriptions.</p>
+      </div>`;
+    return;
+  }
+
+  main.innerHTML = `
+    <div class="home-main-header">
+      <h2>All Subscriptions</h2>
+      <p>Recent videos across all your categories.</p>
+    </div>
+    <div class="home-feed-loading">
+      <span class="spinner"></span> Fetching latest videos…
+    </div>`;
+
+  try {
+    // Load videos for each category that has channels
+    const catsWithChannels = categories.filter(cat => channels.some(ch => chHasCat(ch, cat)));
+    let allHtml = `<div class="home-main-header"><h2>All Subscriptions</h2><p>Recent videos across ${catsWithChannels.length} categories.</p></div>`;
+
+    for (const cat of catsWithChannels.slice(0, 6)) {
+      const catChannels = channels.filter(ch => chHasCat(ch, cat));
+      const videos = await fetchRecentVideos(catChannels.slice(0, 5));
+      if (videos.length) {
+        allHtml += renderFeedSection(cat, videos);
+      }
+    }
+    main.innerHTML = allHtml || `<div class="home-main-header"><h2>All Subscriptions</h2><p>No recent videos found.</p></div>`;
+  } catch (err) {
+    main.innerHTML += `<p style="color:#f87171;padding:1rem">Error: ${err.message}</p>`;
+  }
+}
+
+async function fetchRecentVideos(channelList) {
+  // Fetch recent uploads for a batch of channels using YouTube search API
+  const channelIds = channelList.slice(0, 10).map(ch => ch.channelId).filter(Boolean);
+  if (!channelIds.length) return [];
+
+  const videos = [];
+  // YouTube search API allows one channel at a time, so batch in small groups
+  const batchSize = 5;
+  for (let i = 0; i < Math.min(channelIds.length, batchSize); i++) {
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelIds[i]}&maxResults=3&order=date&type=video&publishedAfter=${getRecentDate()}`;
+      const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      if (data.items) {
+        for (const item of data.items) {
+          videos.push({
+            id: item.id.videoId,
+            title: item.snippet.title,
+            channel: item.snippet.channelTitle,
+            thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
+            publishedAt: item.snippet.publishedAt
+          });
+        }
+      }
+    } catch(e) { /* skip failed channels */ }
+  }
+
+  // Sort by date, newest first
+  videos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  return videos;
+}
+
+function getRecentDate() {
+  const d = new Date();
+  d.setDate(d.getDate() - 7); // Last 7 days
+  return d.toISOString();
+}
+
+function renderFeedVideos(container, title, videos, channelCount) {
+  if (!videos.length) {
+    container.innerHTML = `
+      <div class="home-main-header">
+        <h2>${title}</h2>
+        <p>No recent videos from ${channelCount} channel${channelCount > 1 ? 's' : ''} in the last 7 days.</p>
+      </div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div class="home-main-header">
+      <h2>${title}</h2>
+      <p>${videos.length} recent video${videos.length > 1 ? 's' : ''} from ${channelCount} channel${channelCount > 1 ? 's' : ''}</p>
+    </div>
+    ${renderFeedSection(title, videos)}`;
+}
+
+function renderFeedSection(title, videos) {
+  return `<div class="home-section">
+    <div class="home-section-header">
+      <span class="home-section-title">${title}</span>
+      <span class="home-section-count">${videos.length} video${videos.length > 1 ? 's' : ''}</span>
+    </div>
+    ${videos.map(v => `
+      <div class="home-video-row" onclick="window.open('https://youtube.com/watch?v=${v.id}','_blank')">
+        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+        <div style="flex:1;min-width:0">
+          <div class="home-video-title">${v.title}</div>
+          <div style="font-size:.6875rem;color:var(--text-muted);margin-top:.125rem">${v.channel} · ${timeAgo(v.publishedAt)}</div>
+        </div>
+        <div class="home-video-thumb">
+          ${v.thumbnail ? `<img src="${v.thumbnail}" alt="">` : `<div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div>`}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
 }
 
 function showView(view) {
@@ -5032,6 +5235,7 @@ function showView(view) {
   homeView.classList.remove('active');
   if (onboarding) onboarding.style.display = 'none';
   if (promoBanner) promoBanner.style.display = 'none';
+  document.getElementById('homeSecondaryNav').classList.remove('open');
 
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
