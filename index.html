@@ -1305,6 +1305,13 @@ input[type=range]::-webkit-slider-thumb{
   transition:all .3s;
 }
 .detail-description.expanded{-webkit-line-clamp:unset;display:block;max-height:none}
+.detail-notes{
+  font-size:.8125rem;color:var(--text-secondary);line-height:1.55;
+  margin-bottom:1rem;padding:.75rem 1rem;
+  background:var(--bg-surface);border-left:3px solid var(--accent);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  white-space:pre-wrap;word-break:break-word;
+}
 .btn-expand{
   background:none;border:none;color:var(--accent);
   font:500 .75rem/1 var(--font-body);cursor:pointer;
@@ -2176,6 +2183,8 @@ input[type=range]::-webkit-slider-thumb{
 
       <div id="detailTopics" class="detail-tags"></div>
 
+      <div id="detailNotes" class="detail-notes" style="display:none"></div>
+
       <div class="detail-category-row" id="detailSubcatRow" style="display:none">
         <label>Subcategory</label>
         <select id="detailSubcategorySelect" onchange="updateDetailSubcategory(this.value)"></select>
@@ -2797,6 +2806,8 @@ function saveNotes() {
   save(); renderAll();
   closeModal('notesModal');
   toast('Notes saved');
+  // Reopen the channel detail to show the updated note
+  openDetail(notesChannelId);
 }
 
 /* ═══════════════════════════════════════════
@@ -2853,13 +2864,25 @@ function openDetail(id) {
   }
   topicsEl.innerHTML = topicsHtml;
 
+  // User notes (display under tags)
+  const notesDisplay = document.getElementById('detailNotes');
+  if (ch.notes) {
+    notesDisplay.textContent = ch.notes;
+    notesDisplay.style.display = '';
+  } else {
+    notesDisplay.style.display = 'none';
+  }
+
   // Description
   const descEl = document.getElementById('detailDescription');
   const expandBtn = document.getElementById('detailExpandBtn');
   descEl.textContent = ch.description || 'No description available.';
   descEl.classList.remove('expanded');
-  expandBtn.style.display = ch.description ? '' : 'none';
   expandBtn.textContent = 'Show more';
+  // Show button only if text is actually truncated (check after render)
+  requestAnimationFrame(() => {
+    expandBtn.style.display = (ch.description && descEl.scrollHeight > descEl.clientHeight + 2) ? '' : 'none';
+  });
 
   // Info grid — always show with available data
   const infoItems = [];
