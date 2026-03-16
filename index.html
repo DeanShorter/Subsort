@@ -1167,7 +1167,7 @@ input[type=range]::-webkit-slider-thumb{
 }
 
 /* ─── Home View: Three-Column Layout ─── */
-.home-view{display:none;height:calc(100vh - 56px);overflow:hidden}
+.home-view{display:none;height:100vh;overflow:hidden}
 .home-view.active{display:flex}
 
 /* Primary nav rail */
@@ -1181,6 +1181,21 @@ input[type=range]::-webkit-slider-thumb{
   overflow:hidden;
 }
 .home-nav-primary.expanded{width:180px;align-items:stretch;padding:.75rem .5rem}
+.home-nav-brand{
+  display:flex;align-items:center;gap:.625rem;
+  justify-content:center;padding:.25rem 0 .625rem;
+}
+.home-nav-primary.expanded .home-nav-brand{justify-content:flex-start;padding-left:.75rem}
+.home-nav-brand-logo{
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  background:var(--accent);color:#fff;
+  font-family:var(--font-display);font-weight:800;font-size:.875rem;
+  display:grid;place-items:center;
+}
+.home-nav-brand-text{
+  font-family:var(--font-display);font-weight:700;font-size:1rem;
+  color:var(--text-primary);letter-spacing:-.01em;
+}
 .home-nav-toggle{
   width:40px;height:40px;border-radius:var(--radius-sm);
   background:none;border:none;color:var(--text-muted);cursor:pointer;
@@ -1713,48 +1728,32 @@ input[type=range]::-webkit-slider-thumb{
 </head>
 <body>
 
-<!-- ═══ Top Navigation ═══ -->
-<nav class="topnav">
-  <a class="topnav-brand" href="#">
-    <div class="topnav-logo">S</div>
-    <span class="topnav-title">Subsort</span>
-  </a>
-  <div class="topnav-links">
-    <button id="navHome" onclick="showView('home')">Home</button>
-    <button id="navChannels" onclick="showView('channels')">Channels</button>
-    <button id="navAnalytics" onclick="showView('analytics')">Analytics</button>
-    <button id="navMarketplace" onclick="showView('marketplace')">Marketplace</button>
-    <button id="navPricing" onclick="showView('pricing')">Pricing</button>
-  </div>
+<!-- Hidden elements for auth state (referenced by updateAuthUI) -->
+<div style="display:none">
+  <button id="btnSync"></button>
+  <button id="btnAI"></button>
+  <button id="btnSignIn"></button>
+  <button id="btnSignOut"></button>
+  <button id="navHome"></button>
+  <button id="navChannels"></button>
+  <button id="navAnalytics"></button>
+  <button id="navMarketplace"></button>
+  <button id="navPricing"></button>
+  <div class="topnav-links"></div>
   <div class="nav-search">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
     <input type="text" id="searchInput" placeholder="Search channels…" oninput="renderChannels()">
   </div>
-  <div class="topnav-actions">
-    <button id="btnSync" onclick="syncYouTube()" style="display:none">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2"/></svg>
-      Sync
-    </button>
-    <button class="btn-accent" id="btnAI" onclick="openModal('aiModal')" style="display:none">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10h16V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
-      AI Categorise
-    </button>
-    <button id="btnSignIn" onclick="connectYouTube()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-      Sign in
-    </button>
-    <button id="btnSignOut" onclick="signOut()" style="display:none">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      Sign out
-    </button>
-  </div>
-</nav>
+</div>
 
 <!-- ═══ Home View (Three-Column Layout) ═══ -->
 <div class="home-view" id="homeView">
 
   <!-- Primary Nav Rail -->
   <nav class="home-nav-primary" id="homePrimaryNav">
+    <div class="home-nav-brand">
+      <div class="home-nav-brand-logo">S</div>
+      <span class="home-nav-item-label home-nav-brand-text">Subsort</span>
+    </div>
     <button class="home-nav-toggle" onclick="togglePrimaryNav()" title="Expand menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
@@ -1787,6 +1786,19 @@ input[type=range]::-webkit-slider-thumb{
     <button class="home-nav-item home-nav-ai" data-nav="ai" onclick="openModal('aiModal')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10h16V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
       <span class="home-nav-item-label">AI Categorise</span>
+    </button>
+    <hr class="home-nav-divider">
+    <button class="home-nav-item" id="sideNavSync" data-nav="sync" onclick="syncYouTube()" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+      <span class="home-nav-item-label">Sync</span>
+    </button>
+    <button class="home-nav-item" id="sideNavSignIn" data-nav="signin" onclick="connectYouTube()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      <span class="home-nav-item-label">Sign in</span>
+    </button>
+    <button class="home-nav-item" id="sideNavSignOut" data-nav="signout" onclick="signOut()" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span class="home-nav-item-label">Sign out</span>
     </button>
   </nav>
 
@@ -4174,6 +4186,11 @@ function updateAuthUI() {
   document.getElementById('btnSync').style.display = signedIn ? '' : 'none';
   document.getElementById('btnAI').style.display = hasChannels ? '' : 'none';
 
+  // Side nav auth buttons
+  document.getElementById('sideNavSync').style.display = signedIn ? '' : 'none';
+  document.getElementById('sideNavSignIn').style.display = signedIn ? 'none' : '';
+  document.getElementById('sideNavSignOut').style.display = signedIn ? '' : 'none';
+
   // Hide nav links and search until user has channels
   document.querySelector('.topnav-links').style.display = hasChannels ? '' : 'none';
   document.querySelector('.nav-search').style.display = hasChannels ? '' : 'none';
@@ -5151,6 +5168,7 @@ function renderAll() {
   updateAuthUI();
 }
 renderAll();
+showView('home');
 </script>
 </body>
 </html>
