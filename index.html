@@ -1297,6 +1297,35 @@ input[type=range]::-webkit-slider-thumb{
 }
 .home-nav-secondary-subitem svg{width:12px;height:12px}
 
+/* Feed category dropdown groups */
+.feed-cat-group{margin-bottom:.125rem}
+.feed-cat-header{display:flex;align-items:center}
+.feed-cat-header .feed-cat-btn{flex:1;min-width:0}
+.feed-cat-header .feed-cat-btn span,.feed-cat-header .feed-cat-btn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed-cat-toggle{
+  width:24px;height:24px;flex-shrink:0;
+  display:grid;place-items:center;
+  background:none;border:none;color:var(--text-muted);
+  cursor:pointer;border-radius:4px;transition:all .1s;
+}
+.feed-cat-toggle:hover{color:var(--text-primary);background:var(--bg-surface)}
+.feed-cat-toggle svg{width:14px;height:14px;transition:transform .2s}
+.feed-cat-group.open .feed-cat-toggle svg{transform:rotate(180deg)}
+.feed-cat-add svg{width:12px;height:12px}
+.feed-cat-subs{
+  display:none;padding-left:.25rem;
+  border-left:2px solid var(--border-subtle);margin-left:1.25rem;margin-bottom:.25rem;
+}
+.feed-cat-group.open .feed-cat-subs{display:block}
+.feed-cat-add-sub{
+  display:flex;align-items:center;gap:.375rem;
+  width:100%;padding:.3rem .75rem;
+  background:none;border:none;color:var(--text-muted);
+  cursor:pointer;font:400 .6875rem/1.3 var(--font-body);
+  transition:all .1s;border-radius:4px;
+}
+.feed-cat-add-sub:hover{color:var(--accent);background:var(--bg-surface)}
+
 /* Secondary nav: action buttons */
 .sec-nav-actions{display:flex;flex-direction:column;gap:.375rem;padding:0 .25rem}
 .sec-nav-action-btn{
@@ -3016,12 +3045,17 @@ function setSubcategory(sub) {
 }
 
 function addSubcategory() {
+  addSubcategoryFor('');
+}
+
+function addSubcategoryFor(preselectedCat) {
   // Populate the parent category dropdown
   const sel = document.getElementById('subcatParentSelect');
+  const defaultCat = preselectedCat || (activeCategory !== 'all' && activeCategory !== '__uncat__' ? activeCategory : '');
   sel.innerHTML = '<option value="">Select a category…</option>' +
     categories.map(c => {
       const subCount = (subcategories[c] || []).length;
-      return `<option value="${c}" ${c === activeCategory && activeCategory !== 'all' && activeCategory !== '__uncat__' ? 'selected' : ''}>${c}${subCount ? ' (' + subCount + ' subs)' : ''}</option>`;
+      return `<option value="${c}" ${c === defaultCat ? 'selected' : ''}>${c}${subCount ? ' (' + subCount + ' subs)' : ''}</option>`;
     }).join('');
   
   // Clear previous state
@@ -5105,35 +5139,58 @@ function setHomeNav(key) {
 
   // Standard nav builder
   let items = [...nav.items];
-  if (key === 'feeds' && categories.length) {
-    const folderIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>';
-    const subIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
-    for (const c of categories) {
-      items.push({ label: c, icon: folderIcon, feedCategory: c });
-      const subs = subcategories[c] || [];
-      for (const sub of subs) {
-        items.push({ label: sub, icon: subIcon, feedCategory: c, feedSubcategory: sub, indent: true });
-      }
-    }
-  }
 
-  content.innerHTML = `<div class="home-nav-secondary-title">${nav.title}</div>` +
+  // Build the standard items first (All Subscriptions, divider, etc.)
+  let html = `<div class="home-nav-secondary-title">${nav.title}</div>` +
     items.map(item => {
       if (item.divider) return '<hr class="home-nav-secondary-divider">';
-      let onclick = '';
-      if (item.feedSubcategory) {
-        onclick = `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}','${item.feedSubcategory.replace(/'/g,"\\'")}')`;
-      } else if (item.feedCategory) {
-        onclick = `loadFeedCategory('${item.feedCategory.replace(/'/g,"\\'")}')`;
-      } else if (item.label === 'All Subscriptions') {
-        onclick = `loadFeedAll()`;
-      }
-      const indentClass = item.indent ? ' home-nav-secondary-subitem' : '';
-      return `<button class="home-nav-secondary-item${indentClass} ${item.active?'active':''}" onclick="this.parentElement.querySelectorAll('.home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');${onclick}">
+      const onclick = item.label === 'All Subscriptions' ? `loadFeedAll()` : '';
+      return `<button class="home-nav-secondary-item ${item.active?'active':''}" onclick="document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');${onclick}">
         ${item.icon}
         ${item.label}
       </button>`;
     }).join('');
+
+  // Add category dropdowns for feeds
+  if (key === 'feeds' && categories.length) {
+    html += '<hr class="home-nav-secondary-divider">';
+    html += '<div class="home-nav-secondary-title">Categories</div>';
+
+    for (const c of categories) {
+      const subs = subcategories[c] || [];
+      const escapedCat = c.replace(/'/g, "\\'");
+      const hasSubcats = subs.length > 0;
+
+      html += `<div class="feed-cat-group">
+        <div class="feed-cat-header">
+          <button class="home-nav-secondary-item feed-cat-btn" onclick="document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');loadFeedCategory('${escapedCat}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>
+            ${c}
+          </button>
+          ${hasSubcats ? `<button class="feed-cat-toggle" onclick="this.closest('.feed-cat-group').classList.toggle('open')" title="Show subcategories">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>` : `<button class="feed-cat-toggle feed-cat-add" onclick="event.stopPropagation();addSubcategoryFor('${escapedCat}')" title="Add subcategory">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>`}
+        </div>
+        ${hasSubcats ? `<div class="feed-cat-subs">
+          ${subs.map(sub => {
+            const escapedSub = sub.replace(/'/g, "\\'");
+            return `<button class="home-nav-secondary-item home-nav-secondary-subitem" onclick="document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');loadFeedCategory('${escapedCat}','${escapedSub}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              ${sub}
+            </button>`;
+          }).join('')}
+          <button class="feed-cat-add-sub" onclick="addSubcategoryFor('${escapedCat}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add subcategory
+          </button>
+        </div>` : ''}
+      </div>`;
+    }
+  }
+
+  content.innerHTML = html;
   sec.classList.add('open');
 
   // Update personality card
