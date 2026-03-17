@@ -10,7 +10,8 @@ export async function generateStaticParams() {
 
 // Dynamic metadata for each post (SEO)
 export async function generateMetadata({ params }) {
-  const post = await getPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
   return {
     title: post.title,
     description: post.excerpt || post.title,
@@ -25,7 +26,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function BlogPost({ params }) {
-  const post = await getPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
 
   // JSON-LD structured data for rich search results
   const jsonLd = {
