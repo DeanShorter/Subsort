@@ -1286,7 +1286,7 @@ input[type=range]::-webkit-slider-thumb{
   width:100%;padding:.5rem .75rem;border-radius:var(--radius-sm);
   background:none;border:none;color:var(--text-secondary);cursor:pointer;
   font:400 .8125rem/1.3 var(--font-body);transition:all .12s;
-  text-align:left;
+  text-align:left;white-space:normal;word-wrap:break-word;
 }
 .home-nav-secondary-item:hover{color:var(--text-primary);background:var(--bg-surface)}
 .home-nav-secondary-item.active{color:var(--accent);background:var(--accent-soft);font-weight:500}
@@ -1298,23 +1298,43 @@ input[type=range]::-webkit-slider-thumb{
 .home-nav-secondary-subitem svg{width:12px;height:12px}
 
 /* Feed category dropdown groups */
-.feed-cat-group{margin-bottom:.125rem}
-.feed-cat-header{display:flex;align-items:center}
-.feed-cat-header .feed-cat-btn{flex:1;min-width:0}
-.feed-cat-header .feed-cat-btn span,.feed-cat-header .feed-cat-btn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed-cat-group{margin-bottom:.125rem;position:relative}
+.feed-cat-header{
+  display:flex;align-items:center;
+  border-radius:var(--radius-sm);
+  transition:all .12s;cursor:pointer;
+}
+.feed-cat-header:hover{background:var(--bg-surface)}
+.feed-cat-group.active > .feed-cat-header{
+  background:var(--accent-soft);
+}
+.feed-cat-group.active > .feed-cat-header::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--accent);border-radius:3px;
+}
+.feed-cat-header .feed-cat-btn{
+  flex:1;min-width:0;
+  padding:.5rem .75rem;
+  background:none;border:none;color:var(--text-secondary);cursor:pointer;
+  font:400 .8125rem/1.3 var(--font-body);text-align:left;
+  white-space:normal;word-wrap:break-word;
+}
+.feed-cat-group.active .feed-cat-btn{color:var(--accent);font-weight:500}
+.feed-cat-header:hover .feed-cat-btn{color:var(--text-primary)}
 .feed-cat-toggle{
-  width:24px;height:24px;flex-shrink:0;
+  width:28px;height:28px;flex-shrink:0;
   display:grid;place-items:center;
   background:none;border:none;color:var(--text-muted);
   cursor:pointer;border-radius:4px;transition:all .1s;
+  margin-right:.25rem;
 }
-.feed-cat-toggle:hover{color:var(--text-primary);background:var(--bg-surface)}
+.feed-cat-toggle:hover{color:var(--text-primary);background:var(--bg-surface-raised)}
 .feed-cat-toggle svg{width:14px;height:14px;transition:transform .2s}
 .feed-cat-group.open .feed-cat-toggle svg{transform:rotate(180deg)}
 .feed-cat-add svg{width:12px;height:12px}
 .feed-cat-subs{
   display:none;padding-left:.25rem;
-  border-left:2px solid var(--border-subtle);margin-left:1.25rem;margin-bottom:.25rem;
+  border-left:2px solid var(--border-subtle);margin-left:1rem;margin-bottom:.25rem;
 }
 .feed-cat-group.open .feed-cat-subs{display:block}
 .feed-cat-add-sub{
@@ -5162,26 +5182,24 @@ function setHomeNav(key) {
       const hasSubcats = subs.length > 0;
 
       html += `<div class="feed-cat-group">
-        <div class="feed-cat-header">
-          <button class="home-nav-secondary-item feed-cat-btn" onclick="document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');loadFeedCategory('${escapedCat}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>
+        <div class="feed-cat-header" onclick="document.querySelectorAll('.feed-cat-group').forEach(g=>g.classList.remove('active'));this.closest('.feed-cat-group').classList.add('active');this.closest('.feed-cat-group').classList.toggle('open');document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));loadFeedCategory('${escapedCat}')">
+          <button class="feed-cat-btn">
             ${c}
           </button>
-          ${hasSubcats ? `<button class="feed-cat-toggle" onclick="this.closest('.feed-cat-group').classList.toggle('open')" title="Show subcategories">
+          ${hasSubcats ? `<span class="feed-cat-toggle" onclick="event.stopPropagation();this.closest('.feed-cat-group').classList.toggle('open')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>` : `<button class="feed-cat-toggle feed-cat-add" onclick="event.stopPropagation();addSubcategoryFor('${escapedCat}')" title="Add subcategory">
+          </span>` : `<span class="feed-cat-toggle feed-cat-add" onclick="event.stopPropagation();addSubcategoryFor('${escapedCat}')" title="Add subcategory">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>`}
+          </span>`}
         </div>
         ${hasSubcats ? `<div class="feed-cat-subs">
           ${subs.map(sub => {
             const escapedSub = sub.replace(/'/g, "\\'");
-            return `<button class="home-nav-secondary-item home-nav-secondary-subitem" onclick="document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');loadFeedCategory('${escapedCat}','${escapedSub}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            return `<button class="home-nav-secondary-item home-nav-secondary-subitem" onclick="event.stopPropagation();document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');loadFeedCategory('${escapedCat}','${escapedSub}')">
               ${sub}
             </button>`;
           }).join('')}
-          <button class="feed-cat-add-sub" onclick="addSubcategoryFor('${escapedCat}')">
+          <button class="feed-cat-add-sub" onclick="event.stopPropagation();addSubcategoryFor('${escapedCat}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add subcategory
           </button>
