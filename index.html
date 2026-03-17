@@ -126,35 +126,42 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .categories-track::-webkit-scrollbar{display:none}
 .category-chip{
   flex:0 0 auto;scroll-snap-align:start;
-  display:flex;flex-direction:column;align-items:center;gap:.5rem;
-  width:100px;padding:1rem .5rem;
-  background:var(--bg-card);border:1px solid var(--border-subtle);
-  border-radius:var(--radius-md);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;
+  width:110px;cursor:pointer;
   transition:all .25s var(--transition);
-  text-align:center;
+  text-align:center;position:relative;
 }
-.category-chip:hover{background:var(--bg-card-hover);border-color:#444;transform:translateY(-2px)}
+.category-chip:hover{transform:translateY(-4px)}
 .categories-track.dragging .category-chip{pointer-events:none;transform:none}
-.category-chip.active{border-color:var(--accent);background:var(--accent-soft)}
-.category-chip .chip-icon{
-  width:36px;height:36px;
+.chip-tile{
+  width:100%;aspect-ratio:1;border-radius:var(--radius-md);
   display:grid;place-items:center;
-  border-radius:10px;
-  background:var(--bg-surface-raised);
+  position:relative;overflow:hidden;
   transition:all .25s var(--transition);
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
-.category-chip.active .chip-icon{background:var(--accent);color:#fff}
-.category-chip .chip-icon svg{width:18px;height:18px;color:var(--text-secondary)}
-.category-chip.active .chip-icon svg{color:#fff}
-.category-chip span{font-size:.6875rem;font-weight:500;color:var(--text-secondary);line-height:1.2;transition:color .2s}
-.category-chip.active span{color:var(--text-primary)}
-.category-chip .chip-count{
-  font-size:.625rem;font-weight:600;color:var(--text-muted);
-  background:var(--bg-surface);
-  padding:.125rem .375rem;border-radius:10px;
-  transition:all .2s;
+.chip-tile svg{width:32px;height:32px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));transition:transform .2s}
+.category-chip:hover .chip-tile svg{transform:scale(1.1)}
+.chip-tile-count{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  display:grid;place-items:center;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(2px);
+  font:700 .875rem/1 var(--font-display);color:#fff;
+  letter-spacing:.02em;
+  opacity:0;transition:opacity .2s;border-radius:var(--radius-md);
 }
-.category-chip.active .chip-count{background:var(--accent);color:#fff}
+.category-chip:hover .chip-tile-count{opacity:1}
+.category-chip.active .chip-tile{
+  box-shadow:0 4px 16px rgba(0,0,0,.25),0 0 0 2px #fff;
+  transform:scale(1.02);
+}
+.chip-label{
+  font-size:.6875rem;font-weight:500;color:var(--text-secondary);
+  line-height:1.2;margin-top:.5rem;
+  transition:color .2s;
+}
+.category-chip.active .chip-label{color:var(--text-primary);font-weight:600}
+.category-chip .chip-count{display:none}
 .btn-add-category{
   display:inline-flex;align-items:center;gap:.375rem;
   background:none;border:1px dashed var(--border-subtle);
@@ -3077,13 +3084,26 @@ function renderCategories() {
     ...categories.map(c => ({name:c, key:c, count: channels.filter(ch => chHasCat(ch, c)).length}))
   ];
 
-  track.innerHTML = cats.map(c => `
+  // Colour palette for tiles
+  const TILE_COLOURS = [
+    '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
+    '#6aadcf','#7b8fd4','#a67dc8','#d47ba8','#c2957a',
+    '#8bb8a0','#a0b8d4','#d4a0b8','#b8d4a0','#d4b8a0',
+    '#7caae8','#c87c9a','#9ac87c','#c8a87c','#7cc8c8'
+  ];
+
+  track.innerHTML = cats.map((c, i) => {
+    const colour = c.key === 'all' ? '#555' : c.key === '__uncat__' ? '#666' : TILE_COLOURS[i % TILE_COLOURS.length];
+    const icon = c.key === 'all' ? CATEGORY_ICONS.all : c.key === '__uncat__' ? CATEGORY_ICONS.default : getIcon(c.name);
+    return `
     <div class="category-chip ${activeCategory === c.key ? 'active' : ''}" onclick="setCategory('${c.key.replace(/'/g,"\\'")}')">
-      <div class="chip-icon">${c.key === 'all' ? CATEGORY_ICONS.all : c.key === '__uncat__' ? CATEGORY_ICONS.default : getIcon(c.name)}</div>
-      <span>${c.name}</span>
-      <span class="chip-count">${c.count}</span>
-    </div>
-  `).join('');
+      <div class="chip-tile" style="background:${colour}">
+        ${icon}
+        <div class="chip-tile-count">${c.count} ${c.count === 1 ? 'channel' : 'channels'}</div>
+      </div>
+      <span class="chip-label">${c.name}</span>
+    </div>`;
+  }).join('');
 
   renderSubcategories();
 }
