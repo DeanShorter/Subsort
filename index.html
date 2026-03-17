@@ -127,40 +127,37 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .category-chip{
   flex:0 0 auto;scroll-snap-align:start;
   display:flex;flex-direction:column;align-items:center;
-  width:110px;cursor:pointer;
+  width:120px;cursor:pointer;
   transition:all .25s var(--transition);
   text-align:center;position:relative;
 }
 .category-chip:hover{transform:translateY(-4px)}
 .categories-track.dragging .category-chip{pointer-events:none;transform:none}
 .chip-tile{
-  width:100%;aspect-ratio:1;border-radius:var(--radius-md);
-  display:grid;place-items:center;
+  width:100%;aspect-ratio:4/3;border-radius:var(--radius-md);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.375rem;
   position:relative;overflow:hidden;
   transition:all .25s var(--transition);
   box-shadow:0 2px 8px rgba(0,0,0,.15);
+  padding:.5rem;
 }
-.chip-tile svg{width:32px;height:32px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));transition:transform .2s}
+.chip-tile svg{width:28px;height:28px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));transition:transform .2s;flex-shrink:0}
 .category-chip:hover .chip-tile svg{transform:scale(1.1)}
-.chip-tile-count{
-  position:absolute;top:0;left:0;right:0;bottom:0;
-  display:grid;place-items:center;
-  background:rgba(0,0,0,.45);backdrop-filter:blur(2px);
-  font:700 .875rem/1 var(--font-display);color:#fff;
-  letter-spacing:.02em;
-  opacity:0;transition:opacity .2s;border-radius:var(--radius-md);
+.chip-tile-name{
+  font-size:.6875rem;font-weight:600;color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.2);
+  line-height:1.2;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.category-chip:hover .chip-tile-count{opacity:1}
+.chip-tile-count{
+  font-size:.5625rem;font-weight:500;color:rgba(255,255,255,.75);
+  text-shadow:0 1px 2px rgba(0,0,0,.15);
+}
 .category-chip.active .chip-tile{
-  box-shadow:0 4px 16px rgba(0,0,0,.25),0 0 0 2px #fff;
+  box-shadow:0 4px 16px rgba(0,0,0,.25),0 0 0 2.5px #fff;
   transform:scale(1.02);
 }
-.chip-label{
-  font-size:.6875rem;font-weight:500;color:var(--text-secondary);
-  line-height:1.2;margin-top:.5rem;
-  transition:color .2s;
-}
-.category-chip.active .chip-label{color:var(--text-primary);font-weight:600}
+.chip-label{display:none}
 .category-chip .chip-count{display:none}
 .btn-add-category{
   display:inline-flex;align-items:center;gap:.375rem;
@@ -2635,7 +2632,10 @@ input[type=range]::-webkit-slider-thumb{
   </main>
 </div>
 
-<!-- ═══ Landing Page (shown when no channels) ═══ -->
+  </div><!-- end .app-content -->
+</div><!-- end .app-shell -->
+
+<!-- ═══ Landing Page (shown when no channels / unauthenticated) ═══ -->
 <div class="landing-page" id="onboardingEmpty" style="display:none">
       <div class="landing-bg">
         <div class="landing-stars"></div>
@@ -2695,9 +2695,6 @@ input[type=range]::-webkit-slider-thumb{
         </div>
       </div>
 </div>
-
-  </div><!-- end .app-content -->
-</div><!-- end .app-shell -->
 
 <!-- ═══ Hidden File Inputs ═══ -->
 <input type="file" class="file-input" id="csvFileInput" accept=".csv" onchange="importCSV(this)">
@@ -3092,6 +3089,14 @@ function renderCategories() {
     '#7caae8','#c87c9a','#9ac87c','#c8a87c','#7cc8c8'
   ];
 
+  // Store colour mapping for category tags on cards
+  window._categoryColours = {};
+  cats.forEach((c, i) => {
+    if (c.key !== 'all' && c.key !== '__uncat__') {
+      window._categoryColours[c.name] = TILE_COLOURS[i % TILE_COLOURS.length];
+    }
+  });
+
   track.innerHTML = cats.map((c, i) => {
     const colour = c.key === 'all' ? '#555' : c.key === '__uncat__' ? '#666' : TILE_COLOURS[i % TILE_COLOURS.length];
     const icon = c.key === 'all' ? CATEGORY_ICONS.all : c.key === '__uncat__' ? CATEGORY_ICONS.default : getIcon(c.name);
@@ -3099,9 +3104,9 @@ function renderCategories() {
     <div class="category-chip ${activeCategory === c.key ? 'active' : ''}" onclick="setCategory('${c.key.replace(/'/g,"\\'")}')">
       <div class="chip-tile" style="background:${colour}">
         ${icon}
-        <div class="chip-tile-count">${c.count} ${c.count === 1 ? 'channel' : 'channels'}</div>
+        <span class="chip-tile-name">${c.name}</span>
+        <span class="chip-tile-count">(${c.count})</span>
       </div>
-      <span class="chip-label">${c.name}</span>
     </div>`;
   }).join('');
 
@@ -3520,7 +3525,10 @@ function renderChannels() {
           ${ch.subscribedAt ? `<span>Subscribed ${new Date(ch.subscribedAt).toLocaleDateString()}</span>` : ''}
         </div>
         <div style="display:flex;gap:.375rem;flex-wrap:wrap;align-items:center">
-          ${chCats(ch).map(c => `<div class="card-category-tag">${c}</div>`).join('')}
+          ${chCats(ch).map(c => {
+            const col = (window._categoryColours && window._categoryColours[c]) || '#e63946';
+            return `<div class="card-category-tag" style="background:${col}22;color:${col}">${c}</div>`;
+          }).join('')}
           ${ch.subcategory ? `<div class="card-subcat-tag">${ch.subcategory}</div>` : ''}
         </div>
         <div class="card-actions">
@@ -3745,7 +3753,10 @@ function openDetail(id) {
 
   // Tags (display only — editing is via the Edit Category button)
   const topicsEl = document.getElementById('detailTopics');
-  let topicsHtml = currentCats.map(c => `<span class="detail-tag">${c}</span>`).join('');
+  let topicsHtml = currentCats.map(c => {
+    const col = (window._categoryColours && window._categoryColours[c]) || '#e63946';
+    return `<span class="detail-tag" style="background:${col}22;color:${col}">${c}</span>`;
+  }).join('');
   if (ch.subcategory) topicsHtml += `<span class="detail-tag" style="background:rgba(59,130,246,.12);color:#60a5fa">${ch.subcategory}</span>`;
   if (!topicsHtml) {
     topicsHtml = '<span style="font-size:.75rem;color:var(--text-muted)">No category assigned</span>';
@@ -4471,7 +4482,9 @@ function signOut() {
   localStorage.removeItem('subsort_yt_token');
   save();
   renderAll();
-  showView('channels');
+  // Hide app shell, show landing page
+  document.getElementById('appShell').style.display = 'none';
+  document.getElementById('onboardingEmpty').style.display = 'flex';
   toast('Signed out');
 }
 
@@ -4673,9 +4686,13 @@ async function fetchAllSubscriptions() {
     save();
     renderAll();
 
-    // After a moment, switch to channels view
+    // After a moment, show app shell and switch to home view
     setTimeout(() => {
-      if (channels.length) showView('channels');
+      if (channels.length) {
+        document.getElementById('appShell').style.display = '';
+        document.getElementById('onboardingEmpty').style.display = 'none';
+        showView('home');
+      }
       resetImportPage();
     }, 1200);
 
@@ -5787,7 +5804,21 @@ function renderAll() {
   updateAuthUI();
 }
 renderAll();
-showView('home');
+// Show landing page for unauthenticated users, home for authenticated
+if (accessToken && channels.length) {
+  document.getElementById('appShell').style.display = '';
+  document.getElementById('onboardingEmpty').style.display = 'none';
+  showView('home');
+} else if (channels.length) {
+  // Has cached channels but no token — show home (they can browse cached data)
+  document.getElementById('appShell').style.display = '';
+  document.getElementById('onboardingEmpty').style.display = 'none';
+  showView('home');
+} else {
+  // No channels, no auth — show landing page full screen
+  document.getElementById('appShell').style.display = 'none';
+  document.getElementById('onboardingEmpty').style.display = 'flex';
+}
 </script>
 </body>
 </html>
