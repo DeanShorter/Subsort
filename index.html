@@ -116,7 +116,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .categories-track{
   display:flex;gap:.75rem;
   overflow-x:auto;scroll-snap-type:x mandatory;
-  padding-bottom:1rem;
+  padding:.5rem 0 1rem;
   scrollbar-width:none;
   cursor:grab;
   -webkit-overflow-scrolling:touch;
@@ -134,7 +134,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .category-chip:hover{transform:translateY(-4px)}
 .categories-track.dragging .category-chip{pointer-events:none;transform:none}
 .chip-tile{
-  width:100%;aspect-ratio:4/3;border-radius:var(--radius-md);
+  width:100%;aspect-ratio:4/3;border-radius:var(--radius-sm);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.375rem;
   position:relative;overflow:hidden;
   transition:all .25s var(--transition);
