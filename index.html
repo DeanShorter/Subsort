@@ -5323,25 +5323,44 @@ async function loadFeedAll() {
 }
 
 async function fetchRecentVideos(channelList) {
-  // Fetch recent uploads for a batch of channels using YouTube search API
-  const channelIds = channelList.slice(0, 10).map(ch => ch.channelId).filter(Boolean);
-  if (!channelIds.length) return [];
-
+  // Fetch recent uploads using playlistItems.list (1 unit each) instead of search.list (100 units each)
+  const recentCutoff = new Date(getRecentDate()).getTime();
   const videos = [];
-  // YouTube search API allows one channel at a time, so batch in small groups
-  const batchSize = 5;
-  for (let i = 0; i < Math.min(channelIds.length, batchSize); i++) {
+
+  // Get channels with upload playlist IDs, limit to 10
+  const withPlaylists = channelList
+    .filter(ch => ch.uploadsPlaylistId && ch.channelId)
+    .slice(0, 10);
+
+  if (!withPlaylists.length) {
+    // Fallback: channels without uploadsPlaylistId — try to construct it
+    // YouTube upload playlist ID = 'UU' + channelId (minus the 'UC' prefix)
+    const fallback = channelList
+      .filter(ch => ch.channelId && ch.channelId.startsWith('UC'))
+      .slice(0, 10);
+    for (const ch of fallback) {
+      ch._uploadsPl = 'UU' + ch.channelId.substring(2);
+    }
+    withPlaylists.push(...fallback.filter(ch => ch._uploadsPl));
+  }
+
+  for (const ch of withPlaylists) {
+    const plId = ch.uploadsPlaylistId || ch._uploadsPl;
+    if (!plId) continue;
     try {
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelIds[i]}&maxResults=3&order=date&type=video&publishedAfter=${getRecentDate()}`;
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${plId}&maxResults=5`;
       const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
       if (!resp.ok) continue;
       const data = await resp.json();
       if (data.items) {
         for (const item of data.items) {
+          const pubDate = new Date(item.snippet.publishedAt).getTime();
+          // Only include videos from the last 7 days
+          if (pubDate < recentCutoff) continue;
           videos.push({
-            id: item.id.videoId,
+            id: item.snippet.resourceId?.videoId || '',
             title: item.snippet.title,
-            channel: item.snippet.channelTitle,
+            channel: item.snippet.channelTitle || ch.name,
             thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
             publishedAt: item.snippet.publishedAt
           });
