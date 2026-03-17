@@ -55,7 +55,7 @@ export default async function BlogPost({ params }) {
         </Link>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
-          <Link href="/app" className={styles.navCta}>Open App</Link>
+          <Link href="/dashboard" className={styles.navCta}>Open App</Link>
         </div>
       </nav>
 
@@ -82,7 +82,7 @@ export default async function BlogPost({ params }) {
           <div className={styles.cta}>
             <h3>Ready to organise your YouTube?</h3>
             <p>Subsort is free, runs in your browser, and doesn't store your data on any server.</p>
-            <Link href="/app" className={styles.ctaBtn}>Launch Subsort</Link>
+            <Link href="/dashboard" className={styles.ctaBtn}>Launch Subsort</Link>
           </div>
         </footer>
       </article>

@@ -3,8 +3,8 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/app/:path*',
-        destination: '/app/index.html',
+        source: '/dashboard/:path*',
+        destination: '/dashboard/index.html',
       },
     ];
   },

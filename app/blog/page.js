@@ -19,7 +19,7 @@ export default function BlogIndex() {
         </Link>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
-          <Link href="/app" className={styles.navCta}>Open App</Link>
+          <Link href="/dashboard" className={styles.navCta}>Open App</Link>
         </div>
       </nav>
 

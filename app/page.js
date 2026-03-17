@@ -12,7 +12,7 @@ export default function HomePage() {
         </div>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
-          <Link href="/app" className={styles.navCta}>Open App</Link>
+          <Link href="/dashboard" className={styles.navCta}>Open App</Link>
         </div>
       </nav>
 
@@ -32,7 +32,7 @@ export default function HomePage() {
             All in your browser — nothing stored on our servers.
           </p>
           <div className={styles.heroCtas}>
-            <Link href="/app" className={styles.btnPrimary}>
+            <Link href="/dashboard" className={styles.btnPrimary}>
               Get Started — Free
             </Link>
             <Link href="/blog" className={styles.btnSecondary}>
@@ -67,7 +67,7 @@ export default function HomePage() {
       <section className={styles.ctaSection}>
         <h2>Ready to organise your YouTube?</h2>
         <p>Free forever. No account required. Your data stays in your browser.</p>
-        <Link href="/app" className={styles.btnPrimary}>
+        <Link href="/dashboard" className={styles.btnPrimary}>
           Launch Subsort
         </Link>
       </section>
@@ -81,7 +81,7 @@ export default function HomePage() {
           </div>
           <div className={styles.footerLinks}>
             <Link href="/blog">Blog</Link>
-            <Link href="/app">App</Link>
+            <Link href="/dashboard">App</Link>
           </div>
           <p className={styles.footerCopy}>© {new Date().getFullYear()} Subsort. All rights reserved.</p>
         </div>

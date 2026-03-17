@@ -4,7 +4,7 @@ export default function robots() {
       {
         userAgent: '*',
         allow: '/',
-        disallow: '/app/',  // Don't index the SPA
+        disallow: '/dashboard/',  // Don't index the SPA
       },
     ],
     sitemap: 'https://subsort.vercel.app/sitemap.xml',
