@@ -12,13 +12,13 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-primary:#0d0d0d;
-  --bg-secondary:#161616;
-  --bg-card:#1a1a1a;
-  --bg-card-hover:#222;
-  --bg-surface:#1e1e1e;
-  --bg-surface-raised:#252525;
-  --border-subtle:#2a2a2a;
+  --bg-primary:#0a0a14;
+  --bg-secondary:#0c0c18;
+  --bg-card:#12121e;
+  --bg-card-hover:#18182a;
+  --bg-surface:#141422;
+  --bg-surface-raised:#1a1a2e;
+  --border-subtle:#1e1e32;
   --border-active:#e63946;
   --text-primary:#f0f0f0;
   --text-secondary:#999;
@@ -1170,6 +1170,48 @@ input[type=range]::-webkit-slider-thumb{
   .pricing-hero h2{font-size:1.75rem}
 }
 
+/* ─── Settings Page ─── */
+.settings-page{display:none;padding:2.5rem;max-width:700px;margin:0 auto}
+.settings-page.active{display:block}
+.settings-heading{font-family:var(--font-display);font-size:1.75rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.375rem}
+.settings-subtitle{font-size:.875rem;color:var(--text-secondary);margin-bottom:2rem}
+.settings-section{margin-bottom:2rem}
+.settings-section-title{
+  font-size:.6875rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text-muted);margin-bottom:.625rem;
+}
+.settings-card{
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);overflow:hidden;
+}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1rem 1.25rem;
+  border-bottom:1px solid var(--border-subtle);
+}
+.settings-row:last-child{border-bottom:none}
+.settings-row-info{flex:1;min-width:0}
+.settings-row-label{font-size:.8125rem;font-weight:500;color:var(--text-primary);margin-bottom:.125rem}
+.settings-row-desc{font-size:.75rem;color:var(--text-muted);line-height:1.4}
+.settings-btn{
+  padding:.4rem .875rem;border-radius:var(--radius-sm);
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  color:var(--text-secondary);font:500 .75rem/1 var(--font-body);
+  cursor:pointer;transition:all .12s;white-space:nowrap;
+}
+.settings-btn:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
+.settings-btn-accent{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.2);color:#60a5fa}
+.settings-btn-accent:hover{background:rgba(59,130,246,.2);border-color:#60a5fa}
+.settings-btn-danger{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.15);color:#f87171}
+.settings-btn-danger:hover{background:rgba(239,68,68,.15);border-color:#f87171}
+.settings-select{
+  padding:.4rem .625rem;border-radius:var(--radius-sm);
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  color:var(--text-secondary);font:500 .75rem/1 var(--font-body);
+  cursor:pointer;outline:none;
+}
+.settings-select:disabled{opacity:.5;cursor:not-allowed}
+
 /* ─── App Shell ─── */
 .app-shell{display:flex;height:100vh;overflow:hidden}
 .app-content{flex:1;min-width:0;overflow-y:auto;display:flex;flex-direction:column}
@@ -1912,7 +1954,7 @@ input[type=range]::-webkit-slider-thumb{
     <!-- Free features -->
     <button class="home-nav-item active" data-nav="home" onclick="showView('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span class="home-nav-item-label">Home</span>
+      <span class="home-nav-item-label">Dashboard</span>
     </button>
     <button class="home-nav-item" data-nav="feeds" onclick="showView('home');setHomeNav('feeds')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
@@ -1942,6 +1984,10 @@ input[type=range]::-webkit-slider-thumb{
     <!-- Utility (bottom) -->
     <div style="flex:1"></div>
     <hr class="home-nav-divider">
+    <button class="home-nav-item" data-nav="settings" onclick="showView('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="home-nav-item-label">Settings</span>
+    </button>
     <button class="home-nav-item" id="sideNavSync" data-nav="sync" onclick="syncYouTube()" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2"/></svg>
       <span class="home-nav-item-label">Sync</span>
@@ -1970,7 +2016,7 @@ input[type=range]::-webkit-slider-thumb{
   <!-- Main Content -->
   <main class="home-main" id="homeMain">
     <div class="home-main-header">
-      <h2>Today's Videos</h2>
+      <h2>Dashboard</h2>
       <p>Recent uploads from your subscriptions, sorted by category.</p>
     </div>
 
@@ -2435,6 +2481,127 @@ input[type=range]::-webkit-slider-thumb{
 
   </div>
 </div>
+
+<!-- ═══ Settings Page ═══ -->
+<div class="settings-page" id="settingsPage">
+  <div class="settings-inner">
+    <h2 class="settings-heading">Settings</h2>
+    <p class="settings-subtitle">Manage your account, preferences, and data.</p>
+
+    <div class="settings-section">
+      <h3 class="settings-section-title">Account</h3>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">YouTube Account</div>
+            <div class="settings-row-desc">Connected Google account for syncing subscriptions.</div>
+          </div>
+          <button class="settings-btn" onclick="toast('Account management coming soon')">Manage</button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Subscription Plan</div>
+            <div class="settings-row-desc">You're on the <strong>Free</strong> plan.</div>
+          </div>
+          <button class="settings-btn settings-btn-accent" onclick="showView('marketplace')">Upgrade</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3 class="settings-section-title">Preferences</h3>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Theme</div>
+            <div class="settings-row-desc">Choose your preferred colour scheme.</div>
+          </div>
+          <select class="settings-select" disabled>
+            <option>Dark</option>
+            <option>Light</option>
+            <option>System</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Default View</div>
+            <div class="settings-row-desc">Which page to show when you open Subsort.</div>
+          </div>
+          <select class="settings-select" disabled>
+            <option>Dashboard</option>
+            <option>Channels</option>
+            <option>Feeds</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Feed Refresh Interval</div>
+            <div class="settings-row-desc">How often to check for new videos in Feeds.</div>
+          </div>
+          <select class="settings-select" disabled>
+            <option>2 hours</option>
+            <option>4 hours</option>
+            <option>12 hours</option>
+            <option>Manual only</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3 class="settings-section-title">Data & Privacy</h3>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Export Data</div>
+            <div class="settings-row-desc">Download all your channels, categories, and notes as JSON.</div>
+          </div>
+          <button class="settings-btn" onclick="exportJSON()">Export</button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Import Data</div>
+            <div class="settings-row-desc">Restore from a previously exported JSON file.</div>
+          </div>
+          <button class="settings-btn" onclick="document.getElementById('jsonFileInput').click()">Import</button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Clear Cache</div>
+            <div class="settings-row-desc">Remove cached feed videos and discover results.</div>
+          </div>
+          <button class="settings-btn" onclick="cacheClearPrefix('subsort_cache_');toast('Cache cleared')">Clear</button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Delete All Data</div>
+            <div class="settings-row-desc">Permanently remove all local data including channels and categories.</div>
+          </div>
+          <button class="settings-btn settings-btn-danger" onclick="toast('Data deletion coming soon')">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3 class="settings-section-title">About</h3>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Version</div>
+            <div class="settings-row-desc">Subsort v1.0.0</div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Storage Used</div>
+            <div class="settings-row-desc" id="settingsStorageUsed">Calculating…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ Categories Strip ═══ -->
 <section class="categories-section" id="categoriesSection">
   <div class="categories-track-area">
@@ -5244,7 +5411,7 @@ function findDeadChannels() {
    ═══════════════════════════════════════════ */
 const SECONDARY_NAV = {
   home: {
-    title: 'Home',
+    title: 'Dashboard',
     items: [
       {label:'Today\'s Videos', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>', active:true},
       {label:'Watch Later', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'},
@@ -5673,6 +5840,7 @@ function showView(view) {
   analyticsPage.classList.remove('active');
   marketplacePage.classList.remove('active');
   homeView.classList.remove('active');
+  document.getElementById('settingsPage').classList.remove('active');
   if (onboarding) onboarding.style.display = 'none';
   if (promoBanner) promoBanner.style.display = 'none';
   document.getElementById('homeSecondaryNav').classList.remove('open');
@@ -5699,6 +5867,19 @@ function showView(view) {
       marketplacePage.classList.add('active');
       document.getElementById('navMarketplace').classList.add('active');
       document.querySelector('.home-nav-item[data-nav="marketplace"]')?.classList.add('active');
+      break;
+    case 'settings':
+      document.getElementById('settingsPage').classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="settings"]')?.classList.add('active');
+      // Calculate storage used
+      try {
+        let totalBytes = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          totalBytes += (localStorage.getItem(k) || '').length * 2;
+        }
+        document.getElementById('settingsStorageUsed').textContent = (totalBytes / 1024).toFixed(1) + ' KB of ~5 MB';
+      } catch(e) {}
       break;
 
     case 'channels':
