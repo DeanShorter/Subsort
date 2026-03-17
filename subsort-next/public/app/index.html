@@ -1170,6 +1170,88 @@ input[type=range]::-webkit-slider-thumb{
   .pricing-hero h2{font-size:1.75rem}
 }
 
+/* ─── Blog Page ─── */
+.blog-page{display:none;padding:2.5rem;max-width:950px;margin:0 auto}
+.blog-page.active{display:block}
+.blog-header{margin-bottom:2.5rem}
+.blog-heading{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.375rem}
+.blog-subtitle{font-size:.9375rem;color:var(--text-secondary);line-height:1.6}
+.blog-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.blog-card{
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);overflow:hidden;cursor:pointer;
+  transition:all .2s;
+}
+.blog-card:hover{border-color:#333;transform:translateY(-2px)}
+.blog-card-color{height:6px}
+.blog-card-body{padding:1.25rem}
+.blog-card-tag{
+  font-size:.5625rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--accent);margin-bottom:.5rem;display:inline-block;
+}
+.blog-card-title{
+  font-size:1rem;font-weight:600;line-height:1.3;margin-bottom:.5rem;
+  color:var(--text-primary);
+}
+.blog-card-excerpt{
+  font-size:.8125rem;color:var(--text-secondary);line-height:1.6;
+  margin-bottom:.75rem;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.blog-card-meta{
+  display:flex;justify-content:space-between;
+  font-size:.6875rem;color:var(--text-muted);
+}
+
+/* Blog article view */
+.blog-article-page{display:none;padding:2.5rem;max-width:700px;margin:0 auto}
+.blog-article-page.active{display:block}
+.blog-article-inner{}
+.blog-back{
+  display:inline-flex;align-items:center;gap:.375rem;
+  background:none;border:none;color:var(--text-muted);cursor:pointer;
+  font:500 .8125rem/1 var(--font-body);margin-bottom:1.5rem;
+  transition:color .15s;
+}
+.blog-back:hover{color:var(--accent)}
+.blog-article-tag{
+  font-size:.625rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--accent);margin-bottom:.625rem;display:inline-block;
+}
+.blog-article-title{
+  font-family:var(--font-display);font-size:2rem;font-weight:800;
+  letter-spacing:-.03em;line-height:1.15;margin-bottom:.75rem;
+}
+.blog-article-meta{
+  display:flex;gap:.5rem;font-size:.8125rem;color:var(--text-muted);margin-bottom:2rem;
+}
+.blog-article-body{line-height:1.8;color:var(--text-secondary);font-size:.9375rem}
+.blog-article-body h2{
+  font-family:var(--font-display);font-size:1.375rem;font-weight:700;
+  color:var(--text-primary);margin:2.5rem 0 .75rem;letter-spacing:-.01em;
+}
+.blog-article-body h3{
+  font-size:1.0625rem;font-weight:600;color:var(--text-primary);margin:2rem 0 .5rem;
+}
+.blog-article-body p{margin-bottom:1.25rem}
+.blog-article-body strong{color:var(--text-primary);font-weight:600}
+.blog-article-body ul,.blog-article-body ol{margin:1rem 0 1.25rem 1.25rem}
+.blog-article-body li{margin-bottom:.375rem}
+.blog-article-cta{
+  text-align:center;padding:2rem;margin-top:3rem;
+  background:var(--bg-card);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);
+}
+.blog-article-cta h3{
+  font-family:var(--font-display);font-size:1.25rem;font-weight:700;margin-bottom:.5rem;
+}
+.blog-article-cta p{font-size:.875rem;color:var(--text-secondary);margin-bottom:1.25rem}
+
+@media (max-width: 640px) {
+  .blog-grid{grid-template-columns:1fr}
+  .blog-heading{font-size:1.5rem}
+}
+
 /* ─── Settings Page ─── */
 .settings-page{display:none;padding:2.5rem;max-width:700px;margin:0 auto}
 .settings-page.active{display:block}
@@ -1964,6 +2046,10 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
       <span class="home-nav-item-label">Channels</span>
     </button>
+    <button class="home-nav-item" data-nav="blog" onclick="showView('blog')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span class="home-nav-item-label">Blog</span>
+    </button>
     <button class="home-nav-item home-nav-premium-cta" data-nav="marketplace" onclick="showView('marketplace')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       <span class="home-nav-item-label">Premium</span>
@@ -2479,6 +2565,34 @@ input[type=range]::-webkit-slider-thumb{
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ═══ Blog Page ═══ -->
+<div class="blog-page" id="blogPage">
+  <div class="blog-inner">
+    <div class="blog-header">
+      <h2 class="blog-heading">Blog</h2>
+      <p class="blog-subtitle">Tips, guides, and insights on organising your YouTube subscriptions and discovering quality creators.</p>
+    </div>
+
+    <div class="blog-grid" id="blogGrid"></div>
+  </div>
+</div>
+
+<!-- ═══ Blog Article View ═══ -->
+<div class="blog-article-page" id="blogArticlePage">
+  <div class="blog-article-inner">
+    <button class="blog-back" onclick="showView('blog')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Blog
+    </button>
+    <article id="blogArticleContent"></article>
+    <div class="blog-article-cta">
+      <h3>Ready to organise your YouTube?</h3>
+      <p>Subsort is free, runs in your browser, and doesn't store your data on any server.</p>
+      <button class="pricing-btn pricing-btn-primary" onclick="showView('home')">Go to Dashboard</button>
+    </div>
   </div>
 </div>
 
@@ -5825,6 +5939,149 @@ function timeAgo(dateStr) {
   return `${days}d ago`;
 }
 
+/* ═══════════════════════════════════════════
+   BLOG
+   ═══════════════════════════════════════════ */
+const BLOG_POSTS = [
+  {
+    slug: 'how-to-organise-youtube-subscriptions',
+    title: 'How to Organise 500+ YouTube Subscriptions Without Losing Your Mind',
+    excerpt: "If you've been on YouTube for years, your subscription list is probably a chaotic mix of channels you love, channels you forgot about, and channels that haven't posted in three years.",
+    category: 'Guides',
+    date: '15 Mar 2026',
+    readTime: '8 min read',
+    color: '#6aadcf',
+    body: `<h2>The Problem With YouTube's Built-In System</h2>
+<p>YouTube gives you exactly one view of your subscriptions: a chronological feed of every video from every channel, all mixed together. There's no way to say "show me just my music channels" or "which of my subscriptions are actually dead?"</p>
+<p>This means your feed is dominated by channels that post the most frequently, while smaller creators you genuinely care about get buried.</p>
+
+<h2>Step 1: Audit Your Subscriptions</h2>
+<p>The first step is understanding what you're actually subscribed to. Tools like Subsort can pull in your full subscription list via the YouTube API and give you a bird's-eye view.</p>
+<p>Look for:</p>
+<ul>
+<li><strong>Dead channels</strong>: Channels that haven't posted in 6+ months</li>
+<li><strong>Duplicates</strong>: Multiple channels from the same creator</li>
+<li><strong>Mystery channels</strong>: Names you don't recognise at all</li>
+<li><strong>High-volume channels</strong>: News or daily upload channels that dominate your feed</li>
+</ul>
+
+<h2>Step 2: Create Categories That Make Sense</h2>
+<p>Don't overthink this. Start with 5-8 broad categories that match how you actually watch YouTube — Tech, Entertainment, Education, Music, Gaming. You can always add subcategories later.</p>
+
+<h2>Step 3: Use Subcategories for Depth</h2>
+<p>Once your main categories are set, subcategories let you get specific without creating a messy flat list. A channel can belong to "Music" with a subcategory of "Jazz" — so you can browse all music or drill down to just jazz.</p>
+
+<h2>Step 4: Set Up Custom Feeds</h2>
+<p>The real power comes when you can filter your YouTube feed by category. Instead of 500 channels competing for attention, you see "Show me recent videos from my Tech channels." This turns your chaotic subscription list into a personalised TV guide.</p>
+
+<h2>Step 5: Maintain It</h2>
+<p>Set a reminder to review your subscriptions quarterly. Unsubscribe from channels you haven't watched in 3 months. Categorise new subscriptions as you add them. It takes 5 minutes and keeps your feed clean.</p>`
+  },
+  {
+    slug: 'find-remove-dead-youtube-channels',
+    title: 'Dead Channels: How to Find and Remove Inactive YouTube Subscriptions',
+    excerpt: "Up to 30% of your YouTube subscriptions might be completely inactive. Here's how to identify dead channels and clean up your feed.",
+    category: 'Tips',
+    date: '10 Mar 2026',
+    readTime: '5 min read',
+    color: '#e8837c',
+    body: `<h2>What Counts as a Dead Channel?</h2>
+<p>A channel is generally considered inactive if it hasn't uploaded in over 6 months. There are a few types:</p>
+<ul>
+<li><strong>Abandoned channels</strong>: The creator stopped posting entirely</li>
+<li><strong>Hiatus channels</strong>: Creators who take extended breaks</li>
+<li><strong>Rebranded channels</strong>: The creator moved to a new channel</li>
+<li><strong>Deleted channels</strong>: Channels that no longer exist but still show in your list</li>
+</ul>
+
+<h2>Why Dead Channels Matter</h2>
+<p>Dead channels don't directly harm your feed — YouTube won't show you videos from channels that aren't posting. But they clutter your subscription count, making it harder to manage the channels that actually matter.</p>
+
+<h2>How to Find Dead Channels</h2>
+<p>Manually checking each subscription is impractical if you have hundreds. The fastest approach is to use a tool that checks each channel's last upload date automatically. Subsort flags channels as inactive based on their upload frequency and last video date.</p>
+
+<h2>What To Do With Dead Channels</h2>
+<p>Not every inactive channel deserves an unsubscribe. Consider:</p>
+<ul>
+<li><strong>Unsubscribe immediately</strong>: Channels you don't recognise or aren't interested in</li>
+<li><strong>Keep for now</strong>: Creators who announced a break</li>
+<li><strong>Add a note</strong>: If unsure, add "Check back in 3 months"</li>
+</ul>
+
+<h2>Regular Maintenance</h2>
+<p>Make dead channel cleanup a quarterly habit. It takes 10 minutes and keeps your subscription list lean and meaningful.</p>`
+  },
+  {
+    slug: 'youtube-feed-anxiety-how-to-fix',
+    title: "YouTube Feed Anxiety Is Real — Here's How to Fix It",
+    excerpt: "That overwhelming feeling when you open YouTube and see hundreds of unwatched videos? It has a name, and there's a systematic way to deal with it.",
+    category: 'Insights',
+    date: '5 Mar 2026',
+    readTime: '6 min read',
+    color: '#7dc88b',
+    body: `<h2>Why It Happens</h2>
+<p>The average active YouTube channel uploads 1-2 videos per week. If you're subscribed to 200 channels, that's potentially 200-400 new videos every week competing for your attention. Your brain knows it can't watch them all, but the feed presents them as if you should.</p>
+
+<h2>The Category Approach</h2>
+<p>The single most effective fix is to stop thinking of your subscriptions as one giant list and start thinking of them as separate feeds. When you categorise — Tech, Music, Gaming, Education — you can choose which feed to browse based on your mood and available time.</p>
+<p>Instead of "I have 47 unwatched videos," it becomes "I have 20 minutes, let me check what's new in Tech."</p>
+
+<h2>The Quality Filter</h2>
+<p>Not all subscriptions are equal. Some channels you watch every single video from. Others you occasionally check. Be honest about which tier each channel falls into. Your "must watch" channels might only be 20-30 out of hundreds.</p>
+
+<h2>Practical Steps</h2>
+<ul>
+<li><strong>Categorise</strong> your subscriptions into 5-8 groups</li>
+<li><strong>Identify</strong> your "must watch" channels</li>
+<li><strong>Set specific times</strong> for different categories</li>
+<li><strong>Accept</strong> that you'll miss things — and that's fine</li>
+<li><strong>Clean up quarterly</strong> — unsubscribe from channels that don't interest you</li>
+</ul>
+
+<h2>The Result</h2>
+<p>A categorised, curated subscription list transforms YouTube from a source of anxiety into a library you can browse intentionally. You watch what you want, when you want, without the guilt of an endless unread list.</p>`
+  }
+];
+
+function renderBlog() {
+  const grid = document.getElementById('blogGrid');
+  grid.innerHTML = BLOG_POSTS.map(post => `
+    <div class="blog-card" onclick="openBlogPost('${post.slug}')">
+      <div class="blog-card-color" style="background:${post.color}"></div>
+      <div class="blog-card-body">
+        <span class="blog-card-tag">${post.category}</span>
+        <h3 class="blog-card-title">${post.title}</h3>
+        <p class="blog-card-excerpt">${post.excerpt}</p>
+        <div class="blog-card-meta">
+          <span>${post.date}</span>
+          <span>${post.readTime}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openBlogPost(slug) {
+  const post = BLOG_POSTS.find(p => p.slug === slug);
+  if (!post) return;
+
+  const container = document.getElementById('blogArticleContent');
+  container.innerHTML = `
+    <span class="blog-article-tag">${post.category}</span>
+    <h1 class="blog-article-title">${post.title}</h1>
+    <div class="blog-article-meta">
+      <span>${post.date}</span>
+      <span>·</span>
+      <span>${post.readTime}</span>
+    </div>
+    <div class="blog-article-body">${post.body}</div>
+  `;
+
+  // Hide blog index, show article
+  document.getElementById('blogPage').classList.remove('active');
+  document.getElementById('blogArticlePage').classList.add('active');
+}
+
 function showView(view) {
   const catsSection = document.getElementById('categoriesSection');
   const mainLayout = document.querySelector('.main-layout');
@@ -5841,6 +6098,8 @@ function showView(view) {
   marketplacePage.classList.remove('active');
   homeView.classList.remove('active');
   document.getElementById('settingsPage').classList.remove('active');
+  document.getElementById('blogPage').classList.remove('active');
+  document.getElementById('blogArticlePage').classList.remove('active');
   if (onboarding) onboarding.style.display = 'none';
   if (promoBanner) promoBanner.style.display = 'none';
   document.getElementById('homeSecondaryNav').classList.remove('open');
@@ -5880,6 +6139,11 @@ function showView(view) {
         }
         document.getElementById('settingsStorageUsed').textContent = (totalBytes / 1024).toFixed(1) + ' KB of ~5 MB';
       } catch(e) {}
+      break;
+    case 'blog':
+      document.getElementById('blogPage').classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="blog"]')?.classList.add('active');
+      renderBlog();
       break;
 
     case 'channels':
