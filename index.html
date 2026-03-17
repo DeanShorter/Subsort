@@ -2889,6 +2889,25 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
+<!-- ═══ Upgrade Prompt Modal ═══ -->
+<div class="modal-overlay" id="upgradePromptModal">
+  <div class="modal" style="max-width:420px;text-align:center">
+    <button class="modal-close" onclick="closeModal('upgradePromptModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div style="margin-bottom:1rem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5" width="40" height="40" style="margin:0 auto .75rem;display:block"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+    <h2 id="upgradePromptTitle">Upgrade to Premium</h2>
+    <p class="subtitle" id="upgradePromptMessage" style="margin-top:.75rem;line-height:1.6"></p>
+    <div class="modal-footer" style="justify-content:center;margin-top:1.5rem;gap:.75rem">
+      <button class="btn-cancel" onclick="closeModal('upgradePromptModal')">Maybe later</button>
+      <button class="pricing-btn pricing-btn-primary" style="width:auto;padding:.75rem 1.5rem" onclick="closeModal('upgradePromptModal');showView('marketplace')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="display:inline;vertical-align:middle;margin-right:.375rem"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        View Premium Plans
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ Toast ═══ -->
 <div class="toast" id="toast"></div>
 
@@ -2945,7 +2964,59 @@ let activeSubcategory = null;
 let editingChannelId = null;
 let editingCategoryIdx = null;
 let aiResults = null;
-let selectedChannels = new Set(); // Task 4: multi-select
+let selectedChannels = new Set();
+
+// User subscription tier: 'free', 'pro', 'power'
+// Will be set from backend once Supabase/Stripe is integrated
+let userTier = localStorage.getItem('subsort_user_tier') || 'free';
+
+/* ═══════════════════════════════════════════
+   CACHING LAYER
+   ═══════════════════════════════════════════ */
+const CACHE_KEYS = {
+  feedVideos: 'subsort_cache_feed_',
+  syncTimestamp: 'subsort_cache_last_sync',
+  discoverResults: 'subsort_cache_discover_'
+};
+const CACHE_TTL = {
+  feedVideos: 2 * 60 * 60 * 1000,   // 2 hours
+  syncData: 24 * 60 * 60 * 1000,    // 24 hours
+  discover: 4 * 60 * 60 * 1000      // 4 hours
+};
+
+function cacheSet(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  } catch(e) { /* storage full — silently fail */ }
+}
+
+function cacheGet(key, maxAge) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > maxAge) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return data;
+  } catch(e) { return null; }
+}
+
+function cacheClearPrefix(prefix) {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(prefix)) keys.push(k);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+}
+
+function isSyncFresh() {
+  const ts = localStorage.getItem(CACHE_KEYS.syncTimestamp);
+  if (!ts) return false;
+  return (Date.now() - parseInt(ts)) < CACHE_TTL.syncData;
+}
 
 // ── Multi-category helpers ──
 // Migrate old string category to array on load
@@ -4261,12 +4332,13 @@ async function discoverSimilar() {
     updateDiscoverCounter(1, suggestions.length);
     moveCarousel(0);
 
-    // Cache results for this category
+    // Cache results for this category (in memory and localStorage)
     discoverCache[activeCategory] = {
       suggestions,
       html: carousel.innerHTML,
       index: 0
     };
+    cacheSet(CACHE_KEYS.discoverResults + activeCategory, { suggestions });
 
   } catch(e) {
     carousel.innerHTML = `<div class="discover-loading"><p style="font-size:.8125rem;color:#f87171">Search failed: ${e.message}</p></div>`;
@@ -4423,10 +4495,38 @@ function connectYouTube() {
 
 function syncYouTube() {
   if (accessToken) {
+    // Check sync limits based on tier
+    const lastSyncTs = localStorage.getItem(CACHE_KEYS.syncTimestamp);
+    if (lastSyncTs && channels.length > 0) {
+      const elapsed = Date.now() - parseInt(lastSyncTs);
+      const ago = Math.round(elapsed / 60000);
+
+      if (userTier === 'free') {
+        // Free users: 1 sync per day, hard limit
+        if (elapsed < CACHE_TTL.syncData) {
+          showUpgradePrompt(
+            'Daily sync limit reached',
+            `Free accounts can sync once per day — you last synced ${ago < 60 ? ago + ' minutes' : Math.round(ago/60) + ' hours'} ago. Upgrade to Pro for unlimited syncs throughout the day.`
+          );
+          return;
+        }
+      } else {
+        // Paid users: soft throttle with confirmation
+        if (elapsed < 30 * 60 * 1000) { // 30 min cooldown for paid users
+          if (!confirm(`You last synced ${ago} minutes ago. Sync again?`)) return;
+        }
+      }
+    }
     fetchAllSubscriptions();
   } else {
     connectYouTube();
   }
+}
+
+function showUpgradePrompt(title, message) {
+  document.getElementById('upgradePromptTitle').textContent = title;
+  document.getElementById('upgradePromptMessage').textContent = message;
+  openModal('upgradePromptModal');
 }
 
 function updateSyncProgress(label, detail, pct) {
@@ -4560,6 +4660,9 @@ async function fetchAllSubscriptions() {
     }, 1200);
 
     toast(`Synced! ${newCount} new channels, ${channels.length} total`);
+    localStorage.setItem(CACHE_KEYS.syncTimestamp, Date.now().toString());
+    // Clear feed caches since channel data has changed
+    cacheClearPrefix(CACHE_KEYS.feedVideos);
 
   } catch (e) {
     toast('Sync failed: ' + e.message);
@@ -5398,7 +5501,14 @@ async function loadFeedAll() {
 }
 
 async function fetchRecentVideos(channelList) {
-  // Fetch recent uploads using playlistItems.list (1 unit each) instead of search.list (100 units each)
+  // Build a cache key from channel IDs
+  const cacheKey = CACHE_KEYS.feedVideos + channelList.slice(0, 10).map(ch => ch.channelId || ch.id).sort().join(',').substring(0, 80);
+  
+  // Check cache first
+  const cached = cacheGet(cacheKey, CACHE_TTL.feedVideos);
+  if (cached) return cached;
+
+  // Fetch recent uploads using playlistItems.list (1 unit each)
   const recentCutoff = new Date(getRecentDate()).getTime();
   const videos = [];
 
@@ -5446,6 +5556,10 @@ async function fetchRecentVideos(channelList) {
 
   // Sort by date, newest first
   videos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  
+  // Cache the results
+  if (videos.length) cacheSet(cacheKey, videos);
+  
   return videos;
 }
 
