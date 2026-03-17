@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Subsort — YouTube Subscription Organiser</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <!-- AdSense: Replace YOUR_PUB_ID with your actual publisher ID, then uncomment -->
@@ -2078,11 +2079,11 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2"/></svg>
       <span class="home-nav-item-label">Sync</span>
     </button>
-    <button class="home-nav-item" id="sideNavSignIn" data-nav="signin" onclick="connectYouTube()">
+    <button class="home-nav-item" id="sideNavSignIn" data-nav="signin" onclick="signInWithGoogle()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
       <span class="home-nav-item-label">Sign in</span>
     </button>
-    <button class="home-nav-item" id="sideNavSignOut" data-nav="signout" onclick="signOut()" style="display:none">
+    <button class="home-nav-item" id="sideNavSignOut" data-nav="signout" onclick="signOutSupabase()" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       <span class="home-nav-item-label">Sign out</span>
     </button>
@@ -3204,6 +3205,252 @@ let channels = JSON.parse(localStorage.getItem('subsort_channels') || '[]');
 let categories = JSON.parse(localStorage.getItem('subsort_categories') || '[]');
 let subcategories = JSON.parse(localStorage.getItem('subsort_subcategories') || '{}');
 let settings = JSON.parse(localStorage.getItem('subsort_settings') || '{}');
+/* ═══════════════════════════════════════════
+   SUPABASE CLIENT
+   ═══════════════════════════════════════════ */
+const SUPABASE_URL = 'https://cruqcglooudetpxstvsc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNydXFjZ2xvb3VkZXRweHN0dnNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3OTAyMjQsImV4cCI6MjA4OTM2NjIyNH0.ZqV49eayg6J-rk2yC5QKHMQ2XWEG24ALdB9UAbuTOIc';
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+let sbUser = null; // Supabase auth user
+
+// Check for existing Supabase session on load
+async function initSupabase() {
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    sbUser = session.user;
+    await loadUserData();
+  }
+  // Listen for auth state changes
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      sbUser = session.user;
+      await loadUserData();
+      renderAll();
+      showView('home');
+    } else if (event === 'SIGNED_OUT') {
+      sbUser = null;
+      window.location.href = '/';
+    }
+  });
+}
+
+// Sign in with Google via Supabase
+async function signInWithGoogle() {
+  if (!sb) { connectYouTube(); return; } // Fallback to old auth
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + '/app',
+      scopes: 'https://www.googleapis.com/auth/youtube.readonly'
+    }
+  });
+  if (error) toast('Sign in failed: ' + error.message);
+}
+
+// Sign out via Supabase
+async function signOutSupabase() {
+  if (!sb) { signOut(); return; }
+  await sb.auth.signOut();
+  channels = [];
+  categories = [];
+  subcategories = {};
+  activeCategory = 'all';
+  save();
+  window.location.href = '/';
+}
+
+/* ═══════════════════════════════════════════
+   DATABASE: LOAD USER DATA
+   ═══════════════════════════════════════════ */
+async function loadUserData() {
+  if (!sb || !sbUser) return;
+
+  try {
+    // Load categories
+    const { data: catRows } = await sb
+      .from('categories')
+      .select('*')
+      .order('sort_order');
+    if (catRows) {
+      categories = catRows.map(c => c.name);
+      window._dbCategories = catRows; // Keep full rows for IDs
+    }
+
+    // Load subcategories
+    const { data: subRows } = await sb
+      .from('subcategories')
+      .select('*, categories(name)')
+      .order('sort_order');
+    if (subRows) {
+      subcategories = {};
+      subRows.forEach(s => {
+        const catName = s.categories?.name;
+        if (catName) {
+          if (!subcategories[catName]) subcategories[catName] = [];
+          subcategories[catName].push(s.name);
+        }
+      });
+      window._dbSubcategories = subRows;
+    }
+
+    // Load channels with their categories
+    const { data: chRows } = await sb
+      .from('channels')
+      .select('*, channel_categories(category_id, categories(name))');
+    if (chRows) {
+      channels = chRows.map(ch => ({
+        id: ch.id,
+        channelId: ch.channel_id,
+        name: ch.name,
+        customUrl: ch.custom_url || '',
+        thumbnail: ch.thumbnail || '',
+        thumbnailHigh: ch.thumbnail_high || '',
+        bannerUrl: ch.banner_url || '',
+        description: ch.description || '',
+        subscriberCount: ch.subscriber_count || 0,
+        videoCount: ch.video_count || 0,
+        viewCount: ch.view_count || 0,
+        subscribedAt: ch.subscribed_at || '',
+        channelCreatedAt: ch.channel_created_at || '',
+        uploadsPlaylistId: ch.uploads_playlist_id || '',
+        topics: ch.topics || [],
+        keywords: ch.keywords || '',
+        country: ch.country || '',
+        notes: ch.notes || '',
+        subcategory: '', // TODO: map from subcategory_id
+        categories: (ch.channel_categories || []).map(cc => cc.categories?.name).filter(Boolean),
+        channelUrl: `https://www.youtube.com/channel/${ch.channel_id}`
+      }));
+    }
+
+    save(); // Also cache to localStorage as fallback
+    renderAll();
+  } catch (e) {
+    console.error('Failed to load user data:', e);
+    toast('Failed to load data from server');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DATABASE: SAVE OPERATIONS
+   ═══════════════════════════════════════════ */
+async function dbSaveCategory(name) {
+  if (!sb || !sbUser) return null;
+  const { data, error } = await sb
+    .from('categories')
+    .insert({ user_id: sbUser.id, name, sort_order: categories.length })
+    .select()
+    .single();
+  if (error) { console.error('Save category error:', error); return null; }
+  return data;
+}
+
+async function dbDeleteCategory(name) {
+  if (!sb || !sbUser) return;
+  const cat = (window._dbCategories || []).find(c => c.name === name);
+  if (cat) await sb.from('categories').delete().eq('id', cat.id);
+}
+
+async function dbSaveSubcategory(categoryName, subName) {
+  if (!sb || !sbUser) return null;
+  const cat = (window._dbCategories || []).find(c => c.name === categoryName);
+  if (!cat) return null;
+  const { data, error } = await sb
+    .from('subcategories')
+    .insert({ user_id: sbUser.id, category_id: cat.id, name: subName })
+    .select()
+    .single();
+  if (error) { console.error('Save subcategory error:', error); return null; }
+  return data;
+}
+
+async function dbSaveChannel(channel) {
+  if (!sb || !sbUser) return null;
+  const { data, error } = await sb
+    .from('channels')
+    .upsert({
+      user_id: sbUser.id,
+      channel_id: channel.channelId,
+      name: channel.name,
+      custom_url: channel.customUrl || '',
+      thumbnail: channel.thumbnail || '',
+      thumbnail_high: channel.thumbnailHigh || '',
+      banner_url: channel.bannerUrl || '',
+      description: channel.description || '',
+      subscriber_count: channel.subscriberCount || 0,
+      video_count: channel.videoCount || 0,
+      view_count: channel.viewCount || 0,
+      subscribed_at: channel.subscribedAt || null,
+      channel_created_at: channel.channelCreatedAt || null,
+      uploads_playlist_id: channel.uploadsPlaylistId || '',
+      topics: channel.topics || [],
+      keywords: channel.keywords || '',
+      country: channel.country || '',
+      notes: channel.notes || ''
+    }, { onConflict: 'user_id,channel_id' })
+    .select()
+    .single();
+  if (error) { console.error('Save channel error:', error); return null; }
+  return data;
+}
+
+async function dbSetChannelCategories(channelDbId, categoryNames) {
+  if (!sb || !sbUser || !channelDbId) return;
+  // Delete existing
+  await sb.from('channel_categories').delete().eq('channel_id', channelDbId);
+  // Insert new
+  const catMap = window._dbCategories || [];
+  const inserts = categoryNames
+    .map(name => catMap.find(c => c.name === name))
+    .filter(Boolean)
+    .map(cat => ({ user_id: sbUser.id, channel_id: channelDbId, category_id: cat.id }));
+  if (inserts.length) {
+    await sb.from('channel_categories').insert(inserts);
+  }
+}
+
+async function dbSaveChannelNotes(channelId, notes) {
+  if (!sb || !sbUser) return;
+  await sb.from('channels').update({ notes }).eq('channel_id', channelId).eq('user_id', sbUser.id);
+}
+
+async function dbBulkSaveChannels(channelList) {
+  if (!sb || !sbUser) return;
+  // Batch upsert channels
+  const rows = channelList.map(ch => ({
+    user_id: sbUser.id,
+    channel_id: ch.channelId,
+    name: ch.name,
+    custom_url: ch.customUrl || '',
+    thumbnail: ch.thumbnail || '',
+    thumbnail_high: ch.thumbnailHigh || '',
+    banner_url: ch.bannerUrl || '',
+    description: ch.description || '',
+    subscriber_count: ch.subscriberCount || 0,
+    video_count: ch.videoCount || 0,
+    view_count: ch.viewCount || 0,
+    subscribed_at: ch.subscribedAt || null,
+    channel_created_at: ch.channelCreatedAt || null,
+    uploads_playlist_id: ch.uploadsPlaylistId || '',
+    topics: ch.topics || [],
+    keywords: ch.keywords || '',
+    country: ch.country || '',
+    notes: ch.notes || ''
+  }));
+  const { error } = await sb.from('channels').upsert(rows, { onConflict: 'user_id,channel_id' });
+  if (error) console.error('Bulk save error:', error);
+}
+
+async function dbUpdateProfile(updates) {
+  if (!sb || !sbUser) return;
+  await sb.from('profiles').update(updates).eq('id', sbUser.id);
+}
+
+// Initialise Supabase on load
+initSupabase();
+
 const GOOGLE_CLIENT_ID = '916513934955-1noko2b7uubrmu9qtgvf45kk9l9stv6t.apps.googleusercontent.com';
 let activeCategory = 'all';
 let activeSubcategory = null;
@@ -4696,7 +4943,7 @@ function restoreDiscover(category) {
    AUTH UI
    ═══════════════════════════════════════════ */
 function updateAuthUI() {
-  const signedIn = !!accessToken;
+  const signedIn = !!accessToken || !!sbUser;
   const hasChannels = channels.length > 0;
   document.getElementById('btnSignIn').style.display = signedIn ? 'none' : '';
   document.getElementById('btnSignOut').style.display = signedIn ? '' : 'none';
@@ -6209,12 +6456,17 @@ function renderAll() {
 }
 renderAll();
 // Redirect unauthenticated users to the marketing landing page
-if (accessToken || channels.length) {
+if (accessToken || sbUser || channels.length) {
   document.getElementById('appShell').style.display = '';
   showView('home');
 } else {
   // No channels, no auth — redirect to the public landing page
-  window.location.href = '/';
+  // Small delay to let Supabase session check complete
+  setTimeout(() => {
+    if (!sbUser && !accessToken && !channels.length) {
+      window.location.href = '/';
+    }
+  }, 1500);
 }
 </script>
 </body>
