@@ -1239,10 +1239,34 @@ input[type=range]::-webkit-slider-thumb{
   width:28px;margin:.5rem auto;
 }
 .home-nav-primary.expanded .home-nav-divider{width:calc(100% - 1rem);margin:.5rem .5rem}
-.home-nav-ai{
-  color:var(--accent) !important;
+/* Nav section label */
+.home-nav-section-label{
+  display:none;font-size:.5rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--text-muted);padding:0 .75rem;margin-top:.125rem;
 }
-.home-nav-ai:hover{background:var(--accent-soft) !important}
+.home-nav-primary.expanded .home-nav-section-label{display:block}
+
+/* Premium CTA - standout button */
+.home-nav-premium-cta{
+  background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(59,130,246,.05)) !important;
+  border:1px solid rgba(59,130,246,.3) !important;
+  color:#60a5fa !important;
+  margin-top:.25rem;
+}
+.home-nav-primary:not(.expanded) .home-nav-premium-cta{
+  border-radius:10px !important;margin:0.25rem auto 0;
+}
+.home-nav-primary.expanded .home-nav-premium-cta{
+  border-radius:var(--radius-sm) !important;margin:0.25rem 0 0;
+}
+.home-nav-premium-cta:hover{
+  background:linear-gradient(135deg,rgba(59,130,246,.25),rgba(59,130,246,.1)) !important;
+  border-color:rgba(59,130,246,.5) !important;
+}
+.home-nav-premium-cta.active{
+  background:rgba(59,130,246,.15) !important;
+  border-color:#60a5fa !important;
+}
 
 /* Secondary nav */
 .home-nav-secondary{
@@ -1504,6 +1528,10 @@ input[type=range]::-webkit-slider-thumb{
 }
 
 .mp-section{margin-bottom:2.5rem}
+.mp-divider{
+  border:none;border-top:1px solid var(--border-subtle);
+  margin:2.5rem 0;
+}
 .mp-section-title{font-family:var(--font-display);font-size:1.25rem;font-weight:700;margin-bottom:.375rem;letter-spacing:-.01em}
 .mp-section-desc{font-size:.875rem;color:var(--text-secondary);margin-bottom:1.25rem}
 
@@ -1804,7 +1832,6 @@ input[type=range]::-webkit-slider-thumb{
   <button id="navChannels"></button>
   <button id="navAnalytics"></button>
   <button id="navMarketplace"></button>
-  <button id="navPricing"></button>
   <div class="topnav-links"></div>
   <div class="nav-search">
     <input type="text" id="searchInput" placeholder="Search channels…" oninput="renderChannels()">
@@ -1823,6 +1850,8 @@ input[type=range]::-webkit-slider-thumb{
     <button class="home-nav-toggle" onclick="togglePrimaryNav()" title="Expand menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
+
+    <!-- Free features -->
     <button class="home-nav-item active" data-nav="home" onclick="showView('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span class="home-nav-item-label">Home</span>
@@ -1835,24 +1864,25 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
       <span class="home-nav-item-label">Channels</span>
     </button>
+    <button class="home-nav-item home-nav-premium-cta" data-nav="marketplace" onclick="showView('marketplace')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span class="home-nav-item-label">Premium</span>
+    </button>
+
+    <!-- Premium features -->
+    <hr class="home-nav-divider">
+    <span class="home-nav-section-label">Pro Tools</span>
     <button class="home-nav-item" data-nav="analytics" onclick="showView('analytics')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
       <span class="home-nav-item-label">Analytics</span>
     </button>
-    <hr class="home-nav-divider">
-    <button class="home-nav-item" data-nav="marketplace" onclick="showView('marketplace')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      <span class="home-nav-item-label">Marketplace</span>
-    </button>
-    <button class="home-nav-item" data-nav="pricing" onclick="showView('pricing')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      <span class="home-nav-item-label">Pricing</span>
-    </button>
-    <div style="flex:1"></div>
-    <button class="home-nav-item home-nav-ai" data-nav="ai" onclick="openModal('aiModal')">
+    <button class="home-nav-item" data-nav="ai" onclick="openModal('aiModal')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10h16V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
       <span class="home-nav-item-label">AI Categorise</span>
     </button>
+
+    <!-- Utility (bottom) -->
+    <div style="flex:1"></div>
     <hr class="home-nav-divider">
     <button class="home-nav-item" id="sideNavSync" data-nav="sync" onclick="syncYouTube()" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2"/></svg>
@@ -2134,9 +2164,11 @@ input[type=range]::-webkit-slider-thumb{
   <div class="marketplace-inner">
     <div class="marketplace-hero">
       <div class="mp-badge">Coming Soon</div>
-      <h2 class="import-heading">Creator <em>Marketplace</em></h2>
-      <p class="import-subtitle">A space for creators to reach new audiences, and for viewers to discover quality content tailored to their interests.</p>
+      <h2 class="import-heading">The Premium <em>Experience</em></h2>
+      <p class="import-subtitle">Premium is how viewers and creators alike do their part to build a cleaner, more organised, and higher quality YouTube experience for everyone.</p>
     </div>
+
+    <hr class="mp-divider">
 
     <!-- How it works -->
     <div class="mp-section">
@@ -2165,6 +2197,8 @@ input[type=range]::-webkit-slider-thumb{
         </div>
       </div>
     </div>
+
+    <hr class="mp-divider">
 
     <!-- Pricing preview -->
     <div class="mp-section">
@@ -2210,6 +2244,8 @@ input[type=range]::-webkit-slider-thumb{
       </div>
     </div>
 
+    <hr class="mp-divider">
+
     <!-- Preview of how promoted cards look -->
     <div class="mp-section">
       <h3 class="mp-section-title">What promoted channels look like</h3>
@@ -2241,190 +2277,108 @@ input[type=range]::-webkit-slider-thumb{
       </div>
     </div>
 
+    <hr class="mp-divider">
+
+    <!-- Viewer Pricing -->
+    <div class="mp-section">
+      <div class="pricing-section">
+        <div class="pricing-section-header">
+          <h3>For Viewers</h3>
+          <span class="pricing-section-badge pricing-badge-viewer">Subscription Organiser</span>
+        </div>
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <div class="pricing-card-tier">Free</div>
+            <div class="pricing-card-price">£0<span>/forever</span></div>
+            <div class="pricing-card-desc">Everything you need to tidy up your subscriptions.</div>
+            <ul class="pricing-features">
+              <li class="feat-highlight">Unlimited channel sync via YouTube API</li>
+              <li>Manual & auto-categorisation</li>
+              <li>Subcategories & multi-category tagging</li>
+              <li>Bulk channel management</li>
+              <li>Notes on any channel</li>
+              <li>Basic stats (subs, videos, activity)</li>
+              <li>Dead & inactive channel detection</li>
+              <li>Discover similar channels</li>
+              <li>Import / Export data (JSON)</li>
+              <li class="feat-disabled">Watch history analytics</li>
+              <li class="feat-disabled">AI-powered categorisation</li>
+              <li class="feat-disabled">Channel health reports (PDF)</li>
+            </ul>
+            <div class="pricing-btn" style="text-align:center;cursor:default;opacity:.7">Current plan</div>
+          </div>
+          <div class="pricing-card pricing-card-featured">
+            <div class="pricing-card-popular">Most Popular</div>
+            <div class="pricing-card-tier">Pro</div>
+            <div class="pricing-card-price">£4<span>/month</span></div>
+            <div class="pricing-card-desc">Deep insights into your viewing habits and smarter organisation.</div>
+            <ul class="pricing-features">
+              <li class="feat-highlight">Everything in Free, plus:</li>
+              <li class="feat-highlight">Watch history analytics (Google Takeout)</li>
+              <li>Most-watched channels breakdown</li>
+              <li>Viewing patterns by day & time</li>
+              <li>Channels you watch but aren't subscribed to</li>
+              <li class="feat-highlight">AI-powered categorisation (Claude)</li>
+              <li>Smart unsub candidates</li>
+              <li>Priority Discover results</li>
+              <li>Channel health report (PDF export)</li>
+              <li>Category breakdown visualisations</li>
+            </ul>
+            <button class="pricing-btn pricing-btn-primary" onclick="toast('Pro launches soon — we\\'ll let you know!')">Get Pro</button>
+          </div>
+          <div class="pricing-card">
+            <div class="pricing-card-tier">Power</div>
+            <div class="pricing-card-price">£9<span>/month</span></div>
+            <div class="pricing-card-desc">For the serious YouTube power user who manages everything.</div>
+            <ul class="pricing-features">
+              <li class="feat-highlight">Everything in Pro, plus:</li>
+              <li class="feat-highlight">Bulk unsubscribe from inactive channels</li>
+              <li>Subscription migration tools</li>
+              <li>Spreadsheet export (XLSX)</li>
+              <li>API access for developers</li>
+              <li>Multi-account management</li>
+              <li>Custom category icons</li>
+              <li>Priority support</li>
+            </ul>
+            <button class="pricing-btn" onclick="toast('Power plan launches soon — we\\'ll let you know!')">Get Power</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="mp-divider">
+
+    <!-- FAQ -->
+    <div class="mp-section">
+      <div class="pricing-faq">
+        <h3>Frequently asked questions</h3>
+        <div class="pricing-faq-item">
+          <div class="pricing-faq-q">Can I cancel anytime?</div>
+          <div class="pricing-faq-a">Yes — all plans are monthly with no lock-in. Cancel from your account settings and you'll keep access until the end of your billing period.</div>
+        </div>
+        <div class="pricing-faq-item">
+          <div class="pricing-faq-q">Is the free tier really free forever?</div>
+          <div class="pricing-faq-a">Absolutely. Categorisation, basic analytics, dead channel detection, and Discover will always be free. We want everyone to have a cleaner YouTube feed.</div>
+        </div>
+        <div class="pricing-faq-item">
+          <div class="pricing-faq-q">What's the difference between viewer and creator plans?</div>
+          <div class="pricing-faq-a">Viewer plans help you organise and understand your subscriptions. Creator plans let you promote your channel in the Marketplace so new subscribers discover you.</div>
+        </div>
+        <div class="pricing-faq-item">
+          <div class="pricing-faq-q">How does the watch history feature work?</div>
+          <div class="pricing-faq-a">You upload your YouTube watch history from Google Takeout. Everything is processed locally in your browser — your data never leaves your device.</div>
+        </div>
+        <div class="pricing-faq-item">
+          <div class="pricing-faq-q">Do I need to be a Pro viewer to list on the Marketplace?</div>
+          <div class="pricing-faq-a">No — viewer and creator plans are completely independent. You can use the free viewer tier and still list your channel as a creator.</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
-
-<!-- ═══ Pricing Page ═══ -->
-<div class="pricing-page" id="pricingPage">
-  <div class="pricing-hero">
-    <h2>Simple, transparent <em>pricing</em></h2>
-    <p>Free forever for casual users. Upgrade for powerful analytics and Marketplace access for creators.</p>
-  </div>
-
-  <!-- Viewer Tiers -->
-  <div class="pricing-section">
-    <div class="pricing-section-header">
-      <h3>For Viewers</h3>
-      <span class="pricing-section-badge pricing-badge-viewer">Subscription Organiser</span>
-    </div>
-    <div class="pricing-grid">
-      <!-- Free -->
-      <div class="pricing-card">
-        <div class="pricing-card-tier">Free</div>
-        <div class="pricing-card-price">£0<span>/forever</span></div>
-        <div class="pricing-card-desc">Everything you need to tidy up your subscriptions.</div>
-        <ul class="pricing-features">
-          <li class="feat-highlight">Unlimited channel sync via YouTube API</li>
-          <li>Manual & auto-categorisation</li>
-          <li>Subcategories & multi-category tagging</li>
-          <li>Bulk channel management</li>
-          <li>Notes on any channel</li>
-          <li>Basic stats (subs, videos, activity)</li>
-          <li>Dead & inactive channel detection</li>
-          <li>Discover similar channels</li>
-          <li>Import / Export data (JSON)</li>
-          <li class="feat-disabled">Watch history analytics</li>
-          <li class="feat-disabled">AI-powered categorisation</li>
-          <li class="feat-disabled">Channel health reports (PDF)</li>
-        </ul>
-        <div class="pricing-btn" style="text-align:center;cursor:default;opacity:.7">Current plan</div>
-      </div>
-      <!-- Pro -->
-      <div class="pricing-card pricing-card-featured">
-        <div class="pricing-card-popular">Most Popular</div>
-        <div class="pricing-card-tier">Pro</div>
-        <div class="pricing-card-price">£4<span>/month</span></div>
-        <div class="pricing-card-desc">Deep insights into your viewing habits and smarter organisation.</div>
-        <ul class="pricing-features">
-          <li class="feat-highlight">Everything in Free, plus:</li>
-          <li class="feat-highlight">Watch history analytics (Google Takeout)</li>
-          <li>Most-watched channels breakdown</li>
-          <li>Viewing patterns by day & time</li>
-          <li>Channels you watch but aren't subscribed to</li>
-          <li class="feat-highlight">AI-powered categorisation (Claude)</li>
-          <li>Smart unsub candidates</li>
-          <li>Priority Discover results</li>
-          <li>Channel health report (PDF export)</li>
-          <li>Category breakdown visualisations</li>
-        </ul>
-        <button class="pricing-btn pricing-btn-primary" onclick="toast('Pro launches soon — we\\'ll let you know!')">Get Pro</button>
-      </div>
-      <!-- Power -->
-      <div class="pricing-card">
-        <div class="pricing-card-tier">Power</div>
-        <div class="pricing-card-price">£9<span>/month</span></div>
-        <div class="pricing-card-desc">For the serious YouTube power user who manages everything.</div>
-        <ul class="pricing-features">
-          <li class="feat-highlight">Everything in Pro, plus:</li>
-          <li class="feat-highlight">Bulk unsubscribe from inactive channels</li>
-          <li>Subscription migration tools</li>
-          <li>Spreadsheet export (XLSX)</li>
-          <li>API access for developers</li>
-          <li>Multi-account management</li>
-          <li>Custom category icons</li>
-          <li>Priority support</li>
-        </ul>
-        <button class="pricing-btn" onclick="toast('Power plan launches soon — we\\'ll let you know!')">Get Power</button>
-      </div>
-    </div>
-  </div>
-
-  <hr class="pricing-divider">
-
-  <!-- Creator Tiers -->
-  <div class="pricing-section">
-    <div class="pricing-section-header">
-      <h3>For Creators</h3>
-      <span class="pricing-section-badge pricing-badge-creator">Marketplace</span>
-    </div>
-    <div class="pricing-grid">
-      <!-- Starter -->
-      <div class="pricing-card">
-        <div class="pricing-card-tier">Starter</div>
-        <div class="pricing-card-price">£29<span>/month</span></div>
-        <div class="pricing-card-desc">Get your channel in front of the right subscribers.</div>
-        <ul class="pricing-features">
-          <li>Featured in 1 category</li>
-          <li>Up to 500 impressions/month</li>
-          <li>Basic click & view analytics</li>
-          <li>"Promoted" label on Discover</li>
-          <li>Quality-filtered audience only</li>
-          <li class="feat-disabled">Priority carousel placement</li>
-          <li class="feat-disabled">A/B test descriptions</li>
-          <li class="feat-disabled">Audience targeting</li>
-        </ul>
-        <button class="pricing-btn" onclick="toast('Marketplace launches soon — we\\'ll let you know!')">Get started</button>
-      </div>
-      <!-- Growth -->
-      <div class="pricing-card pricing-card-featured">
-        <div class="pricing-card-popular">Most Popular</div>
-        <div class="pricing-card-tier">Growth</div>
-        <div class="pricing-card-price">£79<span>/month</span></div>
-        <div class="pricing-card-desc">Scale your reach across multiple categories with rich data.</div>
-        <ul class="pricing-features">
-          <li class="feat-highlight">Everything in Starter, plus:</li>
-          <li class="feat-highlight">Featured in up to 5 categories</li>
-          <li>Up to 2,500 impressions/month</li>
-          <li>Priority carousel placement</li>
-          <li>Detailed click & subscriber analytics</li>
-          <li>A/B test channel descriptions</li>
-          <li>Audience demographics (anonymised)</li>
-          <li class="feat-disabled">Dedicated account manager</li>
-        </ul>
-        <button class="pricing-btn pricing-btn-primary" onclick="toast('Marketplace launches soon — we\\'ll let you know!')">Get Growth</button>
-      </div>
-      <!-- Pro Creator -->
-      <div class="pricing-card">
-        <div class="pricing-card-tier">Pro</div>
-        <div class="pricing-card-price">£199<span>/month</span></div>
-        <div class="pricing-card-desc">Full access, top placement, and a dedicated growth partner.</div>
-        <ul class="pricing-features">
-          <li class="feat-highlight">Everything in Growth, plus:</li>
-          <li class="feat-highlight">Featured in all categories</li>
-          <li>Unlimited impressions</li>
-          <li>Top carousel position</li>
-          <li>Dedicated account manager</li>
-          <li>Custom audience targeting</li>
-          <li>Competitor benchmarking</li>
-          <li>API access for bulk management</li>
-        </ul>
-        <button class="pricing-btn" onclick="toast('Marketplace launches soon — we\\'ll let you know!')">Contact sales</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- FAQ -->
-  <hr class="pricing-divider">
-  <div class="pricing-faq">
-    <h3>Frequently asked questions</h3>
-    <div class="pricing-faq-item">
-      <div class="pricing-faq-q">Can I cancel anytime?</div>
-      <div class="pricing-faq-a">Yes — all plans are monthly with no lock-in. Cancel from your account settings and you'll keep access until the end of your billing period.</div>
-    </div>
-    <div class="pricing-faq-item">
-      <div class="pricing-faq-q">Is the free tier really free forever?</div>
-      <div class="pricing-faq-a">Absolutely. Categorisation, basic analytics, dead channel detection, and Discover will always be free. We want everyone to have a cleaner YouTube feed.</div>
-    </div>
-    <div class="pricing-faq-item">
-      <div class="pricing-faq-q">What's the difference between viewer and creator plans?</div>
-      <div class="pricing-faq-a">Viewer plans help you organise and understand your subscriptions. Creator plans let you promote your channel in the Marketplace so new subscribers discover you.</div>
-    </div>
-    <div class="pricing-faq-item">
-      <div class="pricing-faq-q">How does the watch history feature work?</div>
-      <div class="pricing-faq-a">You upload your YouTube watch history from Google Takeout. Everything is processed locally in your browser — your data never leaves your device.</div>
-    </div>
-    <div class="pricing-faq-item">
-      <div class="pricing-faq-q">Do I need to be a Pro viewer to list on the Marketplace?</div>
-      <div class="pricing-faq-a">No — viewer and creator plans are completely independent. You can use the free viewer tier and still list your channel as a creator.</div>
-    </div>
-  </div>
-</div>
-
 <!-- ═══ Categories Strip ═══ -->
 <section class="categories-section" id="categoriesSection">
-  <div class="categories-header">
-    <h2>Categories</h2>
-  </div>
-  <div class="categories-actions-row">
-    <button class="btn-add-category" onclick="openModal('addCategoryModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Add category
-    </button>
-    <button class="btn-add-category btn-auto-cat" onclick="openModal('autoCatConfirmModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg>
-      Auto-Categorise
-    </button>
-  </div>
   <div class="categories-track-area">
     <button class="categories-scroll-btn" onclick="scrollCats(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div class="categories-track-wrap">
@@ -2739,6 +2693,32 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
+<!-- ═══ Add Subcategory Modal ═══ -->
+<div class="modal-overlay" id="addSubcategoryModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addSubcategoryModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2>New subcategory</h2>
+    <div style="margin-top:1.25rem">
+      <div class="form-group">
+        <label>Primary category</label>
+        <select id="subcatParentSelect" class="sort-select" onchange="updateSubcatParentHint()">
+          <option value="">Select a category…</option>
+        </select>
+        <p class="hint" id="subcatParentHint"></p>
+      </div>
+      <div class="form-group">
+        <label>Subcategory name</label>
+        <input type="text" id="subcategoryNameInput" placeholder="e.g. Production, Jazz, Web Dev…">
+        <p class="form-error" id="subcategoryError" style="display:none"></p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('addSubcategoryModal')">Cancel</button>
+      <button class="btn-save" onclick="saveSubcategoryModal()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ AI Categorise Modal ═══ -->
 <div class="modal-overlay" id="aiModal">
   <div class="modal">
@@ -3036,15 +3016,77 @@ function setSubcategory(sub) {
 }
 
 function addSubcategory() {
-  const name = prompt('New subcategory name for "' + activeCategory + '":');
-  if (!name || !name.trim()) return;
-  const trimmed = name.trim();
-  if (!subcategories[activeCategory]) subcategories[activeCategory] = [];
-  if (subcategories[activeCategory].includes(trimmed)) { toast('Subcategory already exists'); return; }
-  subcategories[activeCategory].push(trimmed);
+  // Populate the parent category dropdown
+  const sel = document.getElementById('subcatParentSelect');
+  sel.innerHTML = '<option value="">Select a category…</option>' +
+    categories.map(c => {
+      const subCount = (subcategories[c] || []).length;
+      return `<option value="${c}" ${c === activeCategory && activeCategory !== 'all' && activeCategory !== '__uncat__' ? 'selected' : ''}>${c}${subCount ? ' (' + subCount + ' subs)' : ''}</option>`;
+    }).join('');
+  
+  // Clear previous state
+  document.getElementById('subcategoryNameInput').value = '';
+  document.getElementById('subcategoryError').style.display = 'none';
+  document.getElementById('subcategoryError').textContent = '';
+  updateSubcatParentHint();
+  
+  openModal('addSubcategoryModal');
+}
+
+function updateSubcatParentHint() {
+  const sel = document.getElementById('subcatParentSelect');
+  const hint = document.getElementById('subcatParentHint');
+  const cat = sel.value;
+  if (!cat) {
+    hint.textContent = 'Choose which category this subcategory belongs to.';
+    return;
+  }
+  const existing = subcategories[cat] || [];
+  if (existing.length) {
+    hint.textContent = 'Existing: ' + existing.join(', ');
+  } else {
+    hint.textContent = 'No subcategories yet for ' + cat + '.';
+  }
+}
+
+function saveSubcategoryModal() {
+  const cat = document.getElementById('subcatParentSelect').value;
+  const name = document.getElementById('subcategoryNameInput').value.trim();
+  const errorEl = document.getElementById('subcategoryError');
+
+  // Clear previous error
+  errorEl.style.display = 'none';
+  errorEl.textContent = '';
+
+  // Validate parent category selected
+  if (!cat) {
+    errorEl.textContent = 'Please select a primary category first.';
+    errorEl.style.display = '';
+    return;
+  }
+
+  // Validate name not empty
+  if (!name) {
+    errorEl.textContent = 'Subcategory name can\'t be empty — give it a name!';
+    errorEl.style.display = '';
+    document.getElementById('subcategoryNameInput').focus();
+    return;
+  }
+
+  // Validate not duplicate
+  if (!subcategories[cat]) subcategories[cat] = [];
+  if (subcategories[cat].includes(name)) {
+    errorEl.textContent = `"${name}" already exists under ${cat}.`;
+    errorEl.style.display = '';
+    document.getElementById('subcategoryNameInput').focus();
+    return;
+  }
+
+  subcategories[cat].push(name);
   save();
   renderSubcategories();
-  toast('Subcategory added');
+  closeModal('addSubcategoryModal');
+  toast(`Subcategory "${name}" added to ${cat}`);
 }
 
 function editSubcategory(oldName) {
@@ -3187,10 +3229,10 @@ function renderChannels() {
   catsSection.style.display = '';
   mainLayout.style.display = '';
   toolbar.style.display = 'flex';
-  sidebar.style.display = '';
+  sidebar.style.display = 'none';
   document.getElementById('promoBanner').style.display = '';
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
-  document.getElementById('navChannels').classList.add('active');
+  document.getElementById('navChannels')?.classList.add('active');
 
   // Show discover button only when a real category is selected
   const discoverBtn = document.getElementById('btnDiscover');
@@ -5124,6 +5166,16 @@ function buildChannelsSecondaryNav(container) {
     <hr class="home-nav-secondary-divider">
 
     <div class="sec-nav-filter-group">
+      <div class="sec-nav-filter-title">Sort by</div>
+      <select class="sec-nav-sort" id="secNavSort" onchange="document.getElementById('sortSelect').value=this.value;renderChannels()">
+        <option value="name">Name</option>
+        <option value="subscribers">Subscribers</option>
+        <option value="videoCount">Video count</option>
+        <option value="subDate">Subscription date</option>
+      </select>
+    </div>
+
+    <div class="sec-nav-filter-group">
       <div class="sec-nav-filter-title">Channel Size</div>
       <label class="sec-nav-filter"><input type="checkbox" data-filter="size" value="mega" onchange="renderChannels()">${checkIcon} Mega <span class="sec-nav-filter-tag">1M+</span></label>
       <label class="sec-nav-filter"><input type="checkbox" data-filter="size" value="large" onchange="renderChannels()">${checkIcon} Large <span class="sec-nav-filter-tag">100K–1M</span></label>
@@ -5150,18 +5202,6 @@ function buildChannelsSecondaryNav(container) {
       <label class="sec-nav-filter"><input type="checkbox" data-filter="action" value="uncategorised" onchange="renderChannels()">${checkIcon} Uncategorised</label>
       <label class="sec-nav-filter"><input type="checkbox" data-filter="action" value="missingdata" onchange="renderChannels()">${checkIcon} Missing data</label>
       <label class="sec-nav-filter"><input type="checkbox" data-filter="action" value="unsub" onchange="renderChannels()">${checkIcon} Unsub candidates</label>
-    </div>
-
-    <hr class="home-nav-secondary-divider">
-
-    <div class="sec-nav-filter-group">
-      <div class="sec-nav-filter-title">Sort by</div>
-      <select class="sec-nav-sort" id="secNavSort" onchange="document.getElementById('sortSelect').value=this.value;renderChannels()">
-        <option value="name">Name</option>
-        <option value="subscribers">Subscribers</option>
-        <option value="videoCount">Video count</option>
-        <option value="subDate">Subscription date</option>
-      </select>
     </div>
 
     <button class="sec-nav-clear-btn" onclick="clearAllSecNavFilters()">
@@ -5373,7 +5413,6 @@ function showView(view) {
   const mainLayout = document.querySelector('.main-layout');
   const analyticsPage = document.getElementById('analyticsPage');
   const marketplacePage = document.getElementById('marketplacePage');
-  const pricingPage = document.getElementById('pricingPage');
   const homeView = document.getElementById('homeView');
   const onboarding = document.getElementById('onboardingEmpty');
   const promoBanner = document.getElementById('promoBanner');
@@ -5383,7 +5422,6 @@ function showView(view) {
   mainLayout.style.display = 'none';
   analyticsPage.classList.remove('active');
   marketplacePage.classList.remove('active');
-  pricingPage.classList.remove('active');
   homeView.classList.remove('active');
   if (onboarding) onboarding.style.display = 'none';
   if (promoBanner) promoBanner.style.display = 'none';
@@ -5412,11 +5450,7 @@ function showView(view) {
       document.getElementById('navMarketplace').classList.add('active');
       document.querySelector('.home-nav-item[data-nav="marketplace"]')?.classList.add('active');
       break;
-    case 'pricing':
-      pricingPage.classList.add('active');
-      document.getElementById('navPricing').classList.add('active');
-      document.querySelector('.home-nav-item[data-nav="pricing"]')?.classList.add('active');
-      break;
+
     case 'channels':
     default:
       if (channels.length) {
