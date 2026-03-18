@@ -30,6 +30,7 @@
   position: relative; padding: 10rem 2.5rem 6rem; text-align: center;
   overflow: hidden; min-height: 80vh;
   display: flex; align-items: center; justify-content: center;
+  border-bottom: 1px solid rgba(255,255,255,.06);
 }
 .heroBg { position: absolute; inset: 0; }
 .heroGlow1 {
