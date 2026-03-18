@@ -3433,34 +3433,32 @@ let settings = JSON.parse(localStorage.getItem('subsort_settings') || '{}');
    ═══════════════════════════════════════════ */
 const SUPABASE_URL = 'https://cruqcglooudetpxstvsc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNydXFjZ2xvb3VkZXRweHN0dnNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3OTAyMjQsImV4cCI6MjA4OTM2NjIyNH0.ZqV49eayg6J-rk2yC5QKHMQ2XWEG24ALdB9UAbuTOIc';
-const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { flowType: 'implicit' }
+}) : null;
 
 let sbUser = null; // Supabase auth user
 
 // Check for existing Supabase session on load
-async function initSupabase() {
+function initSupabase() {
   if (!sb) return;
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    sbUser = session.user;
-    // Extract Google provider token for YouTube API calls
-    if (session.provider_token) {
-      accessToken = session.provider_token;
-      localStorage.setItem('subsort_yt_token', accessToken);
-    }
-    await loadUserData();
-  }
-  // Listen for auth state changes
+  // onAuthStateChange fires INITIAL_SESSION immediately on registration,
+  // covering both fresh OAuth callbacks and existing sessions.
   sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) {
+    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
       sbUser = session.user;
-      // Extract Google provider token
+      // Extract Google provider token for YouTube API calls
       if (session.provider_token) {
         accessToken = session.provider_token;
         localStorage.setItem('subsort_yt_token', accessToken);
       }
       await loadUserData();
       renderAll();
+      updateAuthUI();
+      showView('home');
+    } else if (event === 'INITIAL_SESSION' && !session) {
+      // No session on initial load — show unauthenticated state
+      updateAuthUI();
       showView('home');
     } else if (event === 'SIGNED_OUT') {
       sbUser = null;
@@ -3468,7 +3466,6 @@ async function initSupabase() {
       localStorage.removeItem('subsort_yt_token');
       window.location.href = '/';
     } else if (event === 'TOKEN_REFRESHED' && session) {
-      // Update provider token if refreshed
       if (session.provider_token) {
         accessToken = session.provider_token;
         localStorage.setItem('subsort_yt_token', accessToken);
@@ -6975,47 +6972,15 @@ function renderAll() {
 }
 renderAll();
 // Check auth and decide what to show
-async function initApp() {
-  // If we have local data, show the app immediately
-  if (accessToken || channels.length) {
-    document.getElementById('appShell').style.display = '';
-    showView('home');
-    return;
-  }
-
-  // Wait for Supabase session check
-  if (sb) {
-    try {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session) {
-        sbUser = session.user;
-        // Extract Google provider token for YouTube API
-        if (session.provider_token) {
-          accessToken = session.provider_token;
-          localStorage.setItem('subsort_yt_token', accessToken);
-        }
-        document.getElementById('appShell').style.display = '';
-        await loadUserData();
-        renderAll();
-        updateAuthUI();
-        showView('home');
-        return;
-      }
-    } catch(e) { console.error('Session check failed:', e); }
-  }
-
-  // No auth — check if we should auto-trigger sign-in
+function initApp() {
+  // Auto-trigger sign-in if ?signin=true in URL
   const params = new URLSearchParams(window.location.search);
   if (params.get('signin') === 'true') {
-    // Clean the URL
     window.history.replaceState({}, '', window.location.pathname);
-    // Auto-trigger Google sign-in
     signInWithGoogle();
     return;
   }
-
-  // No auth, no signin param — show the app shell with sign-in option
-  document.getElementById('appShell').style.display = '';
+  // Always show the app shell — initSupabase handles auth state
   updateAuthUI();
   showView('home');
 }
