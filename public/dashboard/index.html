@@ -798,6 +798,13 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600;
 }
 .cat-check-item input{display:none}
+.bulk-subcat-group-label{
+  font-size:.5625rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text-muted);
+  margin-top:.5rem;margin-bottom:.25rem;
+  padding-left:.25rem;
+}
+.bulk-subcat-group-label:first-child{margin-top:0}
 
 /* ─── Bulk Selection ─── */
 .channel-card .card-select{
@@ -3126,8 +3133,8 @@ input[type=range]::-webkit-slider-thumb{
       <div class="cat-checkbox-list" id="bulkCategoryList"></div>
     </div>
     <div class="form-group" id="bulkSubcatGroup" style="display:none">
-      <label>Set subcategory</label>
-      <select id="bulkSubcategorySelect" class="sort-select"></select>
+      <label>Assign subcategories <span style="opacity:.5">select multiple</span></label>
+      <div class="cat-checkbox-list" id="bulkSubcategoryList"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('bulkCategoryModal')">Cancel</button>
@@ -6453,38 +6460,57 @@ function openBulkCategoryModal() {
     </label>`
   ).join('');
   document.getElementById('bulkSubcatGroup').style.display = 'none';
+  document.getElementById('bulkSubcategoryList').innerHTML = '';
   openModal('bulkCategoryModal');
 }
 
 function updateBulkSubcatOptions() {
   const checked = [...document.querySelectorAll('#bulkCategoryList input:checked')].map(i => i.value);
   const group = document.getElementById('bulkSubcatGroup');
-  const sel = document.getElementById('bulkSubcategorySelect');
-  const allSubs = [];
+  const list = document.getElementById('bulkSubcategoryList');
+
+  // Gather all subcategories from selected categories, grouped by parent
+  let html = '';
+  let hasAnySubs = false;
   for (const cat of checked) {
-    for (const sub of (subcategories[cat] || [])) {
-      if (!allSubs.includes(sub)) allSubs.push(sub);
+    const subs = subcategories[cat] || [];
+    if (subs.length) {
+      hasAnySubs = true;
+      html += `<div class="bulk-subcat-group-label">${cat}</div>`;
+      html += subs.map(s =>
+        `<label class="cat-check-item" onclick="this.classList.toggle('checked')">
+          <input type="checkbox" value="${s}" data-parent="${cat}" onchange="this.parentElement.classList.toggle('checked',this.checked)">
+          ${s}
+        </label>`
+      ).join('');
     }
   }
-  if (!allSubs.length) {
+
+  if (!hasAnySubs) {
     group.style.display = 'none';
+    list.innerHTML = '';
     return;
   }
   group.style.display = '';
-  sel.innerHTML = '<option value="">No subcategory</option>' + allSubs.map(s => `<option value="${s}">${s}</option>`).join('');
+  list.innerHTML = html;
 }
 
 function applyBulkCategories() {
   const newCats = [...document.querySelectorAll('#bulkCategoryList input:checked')].map(i => i.value);
-  const subSel = document.getElementById('bulkSubcategorySelect');
-  const newSub = subSel.options.length ? subSel.value : '';
+  const newSubs = [...document.querySelectorAll('#bulkSubcategoryList input:checked')].map(i => ({
+    name: i.value,
+    parent: i.dataset.parent
+  }));
 
   let updated = 0;
   for (const id of selectedChannels) {
     const ch = channels.find(c => c.id === id);
     if (!ch) continue;
     ch.categories = [...newCats];
-    ch.subcategory = newSub;
+    // Set subcategory: use the first matching subcategory for the channel's categories
+    // If multiple subcats selected, prefer one whose parent matches the channel's first category
+    const matchingSub = newSubs.find(s => newCats.includes(s.parent));
+    ch.subcategory = matchingSub ? matchingSub.name : '';
     updated++;
   }
 
