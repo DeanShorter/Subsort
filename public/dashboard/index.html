@@ -3517,8 +3517,8 @@ async function loadUserData() {
     if (ch.categories?.length) localChannelCats[ch.channelId] = ch.categories;
   });
 
+  // ── Categories ─────────────────────────────────────────────────────────
   try {
-    // ── Categories ───────────────────────────────────────────────────────
     const { data: catRows, error: catErr } = await sb.from('categories').select('*').order('sort_order');
     if (catErr) throw catErr;
     if (catRows && catRows.length > 0) {
@@ -3534,21 +3534,30 @@ async function loadUserData() {
         if (data) window._dbCategories.push(data);
       }
       categories = window._dbCategories.map(c => c.name);
+    } else {
+      window._dbCategories = window._dbCategories || [];
     }
+  } catch (e) {
+    console.error('Failed to load categories:', e);
+    toast('Failed to load categories from server');
+  }
 
-    // ── Subcategories ────────────────────────────────────────────────────
-    const { data: subRows, error: subErr } = await sb.from('subcategories').select('*, categories(name)').order('sort_order');
+  // ── Subcategories ───────────────────────────────────────────────────────
+  try {
+    // Avoid nested join — look up category name from _dbCategories cache
+    const { data: subRows, error: subErr } = await sb.from('subcategories').select('*').order('sort_order');
     if (subErr) throw subErr;
     if (subRows && subRows.length > 0) {
       subcategories = {};
+      window._dbSubcategories = subRows;
       subRows.forEach(s => {
-        const catName = s.categories?.name;
+        const catRow = (window._dbCategories || []).find(c => c.id === s.category_id);
+        const catName = catRow?.name;
         if (catName) {
           if (!subcategories[catName]) subcategories[catName] = [];
           subcategories[catName].push(s.name);
         }
       });
-      window._dbSubcategories = subRows;
     } else if (subRows && subRows.length === 0 && Object.keys(localSubcategories).length > 0 && window._dbCategories?.length > 0) {
       window._dbSubcategories = [];
       for (const [catName, subs] of Object.entries(localSubcategories)) {
@@ -3562,8 +3571,12 @@ async function loadUserData() {
         }
       }
     }
+  } catch (e) {
+    console.error('Failed to load subcategories:', e);
+  }
 
-    // ── Channels ─────────────────────────────────────────────────────────
+  // ── Channels ────────────────────────────────────────────────────────────
+  try {
     let { data: chRows, error: chErr } = await sb.from('channels').select('*');
     if (chErr) throw chErr;
 
@@ -3574,12 +3587,13 @@ async function loadUserData() {
       chRows = reloaded;
     }
 
-    const { data: ccRows } = await sb.from('channel_categories').select('channel_id, category_id, categories(name)');
+    // Load channel→category assignments (avoid nested join — look up name from _dbCategories)
+    const { data: ccRows } = await sb.from('channel_categories').select('channel_id, category_id');
     const ccMap = {};
     (ccRows || []).forEach(cc => {
       if (!ccMap[cc.channel_id]) ccMap[cc.channel_id] = [];
-      const name = cc.categories?.name;
-      if (name) ccMap[cc.channel_id].push(name);
+      const cat = (window._dbCategories || []).find(c => c.id === cc.category_id);
+      if (cat) ccMap[cc.channel_id].push(cat.name);
     });
 
     if (chRows && chRows.length > 0) {
@@ -3634,12 +3648,12 @@ async function loadUserData() {
       }
     }
   } catch (e) {
-    console.error('Failed to load user data:', e);
-    toast('Failed to load data from server');
-  } finally {
-    save();
-    renderAll();
+    console.error('Failed to load channels:', e);
+    toast('Failed to load channels from server');
   }
+
+  save();
+  renderAll();
 }
 
 /* ═══════════════════════════════════════════
@@ -3649,10 +3663,10 @@ async function dbSaveCategory(name) {
   if (!sb || !sbUser) return null;
   const { data, error } = await sb
     .from('categories')
-    .insert({ user_id: sbUser.id, name, sort_order: categories.length })
+    .upsert({ user_id: sbUser.id, name, sort_order: categories.length }, { onConflict: 'user_id,name' })
     .select()
     .single();
-  if (error) { console.error('Save category error:', error); return null; }
+  if (error) { console.error('Save category error:', error); toast('Category not saved to server'); return null; }
   return data;
 }
 
@@ -3666,12 +3680,13 @@ async function dbSaveSubcategory(categoryName, subName) {
   if (!sb || !sbUser) return null;
   const cat = (window._dbCategories || []).find(c => c.name === categoryName);
   if (!cat) return null;
+  const sortOrder = (subcategories[categoryName] || []).length;
   const { data, error } = await sb
     .from('subcategories')
-    .insert({ user_id: sbUser.id, category_id: cat.id, name: subName })
+    .upsert({ user_id: sbUser.id, category_id: cat.id, name: subName, sort_order: sortOrder }, { onConflict: 'category_id,name' })
     .select()
     .single();
-  if (error) { console.error('Save subcategory error:', error); return null; }
+  if (error) { console.error('Save subcategory error:', error); toast('Subcategory not saved to server'); return null; }
   return data;
 }
 
