@@ -2917,6 +2917,7 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Select
     </button>
+    <button class="bb-btn" onclick="openBulkCategoryModal()">Bulk Edit</button>
     <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
   </div>
   <div class="chan-topbar-right">
@@ -4558,8 +4559,6 @@ async function saveNotes() {
   save(); renderAll();
   closeModal('notesModal');
   toast('Notes saved');
-  // Reopen the channel detail to show the updated note
-  openDetail(notesChannelId);
   if (sb && sbUser) dbSaveChannelNotes(ch.channelId, ch.notes);
 }
 
