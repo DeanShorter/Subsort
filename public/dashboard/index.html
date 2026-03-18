@@ -2027,8 +2027,10 @@ input[type=range]::-webkit-slider-thumb{
 .main-layout{padding:0!important}
 
 /* ─── Channels Top Bar ─── */
-.chan-topbar{display:none;align-items:center;gap:.625rem;padding:.75rem 1.5rem;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
+.chan-topbar{display:none;align-items:center;justify-content:space-between;gap:.625rem;padding:.75rem 1.5rem;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
 .chan-topbar.show{display:flex}
+.chan-topbar-left{display:flex;align-items:center;gap:.5rem}
+.chan-topbar-right{display:flex;align-items:center;gap:.625rem}
 .chan-search{flex:1;position:relative;min-width:0}
 .chan-search input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);font:400 .875rem/1 var(--font-body);padding:.5rem .75rem .5rem 2.125rem;border-radius:var(--radius-sm);outline:none;transition:border-color .15s}
 .chan-search input:focus{border-color:#555}
@@ -2827,22 +2829,32 @@ input[type=range]::-webkit-slider-thumb{
 
 <!-- ═══ Channels Top Bar ═══ -->
 <div class="chan-topbar" id="chanTopbar">
-  <div class="chan-search">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-    <input type="text" id="searchInput" placeholder="Search channels…" oninput="chanPage=1;renderChannels()">
+  <div class="chan-topbar-left">
+    <button class="bb-btn" id="bbSelectBtn" onclick="toggleBulkMode()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Select
+    </button>
+    <button class="bb-btn" onclick="openModal('autoCatConfirmModal')">Auto-Sort</button>
+    <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
   </div>
-  <label class="chan-ctrl">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
-    Sort:&nbsp;<select id="sortSelect" onchange="chanPage=1;renderChannels()">
-      <option value="name">Name</option>
-      <option value="subscribers">Subscribers</option>
-      <option value="videoCount">Video count</option>
-      <option value="subDate">Subscription date</option>
-    </select>
-  </label>
-  <button class="chan-icon-btn" title="Filters" onclick="toggleChannelsSecNav()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-  </button>
+  <div class="chan-topbar-right">
+    <div class="chan-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Search channels…" oninput="chanPage=1;renderChannels()">
+    </div>
+    <label class="chan-ctrl">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+      Sort:&nbsp;<select id="sortSelect" onchange="chanPage=1;renderChannels()">
+        <option value="name">Name</option>
+        <option value="subscribers">Subscribers</option>
+        <option value="videoCount">Video count</option>
+        <option value="subDate">Subscription date</option>
+      </select>
+    </label>
+    <button class="chan-icon-btn" title="Filters" onclick="toggleChannelsSecNav()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    </button>
+  </div>
 </div>
 
 <!-- ═══ Categories Strip ═══ -->
@@ -3046,7 +3058,7 @@ input[type=range]::-webkit-slider-thumb{
   </main>
 </div>
 
-<!-- ═══ Bottom Bar ═══ -->
+<!-- ═══ Bottom Bar (uncategorised info only) ═══ -->
 <div class="bottom-bar" id="bottomBar">
   <div class="bb-left">
     <div class="bb-info" id="bbUncatInfo" style="display:none">
@@ -3054,15 +3066,6 @@ input[type=range]::-webkit-slider-thumb{
       <span id="bbUncatText"></span>
     </div>
     <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow" style="display:none">Sort now</button>
-  </div>
-  <div class="bb-right">
-    <button class="bb-btn" id="bbSelectBtn" onclick="toggleBulkMode()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Select
-    </button>
-    <button class="bb-btn" onclick="openBulkCategoryModal()">Categorise</button>
-    <button class="bb-btn" onclick="openModal('autoCatConfirmModal')">Auto-Sort</button>
-    <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
   </div>
 </div>
 
