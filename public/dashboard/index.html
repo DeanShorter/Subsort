@@ -1454,19 +1454,7 @@ input[type=range]::-webkit-slider-thumb{
 }
 .sidebar-ctrl-option.active .sidebar-ctrl-radio-dot{display:block}
 /* Hover mode: expand nav on hover */
-.home-nav-primary.nav-hover:hover{width:220px;align-items:stretch;padding:1rem .625rem}
-.home-nav-primary.nav-hover:hover .home-nav-brand{justify-content:flex-start;padding:0 .625rem .75rem}
-.home-nav-primary.nav-hover:hover .home-nav-brand-text,
-.home-nav-primary.nav-hover:hover .home-nav-item-label,
-.home-nav-primary.nav-hover:hover .home-nav-section-label,
-.home-nav-primary.nav-hover:hover .home-nav-premium-cta{display:flex}
-.home-nav-primary.nav-hover:hover .home-nav-item-label{display:inline}
-.home-nav-primary.nav-hover:hover .home-nav-section-label{display:block}
-.home-nav-primary.nav-hover:hover .home-nav-item{justify-content:flex-start;padding:.5rem .75rem;width:auto}
-.home-nav-primary.nav-hover:hover .home-nav-item.active::before{left:0}
-.home-nav-primary.nav-hover:hover .home-nav-divider{width:calc(100% - 1.25rem);margin:.5rem .625rem}
-.home-nav-primary.nav-hover:hover .home-nav-toggle{align-self:flex-start;margin-right:0}
-.home-nav-primary.nav-hover:hover .sidebar-ctrl-btn{align-self:flex-start}
+/* nav-hover expand/collapse is handled by JS mouseenter/mouseleave */
 
 .home-nav-premium-cta{
   background:linear-gradient(90deg,rgba(59,130,246,.15),rgba(59,130,246,.05)) !important;
@@ -6147,9 +6135,16 @@ document.addEventListener('click', e => {
 
 function setSidebarMode(mode) {
   const nav = document.getElementById('homePrimaryNav');
+  // Remove previous hover listeners
+  nav.removeEventListener('mouseenter', _navHoverEnter);
+  nav.removeEventListener('mouseleave', _navHoverLeave);
   nav.classList.remove('collapsed', 'nav-hover');
   if (mode === 'collapsed') nav.classList.add('collapsed');
-  if (mode === 'hover') { nav.classList.add('collapsed', 'nav-hover'); }
+  if (mode === 'hover') {
+    nav.classList.add('collapsed', 'nav-hover');
+    nav.addEventListener('mouseenter', _navHoverEnter);
+    nav.addEventListener('mouseleave', _navHoverLeave);
+  }
   ['expanded','collapsed','hover'].forEach(m => {
     document.getElementById('scOpt' + m.charAt(0).toUpperCase() + m.slice(1))?.classList.toggle('active', m === mode);
   });
@@ -6157,6 +6152,8 @@ function setSidebarMode(mode) {
   save();
   document.getElementById('sidebarCtrlMenu').classList.remove('open');
 }
+function _navHoverEnter() { this.classList.remove('collapsed'); }
+function _navHoverLeave() { this.classList.add('collapsed'); }
 
 // Restore sidebar mode on load
 (function() {
