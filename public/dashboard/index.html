@@ -5212,7 +5212,10 @@ async function fetchAllSubscriptions() {
     }, 1200);
 
     toast(`Synced! ${newCount} new channels, ${channels.length} total`);
-    localStorage.setItem(CACHE_KEYS.syncTimestamp, Date.now().toString());
+    // Only save sync timestamp if we actually have channels
+    if (channels.length > 0) {
+      localStorage.setItem(CACHE_KEYS.syncTimestamp, Date.now().toString());
+    }
     // Clear feed caches since channel data has changed
     cacheClearPrefix(CACHE_KEYS.feedVideos);
 
