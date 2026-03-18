@@ -5431,8 +5431,10 @@ function updateAuthUI() {
   document.getElementById('sideNavSignOut').style.display = signedIn ? '' : 'none';
 
   // Hide nav links and search until user has channels
-  document.querySelector('.topnav-links').style.display = hasChannels ? '' : 'none';
-  document.querySelector('.nav-search').style.display = hasChannels ? '' : 'none';
+  const topnavLinks = document.querySelector('.topnav-links');
+  if (topnavLinks) topnavLinks.style.display = hasChannels ? '' : 'none';
+  const navSearch = document.querySelector('.nav-search');
+  if (navSearch) navSearch.style.display = hasChannels ? '' : 'none';
 }
 
 function signOut() {
