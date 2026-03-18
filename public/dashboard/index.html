@@ -5068,19 +5068,29 @@ function showUpgradePrompt(title, message) {
 }
 
 function updateSyncProgress(label, detail, pct) {
-  document.getElementById('syncLabel').textContent = label;
-  document.getElementById('syncDetail').textContent = detail;
-  document.getElementById('syncBar').style.width = pct + '%';
+  const labelEl = document.getElementById('syncLabel');
+  const detailEl = document.getElementById('syncDetail');
+  const barEl = document.getElementById('syncBar');
+  if (labelEl) labelEl.textContent = label;
+  if (detailEl) detailEl.textContent = detail;
+  if (barEl) barEl.style.width = pct + '%';
+  // Show the progress card if it exists
+  const progressCard = document.getElementById('ytProgressCard');
+  if (progressCard) progressCard.style.display = '';
 }
 
 function resetImportPage() {
-  document.getElementById('ytConnectCard').style.display = '';
-  document.getElementById('ytProgressCard').style.display = 'none';
+  const connect = document.getElementById('ytConnectCard');
+  const progress = document.getElementById('ytProgressCard');
+  if (connect) connect.style.display = '';
+  if (progress) progress.style.display = 'none';
 }
 
 async function fetchAllSubscriptions() {
-  document.getElementById('ytConnectCard').style.display = 'none';
-  document.getElementById('ytProgressCard').style.display = '';
+  const connectCard = document.getElementById('ytConnectCard');
+  const progressCard = document.getElementById('ytProgressCard');
+  if (connectCard) connectCard.style.display = 'none';
+  if (progressCard) progressCard.style.display = '';
   updateSyncProgress('Fetching subscriptions…', 'Loading your channel list', 10);
 
   let nextPage = '';
