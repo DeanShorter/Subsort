@@ -3342,7 +3342,7 @@ async function loadUserData() {
     const { data: chRows } = await sb
       .from('channels')
       .select('*, channel_categories(category_id, categories(name))');
-    if (chRows) {
+    if (chRows && chRows.length > 0) {
       channels = chRows.map(ch => ({
         id: ch.id,
         channelId: ch.channel_id,
@@ -3460,8 +3460,7 @@ async function dbSaveChannelNotes(channelId, notes) {
 }
 
 async function dbBulkSaveChannels(channelList) {
-  if (!sb || !sbUser) return;
-  // Batch upsert channels
+  if (!sb || !sbUser) return null;
   const rows = channelList.map(ch => ({
     user_id: sbUser.id,
     channel_id: ch.channelId,
@@ -3482,8 +3481,13 @@ async function dbBulkSaveChannels(channelList) {
     country: ch.country || '',
     notes: ch.notes || ''
   }));
-  const { error } = await sb.from('channels').upsert(rows, { onConflict: 'user_id,channel_id' });
-  if (error) console.error('Bulk save error:', error);
+  // Chunk into batches of 100 to avoid payload limits
+  const CHUNK = 100;
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const { error } = await sb.from('channels').upsert(rows.slice(i, i + CHUNK), { onConflict: 'user_id,channel_id' });
+    if (error) return error;
+  }
+  return null;
 }
 
 async function dbUpdateProfile(updates) {
@@ -5241,7 +5245,10 @@ async function fetchAllSubscriptions() {
     updateSyncProgress('Done!', `${newCount} new channels added (${channels.length} total)`, 100);
     save();
     renderAll();
-    dbBulkSaveChannels(channels);
+    if (sb && sbUser) {
+      const saveErr = await dbBulkSaveChannels(channels);
+      if (saveErr) console.error('Channels not saved to DB:', saveErr);
+    }
 
     // After a moment, show app shell and switch to home view
     setTimeout(() => {
