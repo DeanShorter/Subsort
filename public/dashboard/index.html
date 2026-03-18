@@ -3508,22 +3508,23 @@ async function signOutSupabase() {
 async function loadUserData() {
   if (!sb || !sbUser) return;
 
-  try {
-    // Snapshot local state before any overwrite — used for migration below
-    const localCategories = [...categories];
-    const localSubcategories = JSON.parse(JSON.stringify(subcategories));
-    const localChannelCats = {};
-    channels.forEach(ch => {
-      if (ch.categories?.length) localChannelCats[ch.channelId] = ch.categories;
-    });
+  // Snapshot local state before any overwrite — used for migration
+  const localCategories = [...categories];
+  const localSubcategories = JSON.parse(JSON.stringify(subcategories));
+  const localChannelCats = {};
+  channels.forEach(ch => {
+    if (ch.categories?.length) localChannelCats[ch.channelId] = ch.categories;
+  });
 
-    // ── Load categories ──────────────────────────────────────────────────
-    const { data: catRows } = await sb.from('categories').select('*').order('sort_order');
+  try {
+    // ── Categories ───────────────────────────────────────────────────────
+    const { data: catRows, error: catErr } = await sb.from('categories').select('*').order('sort_order');
+    if (catErr) throw catErr;
     if (catRows && catRows.length > 0) {
       categories = catRows.map(c => c.name);
       window._dbCategories = catRows;
     } else if (catRows && catRows.length === 0 && localCategories.length > 0) {
-      // Migrate localStorage categories → DB (upsert handles duplicates)
+      // Migrate localStorage categories → DB
       window._dbCategories = [];
       for (let i = 0; i < localCategories.length; i++) {
         const { data } = await sb.from('categories')
@@ -3534,8 +3535,9 @@ async function loadUserData() {
       categories = window._dbCategories.map(c => c.name);
     }
 
-    // ── Load subcategories ───────────────────────────────────────────────
-    const { data: subRows } = await sb.from('subcategories').select('*, categories(name)').order('sort_order');
+    // ── Subcategories ────────────────────────────────────────────────────
+    const { data: subRows, error: subErr } = await sb.from('subcategories').select('*, categories(name)').order('sort_order');
+    if (subErr) throw subErr;
     if (subRows && subRows.length > 0) {
       subcategories = {};
       subRows.forEach(s => {
@@ -3547,7 +3549,6 @@ async function loadUserData() {
       });
       window._dbSubcategories = subRows;
     } else if (subRows && subRows.length === 0 && Object.keys(localSubcategories).length > 0 && window._dbCategories?.length > 0) {
-      // Migrate localStorage subcategories → DB
       window._dbSubcategories = [];
       for (const [catName, subs] of Object.entries(localSubcategories)) {
         const cat = window._dbCategories.find(c => c.name === catName);
@@ -3561,10 +3562,19 @@ async function loadUserData() {
       }
     }
 
-    // ── Load channels with their category assignments ────────────────────
-    const { data: chRows } = await sb
-      .from('channels')
-      .select('*, channel_categories(category_id, categories(name))');
+    // ── Channels ─────────────────────────────────────────────────────────
+    // Two separate queries — avoids double-nested select issues
+    const { data: chRows, error: chErr } = await sb.from('channels').select('*');
+    if (chErr) throw chErr;
+
+    const { data: ccRows } = await sb.from('channel_categories').select('channel_id, category_id, categories(name)');
+    const ccMap = {};
+    (ccRows || []).forEach(cc => {
+      if (!ccMap[cc.channel_id]) ccMap[cc.channel_id] = [];
+      const name = cc.categories?.name;
+      if (name) ccMap[cc.channel_id].push(name);
+    });
+
     if (chRows && chRows.length > 0) {
       channels = chRows.map(ch => ({
         id: ch.id,
@@ -3586,38 +3596,42 @@ async function loadUserData() {
         country: ch.country || '',
         notes: ch.notes || '',
         subcategory: '',
-        categories: (ch.channel_categories || []).map(cc => cc.categories?.name).filter(Boolean),
+        categories: ccMap[ch.id] || [],
         channelUrl: `https://www.youtube.com/channel/${ch.channel_id}`
       }));
 
-      // Migrate channel-category assignments that only exist in localStorage
+      // Migrate channel→category assignments that only exist in localStorage
       if (window._dbCategories?.length > 0) {
-        const inserts = [];
-        for (const ch of channels) {
-          if (ch.categories.length > 0) continue; // Already has DB assignments
-          const localCats = localChannelCats[ch.channelId];
-          if (!localCats?.length) continue;
-          ch.categories = localCats; // Restore in memory
-          for (const catName of localCats) {
-            const cat = window._dbCategories.find(c => c.name === catName);
-            if (cat) inserts.push({ user_id: sbUser.id, channel_id: ch.id, category_id: cat.id });
+        try {
+          const inserts = [];
+          for (const ch of channels) {
+            if (ch.categories.length > 0) continue;
+            const localCats = localChannelCats[ch.channelId];
+            if (!localCats?.length) continue;
+            ch.categories = localCats;
+            for (const catName of localCats) {
+              const cat = window._dbCategories.find(c => c.name === catName);
+              if (cat) inserts.push({ user_id: sbUser.id, channel_id: ch.id, category_id: cat.id });
+            }
           }
-        }
-        if (inserts.length > 0) {
-          const CHUNK = 100;
-          for (let i = 0; i < inserts.length; i += CHUNK) {
-            await sb.from('channel_categories')
-              .upsert(inserts.slice(i, i + CHUNK), { onConflict: 'channel_id,category_id' });
+          if (inserts.length > 0) {
+            const CHUNK = 100;
+            for (let i = 0; i < inserts.length; i += CHUNK) {
+              await sb.from('channel_categories')
+                .upsert(inserts.slice(i, i + CHUNK), { onConflict: 'channel_id,category_id' });
+            }
           }
+        } catch (migErr) {
+          console.error('Channel category migration failed:', migErr);
         }
       }
     }
-
-    save();
-    renderAll();
   } catch (e) {
     console.error('Failed to load user data:', e);
     toast('Failed to load data from server');
+  } finally {
+    save();
+    renderAll();
   }
 }
 
