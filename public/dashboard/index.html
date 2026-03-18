@@ -3780,7 +3780,10 @@ async function dbUpdateProfile(updates) {
 // channelsToSync: array of local channel objects (must have .channelId and .categories)
 // newCategoryNames: array of category names that may not yet exist in DB
 async function dbSyncChannelCategories(channelsToSync, newCategoryNames) {
-  if (!sb || !sbUser || !channelsToSync.length) return;
+  if (!sb || !sbUser || !channelsToSync.length) {
+    console.warn('[Subsort] dbSyncChannelCategories: early exit', { sb: !!sb, sbUser: sbUser?.id, count: channelsToSync.length });
+    return;
+  }
 
   // Upsert any new categories
   for (const name of newCategoryNames) {
@@ -3792,8 +3795,10 @@ async function dbSyncChannelCategories(channelsToSync, newCategoryNames) {
 
   // Fetch DB channel rows for the affected channels
   const ytIds = channelsToSync.map(ch => ch.channelId).filter(Boolean);
-  if (!ytIds.length) return;
-  const { data: dbRows } = await sb.from('channels').select('id, channel_id').in('channel_id', ytIds).eq('user_id', sbUser.id);
+  console.log('[Subsort] dbSyncChannelCategories: ytIds', ytIds.length, 'dbCategories', (window._dbCategories||[]).length);
+  if (!ytIds.length) { console.warn('[Subsort] dbSyncChannelCategories: no ytIds'); return; }
+  const { data: dbRows, error: dbRowsErr } = await sb.from('channels').select('id, channel_id').in('channel_id', ytIds).eq('user_id', sbUser.id);
+  console.log('[Subsort] dbSyncChannelCategories: dbRows', dbRows?.length, dbRowsErr);
   if (!dbRows || !dbRows.length) return;
 
   const dbIdMap = {};
@@ -3801,7 +3806,8 @@ async function dbSyncChannelCategories(channelsToSync, newCategoryNames) {
   const dbRowIds = dbRows.map(r => r.id);
 
   // Replace channel_categories in bulk
-  await sb.from('channel_categories').delete().in('channel_id', dbRowIds);
+  const { error: delErr } = await sb.from('channel_categories').delete().in('channel_id', dbRowIds);
+  if (delErr) console.error('[Subsort] channel_categories delete error:', delErr);
   const inserts = [];
   for (const ch of channelsToSync) {
     const dbId = dbIdMap[ch.channelId];
@@ -3811,10 +3817,12 @@ async function dbSyncChannelCategories(channelsToSync, newCategoryNames) {
       if (cat) inserts.push({ user_id: sbUser.id, channel_id: dbId, category_id: cat.id });
     }
   }
+  console.log('[Subsort] dbSyncChannelCategories: inserting', inserts.length, 'rows');
   if (inserts.length) {
     const CHUNK = 200;
     for (let i = 0; i < inserts.length; i += CHUNK) {
-      await sb.from('channel_categories').insert(inserts.slice(i, i + CHUNK));
+      const { error: insErr } = await sb.from('channel_categories').insert(inserts.slice(i, i + CHUNK));
+      if (insErr) console.error('[Subsort] channel_categories insert error:', insErr);
     }
   }
 }
