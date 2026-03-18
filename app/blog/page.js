@@ -19,7 +19,7 @@ export default function BlogIndex() {
         </Link>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
-          <a href="/dashboard?signin=true" className={styles.navCta}>Sign In</a>
+          <a href="/signin" className={styles.navCta}>Sign In</a>
         </div>
       </nav>
 

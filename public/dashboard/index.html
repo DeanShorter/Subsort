@@ -6973,14 +6973,7 @@ function renderAll() {
 renderAll();
 // Check auth and decide what to show
 function initApp() {
-  // Auto-trigger sign-in if ?signin=true in URL
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('signin') === 'true') {
-    window.history.replaceState({}, '', window.location.pathname);
-    signInWithGoogle();
-    return;
-  }
-  // Always show the app shell — initSupabase handles auth state
+  // Always show the app shell — initSupabase handles auth state via onAuthStateChange
   updateAuthUI();
   showView('home');
 }
