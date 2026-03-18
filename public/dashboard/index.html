@@ -6222,7 +6222,7 @@ function _navHoverLeave() { this.classList.add('collapsed'); }
 
 // Restore sidebar mode on load
 (function() {
-  setSidebarMode(settings.sidebarMode || 'hover');
+  setSidebarMode(settings.sidebarMode || 'expanded');
 })();
 
 function setHomeNav(key) {
@@ -6834,7 +6834,6 @@ function showView(view) {
         emptyEl.id = 'channelsEmpty';
         emptyEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:2rem;';
         emptyEl.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48" style="color:var(--text-muted);margin-bottom:1rem"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
           <h2 style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:.5rem">No channels yet</h2>
           <p style="color:var(--text-secondary);margin-bottom:1.5rem;max-width:400px">Sync your YouTube account to import all your subscriptions, then organise them into categories.</p>
           <button onclick="syncYouTube()" style="padding:.75rem 1.5rem;border-radius:8px;background:var(--accent);color:#fff;border:none;font-weight:600;cursor:pointer;font-size:.875rem">
