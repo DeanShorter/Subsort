@@ -5241,6 +5241,7 @@ async function fetchAllSubscriptions() {
     updateSyncProgress('Done!', `${newCount} new channels added (${channels.length} total)`, 100);
     save();
     renderAll();
+    dbBulkSaveChannels(channels);
 
     // After a moment, show app shell and switch to home view
     setTimeout(() => {
