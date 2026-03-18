@@ -3493,12 +3493,15 @@ async function signInWithGoogle() {
 // Sign out via Supabase
 async function signOutSupabase() {
   if (!sb) { signOut(); return; }
-  await sb.auth.signOut();
+  // Clear token synchronously before navigation so next sign-in doesn't skip loadUserData
+  accessToken = null;
+  localStorage.removeItem('subsort_yt_token');
   channels = [];
   categories = [];
   subcategories = {};
   activeCategory = 'all';
   save();
+  await sb.auth.signOut();
   window.location.href = '/';
 }
 
