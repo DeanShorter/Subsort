@@ -2030,6 +2030,8 @@ input[type=range]::-webkit-slider-thumb{
 .chan-topbar{display:none;align-items:center;justify-content:space-between;gap:.625rem;padding:.75rem 1.5rem;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
 .chan-topbar.show{display:flex}
 .chan-topbar-left{display:flex;align-items:center;gap:.5rem}
+.chan-topbar-divider{width:1px;height:1.25rem;background:var(--border-subtle);margin:0 .25rem}
+.bb-act:disabled{background:var(--bg-surface);color:var(--text-muted);cursor:default;opacity:.5}
 .chan-topbar-right{display:flex;align-items:center;gap:.625rem}
 .chan-search{flex:1;position:relative;min-width:0}
 .chan-search input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);font:400 .875rem/1 var(--font-body);padding:.5rem .75rem .5rem 2.125rem;border-radius:var(--radius-sm);outline:none;transition:border-color .15s}
@@ -2830,6 +2832,12 @@ input[type=range]::-webkit-slider-thumb{
 <!-- ═══ Channels Top Bar ═══ -->
 <div class="chan-topbar" id="chanTopbar">
   <div class="chan-topbar-left">
+    <div class="bb-info" id="bbUncatInfo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="bbUncatText"></span>
+    </div>
+    <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
+    <div class="chan-topbar-divider"></div>
     <button class="bb-btn" id="bbSelectBtn" onclick="toggleBulkMode()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Select
@@ -3058,16 +3066,6 @@ input[type=range]::-webkit-slider-thumb{
   </main>
 </div>
 
-<!-- ═══ Bottom Bar (uncategorised info only) ═══ -->
-<div class="bottom-bar" id="bottomBar">
-  <div class="bb-left">
-    <div class="bb-info" id="bbUncatInfo" style="display:none">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span id="bbUncatText"></span>
-    </div>
-    <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow" style="display:none">Sort now</button>
-  </div>
-</div>
 
   </div><!-- end .app-content -->
 </div><!-- end .app-shell -->
@@ -4062,14 +4060,12 @@ function renderChannels() {
   document.getElementById('filterMostWatchedWrap').style.display = watchHistory ? '' : 'none';
 
   const chanTopbar = document.getElementById('chanTopbar');
-  const bottomBar = document.getElementById('bottomBar');
 
   if (!channels.length) {
     catsSection.style.display = 'none';
     mainLayout.style.display = 'none';
     toolbar.style.display = 'none';
     if (chanTopbar) chanTopbar.classList.remove('show');
-    if (bottomBar) bottomBar.classList.remove('show');
     document.getElementById('analyticsPage').classList.remove('active');
     document.getElementById('marketplacePage').classList.remove('active');
     grid.innerHTML = '';
@@ -4084,16 +4080,13 @@ function renderChannels() {
   mainLayout.style.display = '';
   sidebar.style.display = 'none';
   if (chanTopbar) chanTopbar.classList.add('show');
-  if (bottomBar) bottomBar.classList.add('show');
 
-  // Update bottom bar uncat info
+  // Update topbar uncat info
   const uncatCount = channels.filter(ch => chIsUncategorised(ch)).length;
-  const bbInfo = document.getElementById('bbUncatInfo');
-  const bbSortNow = document.getElementById('bbSortNow');
   const bbText = document.getElementById('bbUncatText');
-  if (bbInfo) bbInfo.style.display = uncatCount > 0 ? 'flex' : 'none';
-  if (bbSortNow) bbSortNow.style.display = uncatCount > 0 ? '' : 'none';
+  const bbSortNow = document.getElementById('bbSortNow');
   if (bbText) bbText.textContent = `You have ${uncatCount} uncategorised channel${uncatCount !== 1 ? 's' : ''}`;
+  if (bbSortNow) bbSortNow.disabled = uncatCount === 0;
 
   document.getElementById('navChannels')?.classList.add('active');
 
