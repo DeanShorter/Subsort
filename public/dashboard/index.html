@@ -3776,6 +3776,49 @@ async function dbUpdateProfile(updates) {
   await sb.from('profiles').update(updates).eq('id', sbUser.id);
 }
 
+// Ensure new category names exist in DB, then bulk-update channel_categories for the given channels.
+// channelsToSync: array of local channel objects (must have .channelId and .categories)
+// newCategoryNames: array of category names that may not yet exist in DB
+async function dbSyncChannelCategories(channelsToSync, newCategoryNames) {
+  if (!sb || !sbUser || !channelsToSync.length) return;
+
+  // Upsert any new categories
+  for (const name of newCategoryNames) {
+    if (!(window._dbCategories || []).find(c => c.name === name)) {
+      const row = await dbSaveCategory(name);
+      if (row) (window._dbCategories = window._dbCategories || []).push(row);
+    }
+  }
+
+  // Fetch DB channel rows for the affected channels
+  const ytIds = channelsToSync.map(ch => ch.channelId).filter(Boolean);
+  if (!ytIds.length) return;
+  const { data: dbRows } = await sb.from('channels').select('id, channel_id').in('channel_id', ytIds).eq('user_id', sbUser.id);
+  if (!dbRows || !dbRows.length) return;
+
+  const dbIdMap = {};
+  for (const r of dbRows) dbIdMap[r.channel_id] = r.id;
+  const dbRowIds = dbRows.map(r => r.id);
+
+  // Replace channel_categories in bulk
+  await sb.from('channel_categories').delete().in('channel_id', dbRowIds);
+  const inserts = [];
+  for (const ch of channelsToSync) {
+    const dbId = dbIdMap[ch.channelId];
+    if (!dbId) continue;
+    for (const catName of (ch.categories || [])) {
+      const cat = (window._dbCategories || []).find(c => c.name === catName);
+      if (cat) inserts.push({ user_id: sbUser.id, channel_id: dbId, category_id: cat.id });
+    }
+  }
+  if (inserts.length) {
+    const CHUNK = 200;
+    for (let i = 0; i < inserts.length; i += CHUNK) {
+      await sb.from('channel_categories').insert(inserts.slice(i, i + CHUNK));
+    }
+  }
+}
+
 // Initialise Supabase on load
 initSupabase();
 
@@ -5058,6 +5101,12 @@ function autoCategoriseConfirmed() {
   save();
   renderAll();
   toast(`Auto-categorised ${assigned} channels (${skipped} already had categories)`);
+
+  if (sb && sbUser && assigned > 0) {
+    const newCatNames = categories.filter(n => !(window._dbCategories || []).find(c => c.name === n));
+    const assignedChannels = channels.filter(ch => !chIsUncategorised(ch));
+    await dbSyncChannelCategories(assignedChannels, newCatNames);
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -5683,23 +5732,29 @@ ${channelList}`;
   }
 }
 
-function applyAI() {
+async function applyAI() {
   if (!aiResults) return;
+  const newCatNames = [];
   if (aiResults.categories) {
     for (const cat of aiResults.categories) {
-      if (!categories.includes(cat)) categories.push(cat);
+      if (!categories.includes(cat)) { categories.push(cat); newCatNames.push(cat); }
     }
   }
+  const assignedChannels = [];
   if (aiResults.assignments) {
     for (const [name, cat] of Object.entries(aiResults.assignments)) {
       const ch = channels.find(c => c.name === name);
-      if (ch) chAddCat(ch, cat);
+      if (ch) { chAddCat(ch, cat); if (!assignedChannels.includes(ch)) assignedChannels.push(ch); }
     }
   }
   save(); renderAll();
   closeModal('aiModal');
   toast('AI categories applied!');
   resetAIModal();
+
+  if (sb && sbUser && assignedChannels.length) {
+    await dbSyncChannelCategories(assignedChannels, newCatNames);
+  }
 }
 
 function discardAI() {
@@ -6954,7 +7009,7 @@ function updateBulkSubcatOptions() {
   list.innerHTML = html;
 }
 
-function applyBulkCategories() {
+async function applyBulkCategories() {
   const newCats = [...document.querySelectorAll('#bulkCategoryList input:checked')].map(i => i.value);
   const newSubs = [...document.querySelectorAll('#bulkSubcategoryList input:checked')].map(i => ({
     name: i.value,
@@ -6962,6 +7017,7 @@ function applyBulkCategories() {
   }));
 
   let updated = 0;
+  const updatedChannels = [];
   for (const id of selectedChannels) {
     const ch = channels.find(c => c.id === id);
     if (!ch) continue;
@@ -6970,6 +7026,7 @@ function applyBulkCategories() {
     // If multiple subcats selected, prefer one whose parent matches the channel's first category
     const matchingSub = newSubs.find(s => newCats.includes(s.parent));
     ch.subcategory = matchingSub ? matchingSub.name : '';
+    updatedChannels.push(ch);
     updated++;
   }
 
@@ -6978,6 +7035,10 @@ function applyBulkCategories() {
   closeModal('bulkCategoryModal');
   clearSelection();
   toast(`Updated ${updated} channel${updated > 1 ? 's' : ''}`);
+
+  if (sb && sbUser && updatedChannels.length) {
+    await dbSyncChannelCategories(updatedChannels, []);
+  }
 }
 
 /* ═══════════════════════════════════════════
