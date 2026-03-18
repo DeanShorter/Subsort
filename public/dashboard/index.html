@@ -3443,8 +3443,10 @@ function initSupabase() {
   // onAuthStateChange fires INITIAL_SESSION immediately on registration,
   // covering both fresh OAuth callbacks and existing sessions.
   sb.auth.onAuthStateChange(async (event, session) => {
+    console.log('[Subsort] onAuthStateChange:', event, session ? session.user?.id : null);
     if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
       sbUser = session.user;
+      console.log('[Subsort] sbUser set:', sbUser.id);
       // Extract Google provider token for YouTube API calls
       if (session.provider_token) {
         accessToken = session.provider_token;
@@ -4841,6 +4843,9 @@ async function saveCategory() {
     if (sb && sbUser) {
       const row = await dbSaveCategory(name);
       if (row) (window._dbCategories = window._dbCategories || []).push(row);
+    } else {
+      console.warn('[Subsort] saveCategory: NOT saving to DB', { sb: !!sb, sbUser: sbUser ? sbUser.id : null });
+      toast(`⚠️ Not signed in to DB — "${name}" won't persist after sign-out`);
     }
   }
   save(); renderAll();
