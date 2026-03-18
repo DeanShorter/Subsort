@@ -6479,7 +6479,17 @@ async function initApp() {
     } catch(e) { console.error('Session check failed:', e); }
   }
 
-  // No auth — show the app shell anyway so user can sign in
+  // No auth — check if we should auto-trigger sign-in
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('signin') === 'true') {
+    // Clean the URL
+    window.history.replaceState({}, '', window.location.pathname);
+    // Auto-trigger Google sign-in
+    signInWithGoogle();
+    return;
+  }
+
+  // No auth, no signin param — show the app shell with sign-in option
   document.getElementById('appShell').style.display = '';
   updateAuthUI();
   showView('home');

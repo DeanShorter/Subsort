@@ -32,7 +32,7 @@ export default function HomePage() {
             All in your browser — nothing stored on our servers.
           </p>
           <div className={styles.heroCtas}>
-            <Link href="/dashboard" className={styles.btnPrimary}>
+            <Link href="/dashboard?signin=true" className={styles.btnPrimary}>
               Get Started — Free
             </Link>
             <Link href="/blog" className={styles.btnSecondary}>
@@ -67,7 +67,7 @@ export default function HomePage() {
       <section className={styles.ctaSection}>
         <h2>Ready to organise your YouTube?</h2>
         <p>Free forever. No account required. Your data stays in your browser.</p>
-        <Link href="/dashboard" className={styles.btnPrimary}>
+        <Link href="/dashboard?signin=true" className={styles.btnPrimary}>
           Launch Subsort
         </Link>
       </section>
