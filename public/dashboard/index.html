@@ -2011,6 +2011,97 @@ input[type=range]::-webkit-slider-thumb{
 /* ─── Animations ─── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .channel-card{animation:fadeUp .4s var(--transition) both}
+
+/* ═══════════════════════════════════════════
+   REDESIGN v2
+   ═══════════════════════════════════════════ */
+
+/* Slim sidebar */
+.home-nav-primary{width:155px!important}
+.home-nav-primary.collapsed{width:48px!important}
+
+/* Hide old chrome */
+#promoBanner{display:none!important}
+.sidebar{display:none!important}
+.channels-toolbar{display:none!important}
+.main-layout{padding:0!important}
+
+/* ─── Channels Top Bar ─── */
+.chan-topbar{display:none;align-items:center;gap:.625rem;padding:.75rem 1.5rem;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
+.chan-topbar.show{display:flex}
+.chan-search{flex:1;position:relative;min-width:0}
+.chan-search input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);font:400 .875rem/1 var(--font-body);padding:.5rem .75rem .5rem 2.125rem;border-radius:var(--radius-sm);outline:none;transition:border-color .15s}
+.chan-search input:focus{border-color:#555}
+.chan-search input::placeholder{color:var(--text-muted)}
+.chan-search svg{position:absolute;left:.65rem;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);pointer-events:none}
+.chan-ctrl{display:inline-flex;align-items:center;gap:.375rem;padding:.45rem .75rem;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font:500 .8125rem/1 var(--font-body);cursor:pointer;transition:all .15s;white-space:nowrap}
+.chan-ctrl:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
+.chan-ctrl svg{width:14px;height:14px;flex-shrink:0}
+.chan-ctrl select{background:none;border:none;color:inherit;font:inherit;cursor:pointer;outline:none;padding:0;-webkit-appearance:none}
+.chan-icon-btn{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);cursor:pointer;display:grid;place-items:center;transition:all .15s;flex-shrink:0}
+.chan-icon-btn:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
+.chan-icon-btn svg{width:15px;height:15px}
+
+/* ─── Category Tabs ─── */
+.categories-section{padding:0!important}
+.cat-tabs{display:flex;align-items:stretch;padding:0 1.5rem;border-bottom:1px solid var(--border-subtle);overflow-x:auto;scrollbar-width:none;background:var(--bg-primary);flex-shrink:0}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tab{display:inline-flex;align-items:center;gap:.3rem;padding:.75rem .875rem;color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .15s;flex-shrink:0}
+.cat-tab:hover{color:var(--text-secondary)}
+.cat-tab.active{color:var(--text-primary);border-bottom-color:var(--text-primary)}
+.cat-tab-count{font-size:.75rem;opacity:.6}
+.cat-tab-sep{display:flex;align-items:center;color:rgba(255,255,255,.15);font-size:.9rem;padding:0 .1rem;user-select:none;pointer-events:none;flex-shrink:0;padding-bottom:2px}
+.cat-tab-add{display:inline-flex;align-items:center;gap:.3rem;padding:.75rem .625rem;color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .15s;flex-shrink:0}
+.cat-tab-add:hover{color:var(--accent)}
+.cat-tab-add svg{width:12px;height:12px}
+.subcategories-strip{padding:.5rem 1.5rem!important;border-top:1px solid var(--border-subtle)!important;margin:0!important}
+
+/* ─── Compact Channel Card ─── */
+.ch-card{display:flex;align-items:center;gap:.875rem;padding:.875rem 1.25rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);cursor:pointer;transition:border-color .15s;position:relative}
+.ch-card:hover{border-color:#2e2e42}
+.ch-card.selected-card{border-color:var(--accent)!important;box-shadow:0 0 0 1px var(--accent)}
+.ch-av{width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--bg-surface-raised)}
+.ch-av img{width:100%;height:100%;object-fit:cover}
+.ch-av-ph{width:100%;height:100%;display:grid;place-items:center;font:700 1.0625rem/1 var(--font-body);color:var(--text-muted);background:linear-gradient(135deg,#252535,#1a1a28);border-radius:50%}
+.ch-body{flex:1;min-width:0}
+.ch-name{font-size:.9rem;font-weight:600;color:var(--text-primary);margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-stats{font-size:.8rem;color:var(--text-muted);margin-bottom:.3rem;display:flex;align-items:center;gap:.375rem}
+.ch-dot{width:3px;height:3px;border-radius:50%;background:var(--text-muted);opacity:.5;flex-shrink:0}
+.ch-badges{display:flex;gap:.3rem;flex-wrap:wrap}
+.ch-badge{display:inline-block;padding:.2rem .55rem;border-radius:20px;font-size:.6875rem;font-weight:500;background:rgba(255,255,255,.06);color:var(--text-secondary)}
+.ch-menu{width:28px;height:28px;border-radius:6px;flex-shrink:0;background:none;border:none;color:var(--text-muted);cursor:pointer;display:grid;place-items:center;transition:all .15s}
+.ch-menu:hover{background:var(--bg-surface-raised);color:var(--text-primary)}
+.ch-menu svg{width:16px;height:16px}
+.ch-card .card-select{top:.5rem;right:2.375rem}
+
+/* 3-col grid */
+#channelGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:.875rem!important;padding:1.25rem 1.5rem 0!important}
+@media(max-width:1200px){#channelGrid{grid-template-columns:repeat(2,1fr)!important}}
+@media(max-width:700px){#channelGrid{grid-template-columns:1fr!important}}
+
+/* Pagination */
+.chan-pages{display:flex;align-items:center;justify-content:center;gap:.25rem;padding:.875rem 1.5rem 1.25rem}
+.pg-btn{min-width:32px;height:32px;border-radius:var(--radius-sm);background:none;border:1px solid transparent;color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;display:grid;place-items:center;transition:all .15s;padding:0 .375rem}
+.pg-btn:hover{background:var(--bg-surface);color:var(--text-primary);border-color:var(--border-subtle)}
+.pg-btn.active{background:var(--bg-surface);border-color:var(--border-subtle);color:var(--text-primary);font-weight:600}
+.pg-btn:disabled{opacity:.3;cursor:default;pointer-events:none}
+.pg-btn svg{width:13px;height:13px}
+
+/* Bottom bar */
+.bottom-bar{display:none;align-items:center;justify-content:space-between;gap:1rem;padding:.625rem 1.5rem;background:var(--bg-primary);border-top:1px solid var(--border-subtle);flex-shrink:0;position:sticky;bottom:0;z-index:50}
+.bottom-bar.show{display:flex}
+.bb-left{display:flex;align-items:center;gap:.75rem}
+.bb-info{display:flex;align-items:center;gap:.375rem;font-size:.8125rem;color:var(--text-secondary)}
+.bb-info svg{width:14px;height:14px;color:var(--text-muted);flex-shrink:0}
+.bb-act{padding:.35rem .75rem;border-radius:var(--radius-sm);background:var(--accent);border:none;color:#fff;font:600 .75rem/1 var(--font-body);cursor:pointer;transition:filter .15s}
+.bb-act:hover{filter:brightness(1.15)}
+.bb-right{display:flex;align-items:center;gap:.375rem}
+.bb-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .8rem;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font:500 .8125rem/1 var(--font-body);cursor:pointer;transition:all .15s;white-space:nowrap}
+.bb-btn:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
+.bb-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.bb-btn svg{width:13px;height:13px}
+.bb-btn-primary{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
+.bb-btn-primary:hover{filter:brightness(1.15)}
 .channel-card:nth-child(1){animation-delay:.05s}
 .channel-card:nth-child(2){animation-delay:.1s}
 .channel-card:nth-child(3){animation-delay:.15s}
@@ -2035,9 +2126,7 @@ input[type=range]::-webkit-slider-thumb{
   <button id="navAnalytics"></button>
   <button id="navMarketplace"></button>
   <div class="topnav-links"></div>
-  <div class="nav-search">
-    <input type="text" id="searchInput" placeholder="Search channels…" oninput="renderChannels()">
-  </div>
+
 </div>
 
 <!-- ═══ App Shell ═══ -->
@@ -2736,18 +2825,30 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
+<!-- ═══ Channels Top Bar ═══ -->
+<div class="chan-topbar" id="chanTopbar">
+  <div class="chan-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="searchInput" placeholder="Search channels…" oninput="chanPage=1;renderChannels()">
+  </div>
+  <label class="chan-ctrl">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+    Sort:&nbsp;<select id="sortSelect" onchange="chanPage=1;renderChannels()">
+      <option value="name">Name</option>
+      <option value="subscribers">Subscribers</option>
+      <option value="videoCount">Video count</option>
+      <option value="subDate">Subscription date</option>
+    </select>
+  </label>
+  <button class="chan-icon-btn" title="Filters" onclick="toggleChannelsSecNav()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+  </button>
+</div>
+
 <!-- ═══ Categories Strip ═══ -->
 <section class="categories-section" id="categoriesSection">
-  <div class="categories-track-area">
-    <button class="categories-scroll-btn" onclick="scrollCats(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <div class="categories-track-wrap">
-      <div class="categories-track" id="categoriesTrack"></div>
-    </div>
-    <button class="categories-scroll-btn" onclick="scrollCats(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
-  </div>
-  <!-- Subcategory strip (appears when a primary category is selected) -->
+  <div class="cat-tabs" id="categoriesTrack"></div>
   <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
-    <span class="subcat-label">Sub:</span>
     <div class="subcategories-track" id="subcategoriesTrack"></div>
   </div>
 </section>
@@ -2883,7 +2984,7 @@ input[type=range]::-webkit-slider-thumb{
 
     <div class="sort-section">
       <label>Sort by</label>
-      <select class="sort-select" id="sortSelect" onchange="renderChannels()">
+      <select class="sort-select" onchange="renderChannels()">
         <option value="name">Name</option>
         <option value="subscribers">Subscribers</option>
         <option value="videoCount">Video count</option>
@@ -2941,7 +3042,28 @@ input[type=range]::-webkit-slider-thumb{
     </div>
 
     <div class="channel-grid" id="channelGrid"></div>
+    <div class="chan-pages" id="chanPagination"></div>
   </main>
+</div>
+
+<!-- ═══ Bottom Bar ═══ -->
+<div class="bottom-bar" id="bottomBar">
+  <div class="bb-left">
+    <div class="bb-info" id="bbUncatInfo" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="bbUncatText"></span>
+    </div>
+    <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow" style="display:none">Sort now</button>
+  </div>
+  <div class="bb-right">
+    <button class="bb-btn" id="bbSelectBtn" onclick="toggleBulkMode()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Select
+    </button>
+    <button class="bb-btn" onclick="openBulkCategoryModal()">Categorise</button>
+    <button class="bb-btn" onclick="openModal('autoCatConfirmModal')">Auto-Sort</button>
+    <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
+  </div>
 </div>
 
   </div><!-- end .app-content -->
@@ -3501,6 +3623,8 @@ initSupabase();
 const GOOGLE_CLIENT_ID = '916513934955-1noko2b7uubrmu9qtgvf45kk9l9stv6t.apps.googleusercontent.com';
 let activeCategory = 'all';
 let activeSubcategory = null;
+let chanPage = 1;
+const CHAN_PAGE_SIZE = 24;
 let editingChannelId = null;
 let editingCategoryIdx = null;
 let aiResults = null;
@@ -3616,37 +3740,31 @@ function renderCategories() {
     ...categories.map(c => ({name:c, key:c, count: channels.filter(ch => chHasCat(ch, c)).length}))
   ];
 
-  // Colour palette for tiles
+  // Colour palette for category badges on cards
   const TILE_COLOURS = [
     '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
     '#6aadcf','#7b8fd4','#a67dc8','#d47ba8','#c2957a',
     '#8bb8a0','#a0b8d4','#d4a0b8','#b8d4a0','#d4b8a0',
     '#7caae8','#c87c9a','#9ac87c','#c8a87c','#7cc8c8'
   ];
-
-  // Store colour mapping for category tags on cards
   window._categoryColours = {};
   let colourIdx = 0;
   cats.forEach(c => {
     if (c.key !== 'all') {
-      window._categoryColours[c.name] = TILE_COLOURS[colourIdx % TILE_COLOURS.length];
-      colourIdx++;
+      window._categoryColours[c.name] = TILE_COLOURS[colourIdx++ % TILE_COLOURS.length];
     }
   });
 
-  colourIdx = 0;
-  track.innerHTML = cats.map(c => {
-    const colour = c.key === 'all' ? '#555' : TILE_COLOURS[colourIdx++ % TILE_COLOURS.length];
-    const icon = c.key === 'all' ? CATEGORY_ICONS.all : getIcon(c.name);
-    return `
-    <div class="category-chip ${activeCategory === c.key ? 'active' : ''}" onclick="setCategory('${c.key.replace(/'/g,"\\'")}')">
-      <div class="chip-tile" style="background:${colour}">
-        ${icon}
-        <span class="chip-tile-name">${c.name}</span>
-        <span class="chip-tile-count">(${c.count})</span>
-      </div>
-    </div>`;
-  }).join('');
+  // Render as text tabs
+  let tabHtml = '';
+  cats.forEach((c, i) => {
+    const safeKey = c.key.replace(/'/g, "\\'");
+    const active = activeCategory === c.key ? 'active' : '';
+    tabHtml += `<button class="cat-tab ${active}" onclick="setCategory('${safeKey}')">${c.name} <span class="cat-tab-count">(${c.count})</span></button>`;
+    if (i < cats.length - 1) tabHtml += `<span class="cat-tab-sep">·</span>`;
+  });
+  tabHtml += `<span class="cat-tab-sep" style="margin-left:.25rem">·</span><button class="cat-tab-add" onclick="openModal('addCategoryModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>`;
+  track.innerHTML = tabHtml;
 
   renderSubcategories();
 }
@@ -3694,8 +3812,25 @@ function renderSubcategories() {
 
 function setSubcategory(sub) {
   activeSubcategory = sub;
+  chanPage = 1;
   renderSubcategories();
   renderChannels();
+}
+
+function setPage(n) {
+  chanPage = n;
+  renderChannels();
+  document.getElementById('channelsArea')?.scrollTo(0, 0);
+}
+
+function toggleChannelsSecNav() {
+  const sec = document.getElementById('homeSecondaryNav');
+  if (sec.classList.contains('open')) {
+    sec.classList.remove('open');
+  } else {
+    buildChannelsSecondaryNav(document.getElementById('homeSecondaryContent'));
+    sec.classList.add('open');
+  }
 }
 
 function addSubcategory() {
@@ -3808,6 +3943,7 @@ function setCategory(key) {
   }
   activeCategory = key;
   activeSubcategory = null;
+  chanPage = 1;
   // Exit bulk mode on category change
   if (bulkMode) {
     bulkMode = false;
@@ -3906,14 +4042,17 @@ function renderChannels() {
   // Show "most watched" filter only if watch history is loaded
   document.getElementById('filterMostWatchedWrap').style.display = watchHistory ? '' : 'none';
 
+  const chanTopbar = document.getElementById('chanTopbar');
+  const bottomBar = document.getElementById('bottomBar');
+
   if (!channels.length) {
     catsSection.style.display = 'none';
     mainLayout.style.display = 'none';
     toolbar.style.display = 'none';
-    document.getElementById('promoBanner').style.display = 'none';
+    if (chanTopbar) chanTopbar.classList.remove('show');
+    if (bottomBar) bottomBar.classList.remove('show');
     document.getElementById('analyticsPage').classList.remove('active');
     document.getElementById('marketplacePage').classList.remove('active');
-    document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
     grid.innerHTML = '';
     onboarding.style.display = 'flex';
     return;
@@ -3924,10 +4063,19 @@ function renderChannels() {
   document.getElementById('marketplacePage').classList.remove('active');
   catsSection.style.display = '';
   mainLayout.style.display = '';
-  toolbar.style.display = 'flex';
   sidebar.style.display = 'none';
-  document.getElementById('promoBanner').style.display = '';
-  document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
+  if (chanTopbar) chanTopbar.classList.add('show');
+  if (bottomBar) bottomBar.classList.add('show');
+
+  // Update bottom bar uncat info
+  const uncatCount = channels.filter(ch => chIsUncategorised(ch)).length;
+  const bbInfo = document.getElementById('bbUncatInfo');
+  const bbSortNow = document.getElementById('bbSortNow');
+  const bbText = document.getElementById('bbUncatText');
+  if (bbInfo) bbInfo.style.display = uncatCount > 0 ? 'flex' : 'none';
+  if (bbSortNow) bbSortNow.style.display = uncatCount > 0 ? '' : 'none';
+  if (bbText) bbText.textContent = `You have ${uncatCount} uncategorised channel${uncatCount !== 1 ? 's' : ''}`;
+
   document.getElementById('navChannels')?.classList.add('active');
 
   // Show discover button only when a real category is selected
@@ -4053,43 +4201,62 @@ function renderChannels() {
     resultsEl.innerHTML = `Showing <strong>${filtered.length}</strong> of ${channels.length} channels`;
   }
 
-  grid.innerHTML = filtered.map((ch, idx) => {
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / CHAN_PAGE_SIZE);
+  if (chanPage > totalPages) chanPage = Math.max(1, totalPages);
+  const pageStart = (chanPage - 1) * CHAN_PAGE_SIZE;
+  const paged = filtered.slice(pageStart, pageStart + CHAN_PAGE_SIZE);
+
+  grid.innerHTML = paged.map(ch => {
     const initials = (ch.name || '?').substring(0,2).toUpperCase();
-    const phClass = 'ph-' + (idx % 5);
+    const cats = chCats(ch);
+    const statsHtml = [
+      ch.subscriberCount ? `${formatCount(ch.subscriberCount)} subs` : '',
+      ch.videoCount ? `${formatCount(ch.videoCount)} videos` : ''
+    ].filter(Boolean).join('<span class="ch-dot"></span>');
     return `
-    <div class="channel-card ${selectedChannels.has(ch.id)?'selected-card':''}" onclick="openDetail('${ch.id}')">
+    <div class="ch-card ${selectedChannels.has(ch.id)?'selected-card':''}" onclick="openDetail('${ch.id}')">
       <div class="card-select ${selectedChannels.has(ch.id)?'selected':''}" onclick="event.stopPropagation();toggleChannelSelect('${ch.id}')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <div class="card-banner">
-        ${ch.bannerUrl ? `<img src="${ch.bannerUrl}" alt="">` : `<div class="card-banner-placeholder ${phClass}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div>`}
+      <div class="ch-av">
+        ${ch.thumbnail ? `<img src="${ch.thumbnail}" alt="${ch.name}">` : `<div class="ch-av-ph">${initials}</div>`}
       </div>
-      <div class="card-body">
-        <div class="card-name-row">
-          <div class="card-avatar">
-            ${ch.thumbnail ? `<img src="${ch.thumbnail}" alt="${ch.name}">` : `<div class="card-avatar-placeholder">${initials}</div>`}
-          </div>
-          <div class="card-name">${ch.name || 'Unknown'}</div>
-        </div>
-        <div class="card-meta">
-          ${ch.subscriberCount ? `<span>${formatCount(ch.subscriberCount)} subs</span>` : ''}
-          ${ch.videoCount ? `<span>${formatCount(ch.videoCount)} videos</span>` : ''}
-          ${ch.subscribedAt ? `<span>Subscribed ${new Date(ch.subscribedAt).toLocaleDateString()}</span>` : ''}
-        </div>
-        <div style="display:flex;gap:.375rem;flex-wrap:wrap;align-items:center">
-          ${chCats(ch).map(c => {
+      <div class="ch-body">
+        <div class="ch-name">${ch.name || 'Unknown'}</div>
+        ${statsHtml ? `<div class="ch-stats">${statsHtml}</div>` : ''}
+        <div class="ch-badges">
+          ${cats.map(c => {
             const col = (window._categoryColours && window._categoryColours[c]) || '#e63946';
-            return `<div class="card-category-tag" style="background:${col}22;color:${col}">${c}</div>`;
+            return `<span class="ch-badge" style="background:${col}22;color:${col}">${c}</span>`;
           }).join('')}
-          ${ch.subcategory ? `<div class="card-subcat-tag">${ch.subcategory}</div>` : ''}
-        </div>
-        <div class="card-actions">
-          <button title="Edit" onclick="event.stopPropagation();editChannel('${ch.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button title="Open on YouTube" onclick="event.stopPropagation();window.open('https://youtube.com/channel/${ch.channelId}','_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+          ${ch.subcategory ? `<span class="ch-badge">${ch.subcategory}</span>` : ''}
         </div>
       </div>
+      <button class="ch-menu" title="Options" onclick="event.stopPropagation();editChannel('${ch.id}')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </button>
     </div>`;
   }).join('');
+
+  // Render pagination
+  const pageEl = document.getElementById('chanPagination');
+  if (pageEl) {
+    if (totalPages <= 1) {
+      pageEl.innerHTML = '';
+    } else {
+      let pgHtml = `<button class="pg-btn" onclick="setPage(${chanPage-1})" ${chanPage===1?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>`;
+      for (let p = 1; p <= totalPages; p++) {
+        if (totalPages <= 7 || p === 1 || p === totalPages || (p >= chanPage-1 && p <= chanPage+1)) {
+          pgHtml += `<button class="pg-btn ${p===chanPage?'active':''}" onclick="setPage(${p})">${p}</button>`;
+        } else if (p === chanPage-2 || p === chanPage+2) {
+          pgHtml += `<span style="color:var(--text-muted);display:grid;place-items:center;min-width:32px;font-size:.875rem">…</span>`;
+        }
+      }
+      pgHtml += `<button class="pg-btn" onclick="setPage(${chanPage+1})" ${chanPage===totalPages?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>`;
+      pageEl.innerHTML = pgHtml;
+    }
+  }
 }
 
 function formatCount(n) {
@@ -6430,15 +6597,16 @@ function showView(view) {
 
     case 'channels':
     default:
+      // Close secondary nav — channels has its own topbar
+      document.getElementById('homeSecondaryNav').classList.remove('open');
+      document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
+      document.querySelector('.home-nav-item[data-nav="channels"]')?.classList.add('active');
+      document.getElementById('navChannels')?.classList.add('active');
       if (channels.length) {
         catsSection.style.display = '';
         mainLayout.style.display = '';
-        if (promoBanner) promoBanner.style.display = '';
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = 'none';
-        document.getElementById('navChannels')?.classList.add('active');
-        document.querySelector('.home-nav-item[data-nav="channels"]')?.classList.add('active');
-        setHomeNav('channels');
         renderSubcategories();
       } else {
         mainLayout.style.display = 'none';
@@ -6472,6 +6640,8 @@ function toggleBulkMode() {
   bulkMode = !bulkMode;
   document.body.classList.toggle('bulk-mode', bulkMode);
   document.getElementById('btnBulkToggleLabel').textContent = bulkMode ? 'Exit Bulk Mode' : 'Bulk Categorise';
+  const bbSelectBtn = document.getElementById('bbSelectBtn');
+  if (bbSelectBtn) bbSelectBtn.classList.toggle('active', bulkMode);
   if (!bulkMode) {
     selectedChannels.clear();
     updateBulkBar();

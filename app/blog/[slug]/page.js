@@ -55,7 +55,7 @@ export default async function BlogPost({ params }) {
         </Link>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
-          <Link href="/dashboard" className={styles.navCta}>Open App</Link>
+          <Link href="/dashboard" className={styles.navCta}>Sign In</Link>
         </div>
       </nav>
 
