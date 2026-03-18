@@ -3511,6 +3511,7 @@ async function loadUserData() {
   // Snapshot local state before any overwrite — used for migration
   const localCategories = [...categories];
   const localSubcategories = JSON.parse(JSON.stringify(subcategories));
+  const localChannels = [...channels];
   const localChannelCats = {};
   channels.forEach(ch => {
     if (ch.categories?.length) localChannelCats[ch.channelId] = ch.categories;
@@ -3563,9 +3564,15 @@ async function loadUserData() {
     }
 
     // ── Channels ─────────────────────────────────────────────────────────
-    // Two separate queries — avoids double-nested select issues
-    const { data: chRows, error: chErr } = await sb.from('channels').select('*');
+    let { data: chRows, error: chErr } = await sb.from('channels').select('*');
     if (chErr) throw chErr;
+
+    // If DB has no channels but localStorage does, save them now
+    if ((!chRows || chRows.length === 0) && localChannels.length > 0) {
+      await dbBulkSaveChannels(localChannels);
+      const { data: reloaded } = await sb.from('channels').select('*');
+      chRows = reloaded;
+    }
 
     const { data: ccRows } = await sb.from('channel_categories').select('channel_id, category_id, categories(name)');
     const ccMap = {};
