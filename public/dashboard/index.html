@@ -6455,19 +6455,34 @@ function renderAll() {
   updateAuthUI();
 }
 renderAll();
-// Redirect unauthenticated users to the marketing landing page
-if (accessToken || sbUser || channels.length) {
-  document.getElementById('appShell').style.display = '';
-  showView('home');
-} else {
-  // No channels, no auth — redirect to the public landing page
-  // Small delay to let Supabase session check complete
-  setTimeout(() => {
-    if (!sbUser && !accessToken && !channels.length) {
-      window.location.href = '/';
-    }
-  }, 1500);
+// Wait for Supabase to check session before deciding to redirect
+async function initApp() {
+  // If we have local data, show the app immediately
+  if (accessToken || channels.length) {
+    document.getElementById('appShell').style.display = '';
+    showView('home');
+    return;
+  }
+
+  // Wait for Supabase session check
+  if (sb) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        sbUser = session.user;
+        document.getElementById('appShell').style.display = '';
+        await loadUserData();
+        renderAll();
+        showView('home');
+        return;
+      }
+    } catch(e) { console.error('Session check failed:', e); }
+  }
+
+  // No auth anywhere — redirect to landing page
+  window.location.href = '/';
 }
+initApp();
 </script>
 </body>
 </html>
