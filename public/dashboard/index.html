@@ -5033,7 +5033,7 @@ const KEYWORD_PATTERNS = [
   { pattern: /\b(kid|child|family|parent|baby|toddler)\b/i, category: 'Kids & Family' },
 ];
 
-function autoCategoriseConfirmed() {
+async function autoCategoriseConfirmed() {
   if (!channels.length) { toast('No channels to categorise'); return; }
 
   // Check if we have topic data
