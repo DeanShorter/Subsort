@@ -3910,9 +3910,14 @@ function saveSubcategoryModal() {
   renderSubcategories();
   closeModal('addSubcategoryModal');
   toast(`Subcategory "${name}" added to ${cat}`);
+  if (sb && sbUser) {
+    dbSaveSubcategory(cat, name).then(row => {
+      if (row) (window._dbSubcategories = window._dbSubcategories || []).push(row);
+    });
+  }
 }
 
-function editSubcategory(oldName) {
+async function editSubcategory(oldName) {
   const action = prompt(`Rename or type "delete" to remove "${oldName}":`, oldName);
   if (action === null) return;
   const subs = subcategories[activeCategory] || [];
@@ -3924,6 +3929,10 @@ function editSubcategory(oldName) {
     channels.forEach(ch => { if (chHasCat(ch, activeCategory) && ch.subcategory === oldName) ch.subcategory = ''; });
     if (activeSubcategory === oldName) activeSubcategory = null;
     toast('Subcategory deleted');
+    if (sb && sbUser) {
+      const entry = (window._dbSubcategories || []).find(s => s.name === oldName && s.categories?.name === activeCategory);
+      if (entry) await sb.from('subcategories').delete().eq('id', entry.id);
+    }
   } else {
     const newName = action.trim();
     if (!newName) return;
@@ -3931,6 +3940,13 @@ function editSubcategory(oldName) {
     channels.forEach(ch => { if (chHasCat(ch, activeCategory) && ch.subcategory === oldName) ch.subcategory = newName; });
     if (activeSubcategory === oldName) activeSubcategory = newName;
     toast('Subcategory renamed');
+    if (sb && sbUser) {
+      const entry = (window._dbSubcategories || []).find(s => s.name === oldName && s.categories?.name === activeCategory);
+      if (entry) {
+        await sb.from('subcategories').update({ name: newName }).eq('id', entry.id);
+        entry.name = newName;
+      }
+    }
   }
   save();
   renderAll();
@@ -4388,7 +4404,7 @@ function updateEditSubcategoryOptions(currentSubcat) {
   sel.innerHTML = '<option value="">None</option>' + allSubs.map(s => `<option value="${s}" ${current===s?'selected':''}>${s}</option>`).join('');
 }
 
-function saveChannelEdit() {
+async function saveChannelEdit() {
   const ch = channels.find(c => c.id === editingChannelId);
   if (!ch) return;
   const newCats = [...document.querySelectorAll('#editChannelCategories input:checked')].map(i => i.value);
@@ -4399,6 +4415,10 @@ function saveChannelEdit() {
   save(); renderAll();
   closeModal('editChannelModal');
   toast('Channel updated');
+  if (sb && sbUser) {
+    const dbRow = await dbSaveChannel(ch);
+    if (dbRow) await dbSetChannelCategories(dbRow.id, newCats);
+  }
 }
 
 /* ─── Notes Modal ─── */
@@ -4414,7 +4434,7 @@ function openNotesModal(id) {
   openModal('notesModal');
 }
 
-function saveNotes() {
+async function saveNotes() {
   const ch = channels.find(c => c.id === notesChannelId);
   if (!ch) return;
   ch.notes = document.getElementById('notesInput').value;
@@ -4423,6 +4443,7 @@ function saveNotes() {
   toast('Notes saved');
   // Reopen the channel detail to show the updated note
   openDetail(notesChannelId);
+  if (sb && sbUser) dbSaveChannelNotes(ch.channelId, ch.notes);
 }
 
 /* ═══════════════════════════════════════════
@@ -4613,7 +4634,7 @@ function confirmUnsubscribe(id) {
 /* ═══════════════════════════════════════════
    CATEGORIES
    ═══════════════════════════════════════════ */
-function saveCategory() {
+async function saveCategory() {
   const input = document.getElementById('categoryNameInput');
   const name = input.value.trim();
   const errorEl = document.getElementById('categoryError');
@@ -4658,8 +4679,19 @@ function saveCategory() {
       delete subcategories[old];
     }
     categories[editingCategoryIdx] = name;
+    if (sb && sbUser) {
+      const entry = (window._dbCategories || []).find(c => c.name === old);
+      if (entry) {
+        await sb.from('categories').update({ name }).eq('id', entry.id);
+        entry.name = name;
+      }
+    }
   } else {
     categories.push(name);
+    if (sb && sbUser) {
+      const row = await dbSaveCategory(name);
+      if (row) (window._dbCategories = window._dbCategories || []).push(row);
+    }
   }
   save(); renderAll();
   closeModal('addCategoryModal');
@@ -4678,6 +4710,7 @@ function deleteCategory() {
   closeModal('addCategoryModal');
   toast('Category deleted');
   editingCategoryIdx = null;
+  if (sb && sbUser) dbDeleteCategory(name);
 }
 
 /* ═══════════════════════════════════════════
