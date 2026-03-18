@@ -12,7 +12,7 @@ export default function HomePage() {
         </div>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
-          <Link href="/dashboard?signin=true" className={styles.navCta}>Sign In</Link>
+          <a href="/dashboard?signin=true" className={styles.navCta}>Sign In</a>
         </div>
       </nav>
 
@@ -32,9 +32,9 @@ export default function HomePage() {
             All in your browser — nothing stored on our servers.
           </p>
           <div className={styles.heroCtas}>
-            <Link href="/dashboard?signin=true" className={styles.btnPrimary}>
+            <a href="/dashboard?signin=true" className={styles.btnPrimary}>
               Get Started — It's Free
-            </Link>
+            </a>
             <Link href="/blog" className={styles.btnSecondary}>
               Read the Blog
             </Link>
@@ -67,9 +67,9 @@ export default function HomePage() {
       <section className={styles.ctaSection}>
         <h2>Ready to organise your YouTube?</h2>
         <p>Free forever. No account required. Your data stays in your browser.</p>
-        <Link href="/dashboard?signin=true" className={styles.btnPrimary}>
+        <a href="/dashboard?signin=true" className={styles.btnPrimary}>
           Launch Subsort
-        </Link>
+        </a>
       </section>
 
       {/* Footer */}
@@ -81,7 +81,7 @@ export default function HomePage() {
           </div>
           <div className={styles.footerLinks}>
             <Link href="/blog">Blog</Link>
-            <Link href="/dashboard?signin=true">Sign In</Link>
+            <a href="/dashboard?signin=true">Sign In</a>
           </div>
           <p className={styles.footerCopy}>© {new Date().getFullYear()} Subsort. All rights reserved.</p>
         </div>
