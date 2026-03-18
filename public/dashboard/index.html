@@ -6455,7 +6455,7 @@ function renderAll() {
   updateAuthUI();
 }
 renderAll();
-// Wait for Supabase to check session before deciding to redirect
+// Check auth and decide what to show
 async function initApp() {
   // If we have local data, show the app immediately
   if (accessToken || channels.length) {
@@ -6479,8 +6479,10 @@ async function initApp() {
     } catch(e) { console.error('Session check failed:', e); }
   }
 
-  // No auth anywhere — redirect to landing page
-  window.location.href = '/';
+  // No auth — show the app shell anyway so user can sign in
+  document.getElementById('appShell').style.display = '';
+  updateAuthUI();
+  showView('home');
 }
 initApp();
 </script>
