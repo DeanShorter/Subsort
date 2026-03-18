@@ -10,9 +10,7 @@
 }
 .navBrand { display: flex; align-items: center; gap: .625rem; }
 .navLogo {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: var(--accent); color: #fff;
-  font-family: var(--font-display); font-weight: 800; font-size: .875rem;
+  width: 32px; height: 32px;
   display: grid; place-items: center;
 }
 .navTitle { font-family: var(--font-display); font-weight: 700; font-size: 1.0625rem; color: #fff; }
