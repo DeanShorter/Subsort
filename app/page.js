@@ -12,7 +12,7 @@ export default function HomePage() {
         </div>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
-          <Link href="/dashboard" className={styles.navCta}>Open App</Link>
+          <Link href="/dashboard" className={styles.navCta}>Sign In</Link>
         </div>
       </nav>
 
@@ -33,7 +33,7 @@ export default function HomePage() {
           </p>
           <div className={styles.heroCtas}>
             <Link href="/dashboard?signin=true" className={styles.btnPrimary}>
-              Get Started — Free
+              Get Started — It's Free
             </Link>
             <Link href="/blog" className={styles.btnSecondary}>
               Read the Blog
@@ -81,7 +81,7 @@ export default function HomePage() {
           </div>
           <div className={styles.footerLinks}>
             <Link href="/blog">Blog</Link>
-            <Link href="/dashboard">App</Link>
+            <Link href="/dashboard">Sign In</Link>
           </div>
           <p className={styles.footerCopy}>© {new Date().getFullYear()} Subsort. All rights reserved.</p>
         </div>
