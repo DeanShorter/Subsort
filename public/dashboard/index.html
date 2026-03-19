@@ -2284,6 +2284,12 @@ input[type=range]::-webkit-slider-thumb{
 /* Slim sidebar */
 .home-nav-primary{width:155px!important}
 .home-nav-primary.collapsed{width:48px!important}
+@media(max-width:640px){
+  .home-nav-primary,.home-nav-primary.collapsed,.home-nav-primary.nav-hover{
+    width:75vw!important;max-width:300px!important;left:-100vw!important;
+  }
+  .home-nav-primary.mobile-open{left:0!important}
+}
 
 /* Hide old chrome */
 #promoBanner{display:none!important}
