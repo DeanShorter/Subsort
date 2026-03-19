@@ -2241,6 +2241,10 @@ input[type=range]::-webkit-slider-thumb{
 .channels-toolbar{display:none!important}
 .main-layout{padding:0!important}
 
+/* ─── Channels Header ─── */
+.chan-header{display:none;padding:1.75rem 1.5rem .75rem;flex-shrink:0}
+.chan-header.show{display:block}
+
 /* ─── Channels Top Bar ─── */
 .chan-topbar{display:none;align-items:center;justify-content:space-between;gap:.625rem;padding:.75rem 1.5rem;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
 .chan-topbar.show{display:flex}
@@ -3118,20 +3122,15 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
+<!-- ═══ Channels Header ═══ -->
+<div class="chan-header" id="chanHeader">
+  <h1 class="db-title">Channels</h1>
+  <p class="db-subtitle">Browse, sort and categorise all your YouTube subscriptions.</p>
+</div>
+
 <!-- ═══ Channels Top Bar ═══ -->
 <div class="chan-topbar" id="chanTopbar">
   <div class="chan-topbar-left">
-    <div class="bb-info" id="bbUncatInfo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span id="bbUncatText"></span>
-    </div>
-    <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
-    <div class="chan-topbar-divider"></div>
-    <button class="bb-btn" id="bbBulkEditBtn" onclick="toggleBulkMode()">Bulk Edit</button>
-    <button class="bb-btn" id="bbBulkEditAction" onclick="openBulkCategoryModal()">Edit</button>
-    <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
-  </div>
-  <div class="chan-topbar-right">
     <div class="chan-search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       <input type="text" id="searchInput" placeholder="Search channels…" oninput="chanPage=1;renderChannels()">
@@ -3148,6 +3147,17 @@ input[type=range]::-webkit-slider-thumb{
     <button class="chan-icon-btn" title="Filters" onclick="toggleChannelsSecNav()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
     </button>
+  </div>
+  <div class="chan-topbar-right">
+    <div class="bb-info" id="bbUncatInfo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="bbUncatText"></span>
+    </div>
+    <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
+    <div class="chan-topbar-divider"></div>
+    <button class="bb-btn" id="bbBulkEditBtn" onclick="toggleBulkMode()">Bulk Edit</button>
+    <button class="bb-btn" id="bbBulkEditAction" onclick="openBulkCategoryModal()">Edit</button>
+    <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
   </div>
 </div>
 
@@ -7344,6 +7354,7 @@ function showView(view) {
   document.getElementById('homeSecondaryNav').classList.remove('open');
   document.getElementById('channelsEmpty')?.remove();
   document.getElementById('chanTopbar')?.classList.remove('show');
+  document.getElementById('chanHeader')?.classList.remove('show');
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
@@ -7394,6 +7405,7 @@ function showView(view) {
       document.querySelector('.home-nav-item[data-nav="channels"]')?.classList.add('active');
       document.getElementById('navChannels')?.classList.add('active');
       if (channels.length) {
+        document.getElementById('chanHeader')?.classList.add('show');
         document.getElementById('chanTopbar')?.classList.add('show');
         catsSection.style.display = '';
         mainLayout.style.display = '';
