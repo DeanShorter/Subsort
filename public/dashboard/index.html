@@ -3124,6 +3124,11 @@ input[type=range]::-webkit-slider-thumb{
 <!-- ═══ Categories Strip ═══ -->
 <section class="categories-section" id="categoriesSection">
   <div class="cat-tabs-outer">
+    <button class="cat-edit-btn" onclick="openModal('addCategoryModal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Category
+    </button>
+    <div class="cat-tab-vdivider"></div>
     <button class="cat-edit-btn" onclick="openManageCategories()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Edit Categories
@@ -4181,7 +4186,6 @@ function renderCategories() {
     tabHtml += `<button class="cat-tab ${active}" onclick="setCategory('${safeKey}')">${c.name} <span class="cat-tab-count">(${c.count})</span></button>`;
     if (i < cats.length - 1) tabHtml += `<span class="cat-tab-sep">·</span>`;
   });
-  tabHtml += `<span class="cat-tab-sep" style="margin-left:.25rem">·</span><button class="cat-tab-add" onclick="openModal('addCategoryModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>`;
   track.innerHTML = tabHtml;
 
   renderSubcategories();
@@ -6853,6 +6857,12 @@ function buildFeedTabsHtml() {
     }).join('')}</div>`;
   }
 
+  const headerHtml = `
+    <div class="db-header">
+      <h1 class="db-title">Your Feed</h1>
+      <p class="db-subtitle">Recent videos from your subscriptions, sorted by category.</p>
+    </div>`;
+
   const controlsHtml = `
     <div class="feed-controls-row">
       <div class="feed-search-wrap">
@@ -6864,7 +6874,7 @@ function buildFeedTabsHtml() {
         <option value="channel" ${feedSortKey==='channel'?'selected':''}>Channel</option>
       </select>
     </div>`;
-  return controlsHtml + `<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}`;
+  return headerHtml + controlsHtml + `<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}`;
 }
 
 function initFeedCatsTrack() {
@@ -6970,13 +6980,12 @@ async function loadFeedAll() {
 
   if (!channels.length) {
     main.innerHTML = buildFeedTabsHtml() + `
-      <div class="feed-page-header"><div><h2>All Subscriptions</h2><p class="feed-page-header-meta">Sync your YouTube account to see recent videos.</p></div></div>`;
+      <p style="color:var(--text-muted);padding:.5rem 0">Sync your YouTube account to see recent videos.</p>`;
     initFeedCatsTrack(); return;
   }
 
   if (!accessToken) {
     main.innerHTML = buildFeedTabsHtml() + `
-      <div class="feed-page-header"><div><h2>All Subscriptions</h2></div></div>
       <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
     initFeedCatsTrack(); return;
   }
@@ -6984,9 +6993,6 @@ async function loadFeedAll() {
   const catsWithChannels = categories.filter(cat => channels.some(ch => chHasCat(ch, cat)));
 
   main.innerHTML = buildFeedTabsHtml() + `
-    <div class="feed-page-header">
-      <div><h2>All Subscriptions</h2><p class="feed-page-header-meta">Recent videos across ${catsWithChannels.length} categor${catsWithChannels.length !== 1 ? 'ies' : 'y'}</p></div>
-    </div>
     <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
   initFeedCatsTrack();
 
