@@ -7566,8 +7566,42 @@ async function fetchRecentVideos(channelList) {
   }
 
   videos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+
+  // Batch-fetch duration + tags to detect Shorts
+  // A Short must be BOTH ≤ 60 seconds AND carry a #shorts signal
+  if (videos.length && accessToken) {
+    try {
+      const ids = videos.map(v => v.id).filter(Boolean);
+      for (let i = 0; i < ids.length; i += 50) {
+        const chunk = ids.slice(i, i + 50).join(',');
+        const resp = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet&id=${chunk}`,
+          { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          (data.items || []).forEach(item => {
+            const v = videos.find(x => x.id === item.id);
+            if (!v) return;
+            const duration = parseDuration(item.contentDetails?.duration);
+            const tags = (item.snippet?.tags || []).join(' ').toLowerCase();
+            const text = (v.title + ' ' + v.description + ' ' + tags).toLowerCase();
+            v.isShort = duration <= 60 && /#short/.test(text);
+          });
+        }
+      }
+    } catch(e) { /* non-critical */ }
+  }
+
   if (videos.length) cacheSet(cacheKey, videos);
   return videos;
+}
+
+function parseDuration(iso) {
+  if (!iso) return Infinity;
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return Infinity;
+  return (parseInt(m[1] || 0) * 3600) + (parseInt(m[2] || 0) * 60) + parseInt(m[3] || 0);
 }
 
 function getRecentDate() {
@@ -7586,7 +7620,7 @@ function renderFeedVideoRow(v, catLabel, subcatLabel) {
   const subcatBadge = subcatLabel ? `<span class="feed-subcat-badge">${subcatLabel}</span>` : '';
   const desc = v.description ? `<div class="feed-video-desc">${v.description}</div>` : '';
   const meta = [v.channel, timeAgo(v.publishedAt), badge, subcatBadge].filter(Boolean).join(' · ');
-  const isShort = /\#short/i.test((v.title || '') + ' ' + (v.description || ''));
+  const isShort = !!v.isShort;
   return `
     <div class="feed-video-row" data-type="${isShort ? 'short' : 'video'}" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
       <div class="feed-video-thumb">${thumb}</div>
