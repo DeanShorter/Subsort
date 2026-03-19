@@ -2418,8 +2418,8 @@ input[type=range]::-webkit-slider-thumb{
 <!-- ═══ Home View ═══ -->
 <div class="home-view" id="homeView">
 
-  <!-- Main Content -->
-  <main class="home-main" id="homeMain">
+  <!-- Dashboard Content (shown when on dashboard tab) -->
+  <main class="home-main" id="homeDashMain">
     <div class="db-header">
       <h1 class="db-title">Dashboard</h1>
       <p class="db-subtitle">Manage your subscriptions and keep your feed healthy.</p>
@@ -2463,6 +2463,9 @@ input[type=range]::-webkit-slider-thumb{
       </div>
     </div>
   </main>
+
+  <!-- Feeds Content (shown when on feeds tab) -->
+  <main class="home-main" id="homeMain" style="display:none"></main>
 
   <!-- Right Sidebar -->
   <aside class="home-sidebar">
@@ -6563,6 +6566,10 @@ function setHomeNav(key) {
   if (key === 'home') {
     sec.classList.remove('open');
     content.innerHTML = '';
+    const dashMain = document.getElementById('homeDashMain');
+    const feedMain = document.getElementById('homeMain');
+    if (dashMain) dashMain.style.display = '';
+    if (feedMain) feedMain.style.display = 'none';
     renderDashboard();
     return;
   }
@@ -6571,6 +6578,10 @@ function setHomeNav(key) {
   if (key === 'feeds') {
     sec.classList.remove('open');
     content.innerHTML = '';
+    const dashMain = document.getElementById('homeDashMain');
+    const feedMain = document.getElementById('homeMain');
+    if (dashMain) dashMain.style.display = 'none';
+    if (feedMain) feedMain.style.display = '';
     loadFeedAll();
     return;
   }
