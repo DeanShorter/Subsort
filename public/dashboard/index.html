@@ -1640,10 +1640,19 @@ input[type=range]::-webkit-slider-thumb{
 .feed-page-header h2{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.2rem}
 .feed-page-header-meta{font-size:.8125rem;color:var(--text-muted)}
 .feed-page-controls{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
-.feed-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.375rem .625rem;border-radius:var(--radius-sm);font-size:.75rem;cursor:pointer}
+/* Feed controls row */
+.feed-controls-row{display:flex;align-items:center;gap:.625rem;padding:.875rem 0 .75rem;border-bottom:1px solid var(--border-subtle);margin-bottom:.125rem}
+.feed-search-wrap{flex:1;position:relative;max-width:280px}
+.feed-search-wrap svg{position:absolute;left:.625rem;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--text-muted);pointer-events:none}
+.feed-search-input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.4rem .625rem .4rem 2rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body)}
+.feed-search-input:focus{outline:none;border-color:var(--accent)}
+.feed-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.375rem .625rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body);cursor:pointer}
 /* Feed category tabs (inline) */
-.feed-cats-row{border-bottom:1px solid var(--border-subtle);margin:0 0 0;overflow-x:auto}
-.feed-cats-row .cat-tabs-track{display:flex;align-items:center;white-space:nowrap}
+.feed-cats-row{border-bottom:1px solid var(--border-subtle);margin:0 0 0;overflow:hidden}
+.feed-cats-row .cat-tabs-track{display:flex;align-items:center;white-space:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.feed-cats-row .cat-tabs-track::-webkit-scrollbar{display:none}
+.feed-cats-row .cat-tabs-track.dragging{cursor:grabbing;scroll-behavior:auto}
+.feed-cats-row .cat-tabs-track.dragging .cat-tab{pointer-events:none}
 .feed-subcats-row{display:flex;flex-wrap:wrap;gap:.375rem;padding:.625rem 0 .875rem;}
 /* Feed video rows */
 .feed-video-row{
@@ -6460,6 +6469,8 @@ function clearAllSecNavFilters() {
    ═══════════════════════════════════════════ */
 let activeFeedCategory = 'all';
 let activeFeedSubcategory = null;
+let feedSearchQuery = '';
+let feedSortKey = 'date';
 
 function buildFeedTabsHtml() {
   const cats = [{name: 'All', key: 'all'}, ...categories.map(c => ({name: c, key: c}))];
@@ -6480,7 +6491,56 @@ function buildFeedTabsHtml() {
     }).join('')}</div>`;
   }
 
-  return `<div class="feed-cats-row"><div class="cat-tabs-track">${tabsHtml}</div></div>${subHtml}`;
+  const controlsHtml = `
+    <div class="feed-controls-row">
+      <div class="feed-search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="feedSearchInput" class="feed-search-input" placeholder="Search videos…" value="${feedSearchQuery.replace(/"/g,'&quot;')}" oninput="applyFeedSearch(this.value)">
+      </div>
+      <select id="feedSortSelect" class="feed-sort-select" onchange="applyFeedSort(this.value)">
+        <option value="date" ${feedSortKey==='date'?'selected':''}>Latest</option>
+        <option value="channel" ${feedSortKey==='channel'?'selected':''}>Channel</option>
+      </select>
+    </div>`;
+  return controlsHtml + `<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}`;
+}
+
+function initFeedCatsTrack() {
+  const track = document.getElementById('feedCatsTrack');
+  if (!track) return;
+  let isDown = false, startX, scrollLeft, moved;
+  function onStart(e) { isDown = true; moved = false; startX = (e.pageX || e.touches[0].pageX) - track.offsetLeft; scrollLeft = track.scrollLeft; }
+  function onEnd() { if (!isDown) return; isDown = false; track.classList.remove('dragging'); }
+  function onMove(e) {
+    if (!isDown) return;
+    const x = (e.pageX || (e.touches && e.touches[0].pageX)) - track.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    if (Math.abs(walk) > 8) { moved = true; track.classList.add('dragging'); }
+    if (moved) track.scrollLeft = scrollLeft - walk;
+  }
+  track.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } });
+  track.addEventListener('mousedown', onStart);
+  window.addEventListener('mouseup', onEnd);
+  window.addEventListener('mousemove', onMove);
+  track.addEventListener('touchstart', onStart, {passive: true});
+  window.addEventListener('touchend', onEnd);
+  window.addEventListener('touchmove', onMove, {passive: true});
+}
+
+function applyFeedSearch(q) {
+  feedSearchQuery = q || '';
+  const lq = feedSearchQuery.toLowerCase();
+  document.querySelectorAll('#homeMain .feed-video-row').forEach(row => {
+    const title = row.querySelector('.feed-video-title')?.textContent.toLowerCase() || '';
+    const meta  = row.querySelector('.feed-video-meta')?.textContent.toLowerCase() || '';
+    row.style.display = (!lq || title.includes(lq) || meta.includes(lq)) ? '' : 'none';
+  });
+}
+
+function applyFeedSort(val) {
+  feedSortKey = val || 'date';
+  if (activeFeedCategory === 'all') loadFeedAll();
+  else loadFeedCategory(activeFeedCategory, activeFeedSubcategory);
 }
 
 function setFeedCategory(key) {
@@ -6510,13 +6570,13 @@ async function loadFeedCategory(category, subcategory) {
     main.innerHTML = buildFeedTabsHtml() + `
       <div class="feed-page-header"><div><h2>${label}</h2></div></div>
       <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
-    return;
+    initFeedCatsTrack(); return;
   }
 
   if (!catChannels.length) {
     main.innerHTML = buildFeedTabsHtml() + `
       <div class="feed-page-header"><div><h2>${label}</h2><p class="feed-page-header-meta">No channels in this category yet.</p></div></div>`;
-    return;
+    initFeedCatsTrack(); return;
   }
 
   main.innerHTML = buildFeedTabsHtml() + `
@@ -6524,15 +6584,18 @@ async function loadFeedCategory(category, subcategory) {
       <div><h2>${label}</h2><p class="feed-page-header-meta">${catChannels.length} channel${catChannels.length !== 1 ? 's' : ''}</p></div>
     </div>
     <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
+  initFeedCatsTrack();
 
   try {
-    const videos = await fetchRecentVideos(catChannels);
+    let videos = await fetchRecentVideos(catChannels);
+    if (feedSortKey === 'channel') videos = [...videos].sort((a,b) => (a.channel||'').localeCompare(b.channel||''));
     const spinner = document.getElementById('feedLoadingSpinner');
     if (spinner) spinner.remove();
     const listHtml = videos.length
       ? videos.map(v => renderFeedVideoRow(v, category)).join('')
       : `<p style="color:var(--text-muted);padding:.5rem 0">No videos in the last 7 days.</p>`;
     main.insertAdjacentHTML('beforeend', listHtml);
+    if (feedSearchQuery) applyFeedSearch(feedSearchQuery);
   } catch (err) {
     const spinner = document.getElementById('feedLoadingSpinner');
     if (spinner) spinner.remove();
@@ -6546,14 +6609,14 @@ async function loadFeedAll() {
   if (!channels.length) {
     main.innerHTML = buildFeedTabsHtml() + `
       <div class="feed-page-header"><div><h2>All Subscriptions</h2><p class="feed-page-header-meta">Sync your YouTube account to see recent videos.</p></div></div>`;
-    return;
+    initFeedCatsTrack(); return;
   }
 
   if (!accessToken) {
     main.innerHTML = buildFeedTabsHtml() + `
       <div class="feed-page-header"><div><h2>All Subscriptions</h2></div></div>
       <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
-    return;
+    initFeedCatsTrack(); return;
   }
 
   const catsWithChannels = categories.filter(cat => channels.some(ch => chHasCat(ch, cat)));
@@ -6563,6 +6626,7 @@ async function loadFeedAll() {
       <div><h2>All Subscriptions</h2><p class="feed-page-header-meta">Recent videos across ${catsWithChannels.length} categor${catsWithChannels.length !== 1 ? 'ies' : 'y'}</p></div>
     </div>
     <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
+  initFeedCatsTrack();
 
   try {
     for (const cat of catsWithChannels.slice(0, 6)) {
