@@ -1686,7 +1686,7 @@ input[type=range]::-webkit-slider-thumb{
 .feed-video-footer{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .feed-cat-badge{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:20px;font-size:.6875rem;font-weight:500;white-space:nowrap}
 .feed-subcat-badge{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:20px;font-size:.6875rem;font-weight:500;white-space:nowrap;background:rgba(148,163,184,.12);color:var(--text-muted)}
-.feed-shorts-badge{position:absolute;bottom:4px;left:4px;background:#ff0000;border-radius:4px;width:18px;height:18px;display:grid;place-items:center}
+.feed-shorts-badge{position:absolute;bottom:4px;left:4px;background:#ff0000;border-radius:3px;padding:0 4px;font-size:10px;font-weight:700;color:#fff;line-height:16px;letter-spacing:.02em}
 .feed-video-desc{font-size:.6875rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px}
 .feed-video-menu{flex-shrink:0;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:.25rem;opacity:0;transition:opacity .1s}
 .feed-video-row:hover .feed-video-menu{opacity:1}
@@ -1963,11 +1963,12 @@ input[type=range]::-webkit-slider-thumb{
   #channelGrid{overflow:visible!important;flex:none!important;padding:.75rem 0 2rem!important}
   .chan-pages{display:none!important}
   .chan-view-toggle{display:none!important}
-  /* Chan topbar: stack left and right rows vertically */
-  .chan-topbar{flex-direction:column!important;align-items:stretch!important;gap:.5rem!important;padding:.625rem 1rem!important}
-  .chan-topbar-left{width:100%}
-  .chan-search{flex:1}
-  .chan-topbar-right{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+  /* Chan header: tighten on mobile */
+  .chan-header{padding:1rem 1rem .375rem!important}
+  .chan-hdr-controls{flex-wrap:wrap}
+  .chan-topbar{padding:.625rem 1rem!important}
+  .chan-cat-row{padding:.625rem 1rem!important}
+  .chan-bulk-row{flex-wrap:wrap}
 }
 
 /* ─── Ad Placements ─── */
@@ -2332,18 +2333,15 @@ input[type=range]::-webkit-slider-thumb{
 .channels-toolbar{display:none!important}
 .main-layout{padding:0!important}
 
-/* ─── Channels Header ─── */
-.chan-header{display:none;padding:1.75rem 1.5rem .75rem;flex-shrink:0}
-.chan-header.show{display:block}
-
-/* ─── Channels Top Bar ─── */
-.chan-topbar{display:none;align-items:center;justify-content:space-between;gap:.625rem;padding:.75rem 1.5rem;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
-.chan-topbar.show{display:flex}
-.chan-topbar-left{display:flex;align-items:center;gap:.5rem}
-.chan-topbar-divider{width:1px;height:1.25rem;background:var(--border-subtle);margin:0 .25rem}
-.bb-act:disabled{background:var(--bg-surface);color:var(--text-muted);cursor:default;opacity:.5}
-.chan-topbar-right{display:flex;align-items:center;gap:.625rem}
-.chan-search{flex:1;position:relative;min-width:0}
+/* ─── Channels Page Header ─── */
+.chan-header{display:none;flex-direction:column;gap:.875rem;padding:1.5rem 1.5rem .5rem;flex-shrink:0}
+.chan-header.show{display:flex}
+.chan-hdr-top{display:flex;align-items:center;justify-content:space-between}
+.chan-page-title{font-size:1.75rem;font-weight:700;color:var(--text-primary)}
+.chan-page-count{font-size:.8125rem;color:var(--text-muted)}
+.chan-hdr-controls{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.chan-hdr-right{display:flex;align-items:center;gap:.5rem}
+.chan-search{position:relative;width:100%}
 .chan-search input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);font:400 .875rem/1 var(--font-body);padding:.5rem .75rem .5rem 2.125rem;border-radius:var(--radius-sm);outline:none;transition:border-color .15s}
 .chan-search input:focus{border-color:#555}
 .chan-search input::placeholder{color:var(--text-muted)}
@@ -2356,23 +2354,31 @@ input[type=range]::-webkit-slider-thumb{
 .chan-icon-btn:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
 .chan-icon-btn svg{width:15px;height:15px}
 
-/* ─── Category Tabs ─── */
+/* ─── Channel Status Bar (uncat banner + bulk actions) ─── */
+.chan-topbar{display:none;flex-direction:column;gap:.5rem;padding:.75rem 1.5rem;flex-shrink:0}
+.chan-topbar.show{display:flex}
+.chan-uncat-row{display:flex;align-items:center;justify-content:space-between;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);border-radius:var(--radius-md);padding:.625rem 1rem}
+.chan-uncat-text{display:flex;align-items:center;gap:.5rem;font-size:.8125rem;color:var(--text-secondary)}
+.chan-uncat-text svg{width:14px;height:14px;color:#4ade80;flex-shrink:0}
+.chan-bulk-row{display:flex;align-items:center;gap:.5rem}
+.bb-act:disabled{background:var(--bg-surface);color:var(--text-muted);cursor:default;opacity:.5}
+
+/* ─── Category Pills ─── */
 .categories-section{padding:0!important}
-.cat-tabs-outer{display:flex;align-items:stretch;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
-.cat-edit-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:.375rem;padding:.75rem 1rem;color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;background:none;border:none;white-space:nowrap;transition:color .15s}
-.cat-edit-btn:hover{color:var(--text-primary)}
-.cat-tab-vdivider{width:1px;background:var(--border-subtle);margin:.4rem 0;flex-shrink:0}
-.cat-tabs{display:flex;align-items:stretch;padding:0 1rem;overflow-x:auto;scrollbar-width:none;background:var(--bg-primary);flex:1;min-width:0}
-.cat-tabs::-webkit-scrollbar{display:none}
-.cat-tab{display:inline-flex;align-items:center;gap:.3rem;padding:.75rem .875rem;color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .15s;flex-shrink:0}
-.cat-tab:hover{color:var(--text-secondary)}
-.cat-tab.active{color:var(--text-primary);border-bottom-color:var(--text-primary)}
-.cat-tab-count{font-size:.75rem;opacity:.6}
-.cat-tab-sep{display:flex;align-items:center;color:rgba(255,255,255,.15);font-size:.9rem;padding:0 .1rem;user-select:none;pointer-events:none;flex-shrink:0;padding-bottom:2px}
-.cat-tab-add{display:inline-flex;align-items:center;gap:.3rem;padding:.75rem .625rem;color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .15s;flex-shrink:0}
-.cat-tab-add:hover{color:var(--accent)}
-.cat-tab-add svg{width:12px;height:12px}
-.subcategories-strip{padding:.5rem 1.5rem!important;border-top:1px solid var(--border-subtle)!important;margin:0!important}
+.chan-cat-row{display:flex;align-items:center;padding:.875rem 1.5rem;gap:.75rem;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
+.chan-cat-pills{display:flex;align-items:center;gap:.375rem;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.chan-cat-pills::-webkit-scrollbar{display:none}
+.chan-cat-edit{display:flex;align-items:center;gap:.375rem;flex-shrink:0}
+.cat-tab-vdivider{width:1px;height:1.25rem;background:var(--border-subtle);flex-shrink:0}
+.cat-edit-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .625rem;border-radius:var(--radius-sm);color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;background:var(--bg-surface);border:1px solid var(--border-subtle);white-space:nowrap;transition:all .15s}
+.cat-edit-btn:hover{color:var(--text-primary);background:var(--bg-surface-raised);border-color:#444}
+.cat-edit-btn svg{width:11px;height:11px}
+.cat-tab{display:inline-flex;align-items:center;gap:.3rem;padding:.375rem .875rem;border-radius:20px;border:1px solid var(--border-subtle);color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;background:none;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.cat-tab:hover{color:var(--text-primary);border-color:#555}
+.cat-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.cat-tab-count{font-size:.75rem;opacity:.8}
+.cat-tab-sep{display:none}
+.subcategories-strip{display:flex;align-items:center;gap:.5rem;padding:.5rem 1.5rem!important;border-bottom:1px solid var(--border-subtle)!important;margin:0!important}
 
 /* ─── Compact Channel Card ─── */
 .ch-card{display:flex;align-items:center;gap:.875rem;padding:.875rem 1.25rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);cursor:pointer;transition:border-color .15s;position:relative}
@@ -3249,19 +3255,17 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
-<!-- ═══ Channels Header ═══ -->
+<!-- ═══ Channels Page Header ═══ -->
 <div class="chan-header" id="chanHeader">
-  <h1 class="db-title">Channels</h1>
-  <p class="db-subtitle">Browse, sort and categorise all your YouTube subscriptions.</p>
-</div>
-
-<!-- ═══ Channels Top Bar ═══ -->
-<div class="chan-topbar" id="chanTopbar">
-  <div class="chan-topbar-left">
-    <div class="chan-search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" id="searchInput" placeholder="Search channels…" oninput="chanPage=1;renderChannels()">
-    </div>
+  <div class="chan-hdr-top">
+    <h1 class="chan-page-title">Channels</h1>
+    <span class="chan-page-count" id="chanSubCount"></span>
+  </div>
+  <div class="chan-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="searchInput" placeholder="Search channels…" oninput="chanPage=1;renderChannels()">
+  </div>
+  <div class="chan-hdr-controls">
     <label class="chan-ctrl">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
       Sort:&nbsp;<select id="sortSelect" onchange="chanPage=1;renderChannels()">
@@ -3271,53 +3275,61 @@ input[type=range]::-webkit-slider-thumb{
         <option value="subDate">Subscription date</option>
       </select>
     </label>
-    <button class="chan-icon-btn" title="Filters" onclick="toggleChannelsSecNav()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-    </button>
-    <div class="chan-view-toggle" id="chanViewToggle">
-      <button class="chan-view-btn" id="viewBtnList" onclick="setChanView('list')" title="List view">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
-      </button>
-      <button class="chan-view-btn" id="viewBtnHybrid" onclick="setChanView('hybrid')" title="Hybrid view">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="5" rx="1"/><rect x="3" y="17" width="8" height="5" rx="1"/><rect x="13" y="17" width="8" height="5" rx="1"/></svg>
+    <div class="chan-hdr-right">
+      <div class="chan-view-toggle" id="chanViewToggle">
+        <button class="chan-view-btn" id="viewBtnList" onclick="setChanView('list')" title="List view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <button class="chan-view-btn" id="viewBtnHybrid" onclick="setChanView('hybrid')" title="Hybrid view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="5" rx="1"/><rect x="3" y="17" width="8" height="5" rx="1"/><rect x="13" y="17" width="8" height="5" rx="1"/></svg>
+        </button>
+      </div>
+      <button class="chan-icon-btn" title="Filters" onclick="toggleChannelsSecNav()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
       </button>
     </div>
-  </div>
-  <div class="chan-topbar-right">
-    <div class="bb-info" id="bbUncatInfo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span id="bbUncatText"></span>
-    </div>
-    <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
-    <div class="chan-topbar-divider"></div>
-    <button class="bb-btn" id="bbBulkEditBtn" onclick="toggleBulkMode()">Bulk Edit</button>
-    <button class="bb-btn" id="bbBulkEditAction" onclick="openBulkCategoryModal()">Edit</button>
-    <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
   </div>
 </div>
 
 <!-- ═══ Categories Strip ═══ -->
 <section class="categories-section" id="categoriesSection">
-  <div class="cat-tabs-outer">
-    <button class="cat-edit-btn" onclick="openModal('addCategoryModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Add Category
-    </button>
-    <div class="cat-tab-vdivider"></div>
-    <button class="cat-edit-btn" onclick="openManageCategories()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Edit Categories
-    </button>
-    <div class="cat-tab-vdivider"></div>
-    <div class="cat-tabs" id="categoriesTrack"></div>
+  <div class="chan-cat-row">
+    <div class="chan-cat-pills" id="categoriesTrack"></div>
+    <div class="chan-cat-edit">
+      <div class="cat-tab-vdivider"></div>
+      <button class="cat-edit-btn" onclick="openModal('addCategoryModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add
+      </button>
+      <button class="cat-edit-btn" onclick="openManageCategories()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit
+      </button>
+    </div>
   </div>
   <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
-    <button class="cat-edit-btn" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>
-    <button class="cat-edit-btn" onclick="openManageSubcategories()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
+    <button class="cat-edit-btn" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>
+    <button class="cat-edit-btn" onclick="openManageSubcategories()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
     <div class="cat-tab-vdivider"></div>
     <div class="subcategories-track" id="subcategoriesTrack"></div>
   </div>
 </section>
+
+<!-- ═══ Channel Status Bar (uncat + bulk) ═══ -->
+<div class="chan-topbar" id="chanTopbar">
+  <div class="chan-uncat-row" id="bbUncatInfo">
+    <div class="chan-uncat-text">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="bbUncatText"></span>
+    </div>
+    <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
+  </div>
+  <div class="chan-bulk-row">
+    <button class="bb-btn" id="bbBulkEditBtn" onclick="toggleBulkMode()">Bulk Edit</button>
+    <button class="bb-btn" id="bbBulkEditAction" onclick="openBulkCategoryModal()">Edit</button>
+    <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
+  </div>
+</div>
 
 <!-- Ad: Banner below categories -->
 <div class="promo-slot promo-slot-banner" id="promoBanner">
@@ -4423,13 +4435,12 @@ function renderCategories() {
     }
   });
 
-  // Render as text tabs
+  // Render as pill tabs
   let tabHtml = '';
-  cats.forEach((c, i) => {
+  cats.forEach(c => {
     const safeKey = c.key.replace(/'/g, "\\'");
     const active = activeCategory === c.key ? 'active' : '';
-    tabHtml += `<button class="cat-tab ${active}" onclick="setCategory('${safeKey}')">${c.name} <span class="cat-tab-count">(${c.count})</span></button>`;
-    if (i < cats.length - 1) tabHtml += `<span class="cat-tab-sep">·</span>`;
+    tabHtml += `<button class="cat-tab ${active}" onclick="setCategory('${safeKey}')">${c.name} <span class="cat-tab-count">${c.count}</span></button>`;
   });
   track.innerHTML = tabHtml;
 
@@ -4842,10 +4853,13 @@ function renderChannels() {
   sidebar.style.display = 'none';
 
   // Update topbar uncat info
+  const subCountEl = document.getElementById('chanSubCount');
+  if (subCountEl) subCountEl.textContent = `${channels.length} subscription${channels.length !== 1 ? 's' : ''}`;
+
   const uncatCount = channels.filter(ch => chIsUncategorised(ch)).length;
   const bbText = document.getElementById('bbUncatText');
   const bbSortNow = document.getElementById('bbSortNow');
-  if (bbText) bbText.textContent = `You have ${uncatCount} uncategorised channel${uncatCount !== 1 ? 's' : ''}`;
+  if (bbText) bbText.textContent = `${uncatCount} uncategorised channel${uncatCount !== 1 ? 's' : ''}`;
   if (bbSortNow) bbSortNow.disabled = uncatCount === 0;
 
   document.getElementById('navChannels')?.classList.add('active');
@@ -7573,9 +7587,7 @@ async function fetchRecentVideos(channelList) {
           const vid = item.snippet.resourceId?.videoId;
           if (vid) shortIds.add(vid);
         });
-        console.log(`[Shorts] ${ch.name}: UUSH=${shortIds.size}`, [...shortIds]);
       } else {
-        console.log(`[Shorts] ${ch.name}: UUSH unavailable (${shortsResp?.status})`);
       }
 
       // Cache Short IDs per channel independently so they survive video cache invalidation
@@ -7668,7 +7680,7 @@ function renderFeedVideoRow(v, catLabel, subcatLabel) {
   const desc = v.description ? `<div class="feed-video-desc">${v.description}</div>` : '';
   const meta = [v.channel, timeAgo(v.publishedAt), badge, subcatBadge].filter(Boolean).join(' · ');
   const isShort = !!v.isShort;
-  const shortsBadge = isShort ? `<span class="feed-shorts-badge" title="Short"><svg viewBox="0 0 24 24" width="10" height="10" fill="white"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.56-3.22 1.6-5.06s-3.22-2.56-5.06-1.6L6 6.94c-1.29.68-2.07 2.09-1.98 3.56.09 1.46 1.04 2.75 2.42 3.28l1.2.5L6.23 15c-1.84.96-2.56 3.22-1.6 5.06.96 1.84 3.22 2.56 5.06 1.6l8.54-4.54c1.29-.68 2.07-2.09 1.98-3.56-.09-1.46-1.04-2.75-2.44-3.24zM10 14.65V9.35L15 12l-5 2.65z"/></svg></span>` : '';
+  const shortsBadge = isShort ? `<span class="feed-shorts-badge" title="Short">S</span>` : '';
   return `
     <div class="feed-video-row" data-type="${isShort ? 'short' : 'video'}" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
       <div class="feed-video-thumb">${thumb}${shortsBadge}</div>
