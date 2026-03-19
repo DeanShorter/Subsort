@@ -3657,7 +3657,7 @@ async function signOutSupabase() {
   subcategories = {};
   activeCategory = 'all';
   save();
-  await sb.auth.signOut();
+  try { await sb.auth.signOut(); } catch(e) {}
   window.location.href = '/';
 }
 
