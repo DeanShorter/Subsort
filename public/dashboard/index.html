@@ -1936,6 +1936,7 @@ input[type=range]::-webkit-slider-thumb{
   .channels-area{overflow:visible!important;flex:none!important;min-height:unset!important}
   #channelGrid{overflow:visible!important;flex:none!important;padding:.75rem 0 2rem!important}
   .chan-pages{display:none!important}
+  .chan-view-toggle{display:none!important}
   /* Chan topbar: stack left and right rows vertically */
   .chan-topbar{flex-direction:column!important;align-items:stretch!important;gap:.5rem!important;padding:.625rem 1rem!important}
   .chan-topbar-left{width:100%}
@@ -2365,10 +2366,34 @@ input[type=range]::-webkit-slider-thumb{
 .ch-menu svg{width:16px;height:16px}
 .ch-card .card-select{top:.5rem;right:2.375rem}
 
-/* 3-col grid */
+/* 3-col grid (hybrid default) */
 #channelGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:.875rem!important;padding:1.25rem 1.5rem 0!important;flex:1;min-height:0;overflow:hidden;align-content:start}
 @media(max-width:1200px){#channelGrid{grid-template-columns:repeat(2,1fr)!important}}
 @media(max-width:700px){#channelGrid{grid-template-columns:1fr!important}}
+
+/* View toggle: list */
+#channelGrid.view-list{grid-template-columns:1fr!important;gap:0!important;padding:0!important}
+.ch-list-row{display:flex;align-items:center;gap:.75rem;padding:.5rem 1.5rem;background:var(--bg-card);border-bottom:1px solid var(--border-subtle);cursor:pointer;position:relative;transition:background .15s;min-height:48px}
+.ch-list-row:first-child{border-top:1px solid var(--border-subtle)}
+.ch-list-row:hover{background:var(--bg-surface)}
+.ch-list-row.selected-card{background:rgba(91,108,255,.06);border-color:var(--accent)}
+.ch-list-info{flex:1;min-width:0;display:flex;align-items:center;gap:.75rem}
+.ch-list-row .ch-name{font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:120px;max-width:220px}
+.ch-list-row .ch-stats{font-size:.75rem;color:var(--text-muted);white-space:nowrap}
+.ch-list-row .ch-badges{display:flex;flex-wrap:wrap;gap:.25rem;flex:1;min-width:0}
+.ch-list-row .ch-menu{flex-shrink:0}
+
+/* View toggle: grid (YouTube-style) */
+#channelGrid.view-grid{grid-template-columns:repeat(4,1fr)!important}
+@media(max-width:1400px){#channelGrid.view-grid{grid-template-columns:repeat(3,1fr)!important}}
+@media(max-width:900px){#channelGrid.view-grid{grid-template-columns:repeat(2,1fr)!important}}
+
+/* View toggle button group */
+.chan-view-toggle{display:flex;align-items:center;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0}
+.chan-view-btn{display:grid;place-items:center;width:30px;height:30px;background:none;border:none;color:var(--text-muted);cursor:pointer;transition:all .15s}
+.chan-view-btn:hover{color:var(--text-primary);background:var(--bg-surface-raised)}
+.chan-view-btn.active{background:var(--accent);color:#fff}
+.chan-view-btn svg{width:13px;height:13px}
 
 /* Pagination */
 .chan-pages{display:flex;align-items:center;justify-content:center;gap:.25rem;padding:.875rem 1.5rem 1.25rem;flex-shrink:0}
@@ -3223,6 +3248,17 @@ input[type=range]::-webkit-slider-thumb{
     <button class="chan-icon-btn" title="Filters" onclick="toggleChannelsSecNav()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
     </button>
+    <div class="chan-view-toggle" id="chanViewToggle">
+      <button class="chan-view-btn" id="viewBtnList" onclick="setChanView('list')" title="List view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="chan-view-btn" id="viewBtnHybrid" onclick="setChanView('hybrid')" title="Hybrid view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="5" rx="1"/><rect x="3" y="17" width="8" height="5" rx="1"/><rect x="13" y="17" width="8" height="5" rx="1"/></svg>
+      </button>
+      <button class="chan-view-btn" id="viewBtnGrid" onclick="setChanView('grid')" title="Grid view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </button>
+    </div>
   </div>
   <div class="chan-topbar-right">
     <div class="bb-info" id="bbUncatInfo">
@@ -4238,6 +4274,7 @@ let activeCategory = 'all';
 let activeSubcategory = null;
 let chanPage = 1;
 let CHAN_PAGE_SIZE = 15;
+let chanView = localStorage.getItem('subsort_chan_view') || 'hybrid';
 let editingChannelId = null;
 let editingCategoryIdx = null;
 let aiResults = null;
@@ -4704,6 +4741,15 @@ function scrollCats(dir) {
 /* ═══════════════════════════════════════════
    CHANNEL GRID
    ═══════════════════════════════════════════ */
+function setChanView(v) {
+  chanView = v;
+  localStorage.setItem('subsort_chan_view', v);
+  ['list','hybrid','grid'].forEach(mode => {
+    document.getElementById('viewBtn' + mode.charAt(0).toUpperCase() + mode.slice(1))?.classList.toggle('active', mode === v);
+  });
+  renderChannels();
+}
+
 function updateChanPageSize() {
   if (window.innerWidth <= 640) return; // mobile uses scroll, not pagination
   const area = document.getElementById('channelsArea');
@@ -4910,36 +4956,89 @@ function renderChannels() {
   if (!isMobile && chanPage > totalPages) chanPage = Math.max(1, totalPages);
   const paged = isMobile ? filtered : filtered.slice((chanPage - 1) * CHAN_PAGE_SIZE, chanPage * CHAN_PAGE_SIZE);
 
-  grid.innerHTML = paged.map(ch => {
+  // Apply view class and sync toggle button states
+  grid.classList.remove('view-list','view-hybrid','view-grid');
+  grid.classList.add('view-' + chanView);
+  ['list','hybrid','grid'].forEach(mode => {
+    document.getElementById('viewBtn' + mode.charAt(0).toUpperCase() + mode.slice(1))?.classList.toggle('active', mode === chanView);
+  });
+
+  const selectSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const menuSvg = `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
+
+  grid.innerHTML = paged.map((ch, i) => {
     const initials = (ch.name || '?').substring(0,2).toUpperCase();
     const cats = chCats(ch);
+    const catBadges = cats.map(c => {
+      const col = (window._categoryColours && window._categoryColours[c]) || '#5B6CFF';
+      return `<span class="ch-badge" style="background:${col}22;color:${col}">${c}</span>`;
+    }).join('');
+    const subcatBadge = ch.subcategory ? `<span class="ch-badge">${ch.subcategory}</span>` : '';
+    const isSelected = selectedChannels.has(ch.id);
+    const selectEl = `<div class="card-select ${isSelected?'selected':''}" onclick="event.stopPropagation();toggleChannelSelect('${ch.id}')">${selectSvg}</div>`;
+    const menuEl = `<button class="ch-menu" title="Options" onclick="event.stopPropagation();editChannel('${ch.id}')">${menuSvg}</button>`;
+
+    if (chanView === 'list') {
+      const statsHtml = [
+        ch.subscriberCount ? `${formatCount(ch.subscriberCount)} subs` : '',
+        ch.videoCount ? `${formatCount(ch.videoCount)} videos` : ''
+      ].filter(Boolean).join(' · ');
+      return `<div class="ch-list-row ${isSelected?'selected-card':''}" onclick="openDetail('${ch.id}')">
+        ${selectEl}
+        <div class="ch-list-info">
+          <div class="ch-name">${ch.name || 'Unknown'}</div>
+          ${statsHtml ? `<div class="ch-stats">${statsHtml}</div>` : ''}
+        </div>
+        <div class="ch-badges">${catBadges}${subcatBadge}</div>
+        ${ch.favourited ? '<div class="ch-fav-dot" title="Favourite"></div>' : ''}
+        ${menuEl}
+      </div>`;
+    }
+
+    if (chanView === 'grid') {
+      const ph = i % 5;
+      const banner = ch.bannerUrl
+        ? `<img src="${ch.bannerUrl}" alt="" loading="lazy">`
+        : `<div class="card-banner-placeholder ph-${ph}"></div>`;
+      const avatar = ch.thumbnail
+        ? `<img src="${ch.thumbnail}" alt="">`
+        : `<div class="card-avatar-placeholder">${initials}</div>`;
+      return `<div class="channel-card ${isSelected?'selected-card':''}" onclick="openDetail('${ch.id}')">
+        ${selectEl}
+        <div class="card-banner">${banner}</div>
+        <div class="card-body">
+          <div class="card-name-row">
+            <div class="card-avatar">${avatar}</div>
+            <div class="card-name">${ch.name || 'Unknown'}</div>
+          </div>
+          ${ch.subscriberCount || ch.videoCount ? `<div class="card-meta">
+            ${ch.subscriberCount ? `<span>${formatCount(ch.subscriberCount)} subs</span>` : ''}
+            ${ch.videoCount ? `<span>${formatCount(ch.videoCount)} videos</span>` : ''}
+          </div>` : ''}
+          <div class="ch-badges">${catBadges}${subcatBadge}</div>
+        </div>
+        ${ch.favourited ? '<div class="ch-fav-dot" title="Favourite" style="position:absolute;top:.625rem;right:.625rem"></div>' : ''}
+        ${menuEl}
+      </div>`;
+    }
+
+    // Hybrid (default)
     const statsHtml = [
       ch.subscriberCount ? `${formatCount(ch.subscriberCount)} subs` : '',
       ch.videoCount ? `${formatCount(ch.videoCount)} videos` : ''
     ].filter(Boolean).join('<span class="ch-dot"></span>');
-    return `
-    <div class="ch-card ${selectedChannels.has(ch.id)?'selected-card':''}" onclick="openDetail('${ch.id}')">
-      <div class="card-select ${selectedChannels.has(ch.id)?'selected':''}" onclick="event.stopPropagation();toggleChannelSelect('${ch.id}')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
+    return `<div class="ch-card ${isSelected?'selected-card':''}" onclick="openDetail('${ch.id}')">
+      ${selectEl}
       <div class="ch-av">
         ${ch.thumbnail ? `<img src="${ch.thumbnail}" alt="${ch.name}">` : `<div class="ch-av-ph">${initials}</div>`}
       </div>
       <div class="ch-body">
         <div class="ch-name">${ch.name || 'Unknown'}</div>
         ${statsHtml ? `<div class="ch-stats">${statsHtml}</div>` : ''}
-        <div class="ch-badges">
-          ${cats.map(c => {
-            const col = (window._categoryColours && window._categoryColours[c]) || '#5B6CFF';
-            return `<span class="ch-badge" style="background:${col}22;color:${col}">${c}</span>`;
-          }).join('')}
-          ${ch.subcategory ? `<span class="ch-badge">${ch.subcategory}</span>` : ''}
-        </div>
+        <div class="ch-badges">${catBadges}${subcatBadge}</div>
       </div>
       ${ch.favourited ? '<div class="ch-fav-dot" title="Favourite"></div>' : ''}
-      <button class="ch-menu" title="Options" onclick="event.stopPropagation();editChannel('${ch.id}')">
-        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
-      </button>
+      ${menuEl}
     </div>`;
   }).join('');
 
