@@ -1235,12 +1235,21 @@ input[type=range]::-webkit-slider-thumb{
 }
 
 /* ─── Blog Page ─── */
-.blog-page{display:none;padding:2.5rem;max-width:950px;margin:0 auto}
-.blog-page.active{display:block}
-.blog-header{margin-bottom:2.5rem}
-.blog-heading{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.375rem}
-.blog-subtitle{font-size:.9375rem;color:var(--text-secondary);line-height:1.6}
-.blog-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.blog-page{display:none;overflow-y:auto;flex:1;min-height:0}
+.blog-page.active{display:flex;flex-direction:column}
+.blog-inner{padding:1.75rem 2rem 3rem;flex:1}
+.blog-controls{display:flex;align-items:center;flex-wrap:wrap;gap:.625rem;margin-bottom:1.75rem}
+.blog-search-wrap{position:relative;flex:1;min-width:160px;max-width:260px}
+.blog-search-wrap svg{position:absolute;left:.625rem;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);pointer-events:none}
+.blog-search-input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);font:400 .8125rem/1 var(--font-body);padding:.5rem .75rem .5rem 2rem;border-radius:var(--radius-sm);outline:none;transition:border-color .15s}
+.blog-search-input:focus{border-color:#555}
+.blog-search-input::placeholder{color:var(--text-muted)}
+.blog-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.4rem .625rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body);cursor:pointer;outline:none}
+.blog-filter-pills{display:flex;gap:.375rem;flex-wrap:wrap}
+.blog-filter-pill{padding:.375rem .75rem;border-radius:20px;border:1px solid var(--border-subtle);background:none;color:var(--text-muted);font:500 .75rem/1 var(--font-body);cursor:pointer;transition:all .15s}
+.blog-filter-pill:hover{border-color:#555;color:var(--text-primary)}
+.blog-filter-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
 .blog-card{
   background:var(--bg-card);border:1px solid var(--border-subtle);
   border-radius:var(--radius-md);overflow:hidden;cursor:pointer;
@@ -1311,10 +1320,8 @@ input[type=range]::-webkit-slider-thumb{
 }
 .blog-article-cta p{font-size:.875rem;color:var(--text-secondary);margin-bottom:1.25rem}
 
-@media (max-width: 640px) {
-  .blog-grid{grid-template-columns:1fr}
-  .blog-heading{font-size:1.5rem}
-}
+@media (max-width: 900px) { .blog-grid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width: 600px) { .blog-grid{grid-template-columns:1fr} }
 
 /* ─── Settings Page ─── */
 .settings-page{display:none;padding:2.5rem;max-width:700px;margin:0 auto}
@@ -1680,8 +1687,14 @@ input[type=range]::-webkit-slider-thumb{
 .feed-search-input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.4rem .625rem .4rem 2rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body)}
 .feed-search-input:focus{outline:none;border-color:var(--accent)}
 .feed-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.375rem .625rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body);cursor:pointer}
+/* Feed sticky bar */
+.feed-sticky-bar{position:sticky;top:0;z-index:10;background:var(--bg-primary);margin:0 -2rem;padding:0 2rem;border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
+#homeMain.feed-scrolled .feed-sticky-bar{border-color:var(--border-subtle);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+/* Collapsible header on scroll */
+#homeMain .db-header{overflow:hidden;max-height:120px;opacity:1;transition:max-height .25s ease,opacity .2s ease,margin .25s ease}
+#homeMain.feed-scrolled .db-header{max-height:0;opacity:0;margin:0}
 /* Feed category tabs (inline) */
-.feed-cats-row{border-bottom:1px solid var(--border-subtle);margin:0 0 0;overflow:hidden;padding-bottom:.25rem}
+.feed-cats-row{border-bottom:none;margin:0 0 0;overflow:hidden;padding-bottom:.25rem}
 .feed-cats-row .cat-tabs-track{display:flex;align-items:center;white-space:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;user-select:none;-webkit-user-select:none}
 .feed-cats-row .cat-tabs-track::-webkit-scrollbar{display:none}
 .feed-cats-row .cat-tabs-track.dragging{cursor:grabbing;scroll-behavior:auto}
@@ -2943,9 +2956,26 @@ input[type=range]::-webkit-slider-thumb{
 <!-- ═══ Blog Page ═══ -->
 <div class="blog-page" id="blogPage">
   <div class="blog-inner">
-    <div class="blog-header">
-      <h2 class="blog-heading">Blog</h2>
-      <p class="blog-subtitle">Tips, guides, and insights on organising your YouTube subscriptions and discovering quality creators.</p>
+    <div class="db-header">
+      <h1 class="db-title">Blog</h1>
+      <p class="db-subtitle">Tips, guides, and insights on organising your YouTube subscriptions.</p>
+    </div>
+
+    <div class="blog-controls">
+      <div class="blog-search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="blogSearchInput" class="blog-search-input" placeholder="Search articles…" oninput="renderBlog()">
+      </div>
+      <select id="blogSortSelect" class="blog-sort-select" onchange="renderBlog()">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+      </select>
+      <div class="blog-filter-pills" id="blogFilterPills">
+        <button class="blog-filter-pill active" data-tag="all" onclick="setBlogFilter(this,'all')">All</button>
+        <button class="blog-filter-pill" data-tag="Guides" onclick="setBlogFilter(this,'Guides')">Guides</button>
+        <button class="blog-filter-pill" data-tag="Insights" onclick="setBlogFilter(this,'Insights')">Insights</button>
+        <button class="blog-filter-pill" data-tag="Tips" onclick="setBlogFilter(this,'Tips')">Tips</button>
+      </div>
     </div>
 
     <div class="blog-grid" id="blogGrid"></div>
@@ -6874,12 +6904,20 @@ function buildFeedTabsHtml() {
         <option value="channel" ${feedSortKey==='channel'?'selected':''}>Channel</option>
       </select>
     </div>`;
-  return headerHtml + controlsHtml + `<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}`;
+  return headerHtml + `<div class="feed-sticky-bar">${controlsHtml}<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}</div>`;
 }
 
 function initFeedCatsTrack() {
   const track = document.getElementById('feedCatsTrack');
   if (!track) return;
+
+  // Hide header on scroll, keep sticky bar visible
+  const main = document.getElementById('homeMain');
+  if (main) {
+    main.addEventListener('scroll', function onFeedScroll() {
+      main.classList.toggle('feed-scrolled', main.scrollTop > 60);
+    }, { passive: true });
+  }
   let isDown = false, startX, scrollLeft, moved;
   function onStart(e) { isDown = true; moved = false; startX = (e.pageX || e.touches[0].pageX) - track.offsetLeft; scrollLeft = track.scrollLeft; }
   function onEnd() { if (!isDown) return; isDown = false; track.classList.remove('dragging'); }
@@ -6933,6 +6971,8 @@ function setFeedSubcategory(cat, sub) {
    ═══════════════════════════════════════════ */
 async function loadFeedCategory(category, subcategory) {
   const main = document.getElementById('homeMain');
+  main.classList.remove('feed-scrolled');
+  main.scrollTop = 0;
   let catChannels = channels.filter(ch => chHasCat(ch, category));
   if (subcategory) catChannels = catChannels.filter(ch => ch.subcategory === subcategory);
 
@@ -6977,6 +7017,8 @@ async function loadFeedCategory(category, subcategory) {
 
 async function loadFeedAll() {
   const main = document.getElementById('homeMain');
+  main.classList.remove('feed-scrolled');
+  main.scrollTop = 0;
 
   if (!channels.length) {
     main.innerHTML = buildFeedTabsHtml() + `
@@ -7210,9 +7252,39 @@ const BLOG_POSTS = [
   }
 ];
 
+let blogActiveTag = 'all';
+
+function setBlogFilter(el, tag) {
+  blogActiveTag = tag;
+  document.querySelectorAll('.blog-filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderBlog();
+}
+
 function renderBlog() {
   const grid = document.getElementById('blogGrid');
-  grid.innerHTML = BLOG_POSTS.map(post => `
+  if (!grid) return;
+
+  const query = (document.getElementById('blogSearchInput')?.value || '').toLowerCase();
+  const sort  = document.getElementById('blogSortSelect')?.value || 'newest';
+
+  let posts = BLOG_POSTS.filter(p => {
+    if (blogActiveTag !== 'all' && p.category !== blogActiveTag) return false;
+    if (query && !p.title.toLowerCase().includes(query) && !p.excerpt.toLowerCase().includes(query)) return false;
+    return true;
+  });
+
+  posts = [...posts].sort((a, b) => {
+    const da = new Date(a.date), db = new Date(b.date);
+    return sort === 'oldest' ? da - db : db - da;
+  });
+
+  if (!posts.length) {
+    grid.innerHTML = '<p style="color:var(--text-muted);font-size:.875rem;grid-column:1/-1">No articles match your search.</p>';
+    return;
+  }
+
+  grid.innerHTML = posts.map(post => `
     <div class="blog-card" onclick="openBlogPost('${post.slug}')">
       <div class="blog-card-color" style="background:${post.color}"></div>
       <div class="blog-card-body">
