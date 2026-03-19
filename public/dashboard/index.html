@@ -3586,6 +3586,10 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>
       Set Categories
     </button>
+    <button id="bulkSubcatBtn" style="display:none" onclick="openBulkSubcategoryModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      Set Subcategory
+    </button>
     <button onclick="clearSelection()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       Clear
@@ -3610,6 +3614,23 @@ input[type=range]::-webkit-slider-thumb{
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('bulkCategoryModal')">Cancel</button>
       <button class="btn-save" onclick="applyBulkCategories()">Apply to all</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Bulk Subcategory Modal ═══ -->
+<div class="modal-overlay" id="bulkSubcategoryModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bulkSubcategoryModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2>Set Subcategory</h2>
+    <p class="subtitle" id="bulkSubcatModalCount" style="margin-top:.5rem"></p>
+    <div class="form-group" style="margin-top:1.25rem">
+      <label id="bulkSubcatModalLabel">Choose a subcategory</label>
+      <div class="cat-checkbox-list" id="bulkSubcatModalList"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('bulkSubcategoryModal')">Cancel</button>
+      <button class="btn-save" onclick="applyBulkSubcategory()">Apply to all</button>
     </div>
   </div>
 </div>
@@ -7547,6 +7568,11 @@ function updateBulkBar() {
   const count = selectedChannels.size;
   document.getElementById('bulkCount').textContent = `${count} selected`;
   bar.classList.toggle('show', count > 0);
+  const subcatBtn = document.getElementById('bulkSubcatBtn');
+  if (subcatBtn) {
+    const showSubcat = activeCategory && activeCategory !== 'all' && activeCategory !== '__uncat__';
+    subcatBtn.style.display = showSubcat ? '' : 'none';
+  }
 }
 
 function openBulkCategoryModal() {
@@ -7622,6 +7648,55 @@ async function applyBulkCategories() {
   clearSelection();
   toast(`Updated ${updated} channel${updated > 1 ? 's' : ''}`);
 
+  if (sb && sbUser && updatedChannels.length) {
+    await dbSyncChannelCategories(updatedChannels, []);
+  }
+}
+
+function selectBulkSubcat(el) {
+  el.closest('.cat-checkbox-list').querySelectorAll('.cat-check-item').forEach(l => l.classList.remove('checked'));
+  el.classList.add('checked');
+  el.querySelector('input').checked = true;
+}
+
+function openBulkSubcategoryModal() {
+  if (!selectedChannels.size) return;
+  const subs = subcategories[activeCategory] || [];
+  document.getElementById('bulkSubcatModalCount').textContent = `Updating ${selectedChannels.size} channel${selectedChannels.size > 1 ? 's' : ''}`;
+  document.getElementById('bulkSubcatModalLabel').textContent = `Subcategories in "${activeCategory}"`;
+  const list = document.getElementById('bulkSubcatModalList');
+  if (!subs.length) {
+    list.innerHTML = '<p style="font-size:.8125rem;color:var(--text-muted);padding:.5rem 0">No subcategories for this category yet. Add some using the Edit button.</p>';
+  } else {
+    const items = [{ label: 'None (clear subcategory)', value: '' }, ...subs.map(s => ({ label: s, value: s }))];
+    list.innerHTML = items.map(item =>
+      `<label class="cat-check-item" onclick="selectBulkSubcat(this)">
+        <input type="radio" name="bulkSubcatRadio" value="${item.value}">
+        ${item.label}
+      </label>`
+    ).join('');
+  }
+  openModal('bulkSubcategoryModal');
+}
+
+async function applyBulkSubcategory() {
+  const selected = document.querySelector('#bulkSubcatModalList input[name="bulkSubcatRadio"]:checked');
+  if (!selected) { closeModal('bulkSubcategoryModal'); return; }
+  const newSub = selected.value;
+  let updated = 0;
+  const updatedChannels = [];
+  for (const id of selectedChannels) {
+    const ch = channels.find(c => c.id === id);
+    if (!ch || !chHasCat(ch, activeCategory)) continue;
+    ch.subcategory = newSub;
+    updatedChannels.push(ch);
+    updated++;
+  }
+  save();
+  renderAll();
+  closeModal('bulkSubcategoryModal');
+  clearSelection();
+  toast(`Updated ${updated} channel${updated > 1 ? 's' : ''}`);
   if (sb && sbUser && updatedChannels.length) {
     await dbSyncChannelCategories(updatedChannels, []);
   }
