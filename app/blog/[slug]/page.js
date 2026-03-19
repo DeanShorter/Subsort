@@ -50,8 +50,7 @@ export default async function BlogPost({ params }) {
 
       <nav className={styles.nav}>
         <Link href="/" className={styles.navBrand}>
-          <div className={styles.navLogo}><svg viewBox="0 0 32 32" fill="none" width="32" height="32"><rect x="1" y="11" width="19" height="19" rx="5" fill="#5B6CFF" opacity="0.6"/><rect x="12" y="1" width="19" height="19" rx="5" fill="#5B6CFF"/></svg></div>
-          <span className={styles.navTitle}>Subsort</span>
+          <img src="/logo.svg" alt="myfeed." height="30" />
         </Link>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
