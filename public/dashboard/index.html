@@ -1691,6 +1691,7 @@ input[type=range]::-webkit-slider-thumb{
 .feed-video-meta{font-size:.75rem;color:var(--text-muted)}
 .feed-video-footer{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .feed-cat-badge{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:20px;font-size:.6875rem;font-weight:500;white-space:nowrap}
+.feed-subcat-badge{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:20px;font-size:.6875rem;font-weight:500;white-space:nowrap;background:rgba(148,163,184,.12);color:var(--text-muted)}
 .feed-video-desc{font-size:.6875rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px}
 .feed-video-menu{flex-shrink:0;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:.25rem;opacity:0;transition:opacity .1s}
 .feed-video-row:hover .feed-video-menu{opacity:1}
@@ -7166,7 +7167,9 @@ function buildFeedTabsHtml() {
       </div>
       <select id="feedSortSelect" class="feed-sort-select" onchange="applyFeedSort(this.value)">
         <option value="date" ${feedSortKey==='date'?'selected':''}>Latest</option>
-        <option value="channel" ${feedSortKey==='channel'?'selected':''}>Channel</option>
+        ${activeFeedCategory === 'all'
+          ? `<option value="channel" ${feedSortKey==='channel'?'selected':''}>Channel</option>`
+          : `<option value="subcategory" ${feedSortKey==='subcategory'?'selected':''}>Subcategory</option>`}
       </select>
     </div>`;
   return headerHtml + `<div class="feed-sticky-bar">${controlsHtml}<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}</div>`;
@@ -7263,13 +7266,16 @@ async function loadFeedCategory(category, subcategory) {
     <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
   initFeedCatsTrack();
 
+  const subMap = {};
+  catChannels.forEach(ch => { if (ch.subcategory) subMap[ch.channelId] = ch.subcategory; });
+
   try {
     let videos = await fetchRecentVideos(catChannels);
-    if (feedSortKey === 'channel') videos = [...videos].sort((a,b) => (a.channel||'').localeCompare(b.channel||''));
+    if (feedSortKey === 'subcategory') videos = [...videos].sort((a,b) => (subMap[a.channelId]||'').localeCompare(subMap[b.channelId]||''));
     const spinner = document.getElementById('feedLoadingSpinner');
     if (spinner) spinner.remove();
     const listHtml = videos.length
-      ? videos.map(v => renderFeedVideoRow(v, null)).join('')
+      ? videos.map(v => renderFeedVideoRow(v, null, subMap[v.channelId] || null)).join('')
       : `<p style="color:var(--text-muted);padding:.5rem 0">No videos in the last 7 days.</p>`;
     main.insertAdjacentHTML('beforeend', listHtml);
     if (feedSearchQuery) applyFeedSearch(feedSearchQuery);
@@ -7304,27 +7310,30 @@ async function loadFeedAll() {
   initFeedCatsTrack();
 
   try {
-    for (const cat of catsWithChannels.slice(0, 6)) {
+    // Fetch all categories in parallel, then flatten and shuffle
+    const allVideos = [];
+    await Promise.all(catsWithChannels.slice(0, 6).map(async cat => {
       const catChannels = channels.filter(ch => chHasCat(ch, cat)).slice(0, 5);
       const videos = await fetchRecentVideos(catChannels);
-      if (!videos.length) continue;
-      const spinner = document.getElementById('feedLoadingSpinner');
-      if (spinner) spinner.remove();
-      const sectionHtml = `
-        <div class="home-section">
-          <div class="home-section-header">
-            <span class="home-section-title">${cat}</span>
-            <span class="home-section-count">${videos.length} video${videos.length !== 1 ? 's' : ''}</span>
-          </div>
-          ${videos.map(v => renderFeedVideoRow(v, cat)).join('')}
-        </div>`;
-      main.insertAdjacentHTML('beforeend', sectionHtml);
-    }
+      videos.forEach(v => allVideos.push({ v, cat }));
+    }));
+
     const spinner = document.getElementById('feedLoadingSpinner');
-    if (spinner) {
-      spinner.remove();
+    if (spinner) spinner.remove();
+
+    if (!allVideos.length) {
       main.insertAdjacentHTML('beforeend', `<p style="color:var(--text-muted);padding:.5rem 0">No recent videos found.</p>`);
+      return;
     }
+
+    // Shuffle
+    for (let i = allVideos.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allVideos[i], allVideos[j]] = [allVideos[j], allVideos[i]];
+    }
+
+    const sectionHtml = `<div class="home-section">${allVideos.map(({ v, cat }) => renderFeedVideoRow(v, cat)).join('')}</div>`;
+    main.insertAdjacentHTML('beforeend', sectionHtml);
   } catch (err) {
     const spinner = document.getElementById('feedLoadingSpinner');
     if (spinner) spinner.remove();
@@ -7385,20 +7394,22 @@ function getRecentDate() {
   return d.toISOString();
 }
 
-function renderFeedVideoRow(v, catLabel) {
+function renderFeedVideoRow(v, catLabel, subcatLabel) {
   const safeId = (v.id || '').replace(/"/g, '');
   const thumb = v.thumbnail
     ? `<img src="${v.thumbnail}" alt="" loading="lazy">`
     : `<div style="width:100%;height:100%;display:grid;place-items:center;color:var(--text-muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div>`;
   const catCol = catLabel && window._categoryColours && window._categoryColours[catLabel];
   const badge = catLabel ? `<span class="feed-cat-badge" style="background:${catCol ? catCol + '22' : 'rgba(91,108,255,.15)'};color:${catCol || '#8b9dff'}">${catLabel}</span>` : '';
+  const subcatBadge = subcatLabel ? `<span class="feed-subcat-badge">${subcatLabel}</span>` : '';
   const desc = v.description ? `<div class="feed-video-desc">${v.description}</div>` : '';
+  const meta = [v.channel, timeAgo(v.publishedAt), badge, subcatBadge].filter(Boolean).join(' · ');
   return `
     <div class="feed-video-row" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
       <div class="feed-video-thumb">${thumb}</div>
       <div class="feed-video-body">
         <div class="feed-video-title">${v.title}</div>
-        <div class="feed-video-meta">${v.channel} · ${timeAgo(v.publishedAt)}${badge ? ' · ' + badge : ''}</div>
+        <div class="feed-video-meta">${meta}</div>
         ${desc}
       </div>
     </div>`;
