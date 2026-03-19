@@ -812,7 +812,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .bulk-subcat-group-label:first-child{margin-top:0}
 
 /* ─── Bulk Selection ─── */
-.channel-card .card-select{
+.channel-card .card-select,.ch-card .card-select{
   position:absolute;top:.625rem;right:.625rem;z-index:2;
   width:22px;height:22px;border-radius:6px;
   background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
@@ -820,7 +820,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   display:none;place-items:center;
   cursor:pointer;transition:all .15s;
 }
-.bulk-mode .channel-card .card-select{display:grid}
+.bulk-mode .channel-card .card-select,.bulk-mode .ch-card .card-select{display:grid}
 .btn-bulk-toggle{
   display:flex;align-items:center;gap:.375rem;
   padding:.4rem .75rem;border-radius:var(--radius-sm);
@@ -831,14 +831,16 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .btn-bulk-toggle:hover{background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444}
 .btn-bulk-toggle svg{width:14px;height:14px;flex-shrink:0}
 .bulk-mode .btn-bulk-toggle{background:var(--accent);border-color:var(--accent);color:#fff}
+#bbBulkEditAction{display:none}
+.bulk-mode #bbBulkEditAction{display:inline-flex}
 .bulk-mode .btn-bulk-toggle:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
 .bulk-mode .btn-bulk-toggle:active{background:var(--accent-pressed)}
-.channel-card .card-select.selected{
+.channel-card .card-select.selected,.ch-card .card-select.selected{
   background:var(--accent);border-color:var(--accent);
 }
-.channel-card .card-select svg{width:14px;height:14px;color:#fff;opacity:0}
-.channel-card .card-select.selected svg{opacity:1}
-.channel-card.selected-card{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.channel-card .card-select svg,.ch-card .card-select svg{width:14px;height:14px;color:#fff;opacity:0}
+.channel-card .card-select.selected svg,.ch-card .card-select.selected svg{opacity:1}
+.channel-card.selected-card,.ch-card.selected-card{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 
 /* Bulk action bar */
 .bulk-bar{
@@ -2914,7 +2916,7 @@ input[type=range]::-webkit-slider-thumb{
     <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
     <div class="chan-topbar-divider"></div>
     <button class="bb-btn" id="bbBulkEditBtn" onclick="toggleBulkMode()">Bulk Edit</button>
-    <button class="bb-btn" onclick="openBulkCategoryModal()">Edit</button>
+    <button class="bb-btn" id="bbBulkEditAction" onclick="openBulkCategoryModal()">Edit</button>
     <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
   </div>
   <div class="chan-topbar-right">
