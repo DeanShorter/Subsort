@@ -943,16 +943,54 @@ input[type=range]::-webkit-slider-thumb{
 .file-input{display:none}
 
 /* ─── Analytics Page ─── */
-.analytics-page{display:none;padding:2rem 2.5rem 3rem}
-.analytics-page.active{display:block}
-.analytics-inner{max-width:900px;margin:0 auto}
-.analytics-hero{text-align:center;margin-bottom:2rem}
-
-.analytics-score-card{
-  display:flex;align-items:center;gap:2rem;
-  background:var(--bg-card);border:1px solid var(--border-subtle);
-  border-radius:var(--radius-xl);padding:2rem;margin-bottom:1.5rem;
-}
+.analytics-page{display:none;overflow-y:auto;flex:1;min-height:0}
+.analytics-page.active{display:flex;flex-direction:column}
+.an-inner{padding:1.75rem 2rem 3rem;flex:1}
+.an-header{margin-bottom:1rem}
+.an-title{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.25rem}
+.an-title em{color:var(--accent);font-style:italic}
+.an-subtitle{font-size:.875rem;color:var(--text-secondary)}
+/* Tab strip */
+.an-tabstrip-wrap{border-bottom:1px solid var(--border-subtle);margin-bottom:1.25rem;overflow:hidden}
+.an-tabstrip{display:flex;align-items:center;gap:.125rem;overflow-x:auto;scrollbar-width:none;padding-bottom:1px;user-select:none;-webkit-user-select:none}
+.an-tabstrip::-webkit-scrollbar{display:none}
+.an-tab-icon{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:var(--radius-sm);background:none;border:1px solid var(--border-subtle);color:var(--text-muted);cursor:pointer;flex-shrink:0;margin-right:.375rem;transition:all .12s}
+.an-tab-icon:hover,.an-tab-icon.active{background:var(--bg-surface);color:var(--text-primary);border-color:#444}
+.an-tab{display:inline-flex;align-items:center;gap:.375rem;padding:.4rem .875rem;border-radius:var(--radius-sm);background:none;border:none;color:var(--text-muted);font:500 .8125rem/1 var(--font-body);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .12s}
+.an-tab:hover{color:var(--text-primary);background:var(--bg-surface)}
+.an-tab.active{background:var(--accent);color:#fff}
+.an-score-badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;background:rgba(255,255,255,.15);border-radius:10px;font-size:.6875rem;font-weight:700;padding:0 .35rem}
+.an-tab.active .an-score-badge{background:rgba(255,255,255,.25)}
+.an-tab-actions{margin-left:auto;display:flex;align-items:center;gap:.375rem;flex-shrink:0;padding-left:.75rem}
+.an-tab-action{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:var(--radius-sm);background:none;border:1px solid var(--border-subtle);color:var(--text-muted);cursor:pointer;transition:all .12s}
+.an-tab-action:hover{background:var(--bg-surface);color:var(--text-primary)}
+/* Stats row */
+.an-stats-row{display:flex;gap:.75rem;margin-bottom:1.25rem;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.an-stats-row::-webkit-scrollbar{display:none}
+.an-stat-card{flex:1;min-width:110px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:.875rem 1rem}
+.an-stat-num{font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--text-primary);margin-bottom:.25rem;white-space:nowrap}
+.an-stat-lbl{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
+/* Health panel */
+.an-health-panel{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:1.25rem}
+.an-health-panel-inner{display:flex;align-items:center;gap:2rem}
+/* Main 2-col grid */
+.an-grid{display:grid;grid-template-columns:1fr 360px;gap:1.25rem;align-items:start}
+.an-col-left{}
+.an-col-right{}
+/* Sections */
+.an-section{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem;margin-bottom:1.25rem}
+.an-section:last-child{margin-bottom:0}
+.an-sticky{position:sticky;top:0}
+.an-section-hd{margin-bottom:1rem}
+.an-section-hd h3{font-family:var(--font-display);font-size:1rem;font-weight:700}
+.an-section-hd p{font-size:.8125rem;color:var(--text-muted);margin-top:.125rem}
+/* Keep old analytics-section for watch history compat */
+.analytics-section{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem;margin-bottom:1.25rem}
+.analytics-section-header{margin-bottom:1rem}
+.analytics-section-header h3{font-family:var(--font-display);font-size:1rem;font-weight:700}
+.analytics-section-header p{font-size:.8125rem;color:var(--text-muted);margin-top:.125rem}
+.analytics-empty{font-size:.8125rem;color:var(--text-muted);padding:.5rem 0}
+/* Score ring (kept for health panel) */
 .score-ring-wrap{position:relative;width:120px;height:120px;flex-shrink:0}
 .score-ring{width:100%;height:100%}
 .score-value{
@@ -971,34 +1009,14 @@ input[type=range]::-webkit-slider-thumb{
 .score-factor.warn{background:rgba(245,158,11,.1);color:#f59e0b}
 .score-factor.bad{background:rgba(239,68,68,.1);color:#f87171}
 
-.analytics-stats-row{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;
-  margin-bottom:1.5rem;
-}
-.analytics-stat-card{
-  background:var(--bg-card);border:1px solid var(--border-subtle);
-  border-radius:var(--radius-md);padding:1rem 1.25rem;text-align:center;
-}
-.analytics-stat-card .stat-num{font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--text-primary)}
-.analytics-stat-card .stat-lbl{font-size:.6875rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-top:.125rem}
-
-.analytics-section{
-  background:var(--bg-card);border:1px solid var(--border-subtle);
-  border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.25rem;
-}
-.analytics-section-header{margin-bottom:1rem}
-.analytics-section-header h3{font-family:var(--font-display);font-size:1rem;font-weight:700}
-.analytics-section-header p{font-size:.8125rem;color:var(--text-muted);margin-top:.125rem}
-.analytics-empty{font-size:.8125rem;color:var(--text-muted);padding:.5rem 0}
-
 /* Category bars */
-.analytics-bars{display:flex;flex-direction:column;gap:.625rem}
-.analytics-bar-row{display:flex;align-items:center;gap:.75rem}
-.analytics-bar-label{width:120px;font-size:.75rem;font-weight:500;color:var(--text-secondary);text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.analytics-bar-track{flex:1;height:24px;background:var(--bg-surface);border-radius:4px;overflow:hidden;position:relative}
-.analytics-bar-fill{height:100%;border-radius:4px;transition:width .6s var(--transition);display:flex;align-items:center;padding:0 .5rem}
-.analytics-bar-fill span{font-size:.625rem;font-weight:600;color:#fff;white-space:nowrap}
-.analytics-bar-count{font-size:.75rem;color:var(--text-muted);width:40px;flex-shrink:0}
+.analytics-bars{display:flex;flex-direction:column;gap:.5rem}
+.analytics-bar-row{display:flex;align-items:center;gap:.625rem}
+.analytics-bar-label{width:130px;font-size:.75rem;color:var(--text-secondary);text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.analytics-bar-track{flex:1;height:20px;background:var(--bg-surface);border-radius:4px;overflow:hidden}
+.analytics-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 .5rem;min-width:28px;transition:width .6s ease}
+.analytics-bar-fill span{font-size:.6rem;color:#fff;font-weight:700;white-space:nowrap}
+.analytics-bar-count{font-size:.75rem;font-weight:600;color:var(--text-secondary);min-width:2.5rem;text-align:right}
 
 /* Dead channels list */
 .dead-channel-row{
@@ -2153,6 +2171,9 @@ input[type=range]::-webkit-slider-thumb{
   .channel-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
   .mp-how-grid,.mp-pricing-grid{grid-template-columns:1fr}
   .analytics-score-card{flex-direction:column;text-align:center}
+  .an-grid{grid-template-columns:1fr}
+  .an-sticky{position:static}
+  .an-inner{padding:1.25rem}
   .analytics-page,.marketplace-page{padding:1.5rem 1.25rem}
   .analytics-premium-card{padding:1.75rem 1.25rem}
   .analytics-premium-loaded-header{flex-direction:column;gap:.75rem;align-items:flex-start}
@@ -2496,65 +2517,88 @@ input[type=range]::-webkit-slider-thumb{
 
 <!-- ═══ Analytics Page ═══ -->
 <div class="analytics-page" id="analyticsPage">
-  <div class="analytics-inner">
-    <div class="analytics-hero">
-      <h2 class="import-heading">Feed <em>Analytics</em></h2>
-      <p class="import-subtitle">Understand your subscription habits and keep your feed healthy.</p>
+  <div class="an-inner">
+
+    <!-- Header -->
+    <div class="an-header">
+      <h2 class="an-title">Feed <em>Analytics</em></h2>
+      <p class="an-subtitle">Understand your subscription habits and keep your feed healthy.</p>
     </div>
 
-    <!-- Health Score -->
-    <div class="analytics-score-card" id="healthScoreCard">
-      <div class="score-ring-wrap">
-        <svg class="score-ring" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border-subtle)" stroke-width="8"/>
-          <circle id="scoreArc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1s ease"/>
-        </svg>
-        <div class="score-value" id="scoreValue">—</div>
-      </div>
-      <div class="score-details">
-        <h3>Feed Health Score</h3>
-        <p class="score-grade" id="scoreGrade">Sync your subscriptions to see your score</p>
-        <div class="score-factors" id="scoreFactors"></div>
+    <!-- Tab strip -->
+    <div class="an-tabstrip-wrap">
+      <div class="an-tabstrip" id="anTabstrip">
+        <button class="an-tab-icon active" id="anTabIconAll" onclick="setAnalyticsTab('all')" title="All">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="an-tab active" id="anTabAll" onclick="setAnalyticsTab('all')">All</button>
+        <button class="an-tab an-tab-health" id="anTabHealth" onclick="setAnalyticsTab('health')">
+          Feed Health Score <span class="an-score-badge" id="anScoreBadge">—</span>
+        </button>
+        <div id="anCatTabs" style="display:contents"></div>
+        <div class="an-tab-actions">
+          <button class="an-tab-action" onclick="showView('analytics')" title="Clean up inactive channels">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+          <button class="an-tab-action" onclick="openModal('autoCatConfirmModal')" title="Rebalance categories">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </button>
+          <button class="an-tab-action" onclick="openModal('addCategoryModal')" title="Add category">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Stats row -->
-    <div class="analytics-stats-row" id="analyticsStatsRow"></div>
+    <div class="an-stats-row" id="analyticsStatsRow"></div>
 
-    <!-- Dead channels -->
-    <div class="analytics-section">
-      <div class="analytics-section-header">
-        <h3>Dead & Inactive Channels</h3>
-        <p>Channels that haven't uploaded recently or have very low activity.</p>
-      </div>
-      <div class="analytics-dead-list" id="deadChannelsList">
-        <p class="analytics-empty">Sync your subscriptions to detect inactive channels.</p>
+    <!-- Health Score Panel (shown when health tab active) -->
+    <div class="an-health-panel" id="anHealthPanel" style="display:none">
+      <div class="an-health-panel-inner">
+        <div class="score-ring-wrap">
+          <svg class="score-ring" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border-subtle)" stroke-width="8"/>
+            <circle id="scoreArc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1s ease"/>
+          </svg>
+          <div class="score-value" id="scoreValue">—</div>
+        </div>
+        <div class="score-details">
+          <h3>Feed Health Score</h3>
+          <p class="score-grade" id="scoreGrade">Sync your subscriptions to see your score</p>
+          <div class="score-factors" id="scoreFactors"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Ad: Analytics inline -->
-    <div class="promo-slot promo-slot-inline" id="promoAnalytics">
-      <!-- Replace with AdSense unit: data-ad-slot="YOUR_SLOT_ID" -->
-      Advertisement
-    </div>
+    <!-- Main 2-col grid -->
+    <div class="an-grid" id="anChannelsSections">
 
-    <!-- Category breakdown -->
-    <div class="analytics-section">
-      <div class="analytics-section-header">
-        <h3>Category Breakdown</h3>
-        <p>How your subscriptions are distributed.</p>
-      </div>
-      <div class="analytics-bars" id="categoryBars"></div>
-    </div>
+      <!-- Left column -->
+      <div class="an-col-left">
 
-    <!-- Top channels -->
-    <div class="analytics-section">
-      <div class="analytics-section-header">
-        <h3>Your Biggest Channels</h3>
-        <p>The most popular channels in your subscriptions.</p>
-      </div>
-      <div class="analytics-top-list" id="topChannelsList"></div>
-    </div>
+        <!-- Dead channels -->
+        <div class="an-section">
+          <div class="an-section-hd">
+            <h3>Dead & Inactive Channels</h3>
+            <p>Channels that haven't uploaded recently or have low activity.</p>
+          </div>
+          <div class="analytics-dead-list" id="deadChannelsList">
+            <p class="analytics-empty">Sync your subscriptions to detect inactive channels.</p>
+          </div>
+        </div>
+
+        <!-- Ad slot -->
+        <div class="promo-slot promo-slot-inline" id="promoAnalytics">Advertisement</div>
+
+        <!-- Top channels -->
+        <div class="an-section">
+          <div class="an-section-hd">
+            <h3>Your Biggest Channels</h3>
+            <p>The most popular channels in your subscriptions.</p>
+          </div>
+          <div class="analytics-top-list" id="topChannelsList"></div>
+        </div>
 
     <!-- ══ Premium: Watch History ══ -->
     <div id="premiumWatchHistorySection">
@@ -2636,9 +2680,22 @@ input[type=range]::-webkit-slider-thumb{
         </div>
       </div>
 
-    </div>
+      </div><!-- /an-col-left -->
 
-  </div>
+      <!-- Right column: category breakdown (sticky) -->
+      <div class="an-col-right">
+        <div class="an-section an-sticky">
+          <div class="an-section-hd">
+            <h3>Category Breakdown</h3>
+            <p>How your subscriptions are distributed.</p>
+          </div>
+          <div class="analytics-bars" id="categoryBars"></div>
+        </div>
+      </div>
+
+    </div><!-- /an-grid -->
+
+  </div><!-- /an-inner -->
 </div>
 
 <!-- ═══ Marketplace Page ═══ -->
@@ -6200,7 +6257,24 @@ function renderAnalytics() {
     {n: formatCount(avgSubs), l:'Avg Subs/Channel'},
     {n: categories.length, l:'Categories'},
     {n: deadChannels.length, l:'Inactive'},
-  ].map(s => `<div class="analytics-stat-card"><div class="stat-num">${s.n}</div><div class="stat-lbl">${s.l}</div></div>`).join('');
+  ].map(s => `<div class="an-stat-card"><div class="an-stat-num">${s.n}</div><div class="an-stat-lbl">${s.l}</div></div>`).join('');
+
+  // Update score badge in tab strip
+  const scoreBadge = document.getElementById('anScoreBadge');
+  if (scoreBadge) scoreBadge.textContent = score;
+
+  // Render category tabs
+  const anCatTabs = document.getElementById('anCatTabs');
+  if (anCatTabs) {
+    anCatTabs.innerHTML = categories.slice(0, 8).map(cat => {
+      const count = catCounts[cat] || 0;
+      const safe = cat.replace(/'/g, "\\'");
+      return `<button class="an-tab" data-cat="${cat}" onclick="setAnalyticsTab('${safe}')">${cat}${count ? ` <span style="opacity:.6;font-size:.7em">${count}</span>` : ''}</button>`;
+    }).join('');
+  }
+
+  // Default tab state
+  setAnalyticsTab('all');
 
   // ── Dead channels ──
   const deadList = document.getElementById('deadChannelsList');
@@ -6262,6 +6336,66 @@ function renderAnalytics() {
   } else {
     document.getElementById('whUploadPrompt').style.display = '';
     document.getElementById('whAnalyticsLoaded').style.display = 'none';
+  }
+}
+
+let activeAnalyticsTab = 'all';
+
+function setAnalyticsTab(key) {
+  activeAnalyticsTab = key;
+
+  // Update tab active states
+  document.querySelectorAll('#anTabstrip .an-tab, #anTabstrip .an-tab-icon').forEach(t => t.classList.remove('active'));
+  if (key === 'all') {
+    document.getElementById('anTabAll')?.classList.add('active');
+    document.getElementById('anTabIconAll')?.classList.add('active');
+  } else if (key === 'health') {
+    document.getElementById('anTabHealth')?.classList.add('active');
+  } else {
+    document.querySelector(`#anCatTabs .an-tab[data-cat="${key}"]`)?.classList.add('active');
+  }
+
+  // Show/hide health panel vs channels grid
+  const healthPanel = document.getElementById('anHealthPanel');
+  const grid = document.getElementById('anChannelsSections');
+  if (healthPanel) healthPanel.style.display = key === 'health' ? '' : 'none';
+  if (grid) grid.style.display = key === 'health' ? 'none' : '';
+
+  // Filter channel lists for category tabs
+  if (key !== 'health' && channels.length) {
+    const cat = key === 'all' ? null : key;
+    const dead = findDeadChannels();
+    const filtered = cat ? dead.filter(d => chHasCat(d.ch, cat)) : dead;
+    const deadList = document.getElementById('deadChannelsList');
+    if (deadList) {
+      deadList.innerHTML = filtered.length
+        ? filtered.slice(0, 20).map(d => `
+            <div class="dead-channel-row">
+              <div class="dead-channel-avatar">${d.ch.thumbnail ? `<img src="${d.ch.thumbnail}">` : ''}</div>
+              <div class="dead-channel-info">
+                <div class="dead-channel-name">${d.ch.name}</div>
+                <div class="dead-channel-reason">${d.reason}</div>
+              </div>
+              <span class="dead-channel-tag ${d.severity}">${d.severity === 'dead' ? 'Inactive' : 'Slow'}</span>
+            </div>`).join('')
+        : `<p class="analytics-empty">No inactive channels${cat ? ' in ' + cat : ''} detected.</p>`;
+    }
+    const topChs = [...channels].filter(ch => !cat || chHasCat(ch, cat))
+      .sort((a,b) => (b.subscriberCount||0)-(a.subscriberCount||0)).slice(0, 10);
+    const topList = document.getElementById('topChannelsList');
+    if (topList) {
+      topList.innerHTML = topChs.map((ch, i) => {
+        const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+        return `<div class="top-channel-row" onclick="openDetail('${ch.id}')" style="cursor:pointer">
+          <span class="top-channel-rank ${rankClass}">${i+1}</span>
+          <div class="dead-channel-avatar">${ch.thumbnail ? `<img src="${ch.thumbnail}">` : ''}</div>
+          <div class="dead-channel-info">
+            <div class="dead-channel-name">${ch.name}</div>
+            <div class="dead-channel-reason">${formatCount(ch.subscriberCount)} subs · ${formatCount(ch.videoCount)} videos${chCats(ch).length ? ' · '+chCats(ch).join(', ') : ''}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
   }
 }
 
