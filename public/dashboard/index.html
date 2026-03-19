@@ -1700,6 +1700,16 @@ input[type=range]::-webkit-slider-thumb{
 #homeMain.feed-view-list .feed-video-thumb{display:none}
 #homeMain.feed-view-list .feed-video-row{align-items:center;padding:.625rem 0}
 #homeMain.feed-view-list .feed-video-row:hover{padding:.625rem .75rem}
+/* Grid mode: YouTube-style cards */
+#homeMain.feed-view-grid .home-section{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media(max-width:1300px){#homeMain.feed-view-grid .home-section{grid-template-columns:repeat(2,1fr)}}
+#homeMain.feed-view-grid .feed-video-row{flex-direction:column;padding:0;border-bottom:none;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);overflow:hidden;gap:0}
+#homeMain.feed-view-grid .feed-video-row:hover{background:var(--bg-card);padding:0;margin:0;border-color:#444;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#homeMain.feed-view-grid .feed-video-thumb{width:100%;height:0;padding-bottom:56.25%;position:relative;border-radius:0;flex-shrink:0}
+#homeMain.feed-view-grid .feed-video-thumb img,
+#homeMain.feed-view-grid .feed-video-thumb>div{position:absolute;inset:0;width:100%;height:100%}
+#homeMain.feed-view-grid .feed-video-body{padding:.75rem;gap:.375rem}
+#homeMain.feed-view-grid .feed-video-desc{max-width:none;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;white-space:normal}
 /* Old row styles kept for dashboard placeholder */
 .home-video-row{display:flex;align-items:center;gap:.75rem;padding:.625rem 0;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer}
 .home-video-title{font-size:.8125rem;color:var(--text-primary)}
@@ -7295,6 +7305,9 @@ function buildFeedTabsHtml() {
         <button class="feed-view-btn ${feedView==='hybrid'?'active':''}" onclick="setFeedView('hybrid')" title="Hybrid view">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="5" rx="1"/><rect x="3" y="17" width="8" height="5" rx="1"/><rect x="13" y="17" width="8" height="5" rx="1"/></svg>
         </button>
+        <button class="feed-view-btn ${feedView==='grid'?'active':''}" onclick="setFeedView('grid')" title="Grid view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
       </div>
     </div>`;
   return headerHtml + `<div class="feed-sticky-bar">${controlsHtml}<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}</div>`;
@@ -7308,6 +7321,7 @@ function initFeedCatsTrack() {
   const main = document.getElementById('homeMain');
   if (main) {
     main.classList.toggle('feed-view-list', feedView === 'list');
+    main.classList.toggle('feed-view-grid', feedView === 'grid');
     main.addEventListener('scroll', function onFeedScroll() {
       main.classList.toggle('feed-scrolled', main.scrollTop > 60);
     }, { passive: true });
@@ -7347,6 +7361,7 @@ function setFeedView(v) {
   const main = document.getElementById('homeMain');
   if (main) {
     main.classList.toggle('feed-view-list', v === 'list');
+    main.classList.toggle('feed-view-grid', v === 'grid');
   }
   // Re-render sticky bar to update button states
   const stickyBar = document.querySelector('#homeMain .feed-sticky-bar');
