@@ -7528,8 +7528,15 @@ async function loadFeedAll() {
 async function fetchRecentVideos(channelList) {
   const cacheKey = CACHE_KEYS.feedVideos + channelList.slice(0, 10).map(ch => ch.channelId || ch.id).sort().join(',').substring(0, 80);
   const cached = cacheGet(cacheKey, CACHE_TTL.feedVideos);
-  // Only use cache if it has the isShort field (stale entries pre-date Shorts detection)
-  if (cached && (cached.length === 0 || 'isShort' in cached[0])) return cached;
+  if (cached && (cached.length === 0 || 'isShort' in cached[0])) {
+    // Re-apply Short IDs from per-channel cache in case UUSH has updated since video cache was set
+    for (const v of cached) {
+      const shortsCacheKey = 'subsort_shorts_' + v.channelId;
+      const cachedShortIds = cacheGet(shortsCacheKey, CACHE_TTL.feedVideos);
+      if (cachedShortIds) v.isShort = cachedShortIds.includes(v.id);
+    }
+    return cached;
+  }
 
   const recentCutoff = new Date(getRecentDate()).getTime();
   const videos = [];
@@ -7546,19 +7553,19 @@ async function fetchRecentVideos(channelList) {
     const plId = ch.uploadsPlaylistId || ch._uploadsPl;
     if (!plId) continue;
     try {
-      const headers = { headers: { Authorization: `Bearer ${accessToken}` } };
-      const uploadsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${plId}&maxResults=5`;
+      const hdrs = { headers: { Authorization: `Bearer ${accessToken}` } };
+      const uploadsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${plId}&maxResults=10`;
 
       // Fetch uploads and UUSH Shorts playlist in parallel
       const uushId = ch.channelId?.startsWith('UC') ? 'UUSH' + ch.channelId.substring(2) : null;
-      const shortsUrl = uushId ? `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uushId}&maxResults=25` : null;
+      const shortsUrl = uushId ? `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uushId}&maxResults=50` : null;
 
       const [uploadsResp, shortsResp] = await Promise.all([
-        fetch(uploadsUrl, headers),
-        shortsUrl ? fetch(shortsUrl, headers) : Promise.resolve(null)
+        fetch(uploadsUrl, hdrs),
+        shortsUrl ? fetch(shortsUrl, hdrs) : Promise.resolve(null)
       ]);
 
-      // Build a set of Short video IDs from the UUSH playlist
+      // Build Short ID set from UUSH playlist (primary signal)
       const shortIds = new Set();
       if (shortsResp?.ok) {
         const shortsData = await shortsResp.json();
@@ -7566,10 +7573,13 @@ async function fetchRecentVideos(channelList) {
           const vid = item.snippet.resourceId?.videoId;
           if (vid) shortIds.add(vid);
         });
-        console.log(`[Shorts] ${ch.name}: UUSH returned ${shortsData.items?.length ?? 0} shorts`, [...shortIds]);
+        console.log(`[Shorts] ${ch.name}: UUSH=${shortIds.size}`, [...shortIds]);
       } else {
-        console.log(`[Shorts] ${ch.name}: UUSH fetch failed/no playlist (status: ${shortsResp?.status})`);
+        console.log(`[Shorts] ${ch.name}: UUSH unavailable (${shortsResp?.status})`);
       }
+
+      // Cache Short IDs per channel independently so they survive video cache invalidation
+      cacheSet('subsort_shorts_' + ch.channelId, [...shortIds]);
 
       if (!uploadsResp.ok) continue;
       const data = await uploadsResp.json();
@@ -7578,17 +7588,49 @@ async function fetchRecentVideos(channelList) {
           const pubDate = new Date(item.snippet.publishedAt).getTime();
           if (pubDate < recentCutoff) continue;
           const videoId = item.snippet.resourceId?.videoId || '';
+          const title = item.snippet.title || '';
+          const desc = (item.snippet.description || '').substring(0, 300);
           videos.push({
             id: videoId,
-            title: item.snippet.title,
+            title,
             channel: item.snippet.channelTitle || ch.name,
             channelId: ch.channelId,
             thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
             publishedAt: item.snippet.publishedAt,
-            description: (item.snippet.description || '').split('\n')[0].substring(0, 120),
-            isShort: shortIds.has(videoId)
+            description: desc.split('\n')[0].substring(0, 120),
+            isShort: shortIds.has(videoId) || /#shorts?\b/i.test(title + ' ' + desc)
           });
         }
+      }
+    } catch(e) { /* skip */ }
+  }
+
+  // Batch-fetch video durations to catch Shorts where UUSH is unavailable
+  // Shorts are always ≤60s; check duration as additional signal for undetected ones
+  const undetectedIds = videos.filter(v => !v.isShort && v.id).map(v => v.id);
+  if (undetectedIds.length) {
+    try {
+      const hdrs = { headers: { Authorization: `Bearer ${accessToken}` } };
+      const batchUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${undetectedIds.slice(0,50).join(',')}&maxResults=50`;
+      const durResp = await fetch(batchUrl, hdrs);
+      if (durResp.ok) {
+        const durData = await durResp.json();
+        const shortByDuration = new Set();
+        (durData.items || []).forEach(item => {
+          const dur = item.contentDetails?.duration || '';
+          // ISO 8601: PT#M#S or PT#S — Shorts must be ≤60s and have no hours or minutes > 1
+          const match = dur.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+          if (match) {
+            const h = parseInt(match[1] || 0);
+            const m = parseInt(match[2] || 0);
+            const s = parseInt(match[3] || 0);
+            const totalSecs = h * 3600 + m * 60 + s;
+            if (totalSecs > 0 && totalSecs <= 60) shortByDuration.add(item.id);
+          }
+        });
+        videos.forEach(v => {
+          if (!v.isShort && shortByDuration.has(v.id)) v.isShort = true;
+        });
       }
     } catch(e) { /* skip */ }
   }
