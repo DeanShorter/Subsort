@@ -7428,7 +7428,7 @@ async function loadFeedCategory(category, subcategory) {
     const spinner = document.getElementById('feedLoadingSpinner');
     if (spinner) spinner.remove();
     const listHtml = videos.length
-      ? videos.map(v => renderFeedVideoRow(v, null, subMap[v.channelId] || null)).join('')
+      ? `<div class="home-section">${videos.map(v => renderFeedVideoRow(v, null, subMap[v.channelId] || null)).join('')}</div>`
       : `<p style="color:var(--text-muted);padding:.5rem 0">No videos in the last 7 days.</p>`;
     main.insertAdjacentHTML('beforeend', listHtml);
     if (feedSearchQuery) applyFeedSearch(feedSearchQuery);
