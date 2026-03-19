@@ -7543,22 +7543,44 @@ async function fetchRecentVideos(channelList) {
     const plId = ch.uploadsPlaylistId || ch._uploadsPl;
     if (!plId) continue;
     try {
-      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${plId}&maxResults=5`;
-      const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
-      if (!resp.ok) continue;
-      const data = await resp.json();
+      const headers = { headers: { Authorization: `Bearer ${accessToken}` } };
+      const uploadsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${plId}&maxResults=5`;
+
+      // Fetch uploads and UUSH Shorts playlist in parallel
+      const uushId = ch.channelId?.startsWith('UC') ? 'UUSH' + ch.channelId.substring(2) : null;
+      const shortsUrl = uushId ? `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uushId}&maxResults=15` : null;
+
+      const [uploadsResp, shortsResp] = await Promise.all([
+        fetch(uploadsUrl, headers),
+        shortsUrl ? fetch(shortsUrl, headers) : Promise.resolve(null)
+      ]);
+
+      // Build a set of Short video IDs from the UUSH playlist
+      const shortIds = new Set();
+      if (shortsResp?.ok) {
+        const shortsData = await shortsResp.json();
+        (shortsData.items || []).forEach(item => {
+          const vid = item.snippet.resourceId?.videoId;
+          if (vid) shortIds.add(vid);
+        });
+      }
+
+      if (!uploadsResp.ok) continue;
+      const data = await uploadsResp.json();
       if (data.items) {
         for (const item of data.items) {
           const pubDate = new Date(item.snippet.publishedAt).getTime();
           if (pubDate < recentCutoff) continue;
+          const videoId = item.snippet.resourceId?.videoId || '';
           videos.push({
-            id: item.snippet.resourceId?.videoId || '',
+            id: videoId,
             title: item.snippet.title,
             channel: item.snippet.channelTitle || ch.name,
             channelId: ch.channelId,
             thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
             publishedAt: item.snippet.publishedAt,
-            description: (item.snippet.description || '').split('\n')[0].substring(0, 120)
+            description: (item.snippet.description || '').split('\n')[0].substring(0, 120),
+            isShort: shortIds.has(videoId)
           });
         }
       }
@@ -7566,42 +7588,8 @@ async function fetchRecentVideos(channelList) {
   }
 
   videos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-
-  // Batch-fetch duration + tags to detect Shorts
-  // A Short must be BOTH ≤ 60 seconds AND carry a #shorts signal
-  if (videos.length && accessToken) {
-    try {
-      const ids = videos.map(v => v.id).filter(Boolean);
-      for (let i = 0; i < ids.length; i += 50) {
-        const chunk = ids.slice(i, i + 50).join(',');
-        const resp = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet&id=${chunk}`,
-          { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
-        if (resp.ok) {
-          const data = await resp.json();
-          (data.items || []).forEach(item => {
-            const v = videos.find(x => x.id === item.id);
-            if (!v) return;
-            const duration = parseDuration(item.contentDetails?.duration);
-            const tags = (item.snippet?.tags || []).join(' ').toLowerCase();
-            const text = (v.title + ' ' + v.description + ' ' + tags).toLowerCase();
-            v.isShort = duration <= 60 && /#short/.test(text);
-          });
-        }
-      }
-    } catch(e) { /* non-critical */ }
-  }
-
   if (videos.length) cacheSet(cacheKey, videos);
   return videos;
-}
-
-function parseDuration(iso) {
-  if (!iso) return Infinity;
-  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-  if (!m) return Infinity;
-  return (parseInt(m[1] || 0) * 3600) + (parseInt(m[2] || 0) * 60) + parseInt(m[3] || 0);
 }
 
 function getRecentDate() {
