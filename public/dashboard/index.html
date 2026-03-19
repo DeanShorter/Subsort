@@ -3907,7 +3907,7 @@ function chHasCat(ch, cat) { return (ch.categories || []).includes(cat); }
 function chCats(ch) { return ch.categories || []; }
 function chAddCat(ch, cat) { if (!ch.categories) ch.categories = []; if (!ch.categories.includes(cat)) ch.categories.push(cat); }
 function chRemoveCat(ch, cat) { if (ch.categories) ch.categories = ch.categories.filter(c => c !== cat); }
-function chIsUncategorised(ch) { return !ch.categories || ch.categories.length === 0; }
+function chIsUncategorised(ch) { return !ch.categories || ch.categories.filter(c => c && categories.includes(c)).length === 0; }
 
 const CATEGORY_ICONS = {
   'all': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
