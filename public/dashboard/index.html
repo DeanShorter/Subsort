@@ -1657,11 +1657,13 @@ input[type=range]::-webkit-slider-thumb{
 .feed-search-input:focus{outline:none;border-color:var(--accent)}
 .feed-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.375rem .625rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body);cursor:pointer}
 /* Feed sticky bar */
-.feed-sticky-bar{position:sticky;top:0;z-index:10;background:var(--bg-primary);margin:0 -2rem;padding:0 2rem;border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
+.feed-sticky-bar{position:sticky;top:0;z-index:50;background:var(--bg-primary);margin:0 -2rem;padding:0 2rem;border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
 #homeMain.feed-scrolled .feed-sticky-bar{border-color:var(--border-subtle);box-shadow:0 4px 16px rgba(0,0,0,.25)}
-/* Collapsible header on scroll */
-#homeMain .db-header{overflow:hidden;max-height:120px;opacity:1;transition:max-height .25s ease,opacity .2s ease,margin .25s ease}
-#homeMain.feed-scrolled .db-header{max-height:0;opacity:0;margin:0}
+/* Remove top padding from the feeds container so sticky bar sits flush at top:0 with no gap */
+#homeMain{padding-top:0}
+/* Collapsible header on scroll — carries the top padding itself */
+#homeMain .db-header{overflow:hidden;max-height:120px;opacity:1;padding-top:1.75rem;transition:max-height .25s ease,opacity .2s ease,margin .25s ease,padding .25s ease}
+#homeMain.feed-scrolled .db-header{max-height:0;opacity:0;margin:0;padding-top:0}
 /* Feed category tabs (inline) */
 .feed-cats-row{border-bottom:none;margin:0 0 0;overflow:hidden;padding-bottom:.25rem}
 .feed-cats-row .cat-tabs-track{display:flex;align-items:center;white-space:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;user-select:none;-webkit-user-select:none}
