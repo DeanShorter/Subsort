@@ -1899,29 +1899,39 @@ input[type=range]::-webkit-slider-thumb{
   /* Show topbar, push content down */
   .mobile-topbar{display:flex}
   .app-shell{padding-top:52px}
-  /* Nav becomes a fixed fullscreen overlay */
+  /* Nav becomes a 75% drawer sliding in from the left */
   .home-nav-primary,.home-nav-primary.collapsed{
     position:fixed!important;left:0!important;top:0!important;bottom:0!important;
-    width:100%!important;transform:translateX(-100%);
+    width:75%!important;max-width:300px!important;
+    transform:translateX(-100%);
     transition:transform .25s ease;
     z-index:250;overflow-y:auto;
-    padding:1rem .625rem!important;align-items:stretch!important;
+    padding:1.25rem .75rem!important;align-items:stretch!important;
+    box-shadow:4px 0 24px rgba(0,0,0,.4);
   }
   .home-nav-primary.mobile-open{transform:translateX(0)!important}
-  /* Always show full labels in the overlay */
+  /* Full labels always visible in drawer */
   .home-nav-primary .home-nav-brand-text,
   .home-nav-primary .home-nav-item-label,
   .home-nav-primary .home-nav-section-label{display:block!important}
-  .home-nav-primary .home-nav-brand{justify-content:flex-start!important;padding:0 .625rem .75rem!important}
+  .home-nav-primary .home-nav-brand{justify-content:flex-start!important;padding:0 .5rem 1rem!important}
+  /* Larger touch targets and font */
   .home-nav-primary .home-nav-item{
-    width:100%!important;height:38px!important;
-    justify-content:flex-start!important;padding:0 .75rem!important;
+    width:100%!important;height:48px!important;
+    justify-content:flex-start!important;padding:0 1rem!important;
   }
+  .home-nav-primary .home-nav-item .home-nav-item-label{font-size:.9375rem!important}
+  .home-nav-primary .home-nav-item svg{width:20px!important;height:20px!important}
   .home-nav-primary .home-nav-item.active::before{left:0!important}
-  .home-nav-primary .home-nav-divider{width:calc(100% - 1.25rem)!important;margin:.5rem .625rem!important}
+  .home-nav-primary .home-nav-divider{width:calc(100% - 1.5rem)!important;margin:.625rem .75rem!important}
   /* Show close button, hide nav controls */
   .mobile-nav-close{display:grid!important}
   .sidebar-ctrl-wrap{display:none!important}
+  /* Channels: remove viewport-constrained layout, allow natural scroll */
+  .main-layout{overflow:visible!important;flex:none!important;padding:1rem!important}
+  .channels-area{overflow:visible!important;flex:none!important;min-height:unset!important}
+  #channelGrid{overflow:visible!important;flex:none!important;padding:.75rem 0 2rem!important}
+  .chan-pages{display:none!important}
 }
 
 /* ─── Ad Placements ─── */
@@ -4660,6 +4670,7 @@ function scrollCats(dir) {
    CHANNEL GRID
    ═══════════════════════════════════════════ */
 function updateChanPageSize() {
+  if (window.innerWidth <= 640) return; // mobile uses scroll, not pagination
   const area = document.getElementById('channelsArea');
   if (!area || !area.clientHeight) return;
   const toolbar = document.getElementById('channelsToolbar');
@@ -4858,11 +4869,11 @@ function renderChannels() {
     resultsEl.innerHTML = `Showing <strong>${filtered.length}</strong> of ${channels.length} channels`;
   }
 
-  // Pagination
-  const totalPages = Math.ceil(filtered.length / CHAN_PAGE_SIZE);
-  if (chanPage > totalPages) chanPage = Math.max(1, totalPages);
-  const pageStart = (chanPage - 1) * CHAN_PAGE_SIZE;
-  const paged = filtered.slice(pageStart, pageStart + CHAN_PAGE_SIZE);
+  // Pagination — disabled on mobile (scroll instead)
+  const isMobile = window.innerWidth <= 640;
+  const totalPages = isMobile ? 1 : Math.ceil(filtered.length / CHAN_PAGE_SIZE);
+  if (!isMobile && chanPage > totalPages) chanPage = Math.max(1, totalPages);
+  const paged = isMobile ? filtered : filtered.slice((chanPage - 1) * CHAN_PAGE_SIZE, chanPage * CHAN_PAGE_SIZE);
 
   grid.innerHTML = paged.map(ch => {
     const initials = (ch.name || '?').substring(0,2).toUpperCase();
