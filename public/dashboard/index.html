@@ -1690,6 +1690,11 @@ input[type=range]::-webkit-slider-thumb{
 .feed-video-menu{flex-shrink:0;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:.25rem;opacity:0;transition:opacity .1s}
 .feed-video-row:hover .feed-video-menu{opacity:1}
 .home-feed-loading{display:flex;align-items:center;gap:.75rem;padding:3rem 0;color:var(--text-muted);font-size:.875rem;justify-content:center}
+/* Feed type toggle (All / Videos / Shorts) */
+.feed-type-toggle{display:flex;align-items:center;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0}
+.feed-type-btn{padding:0 .625rem;height:28px;background:none;border:none;color:var(--text-muted);font:500 .75rem/1 var(--font-body);cursor:pointer;transition:all .15s;white-space:nowrap}
+.feed-type-btn:hover{color:var(--text-primary);background:var(--bg-surface-raised)}
+.feed-type-btn.active{background:var(--accent);color:#fff}
 /* Feed view toggle */
 .feed-view-toggle{display:flex;align-items:center;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0}
 .feed-view-btn{display:grid;place-items:center;width:28px;height:28px;background:none;border:none;color:var(--text-muted);cursor:pointer;transition:all .15s}
@@ -7260,6 +7265,7 @@ let activeFeedSubcategory = null;
 let feedSearchQuery = '';
 let feedSortKey = 'date';
 let feedView = localStorage.getItem('subsort_feed_view') || 'hybrid';
+let feedTypeFilter = 'all'; // 'all' | 'videos' | 'shorts'
 
 function buildFeedTabsHtml() {
   const cats = [{name: 'All', key: 'all'}, ...categories.map(c => ({name: c, key: c}))];
@@ -7288,6 +7294,11 @@ function buildFeedTabsHtml() {
 
   const controlsHtml = `
     <div class="feed-controls-row">
+      <div class="feed-type-toggle">
+        <button class="feed-type-btn ${feedTypeFilter==='all'?'active':''}" onclick="setFeedTypeFilter('all')">All</button>
+        <button class="feed-type-btn ${feedTypeFilter==='videos'?'active':''}" onclick="setFeedTypeFilter('videos')">Videos</button>
+        <button class="feed-type-btn ${feedTypeFilter==='shorts'?'active':''}" onclick="setFeedTypeFilter('shorts')">Shorts</button>
+      </div>
       <div class="feed-search-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input id="feedSearchInput" class="feed-search-input" placeholder="Search videos…" value="${feedSearchQuery.replace(/"/g,'&quot;')}" oninput="applyFeedSearch(this.value)">
@@ -7347,11 +7358,29 @@ function initFeedCatsTrack() {
 
 function applyFeedSearch(q) {
   feedSearchQuery = q || '';
+  applyFeedFilters();
+}
+
+function setFeedTypeFilter(type) {
+  feedTypeFilter = type;
+  // Update button states in sticky bar
+  document.querySelectorAll('#homeMain .feed-type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase() === type || (type === 'all' && btn.textContent === 'All'));
+  });
+  applyFeedFilters();
+}
+
+function applyFeedFilters() {
   const lq = feedSearchQuery.toLowerCase();
   document.querySelectorAll('#homeMain .feed-video-row').forEach(row => {
     const title = row.querySelector('.feed-video-title')?.textContent.toLowerCase() || '';
     const meta  = row.querySelector('.feed-video-meta')?.textContent.toLowerCase() || '';
-    row.style.display = (!lq || title.includes(lq) || meta.includes(lq)) ? '' : 'none';
+    const type  = row.dataset.type; // 'video' | 'short'
+    const matchesSearch = !lq || title.includes(lq) || meta.includes(lq);
+    const matchesType = feedTypeFilter === 'all'
+      || (feedTypeFilter === 'shorts' && type === 'short')
+      || (feedTypeFilter === 'videos' && type === 'video');
+    row.style.display = (matchesSearch && matchesType) ? '' : 'none';
   });
 }
 
@@ -7431,7 +7460,7 @@ async function loadFeedCategory(category, subcategory) {
       ? `<div class="home-section">${videos.map(v => renderFeedVideoRow(v, null, subMap[v.channelId] || null)).join('')}</div>`
       : `<p style="color:var(--text-muted);padding:.5rem 0">No videos in the last 7 days.</p>`;
     main.insertAdjacentHTML('beforeend', listHtml);
-    if (feedSearchQuery) applyFeedSearch(feedSearchQuery);
+    applyFeedFilters();
   } catch (err) {
     const spinner = document.getElementById('feedLoadingSpinner');
     if (spinner) spinner.remove();
@@ -7557,8 +7586,9 @@ function renderFeedVideoRow(v, catLabel, subcatLabel) {
   const subcatBadge = subcatLabel ? `<span class="feed-subcat-badge">${subcatLabel}</span>` : '';
   const desc = v.description ? `<div class="feed-video-desc">${v.description}</div>` : '';
   const meta = [v.channel, timeAgo(v.publishedAt), badge, subcatBadge].filter(Boolean).join(' · ');
+  const isShort = /\#short/i.test((v.title || '') + ' ' + (v.description || ''));
   return `
-    <div class="feed-video-row" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
+    <div class="feed-video-row" data-type="${isShort ? 'short' : 'video'}" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
       <div class="feed-video-thumb">${thumb}</div>
       <div class="feed-video-body">
         <div class="feed-video-title">${v.title}</div>
