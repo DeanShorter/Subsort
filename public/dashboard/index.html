@@ -1686,6 +1686,88 @@ input[type=range]::-webkit-slider-thumb{
 .home-video-thumb-placeholder{width:100%;height:100%;display:grid;place-items:center}
 .home-video-thumb-placeholder svg{width:20px;height:20px;opacity:.3}
 
+/* ─── Dashboard Cards ─── */
+.db-header{padding:.25rem 0 1.25rem}
+.db-title{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.25rem}
+.db-subtitle{font-size:.875rem;color:var(--text-secondary)}
+.db-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.125rem 1.25rem;margin-bottom:1rem}
+.db-card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem}
+.db-card-label{font-size:.8125rem;font-weight:700;color:var(--text-primary)}
+.db-link-btn{background:none;border:none;color:var(--accent);font-size:.75rem;cursor:pointer;padding:0;font-family:var(--font-body)}
+.db-link-btn:hover{text-decoration:underline}
+.db-link-bottom{display:block;margin-top:.75rem}
+.db-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0}
+.db-grid-2 .db-card{margin-bottom:1rem}
+/* Today's Feed */
+.db-today-card .db-feed-scroll{display:flex;gap:.75rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.25rem}
+.db-today-card .db-feed-scroll::-webkit-scrollbar{display:none}
+.db-feed-card{flex-shrink:0;width:160px;cursor:pointer}
+.db-feed-card-thumb{position:relative;width:160px;height:90px;border-radius:var(--radius-sm);overflow:hidden;background:var(--bg-surface-raised);margin-bottom:.5rem}
+.db-feed-card-thumb img{width:100%;height:100%;object-fit:cover;transition:opacity .15s}
+.db-feed-card:hover .db-feed-card-thumb img{opacity:.85}
+.db-feed-ph{width:100%;height:100%;background:linear-gradient(135deg,#1e2030,#161820)}
+.db-feed-duration{position:absolute;bottom:.3rem;right:.3rem;background:rgba(0,0,0,.8);color:#fff;font-size:.65rem;padding:.1rem .35rem;border-radius:3px;font-weight:600}
+.db-feed-card-title{font-size:.75rem;font-weight:500;color:var(--text-primary);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.2rem}
+.db-feed-card-meta{font-size:.6875rem;color:var(--text-muted)}
+/* Quick Actions */
+.db-qa-row{display:flex;align-items:center;gap:.5rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.db-qa-row:last-child{border-bottom:none}
+.db-qa-num{font-size:1rem;font-weight:700;color:var(--text-primary);min-width:2rem}
+.db-qa-num-warn{color:#f59e0b}
+.db-qa-label{flex:1;font-size:.8125rem;color:var(--text-secondary)}
+.db-qa-good{color:var(--text-muted)}
+.db-qa-check{color:#34d399;font-size:.875rem;min-width:2rem}
+.db-qa-btn{padding:.25rem .625rem;border-radius:var(--radius-sm);background:var(--bg-surface-raised);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:.6875rem;cursor:pointer;white-space:nowrap;font-family:var(--font-body)}
+.db-qa-btn:hover{background:#333;color:#fff}
+/* Category Snapshot */
+.db-cat-snap-row{display:flex;align-items:center;gap:.625rem;padding:.35rem 0}
+.db-cat-icon{font-size:1.25rem;width:32px;height:32px;display:grid;place-items:center;background:var(--bg-surface);border-radius:8px;flex-shrink:0}
+.db-cat-info{flex:1;min-width:0}
+.db-cat-name-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.2rem}
+.db-cat-name{font-size:.8125rem;font-weight:600;color:var(--text-primary)}
+.db-cat-pct{font-size:.75rem;font-weight:700;color:var(--text-primary)}
+.db-cat-bar-track{height:4px;background:var(--bg-surface-raised);border-radius:2px;overflow:hidden;margin-bottom:.2rem}
+.db-cat-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .6s ease}
+.db-cat-sub{font-size:.6875rem;color:var(--text-muted)}
+/* Fav Channels */
+.db-fav-grid{display:grid;grid-template-columns:1fr 1fr;gap:.625rem}
+.db-fav-card{cursor:pointer}
+.db-fav-thumb{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius-sm);overflow:hidden;background:var(--bg-surface-raised);margin-bottom:.4rem}
+.db-fav-thumb img{width:100%;height:100%;object-fit:cover;transition:opacity .15s}
+.db-fav-card:hover .db-fav-thumb img{opacity:.85}
+.db-fav-title{font-size:.75rem;font-weight:500;color:var(--text-primary);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.15rem}
+.db-fav-meta{font-size:.6875rem;color:var(--text-muted)}
+/* Feed Health */
+.db-health-body{display:flex;align-items:center;gap:.875rem;margin-bottom:.75rem}
+.db-health-ring-wrap{position:relative;flex-shrink:0;width:80px;height:80px}
+.db-health-score-inner{position:absolute;inset:0;display:grid;place-items:center;font-size:1.375rem;font-weight:800;font-family:var(--font-display)}
+.db-health-detail{flex:1;min-width:0}
+.db-score-grade{font-size:.875rem;font-weight:700;color:var(--text-primary);margin-bottom:.375rem}
+.db-score-factors-mini{display:flex;flex-direction:column;gap:.2rem}
+.db-factor{font-size:.6875rem;color:var(--text-muted)}
+.db-factor.good{color:#34d399}
+.db-factor.warn{color:#f59e0b}
+.db-factor.bad{color:#f87171}
+/* Needs Attention */
+.db-attention-row{display:flex;align-items:center;gap:.5rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.db-attention-row:last-child{border-bottom:none;margin-bottom:.375rem}
+.db-attention-num{font-size:1rem;font-weight:700;color:var(--text-primary);min-width:2.5rem}
+.db-attention-label{flex:1;font-size:.8125rem;color:var(--text-secondary)}
+.db-attention-btn{padding:.2rem .55rem;border-radius:var(--radius-sm);background:var(--bg-surface-raised);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:.6875rem;cursor:pointer;font-family:var(--font-body)}
+.db-attention-btn:hover{background:#333;color:#fff}
+.db-attention-actions{display:flex;gap:.5rem;margin-top:.25rem}
+.db-action-pill{flex:1;padding:.4rem .625rem;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:.75rem;cursor:pointer;text-align:center;font-family:var(--font-body)}
+.db-action-pill:hover{background:var(--bg-surface-raised);color:#fff}
+/* Your Profile */
+.db-profile-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.625rem}
+.db-profile-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:grid;place-items:center;flex-shrink:0;color:#fff;overflow:hidden}
+.db-profile-avatar img{width:100%;height:100%;object-fit:cover}
+.db-profile-name{font-size:.875rem;font-weight:700;color:var(--text-primary);margin-bottom:.2rem}
+.db-profile-meta{font-size:.75rem;color:var(--text-secondary)}
+.db-profile-cats{font-size:.75rem;color:var(--text-secondary);margin-bottom:.75rem}
+.db-profile-btn{width:100%;padding:.5rem;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:.8125rem;cursor:pointer;font-family:var(--font-body);text-align:center}
+.db-profile-btn:hover{background:var(--bg-surface-raised);color:#fff}
+
 /* Right sidebar */
 .home-sidebar{
   width:280px;flex-shrink:0;overflow-y:auto;
@@ -2317,103 +2399,97 @@ input[type=range]::-webkit-slider-thumb{
 
   <!-- Main Content -->
   <main class="home-main" id="homeMain">
-    <div class="home-main-header">
-      <h2>Dashboard</h2>
-      <p>Recent uploads from your subscriptions, sorted by category.</p>
+    <div class="db-header">
+      <h1 class="db-title">Dashboard</h1>
+      <p class="db-subtitle">Manage your subscriptions and keep your feed healthy.</p>
     </div>
 
-    <div class="home-section">
-      <div class="home-section-header">
-        <span class="home-section-title">Tech</span>
-        <span class="home-section-count">6 new videos</span>
+    <div class="db-card db-today-card">
+      <div class="db-card-hd">
+        <span class="db-card-label">Today's Feed</span>
+        <button class="db-link-btn" onclick="setHomeNav('feeds')">View full feed →</button>
       </div>
-      <div class="home-video-row">
-        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
-        <span class="home-video-title">Latest Gadget Reviews</span>
-        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      <div class="db-feed-scroll" id="dbFeedScroll">
+        <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
       </div>
-      <div class="home-video-row">
-        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
-        <span class="home-video-title">AI Breakthroughs 2026</span>
-        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
-      </div>
-      <div class="home-video-row">
-        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
-        <span class="home-video-title">Coding Tips & Tricks</span>
-        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
-      </div>
+      <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">View full feed →</button>
     </div>
 
-    <div class="home-section">
-      <div class="home-section-header">
-        <span class="home-section-title">Education</span>
-        <span class="home-section-count">4 new videos</span>
+    <div class="db-grid-2">
+      <div class="db-card">
+        <div class="db-card-hd"><span class="db-card-label">⚡ Quick Actions</span></div>
+        <div id="dbQA1"></div>
       </div>
-      <div class="home-video-row">
-        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
-        <span class="home-video-title">History of the Roman Empire</span>
-        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
-      </div>
-      <div class="home-video-row">
-        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
-        <span class="home-video-title">Science Experiments for Kids</span>
-        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      <div class="db-card">
+        <div class="db-card-hd"><span class="db-card-label">📋 Channel Health</span></div>
+        <div id="dbQA2"></div>
       </div>
     </div>
 
-    <div class="home-section">
-      <div class="home-section-header">
-        <span class="home-section-title">Finance</span>
-        <span class="home-section-count">3 new videos</span>
+    <div class="db-grid-2">
+      <div class="db-card">
+        <div class="db-card-hd"><span class="db-card-label">📊 Category Snapshot</span></div>
+        <div id="dbCatSnap"></div>
       </div>
-      <div class="home-video-row">
-        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
-        <span class="home-video-title">Stock Market Updates</span>
-        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
-      </div>
-      <div class="home-video-row">
-        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
-        <span class="home-video-title">Personal Finance Tips</span>
-        <div class="home-video-thumb"><div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div></div>
+      <div class="db-card">
+        <div class="db-card-hd">
+          <span class="db-card-label">🔥 From Your Favourite Channels</span>
+        </div>
+        <div class="db-fav-grid" id="dbFavChannels">
+          <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
+        </div>
+        <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">View full feed →</button>
       </div>
     </div>
   </main>
 
   <!-- Right Sidebar -->
   <aside class="home-sidebar">
-    <!-- Trending Channels -->
-    <div class="home-trending">
-      <h4>Trending Channels</h4>
-      <div class="home-trending-item">
-        <div class="home-trending-avatar"><div class="home-trending-avatar-placeholder">ST</div></div>
-        <span class="home-trending-name">Smart Tech Lab</span>
-        <span class="home-trending-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+    <!-- Feed Health -->
+    <div class="db-card db-health-card">
+      <div class="db-card-hd">
+        <span class="db-card-label">Feed Health</span>
       </div>
-      <div class="home-trending-item">
-        <div class="home-trending-avatar"><div class="home-trending-avatar-placeholder">HU</div></div>
-        <span class="home-trending-name">History Uncovered</span>
-        <span class="home-trending-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+      <div class="db-health-body">
+        <div class="db-health-ring-wrap">
+          <svg viewBox="0 0 80 80" width="80" height="80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border-subtle)" stroke-width="6"/>
+            <circle id="dbScoreArc" cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 1s ease"/>
+          </svg>
+          <div class="db-health-score-inner"><span id="dbScoreValue">—</span></div>
+        </div>
+        <div class="db-health-detail">
+          <div id="dbScoreGrade" class="db-score-grade">—</div>
+          <div id="dbScoreFactors" class="db-score-factors-mini"></div>
+        </div>
       </div>
-      <div class="home-trending-item">
-        <div class="home-trending-avatar"><div class="home-trending-avatar-placeholder">MW</div></div>
-        <span class="home-trending-name">MoneyWise</span>
-        <span class="home-trending-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+      <button class="db-link-btn" onclick="showView('analytics')">View full analytics →</button>
+    </div>
+
+    <!-- Needs Attention -->
+    <div class="db-card">
+      <div class="db-card-hd"><span class="db-card-label">⚠ Needs Attention</span></div>
+      <div id="dbAttention"></div>
+      <div class="db-attention-actions">
+        <button class="db-action-pill" onclick="showView('analytics')">🧹 Cleanmop</button>
+        <button class="db-action-pill" onclick="openModal('autoCatConfirmModal')">Rebalance</button>
       </div>
     </div>
 
-    <!-- YouTube Personality Card -->
-    <div class="home-personality">
-      <div class="home-personality-sparkle">~ My YouTube Personality ~</div>
-      <h4>The Curious Technologist</h4>
-      <div class="home-personality-stat">You follow <strong id="homePersonalityCount">0</strong> channels</div>
-      <div class="home-personality-stat">Top Categories: <strong id="homePersonalityTop">—</strong></div>
-      <div style="font-size:.625rem;color:var(--text-muted);margin-top:.625rem;position:relative">Generated by <strong style="color:var(--accent)">Subsort</strong></div>
-      <button class="home-personality-btn" onclick="toast('Share feature coming soon!')">Share My Profile</button>
-    </div>
-
-    <!-- Ad slot -->
-    <div class="promo-slot promo-slot-sidebar" id="promoHomeSidebar" style="height:200px">
-      Advertisement
+    <!-- Your Profile -->
+    <div class="db-card db-profile-card">
+      <div class="db-card-hd"><span class="db-card-label">Your Profile</span></div>
+      <div class="db-profile-row">
+        <div class="db-profile-avatar" id="dbProfileAvatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="26" height="26"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div>
+          <div class="db-profile-name">The Curious <span style="color:var(--accent)">Technologist</span></div>
+          <div class="db-profile-meta">Follows <strong id="dbProfileCount">0</strong> channels</div>
+        </div>
+      </div>
+      <div class="db-profile-cats">Top categories: <span id="dbProfileCats">—</span></div>
+      <button class="db-profile-btn" onclick="toast('Share feature coming soon!')">Share My Profile →</button>
     </div>
   </aside>
 </div>
@@ -6348,6 +6424,14 @@ function setHomeNav(key) {
     return;
   }
 
+  // Dashboard — no secondary nav, render dashboard widgets
+  if (key === 'home') {
+    sec.classList.remove('open');
+    content.innerHTML = '';
+    renderDashboard();
+    return;
+  }
+
   // Feeds uses inline category strip — no sidebar
   if (key === 'feeds') {
     sec.classList.remove('open');
@@ -7103,6 +7187,213 @@ async function applyBulkCategories() {
 
   if (sb && sbUser && updatedChannels.length) {
     await dbSyncChannelCategories(updatedChannels, []);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD
+   ═══════════════════════════════════════════ */
+async function renderDashboard() {
+  // --- Health Score (mirrors renderAnalytics logic) ---
+  let score = 100;
+  const factors = [];
+  const catCounts = {};
+  channels.forEach(ch => { for (const cat of chCats(ch)) catCounts[cat] = (catCounts[cat]||0)+1; });
+  const catKeys = Object.keys(catCounts);
+
+  if (channels.length) {
+    const categorised = channels.filter(c => !chIsUncategorised(c)).length;
+    const catPct = Math.round((categorised / channels.length) * 100);
+    if (catPct >= 80) factors.push({t:`${catPct}% categorised`, c:'good'});
+    else if (catPct >= 40) { score -= 15; factors.push({t:`Only ${catPct}% categorised`, c:'warn'}); }
+    else { score -= 30; factors.push({t:`Only ${catPct}% categorised`, c:'bad'}); }
+
+    const deadChannels = findDeadChannels();
+    if (deadChannels.length <= channels.length * 0.05) factors.push({t:'Few inactive channels', c:'good'});
+    else if (deadChannels.length <= channels.length * 0.2) { score -= 10; factors.push({t:`${deadChannels.length} inactive channels`, c:'warn'}); }
+    else { score -= 25; factors.push({t:`${deadChannels.length} inactive channels`, c:'bad'}); }
+
+    if (catKeys.length >= 5) factors.push({t:`${catKeys.length} categories — diverse`, c:'good'});
+    else if (catKeys.length >= 2) { score -= 5; factors.push({t:`${catKeys.length} categories`, c:'warn'}); }
+    else { score -= 15; factors.push({t:'Needs more categories', c:'bad'}); }
+
+    if (catKeys.length > 1) {
+      const max = Math.max(...Object.values(catCounts));
+      if (max / channels.length > 0.5) { score -= 10; factors.push({t:'Unbalanced distribution', c:'warn'}); }
+      else factors.push({t:'Balanced distribution', c:'good'});
+    }
+    score = Math.max(0, Math.min(100, score));
+  }
+
+  const arc = document.getElementById('dbScoreArc');
+  if (arc) {
+    const circ = 2 * Math.PI * 32;
+    arc.style.strokeDashoffset = circ - (score / 100) * circ;
+    arc.style.stroke = score >= 70 ? '#34d399' : score >= 40 ? '#f59e0b' : '#f87171';
+  }
+  const scoreValEl = document.getElementById('dbScoreValue');
+  if (scoreValEl) scoreValEl.textContent = channels.length ? score : '—';
+  const gradeEl = document.getElementById('dbScoreGrade');
+  if (gradeEl) gradeEl.textContent = channels.length ? (score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Fair' : 'Needs Work') : 'No data yet';
+  const factorsEl = document.getElementById('dbScoreFactors');
+  if (factorsEl) factorsEl.innerHTML = factors.slice(0, 4).map(f =>
+    `<div class="db-factor ${f.c}">${f.c==='good'?'✓':f.c==='warn'?'⚠':'✗'} ${f.t}</div>`
+  ).join('');
+
+  if (!channels.length) {
+    // Empty state for all dynamic sections
+    ['dbQA1','dbQA2','dbCatSnap','dbAttention'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.25rem 0">Sync your subscriptions to see data.</p>';
+    });
+    const fs = document.getElementById('dbFeedScroll');
+    if (fs) fs.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Sync your YouTube account to see your feed.</p>';
+    const fv = document.getElementById('dbFavChannels');
+    if (fv) fv.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Sync to see your top channels.</p>';
+    return;
+  }
+
+  const deadChannels = findDeadChannels();
+  const uncatCount = channels.filter(ch => chIsUncategorised(ch)).length;
+
+  // --- Quick Actions 1 ---
+  const qa1 = document.getElementById('dbQA1');
+  if (qa1) qa1.innerHTML = `
+    <div class="db-qa-row">
+      <span class="db-qa-label">Clean up your feed</span>
+      <button class="db-qa-btn" onclick="showView('analytics')">Review</button>
+    </div>
+    <div class="db-qa-row">
+      ${uncatCount === 0
+        ? `<span class="db-qa-check">✓</span><span class="db-qa-label db-qa-good">0 uncategorised</span>`
+        : `<span class="db-qa-num">${uncatCount}</span><span class="db-qa-label">uncategorised</span><button class="db-qa-btn" onclick="openModal('autoCatConfirmModal')">Sort</button>`}
+    </div>
+    <div class="db-qa-row">
+      <span class="db-qa-num">${categories.length}</span>
+      <span class="db-qa-label">categories active</span>
+    </div>`;
+
+  // --- Quick Actions 2 ---
+  const qa2 = document.getElementById('dbQA2');
+  if (qa2) qa2.innerHTML = `
+    <div class="db-qa-row">
+      <span class="db-qa-num ${deadChannels.length > 10 ? 'db-qa-num-warn' : ''}">${deadChannels.length}</span>
+      <span class="db-qa-label">inactive channels</span>
+      <button class="db-qa-btn" onclick="showView('analytics')">Review</button>
+    </div>
+    <div class="db-qa-row">
+      ${uncatCount === 0
+        ? `<span class="db-qa-check">✓</span><span class="db-qa-label db-qa-good">0 uncategorised</span>`
+        : `<span class="db-qa-num">${uncatCount}</span><span class="db-qa-label">uncategorised</span><button class="db-qa-btn" onclick="openModal('autoCatConfirmModal')">Review</button>`}
+    </div>
+    <div class="db-qa-row">
+      <span class="db-qa-num">${channels.length}</span>
+      <span class="db-qa-label">total subscriptions</span>
+    </div>`;
+
+  // --- Needs Attention ---
+  const attnEl = document.getElementById('dbAttention');
+  if (attnEl) {
+    const items = [
+      deadChannels.length ? {n: deadChannels.length, l:'inactive channels', btn:'Review', a:"showView('analytics')"} : null,
+      uncatCount ? {n: uncatCount, l:'uncategorised channels', btn:'Fix', a:"openModal('autoCatConfirmModal')"} : null,
+      catKeys.length < 3 ? {n: Math.max(0, 3 - catKeys.length), l:'more categories needed', btn:'Fix', a:"showView('analytics')"} : null,
+    ].filter(Boolean).slice(0, 3);
+    attnEl.innerHTML = items.length
+      ? items.map(i => `<div class="db-attention-row"><span class="db-attention-num">${i.n}</span><span class="db-attention-label">${i.l}</span><button class="db-attention-btn" onclick="${i.a}">${i.btn}</button></div>`).join('')
+      : '<p style="color:#34d399;font-size:.8125rem;padding:.375rem 0">✓ Everything looks good!</p>';
+  }
+
+  // --- Category Snapshot ---
+  const catSnap = document.getElementById('dbCatSnap');
+  if (catSnap) {
+    if (catKeys.length) {
+      const sorted = [...catKeys].sort((a,b) => (catCounts[b]||0) - (catCounts[a]||0)).slice(0, 4);
+      const icons = {Music:'🎵',Sports:'⚽',Lifestyle:'❤',Tech:'💻',Technology:'💻',Gaming:'🎮',Education:'📚','Science & Education':'🔬',News:'📰','News & Politics':'📰',Film:'🎬','Film & TV':'🎬',Food:'🍳','Food & Cooking':'🍳',Travel:'✈',Health:'💪','Health & Fitness':'💪',Finance:'💰',Comedy:'😂',Entertainment:'🎭'};
+      catSnap.innerHTML = sorted.map(cat => {
+        const pct = Math.round((catCounts[cat] / channels.length) * 100);
+        return `<div class="db-cat-snap-row">
+          <div class="db-cat-icon">${icons[cat] || '📁'}</div>
+          <div class="db-cat-info">
+            <div class="db-cat-name-row"><span class="db-cat-name">${cat}</span><span class="db-cat-pct">${pct}%</span></div>
+            <div class="db-cat-bar-track"><div class="db-cat-bar" style="width:${pct}%"></div></div>
+            <div class="db-cat-sub">${catCounts[cat]} channel${catCounts[cat]!==1?'s':''}</div>
+          </div>
+        </div>`;
+      }).join('');
+    } else {
+      catSnap.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">No categories yet.</p>';
+    }
+  }
+
+  // --- Profile ---
+  const profileCountEl = document.getElementById('dbProfileCount');
+  if (profileCountEl) profileCountEl.textContent = channels.length;
+  const profileCatsEl = document.getElementById('dbProfileCats');
+  if (profileCatsEl) {
+    const top2 = categories.slice(0, 2);
+    profileCatsEl.innerHTML = top2.length
+      ? top2.map((c,i) => `<strong>${c}</strong>${i < top2.length-1 ? ' & ' : ''}`).join('')
+      : '—';
+  }
+  const avatarEl = document.getElementById('dbProfileAvatar');
+  if (avatarEl && sbUser?.user_metadata?.avatar_url) {
+    avatarEl.innerHTML = `<img src="${sbUser.user_metadata.avatar_url}" alt="">`;
+  }
+
+  // --- Today's Feed ---
+  const feedScrollEl = document.getElementById('dbFeedScroll');
+  if (feedScrollEl) {
+    if (!accessToken) {
+      feedScrollEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Connect YouTube to see your feed.</p>';
+    } else {
+      try {
+        const videos = await fetchRecentVideos(channels.slice(0, 10));
+        if (videos.length) {
+          feedScrollEl.innerHTML = videos.slice(0, 6).map(v => {
+            const thumb = v.thumbnail ? `<img src="${v.thumbnail}" loading="lazy" alt="">` : `<div class="db-feed-ph"></div>`;
+            const safeId = (v.id||'').replace(/"/g,'');
+            return `<div class="db-feed-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
+              <div class="db-feed-card-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
+              <div class="db-feed-card-title">${v.title}</div>
+              <div class="db-feed-card-meta">${v.channel} · ${timeAgo(v.publishedAt)}</div>
+            </div>`;
+          }).join('');
+        } else {
+          feedScrollEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">No recent videos found.</p>';
+        }
+      } catch(e) {
+        feedScrollEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Could not load feed.</p>';
+      }
+    }
+  }
+
+  // --- Favourite Channels ---
+  const favEl = document.getElementById('dbFavChannels');
+  if (favEl) {
+    if (!accessToken) {
+      favEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Connect YouTube to see your top channels.</p>';
+    } else {
+      try {
+        const topChs = [...channels].sort((a,b) => (b.subscriberCount||0) - (a.subscriberCount||0)).slice(0, 3);
+        const favVideos = await fetchRecentVideos(topChs);
+        if (favVideos.length) {
+          favEl.innerHTML = favVideos.slice(0, 2).map(v => {
+            const thumb = v.thumbnail ? `<img src="${v.thumbnail}" loading="lazy" alt="">` : `<div class="db-feed-ph"></div>`;
+            const safeId = (v.id||'').replace(/"/g,'');
+            return `<div class="db-fav-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
+              <div class="db-fav-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
+              <div class="db-fav-title">${v.title}</div>
+              <div class="db-fav-meta">${v.channel} · ${timeAgo(v.publishedAt)}</div>
+            </div>`;
+          }).join('');
+        } else {
+          favEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">No recent videos.</p>';
+        }
+      } catch(e) {
+        favEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Could not load.</p>';
+      }
+    }
   }
 }
 
