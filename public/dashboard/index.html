@@ -7149,7 +7149,7 @@ function buildFeedTabsHtml() {
       const safe = s.replace(/'/g, "\\'");
       const safeCat = activeFeedCategory.replace(/'/g, "\\'");
       const active = activeFeedSubcategory === s ? 'active' : '';
-      return `<button class="subcat-pill ${active}" onclick="setFeedSubcategory('${safeCat}','${safe}')">${s}</button>`;
+      return `<button class="subcat-pill ${active}" onclick="setFeedSubcategory('${safeCat}', activeFeedSubcategory === '${safe}' ? null : '${safe}')">${s}</button>`;
     }).join('')}</div>`;
   }
 
