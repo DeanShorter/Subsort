@@ -881,6 +881,12 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .modal-footer .btn-danger{background:#b91c1c;border:none;color:#fff}
 .modal-footer .btn-danger:hover{filter:brightness(1.15)}
 
+/* ─── Category Colour Picker ─── */
+.cat-colour-swatches{display:flex;flex-wrap:wrap;gap:.375rem;margin-top:.375rem}
+.cat-colour-swatch{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s,border-color .12s;flex-shrink:0}
+.cat-colour-swatch:hover{transform:scale(1.2)}
+.cat-colour-swatch.selected{border-color:#fff;transform:scale(1.15);box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+
 /* ─── Manage Categories Modal ─── */
 .manage-cat-row{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-subtle)}
 .manage-cat-row:last-child{border-bottom:none}
@@ -3398,6 +3404,10 @@ input[type=range]::-webkit-slider-thumb{
         <input type="text" id="categoryNameInput" placeholder="e.g. Music, Gaming…">
         <p class="form-error" id="categoryError" style="display:none"></p>
       </div>
+      <div class="form-group">
+        <label>Tag colour</label>
+        <div class="cat-colour-swatches" id="catColourSwatches"></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('addCategoryModal')">Cancel</button>
@@ -3623,6 +3633,14 @@ let channels = JSON.parse(localStorage.getItem('subsort_channels') || '[]');
 let categories = JSON.parse(localStorage.getItem('subsort_categories') || '[]');
 let subcategories = JSON.parse(localStorage.getItem('subsort_subcategories') || '{}');
 let settings = JSON.parse(localStorage.getItem('subsort_settings') || '{}');
+let categoryColours = JSON.parse(localStorage.getItem('subsort_cat_colours') || '{}');
+
+const TILE_COLOURS = [
+  '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
+  '#6aadcf','#7b8fd4','#a67dc8','#d47ba8','#c2957a',
+  '#8bb8a0','#a0b8d4','#d4a0b8','#b8d4a0','#d4b8a0',
+  '#7caae8','#c87c9a','#9ac87c','#c8a87c','#7cc8c8'
+];
 /* ═══════════════════════════════════════════
    SUPABASE CLIENT
    ═══════════════════════════════════════════ */
@@ -4132,6 +4150,7 @@ function save() {
   localStorage.setItem('subsort_channels', JSON.stringify(channels));
   localStorage.setItem('subsort_categories', JSON.stringify(categories));
   localStorage.setItem('subsort_subcategories', JSON.stringify(subcategories));
+  localStorage.setItem('subsort_cat_colours', JSON.stringify(categoryColours));
 }
 
 /* ═══════════════════════════════════════════
@@ -4145,18 +4164,12 @@ function renderCategories() {
     ...categories.map(c => ({name:c, key:c, count: channels.filter(ch => chHasCat(ch, c)).length}))
   ];
 
-  // Colour palette for category badges on cards
-  const TILE_COLOURS = [
-    '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
-    '#6aadcf','#7b8fd4','#a67dc8','#d47ba8','#c2957a',
-    '#8bb8a0','#a0b8d4','#d4a0b8','#b8d4a0','#d4b8a0',
-    '#7caae8','#c87c9a','#9ac87c','#c8a87c','#7cc8c8'
-  ];
+  // Colour palette for category badges on cards — prefer user-chosen colour, fall back to palette by index
   window._categoryColours = {};
   let colourIdx = 0;
   cats.forEach(c => {
     if (c.key !== 'all') {
-      window._categoryColours[c.name] = TILE_COLOURS[colourIdx++ % TILE_COLOURS.length];
+      window._categoryColours[c.name] = categoryColours[c.name] || TILE_COLOURS[colourIdx++ % TILE_COLOURS.length];
     }
   });
 
@@ -5086,6 +5099,11 @@ async function saveCategory() {
     return;
   }
 
+  // Read selected colour from swatches
+  const selectedSwatch = document.querySelector('#catColourSwatches .cat-colour-swatch.selected');
+  const chosenColour = selectedSwatch ? selectedSwatch.title : null;
+  if (chosenColour) categoryColours[name] = chosenColour;
+
   if (editingCategoryIdx !== null) {
     const old = categories[editingCategoryIdx];
     channels.forEach(ch => {
@@ -5096,6 +5114,10 @@ async function saveCategory() {
     if (subcategories[old]) {
       subcategories[name] = subcategories[old];
       delete subcategories[old];
+    }
+    // Migrate colour to new name
+    if (old !== name) {
+      if (categoryColours[old]) { categoryColours[name] = categoryColours[name] || categoryColours[old]; delete categoryColours[old]; }
     }
     categories[editingCategoryIdx] = name;
     if (sb && sbUser) {
@@ -5127,6 +5149,7 @@ function deleteCategory() {
   channels.forEach(ch => { chRemoveCat(ch, name); if (chIsUncategorised(ch)) ch.subcategory = ''; });
   categories.splice(editingCategoryIdx, 1);
   delete subcategories[name];
+  delete categoryColours[name];
   if (activeCategory === name) { activeCategory = 'all'; activeSubcategory = null; }
   save(); renderAll();
   closeModal('addCategoryModal');
@@ -6198,6 +6221,10 @@ function openModal(id) {
     document.getElementById('categoryError').style.display = 'none';
     document.getElementById('categoryError').textContent = '';
     editingCategoryIdx = null;
+    // Default colour: first palette colour not yet used by an existing category
+    const usedColours = new Set(Object.values(categoryColours));
+    const defaultCol = TILE_COLOURS.find(c => !usedColours.has(c)) || TILE_COLOURS[0];
+    populateCatColourSwatches(defaultCol);
   }
   if (id === 'aiModal') {
     resetAIModal();
@@ -6236,7 +6263,26 @@ function openEditCategoryModal(idx) {
   document.getElementById('deleteCategoryBtn').style.display = '';
   document.getElementById('categoryError').style.display = 'none';
   document.getElementById('categoryError').textContent = '';
+  // Pre-select current colour (stored or computed by index)
+  const currentCol = categoryColours[name] || TILE_COLOURS[idx % TILE_COLOURS.length];
+  populateCatColourSwatches(currentCol);
   document.getElementById('addCategoryModal').classList.add('open');
+}
+
+function populateCatColourSwatches(selectedHex) {
+  const wrap = document.getElementById('catColourSwatches');
+  if (!wrap) return;
+  wrap.innerHTML = TILE_COLOURS.map(hex => `
+    <div class="cat-colour-swatch ${hex === selectedHex ? 'selected' : ''}"
+         style="background:${hex}"
+         onclick="selectCatColour(this,'${hex}')"
+         title="${hex}"></div>
+  `).join('');
+}
+
+function selectCatColour(el, hex) {
+  document.querySelectorAll('#catColourSwatches .cat-colour-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
 }
 
 // Close modals on overlay click
