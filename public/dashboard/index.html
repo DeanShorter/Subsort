@@ -7517,6 +7517,7 @@ async function loadFeedAll() {
 
     const sectionHtml = `<div class="home-section">${allVideos.map(({ v, cat }) => renderFeedVideoRow(v, cat)).join('')}</div>`;
     main.insertAdjacentHTML('beforeend', sectionHtml);
+    applyFeedFilters();
   } catch (err) {
     const spinner = document.getElementById('feedLoadingSpinner');
     if (spinner) spinner.remove();
