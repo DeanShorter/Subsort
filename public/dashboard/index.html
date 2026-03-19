@@ -1690,6 +1690,16 @@ input[type=range]::-webkit-slider-thumb{
 .feed-video-menu{flex-shrink:0;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:.25rem;opacity:0;transition:opacity .1s}
 .feed-video-row:hover .feed-video-menu{opacity:1}
 .home-feed-loading{display:flex;align-items:center;gap:.75rem;padding:3rem 0;color:var(--text-muted);font-size:.875rem;justify-content:center}
+/* Feed view toggle */
+.feed-view-toggle{display:flex;align-items:center;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0}
+.feed-view-btn{display:grid;place-items:center;width:28px;height:28px;background:none;border:none;color:var(--text-muted);cursor:pointer;transition:all .15s}
+.feed-view-btn:hover{color:var(--text-primary);background:var(--bg-surface-raised)}
+.feed-view-btn.active{background:var(--accent);color:#fff}
+.feed-view-btn svg{width:12px;height:12px}
+/* List mode: hide thumbnails */
+#homeMain.feed-view-list .feed-video-thumb{display:none}
+#homeMain.feed-view-list .feed-video-row{align-items:center;padding:.625rem 0}
+#homeMain.feed-view-list .feed-video-row:hover{padding:.625rem .75rem}
 /* Old row styles kept for dashboard placeholder */
 .home-video-row{display:flex;align-items:center;gap:.75rem;padding:.625rem 0;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer}
 .home-video-title{font-size:.8125rem;color:var(--text-primary)}
@@ -3254,9 +3264,6 @@ input[type=range]::-webkit-slider-thumb{
       </button>
       <button class="chan-view-btn" id="viewBtnHybrid" onclick="setChanView('hybrid')" title="Hybrid view">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="5" rx="1"/><rect x="3" y="17" width="8" height="5" rx="1"/><rect x="13" y="17" width="8" height="5" rx="1"/></svg>
-      </button>
-      <button class="chan-view-btn" id="viewBtnGrid" onclick="setChanView('grid')" title="Grid view">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       </button>
     </div>
   </div>
@@ -7242,6 +7249,7 @@ let activeFeedCategory = 'all';
 let activeFeedSubcategory = null;
 let feedSearchQuery = '';
 let feedSortKey = 'date';
+let feedView = localStorage.getItem('subsort_feed_view') || 'hybrid';
 
 function buildFeedTabsHtml() {
   const cats = [{name: 'All', key: 'all'}, ...categories.map(c => ({name: c, key: c}))];
@@ -7280,6 +7288,14 @@ function buildFeedTabsHtml() {
           ? `<option value="channel" ${feedSortKey==='channel'?'selected':''}>Channel</option>`
           : `<option value="subcategory" ${feedSortKey==='subcategory'?'selected':''}>Subcategory</option>`}
       </select>
+      <div class="feed-view-toggle">
+        <button class="feed-view-btn ${feedView==='list'?'active':''}" onclick="setFeedView('list')" title="List view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <button class="feed-view-btn ${feedView==='hybrid'?'active':''}" onclick="setFeedView('hybrid')" title="Hybrid view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="5" rx="1"/><rect x="3" y="17" width="8" height="5" rx="1"/><rect x="13" y="17" width="8" height="5" rx="1"/></svg>
+        </button>
+      </div>
     </div>`;
   return headerHtml + `<div class="feed-sticky-bar">${controlsHtml}<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}</div>`;
 }
@@ -7291,6 +7307,7 @@ function initFeedCatsTrack() {
   // Hide header on scroll, keep sticky bar visible
   const main = document.getElementById('homeMain');
   if (main) {
+    main.classList.toggle('feed-view-list', feedView === 'list');
     main.addEventListener('scroll', function onFeedScroll() {
       main.classList.toggle('feed-scrolled', main.scrollTop > 60);
     }, { passive: true });
@@ -7322,6 +7339,22 @@ function applyFeedSearch(q) {
     const meta  = row.querySelector('.feed-video-meta')?.textContent.toLowerCase() || '';
     row.style.display = (!lq || title.includes(lq) || meta.includes(lq)) ? '' : 'none';
   });
+}
+
+function setFeedView(v) {
+  feedView = v;
+  localStorage.setItem('subsort_feed_view', v);
+  const main = document.getElementById('homeMain');
+  if (main) {
+    main.classList.toggle('feed-view-list', v === 'list');
+  }
+  // Re-render sticky bar to update button states
+  const stickyBar = document.querySelector('#homeMain .feed-sticky-bar');
+  if (stickyBar) {
+    stickyBar.querySelectorAll('.feed-view-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${v}'`));
+    });
+  }
 }
 
 function applyFeedSort(val) {
