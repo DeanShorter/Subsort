@@ -4275,8 +4275,7 @@ function renderChannels() {
     catsSection.style.display = 'none';
     mainLayout.style.display = 'none';
     toolbar.style.display = 'none';
-    if (chanTopbar) chanTopbar.classList.remove('show');
-    document.getElementById('analyticsPage').classList.remove('active');
+      document.getElementById('analyticsPage').classList.remove('active');
     document.getElementById('marketplacePage').classList.remove('active');
     grid.innerHTML = '';
     onboarding.style.display = 'flex';
@@ -4289,7 +4288,6 @@ function renderChannels() {
   catsSection.style.display = '';
   mainLayout.style.display = '';
   sidebar.style.display = 'none';
-  if (chanTopbar) chanTopbar.classList.add('show');
 
   // Update topbar uncat info
   const uncatCount = channels.filter(ch => chIsUncategorised(ch)).length;
@@ -6852,6 +6850,7 @@ function showView(view) {
   if (promoBanner) promoBanner.style.display = 'none';
   document.getElementById('homeSecondaryNav').classList.remove('open');
   document.getElementById('channelsEmpty')?.remove();
+  document.getElementById('chanTopbar')?.classList.remove('show');
 
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
@@ -6903,6 +6902,7 @@ function showView(view) {
       document.querySelector('.home-nav-item[data-nav="channels"]')?.classList.add('active');
       document.getElementById('navChannels')?.classList.add('active');
       if (channels.length) {
+        document.getElementById('chanTopbar')?.classList.add('show');
         catsSection.style.display = '';
         mainLayout.style.display = '';
         if (onboarding) onboarding.style.display = 'none';
