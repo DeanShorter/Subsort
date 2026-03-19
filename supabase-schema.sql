@@ -133,6 +133,7 @@ create table public.channels (
   keywords text,
   country text,
   notes text,
+  favourited boolean default false,
   subcategory_id uuid references public.subcategories(id) on delete set null,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
