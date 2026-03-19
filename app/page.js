@@ -7,8 +7,7 @@ export default function HomePage() {
       {/* Navigation */}
       <nav className={styles.nav}>
         <div className={styles.navBrand}>
-          <div className={styles.navLogo}><svg viewBox="0 0 32 32" fill="none" width="32" height="32"><rect x="1" y="11" width="19" height="19" rx="5" fill="#5B6CFF" opacity="0.6"/><rect x="12" y="1" width="19" height="19" rx="5" fill="#5B6CFF"/></svg></div>
-          <span className={styles.navTitle}>Subsort</span>
+          <img src="/logo.svg" alt="myfeed." height="30" />
         </div>
         <div className={styles.navLinks}>
           <Link href="/blog">Blog</Link>
@@ -76,8 +75,7 @@ export default function HomePage() {
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
           <div className={styles.footerBrand}>
-            <div className={styles.navLogo}><svg viewBox="0 0 32 32" fill="none" width="32" height="32"><rect x="1" y="11" width="19" height="19" rx="5" fill="#5B6CFF" opacity="0.6"/><rect x="12" y="1" width="19" height="19" rx="5" fill="#5B6CFF"/></svg></div>
-            <span>Subsort</span>
+            <img src="/logo.svg" alt="myfeed." height="30" />
           </div>
           <div className={styles.footerLinks}>
             <Link href="/blog">Blog</Link>
