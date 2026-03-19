@@ -1330,7 +1330,7 @@ input[type=range]::-webkit-slider-thumb{
 .app-content{flex:1;min-width:0;overflow-y:auto;display:flex;flex-direction:column}
 
 /* ─── Home View: Three-Column Layout ─── */
-.home-view{display:none;flex:1;overflow:hidden}
+.home-view{display:none;flex:1;overflow:hidden;flex-direction:column}
 .home-view.active{display:flex}
 
 /* Primary nav rail */
@@ -2288,6 +2288,14 @@ input[type=range]::-webkit-slider-thumb{
 
 <!-- ═══ Home View ═══ -->
 <div class="home-view" id="homeView">
+
+  <!-- Feed Categories Strip (feeds view only) -->
+  <div id="feedCatsStrip" style="display:none">
+    <div class="cat-tabs" id="feedCatsTrack"></div>
+    <div class="subcategories-strip" id="feedSubcatsStrip" style="display:none">
+      <div class="subcategories-track" id="feedSubcatsTrack"></div>
+    </div>
+  </div>
 
   <!-- Main Content -->
   <main class="home-main" id="homeMain">
@@ -6322,6 +6330,17 @@ function setHomeNav(key) {
     return;
   }
 
+  // Feeds uses inline category strip — no sidebar
+  if (key === 'feeds') {
+    sec.classList.remove('open');
+    content.innerHTML = '';
+    showFeedCatsStrip();
+    loadFeedAll();
+    return;
+  }
+
+  hideFeedCatsStrip();
+
   // Custom handler for channels
   if (nav.custom && key === 'channels') {
     buildChannelsSecondaryNav(content);
@@ -6342,43 +6361,6 @@ function setHomeNav(key) {
         ${item.label}
       </button>`;
     }).join('');
-
-  // Add category dropdowns for feeds
-  if (key === 'feeds' && categories.length) {
-    html += '<hr class="home-nav-secondary-divider">';
-    html += '<div class="home-nav-secondary-title">Categories</div>';
-
-    for (const c of categories) {
-      const subs = subcategories[c] || [];
-      const escapedCat = c.replace(/'/g, "\\'");
-      const hasSubcats = subs.length > 0;
-
-      html += `<div class="feed-cat-group">
-        <div class="feed-cat-header" onclick="document.querySelectorAll('.feed-cat-group').forEach(g=>g.classList.remove('active'));this.closest('.feed-cat-group').classList.add('active');this.closest('.feed-cat-group').classList.toggle('open');document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));loadFeedCategory('${escapedCat}')">
-          <button class="feed-cat-btn">
-            ${c}
-          </button>
-          ${hasSubcats ? `<span class="feed-cat-toggle" onclick="event.stopPropagation();this.closest('.feed-cat-group').classList.toggle('open')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-          </span>` : `<span class="feed-cat-toggle feed-cat-add" onclick="event.stopPropagation();addSubcategoryFor('${escapedCat}')" title="Add subcategory">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>`}
-        </div>
-        ${hasSubcats ? `<div class="feed-cat-subs">
-          ${subs.map(sub => {
-            const escapedSub = sub.replace(/'/g, "\\'");
-            return `<button class="home-nav-secondary-item home-nav-secondary-subitem" onclick="event.stopPropagation();document.querySelectorAll('#homeSecondaryContent .home-nav-secondary-item').forEach(b=>b.classList.remove('active'));this.classList.add('active');loadFeedCategory('${escapedCat}','${escapedSub}')">
-              ${sub}
-            </button>`;
-          }).join('')}
-          <button class="feed-cat-add-sub" onclick="event.stopPropagation();addSubcategoryFor('${escapedCat}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add subcategory
-          </button>
-        </div>` : ''}
-      </div>`;
-    }
-  }
 
   content.innerHTML = html;
   sec.classList.add('open');
@@ -6465,6 +6447,66 @@ function clearAllSecNavFilters() {
   const mainSort = document.getElementById('sortSelect');
   if (mainSort) mainSort.value = 'name';
   renderChannels();
+}
+
+/* ═══════════════════════════════════════════
+   FEED: CATEGORIES STRIP
+   ═══════════════════════════════════════════ */
+let activeFeedCategory = 'all';
+let activeFeedSubcategory = null;
+
+function renderFeedCategories() {
+  const track = document.getElementById('feedCatsTrack');
+  if (!track) return;
+
+  const cats = [{name: 'All', key: 'all'}, ...categories.map(c => ({name: c, key: c}))];
+  let html = '';
+  cats.forEach((c, i) => {
+    const safe = c.key.replace(/'/g, "\\'");
+    const active = activeFeedCategory === c.key ? 'active' : '';
+    html += `<button class="cat-tab ${active}" onclick="setFeedCategory('${safe}')">${c.name}</button>`;
+    if (i < cats.length - 1) html += `<span class="cat-tab-sep">·</span>`;
+  });
+  track.innerHTML = html;
+
+  const subStrip = document.getElementById('feedSubcatsStrip');
+  const subTrack = document.getElementById('feedSubcatsTrack');
+  const subs = activeFeedCategory !== 'all' ? (subcategories[activeFeedCategory] || []) : [];
+  if (subs.length) {
+    subTrack.innerHTML = subs.map(s => {
+      const active = activeFeedSubcategory === s ? 'active' : '';
+      const safe = s.replace(/'/g, "\\'");
+      const safeCat = activeFeedCategory.replace(/'/g, "\\'");
+      return `<button class="subcat-pill ${active}" onclick="setFeedSubcategory('${safeCat}','${safe}')">${s}</button>`;
+    }).join('');
+    subStrip.style.display = '';
+  } else {
+    subStrip.style.display = 'none';
+  }
+}
+
+function setFeedCategory(key) {
+  activeFeedCategory = key;
+  activeFeedSubcategory = null;
+  renderFeedCategories();
+  if (key === 'all') loadFeedAll();
+  else loadFeedCategory(key);
+}
+
+function setFeedSubcategory(cat, sub) {
+  activeFeedCategory = cat;
+  activeFeedSubcategory = sub;
+  renderFeedCategories();
+  loadFeedCategory(cat, sub);
+}
+
+function showFeedCatsStrip() {
+  document.getElementById('feedCatsStrip').style.display = '';
+  renderFeedCategories();
+}
+
+function hideFeedCatsStrip() {
+  document.getElementById('feedCatsStrip').style.display = 'none';
 }
 
 /* ═══════════════════════════════════════════
@@ -6851,6 +6893,7 @@ function showView(view) {
   document.getElementById('homeSecondaryNav').classList.remove('open');
   document.getElementById('channelsEmpty')?.remove();
   document.getElementById('chanTopbar')?.classList.remove('show');
+  hideFeedCatsStrip();
 
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
