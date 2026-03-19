@@ -2913,11 +2913,8 @@ input[type=range]::-webkit-slider-thumb{
     </div>
     <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
     <div class="chan-topbar-divider"></div>
-    <button class="bb-btn" id="bbSelectBtn" onclick="toggleBulkMode()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Select
-    </button>
-    <button class="bb-btn" onclick="openBulkCategoryModal()">Bulk Edit</button>
+    <button class="bb-btn" id="bbBulkEditBtn" onclick="toggleBulkMode()">Bulk Edit</button>
+    <button class="bb-btn" onclick="openBulkCategoryModal()">Edit</button>
     <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
   </div>
   <div class="chan-topbar-right">
@@ -4176,6 +4173,8 @@ function setCategory(key) {
     selectedChannels.clear();
     document.body.classList.remove('bulk-mode');
     document.getElementById('btnBulkToggleLabel').textContent = 'Bulk Categorise';
+    const bbBulkEditBtn = document.getElementById('bbBulkEditBtn');
+    if (bbBulkEditBtn) bbBulkEditBtn.classList.remove('active');
     updateBulkBar();
   }
   renderCategories();
@@ -6938,8 +6937,8 @@ function toggleBulkMode() {
   bulkMode = !bulkMode;
   document.body.classList.toggle('bulk-mode', bulkMode);
   document.getElementById('btnBulkToggleLabel').textContent = bulkMode ? 'Exit Bulk Mode' : 'Bulk Categorise';
-  const bbSelectBtn = document.getElementById('bbSelectBtn');
-  if (bbSelectBtn) bbSelectBtn.classList.toggle('active', bulkMode);
+  const bbBulkEditBtn = document.getElementById('bbBulkEditBtn');
+  if (bbBulkEditBtn) bbBulkEditBtn.classList.toggle('active', bulkMode);
   if (!bulkMode) {
     selectedChannels.clear();
     updateBulkBar();
@@ -6962,6 +6961,8 @@ function clearSelection() {
   bulkMode = false;
   document.body.classList.remove('bulk-mode');
   document.getElementById('btnBulkToggleLabel').textContent = 'Bulk Categorise';
+  const bbBulkEditBtn = document.getElementById('bbBulkEditBtn');
+  if (bbBulkEditBtn) bbBulkEditBtn.classList.remove('active');
   updateBulkBar();
   renderChannels();
 }
