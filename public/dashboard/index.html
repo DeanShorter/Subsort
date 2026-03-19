@@ -1635,30 +1635,47 @@ input[type=range]::-webkit-slider-thumb{
   color:var(--accent);
 }
 .home-section-count{font-size:.75rem;color:var(--text-muted);font-weight:400}
-.home-video-row{
-  display:flex;align-items:center;gap:.75rem;
-  padding:.625rem 0;border-bottom:1px solid rgba(255,255,255,.03);
-  cursor:pointer;transition:background .1s;
+/* Feed page header */
+.feed-page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.feed-page-header h2{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.2rem}
+.feed-page-header-meta{font-size:.8125rem;color:var(--text-muted)}
+.feed-page-controls{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.feed-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.375rem .625rem;border-radius:var(--radius-sm);font-size:.75rem;cursor:pointer}
+/* Feed category tabs (inline) */
+.feed-cats-row{border-bottom:1px solid var(--border-subtle);margin:0 0 0;overflow-x:auto}
+.feed-cats-row .cat-tabs-track{display:flex;align-items:center;white-space:nowrap}
+.feed-subcats-row{display:flex;flex-wrap:wrap;gap:.375rem;padding:.625rem 0 .875rem;}
+/* Feed video rows */
+.feed-video-row{
+  display:flex;align-items:flex-start;gap:.875rem;
+  padding:.875rem 0;border-bottom:1px solid rgba(255,255,255,.04);
+  cursor:pointer;transition:background .12s;border-radius:var(--radius-sm);
 }
-.home-video-row:hover{background:var(--bg-surface);margin:0 -.5rem;padding:.625rem .5rem;border-radius:var(--radius-sm)}
-.home-video-row:last-child{border-bottom:none}
-.home-video-play{color:var(--accent);flex-shrink:0}
-.home-video-play svg{width:14px;height:14px}
-.home-video-title{font-size:.8125rem;color:var(--text-primary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.home-video-thumb{
-  width:80px;height:45px;border-radius:6px;overflow:hidden;flex-shrink:0;
+.feed-video-row:hover{background:var(--bg-surface);padding:.875rem .75rem;margin:0 -.75rem}
+.feed-video-row:last-child{border-bottom:none}
+.feed-video-thumb{
+  position:relative;width:128px;height:72px;border-radius:6px;overflow:hidden;flex-shrink:0;
   background:var(--bg-surface-raised);
 }
+.feed-video-thumb img{width:100%;height:100%;object-fit:cover}
+.feed-video-thumb-ph{width:100%;height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#1e2030,#161820)}
+.feed-video-thumb-ph svg{width:22px;height:22px;opacity:.3}
+.feed-video-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3rem}
+.feed-video-title{font-size:.875rem;font-weight:500;color:var(--text-primary);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.feed-video-meta{font-size:.75rem;color:var(--text-muted)}
+.feed-video-footer{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.feed-cat-badge{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:20px;font-size:.6875rem;font-weight:500;white-space:nowrap}
+.feed-video-desc{font-size:.6875rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px}
+.feed-video-menu{flex-shrink:0;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:.25rem;opacity:0;transition:opacity .1s}
+.feed-video-row:hover .feed-video-menu{opacity:1}
+.home-feed-loading{display:flex;align-items:center;gap:.75rem;padding:3rem 0;color:var(--text-muted);font-size:.875rem;justify-content:center}
+/* Old row styles kept for dashboard placeholder */
+.home-video-row{display:flex;align-items:center;gap:.75rem;padding:.625rem 0;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer}
+.home-video-title{font-size:.8125rem;color:var(--text-primary)}
+.home-video-thumb{width:80px;height:45px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--bg-surface-raised)}
 .home-video-thumb img{width:100%;height:100%;object-fit:cover}
-.home-video-thumb-placeholder{
-  width:100%;height:100%;display:grid;place-items:center;
-  background:linear-gradient(135deg,#222,#1a1a1a);
-}
-.home-video-thumb-placeholder svg{width:20px;height:20px;color:var(--text-muted);opacity:.4}
-.home-feed-loading{
-  display:flex;align-items:center;gap:.75rem;
-  padding:2rem 0;color:var(--text-muted);font-size:.875rem;
-}
+.home-video-thumb-placeholder{width:100%;height:100%;display:grid;place-items:center}
+.home-video-thumb-placeholder svg{width:20px;height:20px;opacity:.3}
 
 /* Right sidebar */
 .home-sidebar{
@@ -2288,14 +2305,6 @@ input[type=range]::-webkit-slider-thumb{
 
 <!-- ═══ Home View ═══ -->
 <div class="home-view" id="homeView">
-
-  <!-- Feed Categories Strip (feeds view only) -->
-  <div id="feedCatsStrip" style="display:none">
-    <div class="cat-tabs" id="feedCatsTrack"></div>
-    <div class="subcategories-strip" id="feedSubcatsStrip" style="display:none">
-      <div class="subcategories-track" id="feedSubcatsTrack"></div>
-    </div>
-  </div>
 
   <!-- Main Content -->
   <main class="home-main" id="homeMain">
@@ -6334,12 +6343,9 @@ function setHomeNav(key) {
   if (key === 'feeds') {
     sec.classList.remove('open');
     content.innerHTML = '';
-    showFeedCatsStrip();
     loadFeedAll();
     return;
   }
-
-  hideFeedCatsStrip();
 
   // Custom handler for channels
   if (nav.custom && key === 'channels') {
@@ -6450,116 +6456,87 @@ function clearAllSecNavFilters() {
 }
 
 /* ═══════════════════════════════════════════
-   FEED: CATEGORIES STRIP
+   FEED: STATE + TABS
    ═══════════════════════════════════════════ */
 let activeFeedCategory = 'all';
 let activeFeedSubcategory = null;
 
-function renderFeedCategories() {
-  const track = document.getElementById('feedCatsTrack');
-  if (!track) return;
-
+function buildFeedTabsHtml() {
   const cats = [{name: 'All', key: 'all'}, ...categories.map(c => ({name: c, key: c}))];
-  let html = '';
-  cats.forEach((c, i) => {
+  let tabsHtml = cats.map(c => {
     const safe = c.key.replace(/'/g, "\\'");
     const active = activeFeedCategory === c.key ? 'active' : '';
-    html += `<button class="cat-tab ${active}" onclick="setFeedCategory('${safe}')">${c.name}</button>`;
-    if (i < cats.length - 1) html += `<span class="cat-tab-sep">·</span>`;
-  });
-  track.innerHTML = html;
+    return `<button class="cat-tab ${active}" onclick="setFeedCategory('${safe}')">${c.name}</button>`;
+  }).join('<span class="cat-tab-sep">·</span>');
 
-  const subStrip = document.getElementById('feedSubcatsStrip');
-  const subTrack = document.getElementById('feedSubcatsTrack');
   const subs = activeFeedCategory !== 'all' ? (subcategories[activeFeedCategory] || []) : [];
+  let subHtml = '';
   if (subs.length) {
-    subTrack.innerHTML = subs.map(s => {
-      const active = activeFeedSubcategory === s ? 'active' : '';
+    subHtml = `<div class="feed-subcats-row">${subs.map(s => {
       const safe = s.replace(/'/g, "\\'");
       const safeCat = activeFeedCategory.replace(/'/g, "\\'");
+      const active = activeFeedSubcategory === s ? 'active' : '';
       return `<button class="subcat-pill ${active}" onclick="setFeedSubcategory('${safeCat}','${safe}')">${s}</button>`;
-    }).join('');
-    subStrip.style.display = '';
-  } else {
-    subStrip.style.display = 'none';
+    }).join('')}</div>`;
   }
+
+  return `<div class="feed-cats-row"><div class="cat-tabs-track">${tabsHtml}</div></div>${subHtml}`;
 }
 
 function setFeedCategory(key) {
   activeFeedCategory = key;
   activeFeedSubcategory = null;
-  renderFeedCategories();
   if (key === 'all') loadFeedAll();
-  else loadFeedCategory(key);
+  else loadFeedCategory(key, null);
 }
 
 function setFeedSubcategory(cat, sub) {
   activeFeedCategory = cat;
   activeFeedSubcategory = sub;
-  renderFeedCategories();
   loadFeedCategory(cat, sub);
 }
 
-function showFeedCatsStrip() {
-  document.getElementById('feedCatsStrip').style.display = '';
-  renderFeedCategories();
-}
-
-function hideFeedCatsStrip() {
-  document.getElementById('feedCatsStrip').style.display = 'none';
-}
-
 /* ═══════════════════════════════════════════
-   FEED: LOAD VIDEOS BY CATEGORY
+   FEED: LOAD VIDEOS
    ═══════════════════════════════════════════ */
 async function loadFeedCategory(category, subcategory) {
   const main = document.getElementById('homeMain');
   let catChannels = channels.filter(ch => chHasCat(ch, category));
-
-  // Filter by subcategory if specified
-  if (subcategory) {
-    catChannels = catChannels.filter(ch => ch.subcategory === subcategory);
-  }
+  if (subcategory) catChannels = catChannels.filter(ch => ch.subcategory === subcategory);
 
   const label = subcategory ? `${category} › ${subcategory}` : category;
-  const filterDesc = subcategory ? `in ${subcategory}` : '';
-
-  if (!catChannels.length) {
-    main.innerHTML = `
-      <div class="home-main-header">
-        <h2>${label}</h2>
-        <p>No channels ${filterDesc ? filterDesc : 'in this category'} yet.</p>
-      </div>`;
-    return;
-  }
-
-  main.innerHTML = `
-    <div class="home-main-header">
-      <h2>${label}</h2>
-      <p>Recent videos from ${catChannels.length} channel${catChannels.length > 1 ? 's' : ''} ${filterDesc}</p>
-    </div>
-    <div class="home-feed-loading">
-      <span class="spinner"></span> Fetching latest videos…
-    </div>`;
 
   if (!accessToken) {
-    main.innerHTML = `
-      <div class="home-main-header">
-        <h2>${label}</h2>
-        <p>Sign in with YouTube to see recent videos from your subscriptions.</p>
-      </div>`;
+    main.innerHTML = buildFeedTabsHtml() + `
+      <div class="feed-page-header"><div><h2>${label}</h2></div></div>
+      <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
     return;
   }
+
+  if (!catChannels.length) {
+    main.innerHTML = buildFeedTabsHtml() + `
+      <div class="feed-page-header"><div><h2>${label}</h2><p class="feed-page-header-meta">No channels in this category yet.</p></div></div>`;
+    return;
+  }
+
+  main.innerHTML = buildFeedTabsHtml() + `
+    <div class="feed-page-header">
+      <div><h2>${label}</h2><p class="feed-page-header-meta">${catChannels.length} channel${catChannels.length !== 1 ? 's' : ''}</p></div>
+    </div>
+    <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
 
   try {
     const videos = await fetchRecentVideos(catChannels);
-    renderFeedVideos(main, label, videos, catChannels.length);
+    const spinner = document.getElementById('feedLoadingSpinner');
+    if (spinner) spinner.remove();
+    const listHtml = videos.length
+      ? videos.map(v => renderFeedVideoRow(v, category)).join('')
+      : `<p style="color:var(--text-muted);padding:.5rem 0">No videos in the last 7 days.</p>`;
+    main.insertAdjacentHTML('beforeend', listHtml);
   } catch (err) {
-    main.innerHTML = `
-      <div class="home-main-header">
-        <h2>${label}</h2>
-        <p style="color:#f87171">Failed to load videos: ${err.message}</p>
-      </div>`;
+    const spinner = document.getElementById('feedLoadingSpinner');
+    if (spinner) spinner.remove();
+    main.insertAdjacentHTML('beforeend', `<p style="color:#f87171;padding:.5rem 0">Failed to load: ${err.message}</p>`);
   }
 }
 
@@ -6567,77 +6544,69 @@ async function loadFeedAll() {
   const main = document.getElementById('homeMain');
 
   if (!channels.length) {
-    main.innerHTML = `
-      <div class="home-main-header">
-        <h2>All Subscriptions</h2>
-        <p>Sync your YouTube account to see recent videos.</p>
-      </div>`;
+    main.innerHTML = buildFeedTabsHtml() + `
+      <div class="feed-page-header"><div><h2>All Subscriptions</h2><p class="feed-page-header-meta">Sync your YouTube account to see recent videos.</p></div></div>`;
     return;
   }
 
   if (!accessToken) {
-    main.innerHTML = `
-      <div class="home-main-header">
-        <h2>All Subscriptions</h2>
-        <p>Sign in with YouTube to see recent videos from your subscriptions.</p>
-      </div>`;
+    main.innerHTML = buildFeedTabsHtml() + `
+      <div class="feed-page-header"><div><h2>All Subscriptions</h2></div></div>
+      <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
     return;
   }
 
-  main.innerHTML = `
-    <div class="home-main-header">
-      <h2>All Subscriptions</h2>
-      <p>Recent videos across all your categories.</p>
+  const catsWithChannels = categories.filter(cat => channels.some(ch => chHasCat(ch, cat)));
+
+  main.innerHTML = buildFeedTabsHtml() + `
+    <div class="feed-page-header">
+      <div><h2>All Subscriptions</h2><p class="feed-page-header-meta">Recent videos across ${catsWithChannels.length} categor${catsWithChannels.length !== 1 ? 'ies' : 'y'}</p></div>
     </div>
-    <div class="home-feed-loading">
-      <span class="spinner"></span> Fetching latest videos…
-    </div>`;
+    <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
 
   try {
-    // Load videos for each category that has channels
-    const catsWithChannels = categories.filter(cat => channels.some(ch => chHasCat(ch, cat)));
-    let allHtml = `<div class="home-main-header"><h2>All Subscriptions</h2><p>Recent videos across ${catsWithChannels.length} categories.</p></div>`;
-
     for (const cat of catsWithChannels.slice(0, 6)) {
-      const catChannels = channels.filter(ch => chHasCat(ch, cat));
-      const videos = await fetchRecentVideos(catChannels.slice(0, 5));
-      if (videos.length) {
-        allHtml += renderFeedSection(cat, videos);
-      }
+      const catChannels = channels.filter(ch => chHasCat(ch, cat)).slice(0, 5);
+      const videos = await fetchRecentVideos(catChannels);
+      if (!videos.length) continue;
+      const spinner = document.getElementById('feedLoadingSpinner');
+      if (spinner) spinner.remove();
+      const sectionHtml = `
+        <div class="home-section">
+          <div class="home-section-header">
+            <span class="home-section-title">${cat}</span>
+            <span class="home-section-count">${videos.length} video${videos.length !== 1 ? 's' : ''}</span>
+          </div>
+          ${videos.map(v => renderFeedVideoRow(v, cat)).join('')}
+        </div>`;
+      main.insertAdjacentHTML('beforeend', sectionHtml);
     }
-    main.innerHTML = allHtml || `<div class="home-main-header"><h2>All Subscriptions</h2><p>No recent videos found.</p></div>`;
+    const spinner = document.getElementById('feedLoadingSpinner');
+    if (spinner) {
+      spinner.remove();
+      main.insertAdjacentHTML('beforeend', `<p style="color:var(--text-muted);padding:.5rem 0">No recent videos found.</p>`);
+    }
   } catch (err) {
-    main.innerHTML += `<p style="color:#f87171;padding:1rem">Error: ${err.message}</p>`;
+    const spinner = document.getElementById('feedLoadingSpinner');
+    if (spinner) spinner.remove();
+    main.insertAdjacentHTML('beforeend', `<p style="color:#f87171;padding:.5rem 0">Error: ${err.message}</p>`);
   }
 }
 
 async function fetchRecentVideos(channelList) {
-  // Build a cache key from channel IDs
   const cacheKey = CACHE_KEYS.feedVideos + channelList.slice(0, 10).map(ch => ch.channelId || ch.id).sort().join(',').substring(0, 80);
-  
-  // Check cache first
   const cached = cacheGet(cacheKey, CACHE_TTL.feedVideos);
   if (cached) return cached;
 
-  // Fetch recent uploads using playlistItems.list (1 unit each)
   const recentCutoff = new Date(getRecentDate()).getTime();
   const videos = [];
 
-  // Get channels with upload playlist IDs, limit to 10
-  const withPlaylists = channelList
-    .filter(ch => ch.uploadsPlaylistId && ch.channelId)
-    .slice(0, 10);
+  let withPlaylists = channelList.filter(ch => ch.uploadsPlaylistId && ch.channelId).slice(0, 10);
 
   if (!withPlaylists.length) {
-    // Fallback: channels without uploadsPlaylistId — try to construct it
-    // YouTube upload playlist ID = 'UU' + channelId (minus the 'UC' prefix)
-    const fallback = channelList
-      .filter(ch => ch.channelId && ch.channelId.startsWith('UC'))
-      .slice(0, 10);
-    for (const ch of fallback) {
-      ch._uploadsPl = 'UU' + ch.channelId.substring(2);
-    }
-    withPlaylists.push(...fallback.filter(ch => ch._uploadsPl));
+    const fallback = channelList.filter(ch => ch.channelId && ch.channelId.startsWith('UC')).slice(0, 10);
+    for (const ch of fallback) ch._uploadsPl = 'UU' + ch.channelId.substring(2);
+    withPlaylists = fallback.filter(ch => ch._uploadsPl);
   }
 
   for (const ch of withPlaylists) {
@@ -6651,70 +6620,48 @@ async function fetchRecentVideos(channelList) {
       if (data.items) {
         for (const item of data.items) {
           const pubDate = new Date(item.snippet.publishedAt).getTime();
-          // Only include videos from the last 7 days
           if (pubDate < recentCutoff) continue;
           videos.push({
             id: item.snippet.resourceId?.videoId || '',
             title: item.snippet.title,
             channel: item.snippet.channelTitle || ch.name,
+            channelId: ch.channelId,
             thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
-            publishedAt: item.snippet.publishedAt
+            publishedAt: item.snippet.publishedAt,
+            description: (item.snippet.description || '').split('\n')[0].substring(0, 120)
           });
         }
       }
-    } catch(e) { /* skip failed channels */ }
+    } catch(e) { /* skip */ }
   }
 
-  // Sort by date, newest first
   videos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-  
-  // Cache the results
   if (videos.length) cacheSet(cacheKey, videos);
-  
   return videos;
 }
 
 function getRecentDate() {
   const d = new Date();
-  d.setDate(d.getDate() - 7); // Last 7 days
+  d.setDate(d.getDate() - 7);
   return d.toISOString();
 }
 
-function renderFeedVideos(container, title, videos, channelCount) {
-  if (!videos.length) {
-    container.innerHTML = `
-      <div class="home-main-header">
-        <h2>${title}</h2>
-        <p>No recent videos from ${channelCount} channel${channelCount > 1 ? 's' : ''} in the last 7 days.</p>
-      </div>`;
-    return;
-  }
-  container.innerHTML = `
-    <div class="home-main-header">
-      <h2>${title}</h2>
-      <p>${videos.length} recent video${videos.length > 1 ? 's' : ''} from ${channelCount} channel${channelCount > 1 ? 's' : ''}</p>
-    </div>
-    ${renderFeedSection(title, videos)}`;
-}
-
-function renderFeedSection(title, videos) {
-  return `<div class="home-section">
-    <div class="home-section-header">
-      <span class="home-section-title">${title}</span>
-      <span class="home-section-count">${videos.length} video${videos.length > 1 ? 's' : ''}</span>
-    </div>
-    ${videos.map(v => `
-      <div class="home-video-row" onclick="window.open('https://youtube.com/watch?v=${v.id}','_blank')">
-        <span class="home-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
-        <div style="flex:1;min-width:0">
-          <div class="home-video-title">${v.title}</div>
-          <div style="font-size:.6875rem;color:var(--text-muted);margin-top:.125rem">${v.channel} · ${timeAgo(v.publishedAt)}</div>
-        </div>
-        <div class="home-video-thumb">
-          ${v.thumbnail ? `<img src="${v.thumbnail}" alt="">` : `<div class="home-video-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div>`}
-        </div>
-      </div>`).join('')}
-  </div>`;
+function renderFeedVideoRow(v, catLabel) {
+  const safeId = (v.id || '').replace(/"/g, '');
+  const thumb = v.thumbnail
+    ? `<img src="${v.thumbnail}" alt="" loading="lazy">`
+    : `<div style="width:100%;height:100%;display:grid;place-items:center;color:var(--text-muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg></div>`;
+  const badge = catLabel ? `<span class="feed-cat-badge" style="background:rgba(91,108,255,.15);color:#8b9dff">${catLabel}</span>` : '';
+  const desc = v.description ? `<div class="feed-video-desc">${v.description}</div>` : '';
+  return `
+    <div class="feed-video-row" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
+      <div class="feed-video-thumb">${thumb}</div>
+      <div class="feed-video-body">
+        <div class="feed-video-title">${v.title}</div>
+        <div class="feed-video-meta">${v.channel} · ${timeAgo(v.publishedAt)}${badge ? ' · ' + badge : ''}</div>
+        ${desc}
+      </div>
+    </div>`;
 }
 
 function timeAgo(dateStr) {
@@ -6893,8 +6840,6 @@ function showView(view) {
   document.getElementById('homeSecondaryNav').classList.remove('open');
   document.getElementById('channelsEmpty')?.remove();
   document.getElementById('chanTopbar')?.classList.remove('show');
-  hideFeedCatsStrip();
-
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
