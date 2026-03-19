@@ -4312,7 +4312,7 @@ let userTier = localStorage.getItem('subsort_user_tier') || 'free';
    CACHING LAYER
    ═══════════════════════════════════════════ */
 const CACHE_KEYS = {
-  feedVideos: 'subsort_cache_feed_',
+  feedVideos: 'subsort_cache_feed_v2_',
   syncTimestamp: 'subsort_cache_last_sync',
   discoverResults: 'subsort_cache_discover_'
 };
@@ -7633,6 +7633,17 @@ async function fetchRecentVideos(channelList) {
         });
       }
     } catch(e) { /* skip */ }
+  }
+
+  // Rebuild per-channel Short ID caches to include duration-detected Shorts
+  // so that future cache hits (within the 2-hour TTL) also re-apply the correct isShort values
+  const channelShortMap = {};
+  for (const v of videos) {
+    if (!channelShortMap[v.channelId]) channelShortMap[v.channelId] = [];
+    if (v.isShort) channelShortMap[v.channelId].push(v.id);
+  }
+  for (const [chId, ids] of Object.entries(channelShortMap)) {
+    cacheSet('subsort_shorts_' + chId, ids);
   }
 
   videos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
