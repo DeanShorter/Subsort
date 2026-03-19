@@ -7528,7 +7528,8 @@ async function loadFeedAll() {
 async function fetchRecentVideos(channelList) {
   const cacheKey = CACHE_KEYS.feedVideos + channelList.slice(0, 10).map(ch => ch.channelId || ch.id).sort().join(',').substring(0, 80);
   const cached = cacheGet(cacheKey, CACHE_TTL.feedVideos);
-  if (cached) return cached;
+  // Only use cache if it has the isShort field (stale entries pre-date Shorts detection)
+  if (cached && (cached.length === 0 || 'isShort' in cached[0])) return cached;
 
   const recentCutoff = new Date(getRecentDate()).getTime();
   const videos = [];
@@ -7550,7 +7551,7 @@ async function fetchRecentVideos(channelList) {
 
       // Fetch uploads and UUSH Shorts playlist in parallel
       const uushId = ch.channelId?.startsWith('UC') ? 'UUSH' + ch.channelId.substring(2) : null;
-      const shortsUrl = uushId ? `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uushId}&maxResults=15` : null;
+      const shortsUrl = uushId ? `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uushId}&maxResults=25` : null;
 
       const [uploadsResp, shortsResp] = await Promise.all([
         fetch(uploadsUrl, headers),
@@ -7565,6 +7566,9 @@ async function fetchRecentVideos(channelList) {
           const vid = item.snippet.resourceId?.videoId;
           if (vid) shortIds.add(vid);
         });
+        console.log(`[Shorts] ${ch.name}: UUSH returned ${shortsData.items?.length ?? 0} shorts`, [...shortIds]);
+      } else {
+        console.log(`[Shorts] ${ch.name}: UUSH fetch failed/no playlist (status: ${shortsResp?.status})`);
       }
 
       if (!uploadsResp.ok) continue;
