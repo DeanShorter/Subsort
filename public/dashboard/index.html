@@ -175,18 +175,9 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .btn-auto-cat:hover{border-color:#60a5fa;color:#60a5fa;background:rgba(59,130,246,.1)}
 
 /* ─── Subcategories Strip ─── */
-.subcategories-strip{
-  display:flex;align-items:center;gap:.625rem;
-  margin-top:.75rem;padding:.625rem 0;
-  border-top:1px solid var(--border-subtle);
-  overflow-x:auto;scrollbar-width:none;
-}
-.subcategories-strip::-webkit-scrollbar{display:none}
-.subcat-label{
-  font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
-  color:#60a5fa;flex-shrink:0;
-}
-.subcategories-track{display:flex;gap:.375rem;align-items:center;flex-wrap:wrap}
+.subcategories-strip{display:flex;align-items:stretch;border-top:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0}
+.subcategories-track{display:flex;align-items:center;gap:.375rem;padding:0 .75rem;overflow-x:auto;scrollbar-width:none;background:var(--bg-primary);flex:1;min-width:0}
+.subcategories-track::-webkit-scrollbar{display:none}
 .subcat-pill{
   display:inline-flex;align-items:center;gap:.25rem;
   padding:.3rem .75rem;border-radius:20px;
@@ -211,31 +202,9 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   color:var(--text-muted);font-weight:500;
 }
 .subcat-pill-all.active{color:#60a5fa}
-.btn-add-subcat{
-  display:inline-flex;align-items:center;gap:.25rem;
-  padding:.25rem .5rem;border-radius:20px;
-  background:none;border:1px dashed var(--border-subtle);
-  color:var(--text-muted);font:500 .625rem/1 var(--font-body);
-  cursor:pointer;transition:all .2s var(--transition);
-  white-space:nowrap;flex-shrink:0;
-}
-.btn-add-subcat:hover{border-color:#60a5fa;color:#60a5fa;background:rgba(59,130,246,.08)}
-.btn-add-subcat svg{width:10px;height:10px}
-.btn-add-subcat-primary{
-  border-style:solid;border-color:#60a5fa;color:#60a5fa;
-  background:rgba(59,130,246,.1);padding:.3rem .75rem;font-size:.6875rem;
-}
-.btn-add-subcat-primary:hover{background:#60a5fa;color:#fff}
 .subcat-empty-hint{
   font-size:.6875rem;color:var(--text-muted);font-style:italic;flex-shrink:0;
 }
-.subcat-pill .btn-subcat-edit{
-  display:none;background:none;border:none;color:var(--text-muted);
-  cursor:pointer;padding:0;margin-left:.125rem;line-height:1;
-}
-.subcat-pill:hover .btn-subcat-edit{display:inline-flex}
-.subcat-pill .btn-subcat-edit:hover{color:var(--accent)}
-.subcat-pill .btn-subcat-edit svg{width:10px;height:10px}
 
 /* ─── Discover Similar ─── */
 .btn-discover{
@@ -3177,6 +3146,9 @@ input[type=range]::-webkit-slider-thumb{
     <div class="cat-tabs" id="categoriesTrack"></div>
   </div>
   <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
+    <button class="cat-edit-btn" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>
+    <button class="cat-edit-btn" onclick="openManageSubcategories()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
+    <div class="cat-tab-vdivider"></div>
     <div class="subcategories-track" id="subcategoriesTrack"></div>
   </div>
 </section>
@@ -3434,6 +3406,39 @@ input[type=range]::-webkit-slider-thumb{
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('manageCategoriesModal')">Close</button>
       <button class="btn-save" onclick="closeModal('manageCategoriesModal');openModal('addCategoryModal')">+ Add Category</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Manage Subcategories Modal ═══ -->
+<div class="modal-overlay" id="manageSubcategoriesModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('manageSubcategoriesModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2>Edit Subcategories</h2>
+    <div id="manageSubcatList" style="margin-top:1.25rem;max-height:360px;overflow-y:auto"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('manageSubcategoriesModal')">Close</button>
+      <button class="btn-save" onclick="closeModal('manageSubcategoriesModal');addSubcategory()">+ Add Subcategory</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Edit Subcategory Modal ═══ -->
+<div class="modal-overlay" id="editSubcategoryModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('editSubcategoryModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2>Edit subcategory</h2>
+    <div style="margin-top:1.25rem">
+      <div class="form-group">
+        <label>Subcategory name</label>
+        <input type="text" id="editSubcatNameInput" placeholder="Subcategory name">
+        <p class="form-error" id="editSubcatError" style="display:none"></p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('editSubcategoryModal')">Cancel</button>
+      <button class="btn-danger" onclick="deleteSubcategoryModal()">Delete</button>
+      <button class="btn-save" onclick="saveSubcategoryEdit()">Save</button>
     </div>
   </div>
 </div>
@@ -4247,26 +4252,16 @@ function renderSubcategories() {
   const catChannels = channels.filter(ch => chHasCat(ch, activeCategory));
   const allCount = catChannels.length;
 
-  let html = '';
+  let html = `<span class="subcat-pill subcat-pill-all ${!activeSubcategory ? 'active' : ''}" onclick="setSubcategory(null)">All <span class="subcat-count">${allCount}</span></span>`;
 
   if (subs.length) {
-    // Has subcategories — show All pill + subcategory pills + add button
-    html += `<span class="subcat-pill subcat-pill-all ${!activeSubcategory ? 'active' : ''}" onclick="setSubcategory(null)">All <span class="subcat-count">${allCount}</span></span>`;
-
     for (const sub of subs) {
       const count = catChannels.filter(ch => ch.subcategory === sub).length;
       const safeSub = sub.replace(/'/g, "\\'");
-      html += `<span class="subcat-pill ${activeSubcategory === sub ? 'active' : ''}" onclick="setSubcategory('${safeSub}')">
-        ${sub} <span class="subcat-count">${count}</span>
-        <button class="btn-subcat-edit" onclick="event.stopPropagation();editSubcategory('${safeSub}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-      </span>`;
+      html += `<span class="subcat-pill ${activeSubcategory === sub ? 'active' : ''}" onclick="setSubcategory('${safeSub}')">${sub} <span class="subcat-count">${count}</span></span>`;
     }
-
-    html += `<button class="btn-add-subcat" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>`;
   } else {
-    // No subcategories yet — show a clear prompt
     html += `<span class="subcat-empty-hint">No subcategories yet</span>`;
-    html += `<button class="btn-add-subcat btn-add-subcat-primary" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add subcategory</button>`;
   }
 
   track.innerHTML = html;
@@ -4412,6 +4407,79 @@ async function editSubcategory(oldName) {
   }
   save();
   renderAll();
+}
+
+let _editingSubcatName = null;
+
+function openManageSubcategories() {
+  const list = document.getElementById('manageSubcatList');
+  const subs = subcategories[activeCategory] || [];
+  const catChannels = channels.filter(ch => chHasCat(ch, activeCategory));
+
+  if (!subs.length) {
+    list.innerHTML = '<p style="font-size:.875rem;color:var(--text-muted);text-align:center;padding:1rem 0">No subcategories yet.</p>';
+  } else {
+    list.innerHTML = subs.map(sub => {
+      const count = catChannels.filter(ch => ch.subcategory === sub).length;
+      const safeSub = sub.replace(/'/g, "\\'");
+      return `<div class="manage-cat-row">
+        <span class="manage-cat-name">${sub}</span>
+        <span class="manage-cat-count">${count} channel${count !== 1 ? 's' : ''}</span>
+        <button class="manage-cat-edit" onclick="openEditSubcategoryModal('${safeSub}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('manageSubcategoriesModal').classList.add('open');
+}
+
+function openEditSubcategoryModal(name) {
+  closeModal('manageSubcategoriesModal');
+  _editingSubcatName = name;
+  document.getElementById('editSubcatNameInput').value = name;
+  document.getElementById('editSubcatError').style.display = 'none';
+  document.getElementById('editSubcategoryModal').classList.add('open');
+}
+
+async function saveSubcategoryEdit() {
+  const oldName = _editingSubcatName;
+  const newName = document.getElementById('editSubcatNameInput').value.trim();
+  const errEl = document.getElementById('editSubcatError');
+  if (!newName) { errEl.textContent = 'Name cannot be empty.'; errEl.style.display = ''; return; }
+  const subs = subcategories[activeCategory] || [];
+  const idx = subs.indexOf(oldName);
+  if (idx === -1) { closeModal('editSubcategoryModal'); return; }
+  if (newName !== oldName && subs.includes(newName)) { errEl.textContent = 'A subcategory with that name already exists.'; errEl.style.display = ''; return; }
+
+  subs[idx] = newName;
+  channels.forEach(ch => { if (chHasCat(ch, activeCategory) && ch.subcategory === oldName) ch.subcategory = newName; });
+  if (activeSubcategory === oldName) activeSubcategory = newName;
+  toast('Subcategory renamed');
+  if (sb && sbUser) {
+    const entry = (window._dbSubcategories || []).find(s => s.name === oldName && s.categories?.name === activeCategory);
+    if (entry) { await sb.from('subcategories').update({ name: newName }).eq('id', entry.id); entry.name = newName; }
+  }
+  save();
+  renderAll();
+  closeModal('editSubcategoryModal');
+}
+
+async function deleteSubcategoryModal() {
+  const oldName = _editingSubcatName;
+  const subs = subcategories[activeCategory] || [];
+  const idx = subs.indexOf(oldName);
+  if (idx === -1) { closeModal('editSubcategoryModal'); return; }
+
+  subs.splice(idx, 1);
+  channels.forEach(ch => { if (chHasCat(ch, activeCategory) && ch.subcategory === oldName) ch.subcategory = ''; });
+  if (activeSubcategory === oldName) activeSubcategory = null;
+  toast('Subcategory deleted');
+  if (sb && sbUser) {
+    const entry = (window._dbSubcategories || []).find(s => s.name === oldName && s.categories?.name === activeCategory);
+    if (entry) await sb.from('subcategories').delete().eq('id', entry.id);
+  }
+  save();
+  renderAll();
+  closeModal('editSubcategoryModal');
 }
 
 function setCategory(key) {
