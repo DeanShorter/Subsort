@@ -4085,12 +4085,14 @@ async function loadUserData() {
     if (catRows && catRows.length > 0) {
       categories = catRows.map(c => c.name);
       window._dbCategories = catRows;
+      // Load colours from DB into categoryColours
+      catRows.forEach(c => { if (c.colour) categoryColours[c.name] = c.colour; });
     } else if (catRows && catRows.length === 0 && localCategories.length > 0) {
-      // Migrate localStorage categories → DB
+      // Migrate localStorage categories → DB (include any saved colours)
       window._dbCategories = [];
       for (let i = 0; i < localCategories.length; i++) {
         const { data } = await sb.from('categories')
-          .upsert({ user_id: sbUser.id, name: localCategories[i], sort_order: i }, { onConflict: 'user_id,name' })
+          .upsert({ user_id: sbUser.id, name: localCategories[i], sort_order: i, colour: categoryColours[localCategories[i]] || null }, { onConflict: 'user_id,name' })
           .select().single();
         if (data) window._dbCategories.push(data);
       }
@@ -4225,7 +4227,7 @@ async function dbSaveCategory(name) {
   if (!sb || !sbUser) return null;
   const { data, error } = await sb
     .from('categories')
-    .upsert({ user_id: sbUser.id, name, sort_order: categories.length }, { onConflict: 'user_id,name' })
+    .upsert({ user_id: sbUser.id, name, sort_order: categories.length, colour: categoryColours[name] || null }, { onConflict: 'user_id,name' })
     .select()
     .single();
   if (error) { console.error('Save category error:', error); toast('Category not saved to server'); return null; }
@@ -5648,8 +5650,9 @@ async function saveCategory() {
     if (sb && sbUser) {
       const entry = (window._dbCategories || []).find(c => c.name === old);
       if (entry) {
-        await sb.from('categories').update({ name }).eq('id', entry.id);
+        await sb.from('categories').update({ name, colour: categoryColours[name] || null }).eq('id', entry.id);
         entry.name = name;
+        entry.colour = categoryColours[name] || null;
       }
     }
   } else {
@@ -8546,13 +8549,13 @@ async function renderDashboard() {
       try {
         const videos = await fetchRecentVideos(channels.slice(0, 10));
         if (videos.length) {
-          const catColors = {Tech:'#3b82f6',Technology:'#3b82f6',Gaming:'#8b5cf6',Music:'#ec4899',Comedy:'#f59e0b',Sports:'#10b981',Education:'#06b6d4','Science & Education':'#06b6d4',News:'#64748b','News & Politics':'#64748b',Film:'#f97316','Film & TV':'#f97316',Food:'#84cc16','Food & Cooking':'#84cc16',Travel:'#0ea5e9',Health:'#10b981','Health & Fitness':'#10b981',Finance:'#f59e0b',Entertainment:'#a855f7',Lifestyle:'#ec4899'};
+
           feedScrollEl.innerHTML = videos.slice(0, 4).map(v => {
             const thumb = v.thumbnail ? `<img src="${v.thumbnail}" loading="lazy" alt="">` : `<div class="db-feed-ph"></div>`;
             const safeId = (v.id||'').replace(/"/g,'');
             const ch = channels.find(c => c.title === v.channel || c.name === v.channel);
             const cat = ch ? (chCats(ch)[0] || '') : '';
-            const tagColor = catColors[cat] || 'var(--accent)';
+            const tagColor = (window._categoryColours && window._categoryColours[cat]) || 'var(--accent)';
             const tagHtml = cat ? `<span class="db-feed-tag" style="background:${tagColor}22;color:${tagColor}">${cat}</span>` : '';
             return `<div class="db-feed-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
               <div class="db-feed-card-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
