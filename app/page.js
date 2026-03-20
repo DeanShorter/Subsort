@@ -20,7 +20,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className={styles.navRight}>
-            <a href="/signin" className={styles.navLogin}>Log in</a>
+            <a href="/signin" className={styles.navLogin}>Sign in</a>
             <a href="/signin" className={styles.navCta}>Get started</a>
           </div>
         </div>
