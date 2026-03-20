@@ -2100,158 +2100,131 @@ input[type=range]::-webkit-slider-thumb{
 /* ─── Channel Detail Panel ─── */
 .detail-overlay{
   position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
   display:none;opacity:0;transition:opacity .25s;
-  overflow-y:auto;
+  overflow-y:auto;padding:2rem 1rem;
 }
 .detail-overlay.open{display:block;opacity:1}
 .detail-panel{
-  max-width:720px;margin:2rem auto;
-  background:var(--bg-card);border:1px solid var(--border-subtle);
-  border-radius:var(--radius-xl);overflow:hidden;
+  max-width:680px;margin:0 auto;
+  background:#fff;
+  border-radius:16px;overflow:hidden;
   transform:translateY(20px);transition:transform .3s var(--transition);
+  box-shadow:0 24px 60px rgba(0,0,0,.18);
 }
 .detail-overlay.open .detail-panel{transform:translateY(0)}
 .detail-banner{
-  height:180px;position:relative;overflow:hidden;
+  height:160px;position:relative;overflow:hidden;
   background:linear-gradient(135deg,#1a1a2e,#0f3460);
 }
-.detail-banner img{width:100%;height:100%;object-fit:cover;opacity:.85}
+.detail-banner img{width:100%;height:100%;object-fit:cover}
 .detail-banner-overlay{
   position:absolute;inset:0;
-  background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.7) 100%);
+  background:linear-gradient(180deg,transparent 20%,rgba(0,0,0,.45) 100%);
 }
 .detail-close{
-  position:absolute;top:1rem;right:1rem;z-index:2;
-  width:36px;height:36px;border-radius:50%;
-  background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
-  border:none;color:#fff;cursor:pointer;
-  display:grid;place-items:center;
-  transition:background .15s;
+  position:absolute;top:.875rem;right:.875rem;z-index:2;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.9);backdrop-filter:blur(4px);
+  border:none;color:#374151;cursor:pointer;
+  display:grid;place-items:center;font-size:1.125rem;font-weight:300;
+  transition:background .15s;line-height:1;
 }
-.detail-close:hover{background:var(--accent)}
-.detail-close svg{width:18px;height:18px}
+.detail-close:hover{background:#fff}
+.detail-close svg{width:16px;height:16px}
 .detail-header{
-  display:flex;align-items:flex-end;gap:1.25rem;
-  padding:0 2rem;margin-top:-40px;position:relative;z-index:1;
+  display:flex;align-items:center;gap:1rem;
+  padding:.75rem 1.75rem 1rem;
+  border-bottom:1px solid #f1f5f9;
 }
 .detail-avatar{
-  width:80px;height:80px;border-radius:50%;
-  border:4px solid var(--bg-card);overflow:hidden;
-  background:var(--bg-surface-raised);flex-shrink:0;
+  width:72px;height:72px;border-radius:50%;
+  border:3px solid #fff;overflow:hidden;
+  background:#e2e8f0;flex-shrink:0;
+  margin-top:-36px;box-shadow:0 2px 8px rgba(0,0,0,.12);
 }
 .detail-avatar img{width:100%;height:100%;object-fit:cover}
 .detail-avatar-placeholder{
   width:100%;height:100%;display:grid;place-items:center;
-  font-weight:700;font-size:1.5rem;color:var(--text-muted);
-  background:linear-gradient(135deg,#333,#222);
+  font-weight:700;font-size:1.375rem;color:#64748b;
+  background:linear-gradient(135deg,#e2e8f0,#cbd5e1);
 }
-.detail-title-area{padding-bottom:.5rem;min-width:0;flex:1}
-.detail-name{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.detail-custom-url{font-size:.8125rem;color:var(--text-muted)}
-.detail-header-actions{
-  display:flex;gap:.375rem;flex-shrink:0;padding-bottom:.5rem;
+.detail-title-area{min-width:0;flex:1}
+.detail-name{font-size:1.125rem;font-weight:700;color:#0f172a;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detail-custom-url{font-size:.8125rem;color:#94a3b8;margin-top:.1rem}
+.detail-header-actions{display:flex;gap:.5rem;flex-shrink:0}
+.detail-header-actions .btn-fav-star{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.45rem 1rem;border-radius:20px;
+  font:500 .8125rem/1 var(--font-body);cursor:pointer;
+  border:1.5px solid #e2e8f0;background:#fff;color:#64748b;
+  transition:all .15s;white-space:nowrap;
 }
-.detail-header-actions button,.detail-header-actions a{
-  display:inline-flex;align-items:center;gap:.3rem;
-  padding:.4rem .75rem;border-radius:var(--radius-sm);
-  font:500 .6875rem/1 var(--font-body);cursor:pointer;
-  transition:all .15s;text-decoration:none;white-space:nowrap;
-  background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);
-}
-.detail-header-actions button:hover,.detail-header-actions a:hover{
-  background:var(--bg-surface-raised);color:var(--text-primary);border-color:#444;
-}
-.detail-header-actions button svg,.detail-header-actions a svg{width:12px;height:12px}
-.detail-header-actions .btn-header-yt{
-  background:var(--accent);border-color:var(--accent);color:#fff;
-}
-.detail-header-actions .btn-fav-star{transition:all .15s}
-.detail-header-actions .btn-fav-star svg{width:13px!important;height:13px!important;transition:fill .15s,stroke .15s}
+.detail-header-actions .btn-fav-star svg{width:14px;height:14px;transition:fill .15s,stroke .15s}
 .detail-header-actions .btn-fav-star.starred{
-  background:rgba(251,191,36,.12)!important;border-color:rgba(251,191,36,.4)!important;color:#fbbf24!important;
+  border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.08);color:#f59e0b;
 }
-.detail-header-actions .btn-fav-star.starred svg{fill:#fbbf24;stroke:#fbbf24}
-.ch-fav-dot{
-  width:7px;height:7px;border-radius:50%;background:#fbbf24;
-  flex-shrink:0;margin-left:auto;
+.detail-header-actions .btn-fav-star.starred svg{fill:#f59e0b;stroke:#f59e0b}
+.detail-header-actions .btn-header-yt{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.45rem 1rem;border-radius:20px;
+  font:500 .8125rem/1 var(--font-body);cursor:pointer;
+  background:var(--accent);border:none;color:#fff;
+  text-decoration:none;white-space:nowrap;transition:opacity .15s;
 }
-.detail-header-actions .btn-header-yt:hover{background:var(--accent-hover)}
-.detail-header-actions .btn-header-yt:active{background:var(--accent-pressed)}
+.detail-header-actions .btn-header-yt svg{width:13px;height:13px}
+.detail-header-actions .btn-header-yt:hover{opacity:.88}
+.ch-fav-dot{width:7px;height:7px;border-radius:50%;background:#fbbf24;flex-shrink:0;margin-left:auto}
 
-.detail-body{padding:1.5rem 2rem 2rem}
+.detail-body{padding:0 1.75rem 1.75rem}
 
 /* Stats row */
 .detail-stats{
-  display:flex;gap:1.5rem;flex-wrap:wrap;
-  padding:1rem 0;margin-bottom:1.25rem;
-  border-bottom:1px solid var(--border-subtle);
+  display:flex;gap:2rem;flex-wrap:wrap;
+  padding:1.25rem 0;
+  border-bottom:1px solid #f1f5f9;
+  margin-bottom:0;
 }
-.detail-stat{display:flex;flex-direction:column;gap:.125rem}
-.detail-stat .stat-value{font-size:1.125rem;font-weight:700;color:var(--text-primary)}
-.detail-stat .stat-label{font-size:.6875rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
+.detail-stat{display:flex;flex-direction:column;gap:.2rem}
+.detail-stat .stat-value{font-size:1.25rem;font-weight:800;color:#0f172a;letter-spacing:-.02em}
+.detail-stat .stat-label{font-size:.6rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em}
 
-/* Info grid */
-.detail-info-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:1rem;
-  margin-bottom:1.25rem;
+/* Meta rows (category / subcategory) */
+.detail-meta-row{
+  display:flex;align-items:center;gap:1.25rem;
+  padding:.875rem 0;border-bottom:1px solid #f1f5f9;
 }
-.detail-info-item{
-  background:var(--bg-surface);border-radius:var(--radius-sm);
-  padding:.875rem 1rem;
+.detail-meta-label{
+  font-size:.625rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:#94a3b8;min-width:88px;flex-shrink:0;
 }
-.detail-info-item .info-label{
-  font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
-  color:var(--text-muted);margin-bottom:.375rem;
-}
-.detail-info-item .info-value{font-size:.8125rem;color:var(--text-primary);line-height:1.4}
-
-/* Topics / Tags */
-.detail-tags{display:flex;flex-wrap:wrap;gap:.375rem;margin-bottom:1.25rem}
+.detail-meta-value{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .detail-tag{
-  font-size:.6875rem;font-weight:500;
-  padding:.3rem .625rem;border-radius:20px;
-  background:var(--accent-soft);color:var(--accent);
+  font-size:.75rem;font-weight:500;
+  padding:.25rem .7rem;border-radius:20px;
 }
-.detail-tag.topic{background:rgba(56,233,177,.12);color:#38E9B1}
+.detail-edit-link{
+  font-size:.75rem;color:#94a3b8;background:none;border:none;cursor:pointer;
+  padding:0;font-family:var(--font-body);transition:color .15s;
+}
+.detail-edit-link:hover{color:#0f172a}
 
-/* Description */
-.detail-description{
-  font-size:.8125rem;color:var(--text-secondary);line-height:1.65;
-  margin-bottom:.5rem;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-  overflow:hidden;
-  transition:all .3s;
+/* Notes */
+.detail-notes-section{padding:.875rem 0;border-bottom:1px solid #f1f5f9}
+.detail-notes-input{
+  width:100%;min-height:100px;margin-top:.5rem;
+  background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;
+  padding:.75rem;font:400 .8125rem/1.55 var(--font-body);
+  color:#0f172a;resize:vertical;box-sizing:border-box;
+  transition:border-color .15s;outline:none;
 }
-.detail-description.expanded{-webkit-line-clamp:unset;display:block;max-height:none}
-.detail-notes{
-  font-size:.8125rem;color:var(--text-secondary);line-height:1.55;
-  margin-bottom:1rem;padding:.75rem 1rem;
-  background:var(--bg-surface);border-left:3px solid var(--accent);
-  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
-  white-space:pre-wrap;word-break:break-word;
-}
-.detail-notes-label{
-  display:block;font-size:.625rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.06em;color:var(--text-muted);margin-bottom:.375rem;
-}
-.btn-expand{
-  background:none;border:none;color:var(--accent);
-  font:500 .75rem/1 var(--font-body);cursor:pointer;
-  padding:.25rem 0;margin-bottom:1.25rem;display:inline-block;
-}
-.btn-expand:hover{text-decoration:underline}
+.detail-notes-input:focus{border-color:var(--accent)}
+.detail-notes-input::placeholder{color:#cbd5e1}
 
 /* Keywords */
 .detail-keywords{
-  font-size:.75rem;color:var(--text-muted);line-height:1.5;
-  margin-bottom:1.25rem;word-break:break-word;
-}
-
-/* Actions */
-.detail-actions{
-  display:flex;flex-wrap:wrap;gap:.5rem;
-  padding-top:1.25rem;border-top:1px solid var(--border-subtle);
+  padding:.875rem 0;
+  font-size:.8125rem;color:#64748b;line-height:1.55;word-break:break-word;
 }
 .detail-actions button,.detail-actions a{
   display:inline-flex;align-items:center;gap:.375rem;
@@ -3931,23 +3904,22 @@ input[type=range]::-webkit-slider-thumb{
     <div class="detail-body">
       <div class="detail-stats" id="detailStats"></div>
 
-      <div id="detailTopics" class="detail-tags"></div>
-
-      <div id="detailNotes" class="detail-notes" style="display:none"></div>
-
-      <div class="detail-category-row" id="detailSubcatRow" style="display:none">
-        <label>Subcategory</label>
-        <select id="detailSubcategorySelect" onchange="updateDetailSubcategory(this.value)"></select>
+      <div class="detail-meta-row" id="detailCategoryRow">
+        <span class="detail-meta-label">Category</span>
+        <div class="detail-meta-value" id="detailTopics"></div>
       </div>
 
-      <div class="detail-description" id="detailDescription"></div>
-      <button class="btn-expand" id="detailExpandBtn" onclick="toggleDetailDesc()" style="display:none">Show more</button>
+      <div class="detail-meta-row" id="detailSubcatRow" style="display:none">
+        <span class="detail-meta-label">Subcategory</span>
+        <div class="detail-meta-value" id="detailSubcatValue"></div>
+      </div>
 
-      <div class="detail-info-grid" id="detailInfoGrid"></div>
+      <div class="detail-notes-section">
+        <div class="detail-meta-label">Notes</div>
+        <textarea class="detail-notes-input" id="detailNotesInput" placeholder="Add a note about this channel…" onblur="saveDetailNotes(this.value)"></textarea>
+      </div>
 
       <div class="detail-keywords" id="detailKeywords"></div>
-
-      <div class="detail-actions" id="detailActions"></div>
     </div>
   </div>
 </div>
@@ -5420,60 +5392,44 @@ function openDetail(id) {
   const currentCats = chCats(ch);
   populateDetailSubcategory(currentCats, ch.subcategory);
 
-  // Tags (display only — editing is via the Edit Category button)
+  // Category meta row
   const topicsEl = document.getElementById('detailTopics');
-  let topicsHtml = currentCats.map(c => {
-    const col = (window._categoryColours && window._categoryColours[c]) || '#38E9B1';
-    return `<span class="detail-tag" style="background:${col}22;color:${col}">${c}</span>`;
-  }).join('');
-  if (ch.subcategory) topicsHtml += `<span class="detail-tag" style="background:rgba(56,233,177,.12);color:#38E9B1">${ch.subcategory}</span>`;
-  if (!topicsHtml) {
-    topicsHtml = '<span style="font-size:.75rem;color:var(--text-muted)">No category assigned</span>';
-  }
-  topicsEl.innerHTML = topicsHtml;
-
-  // User notes (display under tags)
-  const notesDisplay = document.getElementById('detailNotes');
-  if (ch.notes) {
-    notesDisplay.innerHTML = `<span class="detail-notes-label">📝 Your Notes</span>${ch.notes.replace(/</g,'&lt;').replace(/>/g,'&gt;')}`;
-    notesDisplay.style.display = '';
+  if (currentCats.length) {
+    topicsEl.innerHTML = currentCats.map(c => {
+      const col = (window._categoryColours && window._categoryColours[c]) || '#38E9B1';
+      return `<span class="detail-tag" style="background:${col}22;color:${col}">${c}</span>`;
+    }).join('') + `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`;
   } else {
-    notesDisplay.style.display = 'none';
+    topicsEl.innerHTML = `<span style="font-size:.8125rem;color:#94a3b8">None</span><button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`;
   }
 
-  // Description
-  const descEl = document.getElementById('detailDescription');
-  const expandBtn = document.getElementById('detailExpandBtn');
-  descEl.textContent = ch.description || 'No description available.';
-  descEl.classList.remove('expanded');
-  expandBtn.textContent = 'Show more';
-  // Show button only if text is actually truncated (check after render)
-  requestAnimationFrame(() => {
-    expandBtn.style.display = (ch.description && descEl.scrollHeight > descEl.clientHeight + 2) ? '' : 'none';
-  });
-
-  // Info grid — always show with available data
-  const infoItems = [];
-  infoItems.push({l:'Subscribed since', v: ch.subscribedAt ? new Date(ch.subscribedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) : '—'});
-  infoItems.push({l:'Channel created', v: ch.channelCreatedAt ? new Date(ch.channelCreatedAt).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) : '—'});
-  infoItems.push({l:'Lifetime views', v: ch.viewCount ? ch.viewCount.toLocaleString() : '—'});
-  if (ch.videoCount && ch.subscriberCount) {
-    const ratio = (ch.subscriberCount / ch.videoCount).toFixed(0);
-    infoItems.push({l:'Subs per video', v: formatCount(parseInt(ratio))});
+  // Subcategory meta row
+  const subcatRow = document.getElementById('detailSubcatRow');
+  const subcatValEl = document.getElementById('detailSubcatValue');
+  const catsArr = Array.isArray(currentCats) ? currentCats : [];
+  const allSubs = [];
+  for (const cat of catsArr) { for (const s of (subcategories[cat]||[])) { if (!allSubs.includes(s)) allSubs.push(s); } }
+  if (allSubs.length) {
+    subcatRow.style.display = '';
+    const subCol = currentCats[0] ? ((window._categoryColours && window._categoryColours[currentCats[0]]) || '#38E9B1') : '#38E9B1';
+    subcatValEl.innerHTML = ch.subcategory
+      ? `<span class="detail-tag" style="background:${subCol}22;color:${subCol}">${ch.subcategory}</span>`
+      : `<span style="font-size:.8125rem;color:#94a3b8">None</span>`;
+    subcatValEl.innerHTML += `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`;
+  } else {
+    subcatRow.style.display = 'none';
   }
-  document.getElementById('detailInfoGrid').innerHTML = infoItems.map(i =>
-    `<div class="detail-info-item"><div class="info-label">${i.l}</div><div class="info-value">${i.v}</div></div>`
-  ).join('');
+
+  // Notes inline textarea
+  document.getElementById('detailNotesInput').value = ch.notes || '';
 
   // Keywords
   const kwEl = document.getElementById('detailKeywords');
-  if (ch.keywords) {
-    kwEl.innerHTML = `<strong style="color:var(--text-secondary)">Keywords:</strong> ${ch.keywords}`;
-  } else {
-    kwEl.innerHTML = '<span style="font-size:.75rem;color:var(--text-muted)">No keywords available — hit Sync to fetch latest data</span>';
-  }
+  kwEl.innerHTML = ch.keywords
+    ? `<strong style="color:#374151">Keywords:</strong> ${ch.keywords}`
+    : '';
 
-  // Header action buttons (top-right next to channel name)
+  // Header action buttons
   document.getElementById('detailHeaderActions').innerHTML = `
     <button id="detailFavBtn" class="btn-fav-star ${ch.favourited ? 'starred' : ''}" onclick="toggleFavourite('${ch.id}')" title="${ch.favourited ? 'Remove from favourites' : 'Add to favourites'}">
       <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="${ch.favourited ? 'currentColor' : 'none'}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -5483,18 +5439,7 @@ function openDetail(id) {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       YouTube
     </a>
-    <button onclick="editChannel('${ch.id}');closeDetail()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/></svg>
-      Edit Category
-    </button>
-    <button onclick="openNotesModal('${ch.id}')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Notes
-    </button>
   `;
-
-  // Bottom actions (keep empty or minimal)
-  document.getElementById('detailActions').innerHTML = '';
 
   document.getElementById('detailOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -5540,25 +5485,15 @@ function toggleDetailDesc() {
   btn.textContent = el.classList.contains('expanded') ? 'Show less' : 'Show more';
 }
 
-function populateDetailSubcategory(cats, currentSub) {
-  const row = document.getElementById('detailSubcatRow');
-  const sel = document.getElementById('detailSubcategorySelect');
-  const catsArr = Array.isArray(cats) ? cats : [cats].filter(Boolean);
-  const allSubs = [];
-  for (const cat of catsArr) {
-    for (const sub of (subcategories[cat] || [])) {
-      if (!allSubs.includes(sub)) allSubs.push(sub);
-    }
-  }
-  if (!allSubs.length) {
-    row.style.display = 'none';
-    sel.innerHTML = '';
-    return;
-  }
-  row.style.display = '';
-  sel.innerHTML = '<option value="">None</option>' + allSubs.map(s =>
-    `<option value="${s}" ${currentSub===s?'selected':''}>${s}</option>`
-  ).join('');
+function populateDetailSubcategory() { /* handled inline in openDetail */ }
+
+async function saveDetailNotes(value) {
+  const ch = channels.find(c => c.id === detailChannelId);
+  if (!ch) return;
+  if (ch.notes === value) return;
+  ch.notes = value;
+  save();
+  if (sb && sbUser) dbSaveChannelNotes(ch.channelId, ch.notes);
 }
 
 async function updateDetailSubcategory(value) {
@@ -5568,11 +5503,15 @@ async function updateDetailSubcategory(value) {
   save();
   renderAll();
   if (sb && sbUser) await dbSetChannelSubcategory(ch.id, value, ch.categories);
-  // Refresh tags display
-  const topicsEl = document.getElementById('detailTopics');
-  let html = chCats(ch).map(c => `<span class="detail-tag">${c}</span>`).join('');
-  if (value) html += `<span class="detail-tag" style="background:rgba(56,233,177,.12);color:#38E9B1">${value}</span>`;
-  topicsEl.innerHTML = html || '<span style="font-size:.75rem;color:var(--text-muted)">No category assigned</span>';
+  // Refresh subcategory pill
+  const subcatValEl = document.getElementById('detailSubcatValue');
+  if (subcatValEl) {
+    const col = chCats(ch)[0] ? ((window._categoryColours && window._categoryColours[chCats(ch)[0]]) || '#38E9B1') : '#38E9B1';
+    subcatValEl.innerHTML = value
+      ? `<span class="detail-tag" style="background:${col}22;color:${col}">${value}</span>`
+      : `<span style="font-size:.8125rem;color:#94a3b8">None</span>`;
+    subcatValEl.innerHTML += `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`;
+  }
   toast('Subcategory updated');
 }
 
