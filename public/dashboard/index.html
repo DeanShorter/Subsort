@@ -1826,6 +1826,8 @@ input[type=range]::-webkit-slider-thumb{
 .db-body-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .db-col-left,.db-col-right{display:flex;flex-direction:column;gap:1rem}
 .db-col-left .db-card,.db-col-right .db-card{margin-bottom:0}
+.db-fav-empty{font-size:.8125rem;color:var(--text-muted);margin-bottom:.625rem}
+.db-fav-feed-ctas{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.25rem;margin-top:.625rem}
 
 /* Trending channels card */
 .home-trending{
@@ -2706,12 +2708,12 @@ input[type=range]::-webkit-slider-thumb{
           <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">View full feed →</button>
         </div>
 
-        <!-- Favourite Channels -->
+        <!-- Recently Uploaded by Favourite Channels -->
         <div class="db-card">
           <div class="db-card-hd">
-            <span class="db-card-label">Favourite Channels</span>
+            <span class="db-card-label">Recently Uploaded by your Favourite Channels</span>
           </div>
-          <div class="db-fav-grid" id="dbFavChannels">
+          <div id="dbFavFeed">
             <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
           </div>
         </div>
@@ -8392,7 +8394,7 @@ async function renderDashboard() {
     });
     const fs = document.getElementById('dbFeedScroll');
     if (fs) fs.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Sync your YouTube account to see your feed.</p>';
-    const fv = document.getElementById('dbFavChannels');
+    const fv = document.getElementById('dbFavFeed');
     if (fv) fv.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Sync to see your top channels.</p>';
     return;
   }
@@ -8528,30 +8530,47 @@ async function renderDashboard() {
     }
   }
 
-  // --- Favourite Channels ---
-  const favEl = document.getElementById('dbFavChannels');
-  if (favEl) {
-    if (!accessToken) {
-      favEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Connect YouTube to see your top channels.</p>';
+  // --- Recently Uploaded by Favourite Channels ---
+  const favFeedEl = document.getElementById('dbFavFeed');
+  if (favFeedEl) {
+    const favChannels = channels.filter(c => c.favourited);
+    if (!favChannels.length) {
+      favFeedEl.innerHTML = `
+        <p class="db-fav-empty">You haven't added any channels to your favourites list yet.</p>
+        <button class="db-link-btn" onclick="showView('channels')">Add channels to your favourites list →</button>`;
+    } else if (!accessToken) {
+      favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Connect YouTube to see recent uploads.</p>';
     } else {
       try {
-        const topChs = [...channels].sort((a,b) => (b.subscriberCount||0) - (a.subscriberCount||0)).slice(0, 3);
-        const favVideos = await fetchRecentVideos(topChs);
+        const catColors = {Tech:'#3b82f6',Technology:'#3b82f6',Gaming:'#8b5cf6',Music:'#ec4899',Comedy:'#f59e0b',Sports:'#10b981',Education:'#06b6d4','Science & Education':'#06b6d4',News:'#64748b','News & Politics':'#64748b',Film:'#f97316','Film & TV':'#f97316',Food:'#84cc16','Food & Cooking':'#84cc16',Travel:'#0ea5e9',Health:'#10b981','Health & Fitness':'#10b981',Finance:'#f59e0b',Entertainment:'#a855f7',Lifestyle:'#ec4899'};
+        const favVideos = await fetchRecentVideos(favChannels.slice(0, 10));
         if (favVideos.length) {
-          favEl.innerHTML = favVideos.slice(0, 2).map(v => {
-            const thumb = v.thumbnail ? `<img src="${v.thumbnail}" loading="lazy" alt="">` : `<div class="db-feed-ph"></div>`;
-            const safeId = (v.id||'').replace(/"/g,'');
-            return `<div class="db-fav-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
-              <div class="db-fav-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
-              <div class="db-fav-title">${v.title}</div>
-              <div class="db-fav-meta">${v.channel} · ${timeAgo(v.publishedAt)}</div>
+          favFeedEl.innerHTML = `
+            <div class="db-feed-scroll">${favVideos.slice(0, 4).map(v => {
+              const thumb = v.thumbnail ? `<img src="${v.thumbnail}" loading="lazy" alt="">` : `<div class="db-feed-ph"></div>`;
+              const safeId = (v.id||'').replace(/"/g,'');
+              const ch = channels.find(c => c.title === v.channel || c.name === v.channel);
+              const cat = ch ? (chCats(ch)[0] || '') : '';
+              const tagColor = catColors[cat] || 'var(--accent)';
+              const tagHtml = cat ? `<span class="db-feed-tag" style="background:${tagColor}22;color:${tagColor}">${cat}</span>` : '';
+              return `<div class="db-feed-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
+                <div class="db-feed-card-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
+                <div class="db-feed-card-title">${v.title}</div>
+                <div class="db-feed-card-meta">${v.channel} · ${timeAgo(v.publishedAt)}</div>
+                ${tagHtml}
+              </div>`;
+            }).join('')}</div>
+            <div class="db-fav-feed-ctas">
+              <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">See more →</button>
+              <button class="db-link-btn db-link-bottom" onclick="showView('channels')">Add more channels to your favourites list →</button>
             </div>`;
-          }).join('');
         } else {
-          favEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">No recent videos.</p>';
+          favFeedEl.innerHTML = `
+            <p style="color:var(--text-muted);font-size:.8125rem;margin-bottom:.625rem">No recent uploads from your favourite channels.</p>
+            <button class="db-link-btn" onclick="showView('channels')">Add more channels to your favourites list →</button>`;
         }
       } catch(e) {
-        favEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Could not load.</p>';
+        favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Could not load.</p>';
       }
     }
   }
