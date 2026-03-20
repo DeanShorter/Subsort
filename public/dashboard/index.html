@@ -4520,8 +4520,10 @@ function save() {
 function renderCategories() {
   const track = document.getElementById('categoriesTrack');
   const allCount = channels.length;
+  const favCount = channels.filter(c => c.favourited).length;
   const cats = [
     {name:'All', key:'all', count: allCount},
+    {name:'⭐ Favourites', key:'__favs__', count: favCount},
     ...categories.map(c => ({name:c, key:c, count: channels.filter(ch => chHasCat(ch, c)).length}))
   ];
 
@@ -4551,7 +4553,7 @@ function renderSubcategories() {
   const track = document.getElementById('subcategoriesTrack');
 
   // Only show when a real category is selected
-  if (activeCategory === 'all' || activeCategory === '__uncat__') {
+  if (activeCategory === 'all' || activeCategory === '__uncat__' || activeCategory === '__favs__') {
     strip.style.display = 'none';
     return;
   }
@@ -4965,7 +4967,7 @@ function renderChannels() {
 
   // Show discover button only when a real category is selected
   const discoverBtn = document.getElementById('btnDiscover');
-  discoverBtn.style.display = (activeCategory !== 'all' && activeCategory !== '__uncat__') ? '' : 'none';
+  discoverBtn.style.display = (activeCategory !== 'all' && activeCategory !== '__uncat__' && activeCategory !== '__favs__') ? '' : 'none';
 
   // Pre-compute dead channel set for health filters
   const deadMap = new Map();
@@ -4988,6 +4990,7 @@ function renderChannels() {
   // Category chip filter
   if (activeCategory !== 'all') {
     if (activeCategory === '__uncat__') filtered = filtered.filter(c => chIsUncategorised(c));
+    else if (activeCategory === '__favs__') filtered = filtered.filter(c => c.favourited);
     else filtered = filtered.filter(c => chHasCat(c, activeCategory));
   }
 
