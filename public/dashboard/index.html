@@ -2136,12 +2136,14 @@ input[type=range]::-webkit-slider-thumb{
   display:flex;align-items:center;gap:1rem;
   padding:.75rem 1.75rem 1rem;
   border-bottom:1px solid #f1f5f9;
+  position:relative;z-index:2;
 }
 .detail-avatar{
   width:72px;height:72px;border-radius:50%;
   border:3px solid #fff;overflow:hidden;
   background:#e2e8f0;flex-shrink:0;
   margin-top:-36px;box-shadow:0 2px 8px rgba(0,0,0,.12);
+  position:relative;z-index:2;
 }
 .detail-avatar img{width:100%;height:100%;object-fit:cover}
 .detail-avatar-placeholder{
@@ -2204,10 +2206,12 @@ input[type=range]::-webkit-slider-thumb{
   padding:.25rem .7rem;border-radius:20px;
 }
 .detail-edit-link{
-  font-size:.75rem;color:#94a3b8;background:none;border:none;cursor:pointer;
-  padding:0;font-family:var(--font-body);transition:color .15s;
+  font-size:.6875rem;font-weight:500;color:#64748b;
+  background:#f1f5f9;border:1px solid #e2e8f0;border-radius:20px;
+  cursor:pointer;padding:.2rem .6rem;font-family:var(--font-body);
+  transition:background .15s,color .15s;white-space:nowrap;
 }
-.detail-edit-link:hover{color:#0f172a}
+.detail-edit-link:hover{background:#e2e8f0;color:#0f172a}
 
 /* Notes */
 .detail-notes-section{padding:.875rem 0;border-bottom:1px solid #f1f5f9}
@@ -5382,8 +5386,9 @@ function openDetail(id) {
   if (ch.subscriberCount && !ch.hiddenSubscriberCount) stats.push({v: formatCount(ch.subscriberCount), l: 'Subscribers'});
   if (ch.videoCount) stats.push({v: formatCount(ch.videoCount), l: 'Videos'});
   if (ch.viewCount) stats.push({v: formatCount(ch.viewCount), l: 'Total views'});
-  if (ch.subscribedAt) stats.push({v: new Date(ch.subscribedAt).toLocaleDateString(), l: 'Subscribed'});
-  if (ch.channelCreatedAt) stats.push({v: new Date(ch.channelCreatedAt).toLocaleDateString(), l: 'Channel created'});
+  const fmtDate = d => new Date(d).toLocaleDateString('en-GB', {day:'2-digit',month:'long',year:'numeric'});
+  if (ch.subscribedAt) stats.push({v: fmtDate(ch.subscribedAt), l: 'Subscribed'});
+  if (ch.channelCreatedAt) stats.push({v: fmtDate(ch.channelCreatedAt), l: 'Channel created'});
   document.getElementById('detailStats').innerHTML = stats.map(s =>
     `<div class="detail-stat"><span class="stat-value">${s.v}</span><span class="stat-label">${s.l}</span></div>`
   ).join('');
@@ -5400,7 +5405,7 @@ function openDetail(id) {
       return `<span class="detail-tag" style="background:${col}22;color:${col}">${c}</span>`;
     }).join('') + `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`;
   } else {
-    topicsEl.innerHTML = `<span style="font-size:.8125rem;color:#94a3b8">None</span><button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`;
+    topicsEl.innerHTML = `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Add</button>`;
   }
 
   // Subcategory meta row
@@ -5413,9 +5418,8 @@ function openDetail(id) {
     subcatRow.style.display = '';
     const subCol = currentCats[0] ? ((window._categoryColours && window._categoryColours[currentCats[0]]) || '#38E9B1') : '#38E9B1';
     subcatValEl.innerHTML = ch.subcategory
-      ? `<span class="detail-tag" style="background:${subCol}22;color:${subCol}">${ch.subcategory}</span>`
-      : `<span style="font-size:.8125rem;color:#94a3b8">None</span>`;
-    subcatValEl.innerHTML += `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`;
+      ? `<span class="detail-tag" style="background:${subCol}22;color:${subCol}">${ch.subcategory}</span><button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`
+      : `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Add</button>`;
   } else {
     subcatRow.style.display = 'none';
   }
@@ -5425,9 +5429,7 @@ function openDetail(id) {
 
   // Keywords
   const kwEl = document.getElementById('detailKeywords');
-  kwEl.innerHTML = ch.keywords
-    ? `<strong style="color:#374151">Keywords:</strong> ${ch.keywords}`
-    : '';
+  kwEl.innerHTML = `<strong style="color:#374151">Keywords:</strong> ${ch.keywords || '<span style="color:#94a3b8">None</span>'}`;
 
   // Header action buttons
   document.getElementById('detailHeaderActions').innerHTML = `
@@ -5508,9 +5510,8 @@ async function updateDetailSubcategory(value) {
   if (subcatValEl) {
     const col = chCats(ch)[0] ? ((window._categoryColours && window._categoryColours[chCats(ch)[0]]) || '#38E9B1') : '#38E9B1';
     subcatValEl.innerHTML = value
-      ? `<span class="detail-tag" style="background:${col}22;color:${col}">${value}</span>`
-      : `<span style="font-size:.8125rem;color:#94a3b8">None</span>`;
-    subcatValEl.innerHTML += `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`;
+      ? `<span class="detail-tag" style="background:${col}22;color:${col}">${value}</span><button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Edit</button>`
+      : `<button class="detail-edit-link" onclick="editChannel('${ch.id}');closeDetail()">+ Add</button>`;
   }
   toast('Subcategory updated');
 }
