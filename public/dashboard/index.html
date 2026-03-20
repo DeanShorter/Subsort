@@ -2328,8 +2328,10 @@ input[type=range]::-webkit-slider-thumb{
 .main-layout{padding:0!important}
 
 /* ─── Channels Page Header ─── */
-.chan-header{display:none;flex-direction:column;gap:.875rem;padding:1.5rem 1.5rem .5rem;flex-shrink:0}
+.chan-header{display:none;flex-direction:column;gap:.875rem;padding:1.5rem 1.5rem .5rem;flex-shrink:0;overflow:hidden;max-height:200px;opacity:1;transition:max-height .25s ease,opacity .2s ease,padding .25s ease,margin .25s ease}
 .chan-header.show{display:flex}
+.chan-scrolled .chan-header.show{max-height:0;opacity:0;padding-top:0;padding-bottom:0;margin:0}
+.chan-scrolled .categories-section{border-bottom:1px solid var(--border-subtle);box-shadow:0 4px 16px rgba(0,0,0,.25)}
 .chan-hdr-top{display:flex;align-items:baseline;gap:.625rem}
 .chan-page-title{font-size:1.75rem;font-weight:700;color:var(--text-primary)}
 .chan-page-count{font-size:.8125rem;color:var(--text-muted)}
@@ -8008,6 +8010,9 @@ function showView(view) {
   const onboarding = document.getElementById('onboardingEmpty');
   const promoBanner = document.getElementById('promoBanner');
 
+  // Remove channels scroll class when leaving
+  document.getElementById('appContent')?.classList.remove('chan-scrolled');
+
   // Hide everything first
   catsSection.style.display = 'none';
   mainLayout.style.display = 'none';
@@ -8086,7 +8091,14 @@ function showView(view) {
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = 'none';
         renderSubcategories();
-        requestAnimationFrame(() => {});
+        // Set up scroll-to-hide header behaviour (like feeds page)
+        const chanArea = document.getElementById('channelsArea');
+        if (chanArea && !chanArea._chanScrollBound) {
+          chanArea._chanScrollBound = true;
+          chanArea.addEventListener('scroll', function() {
+            document.getElementById('appContent')?.classList.toggle('chan-scrolled', chanArea.scrollTop > 50);
+          });
+        }
       } else {
         mainLayout.style.display = 'none';
         document.getElementById('navChannels')?.classList.add('active');
