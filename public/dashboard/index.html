@@ -389,7 +389,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 }
 
 /* ─── Channel Grid ─── */
-.channels-area{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.channels-area{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
 .channels-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-shrink:0}
 .channels-toolbar .results-count{font-size:.8125rem;color:var(--text-muted)}
 .channels-toolbar .results-count strong{color:var(--text-primary);font-weight:600}
@@ -1979,14 +1979,13 @@ input[type=range]::-webkit-slider-thumb{
   .main-layout{overflow:visible!important;flex:none!important;padding:1rem!important}
   .channels-area{overflow:visible!important;flex:none!important;min-height:unset!important}
   #channelGrid{overflow:visible!important;flex:none!important;padding:.75rem 0 2rem!important}
-  .chan-pages{display:none!important}
-  .chan-view-toggle{display:none!important}
+.chan-view-toggle{display:none!important}
   /* Chan header: tighten on mobile */
   .chan-header{padding:1rem 1rem .375rem!important}
   .chan-hdr-controls{flex-wrap:wrap}
   .chan-topbar{padding:.625rem 1rem!important}
   .chan-cat-row{padding:.625rem 1rem!important}
-  .chan-bulk-row{flex-wrap:wrap}
+  .chan-bulk-row{margin-left:0}
 }
 
 /* ─── Ad Placements ─── */
@@ -2331,7 +2330,7 @@ input[type=range]::-webkit-slider-thumb{
 /* ─── Channels Page Header ─── */
 .chan-header{display:none;flex-direction:column;gap:.875rem;padding:1.5rem 1.5rem .5rem;flex-shrink:0}
 .chan-header.show{display:flex}
-.chan-hdr-top{display:flex;align-items:center;justify-content:space-between}
+.chan-hdr-top{display:flex;align-items:baseline;gap:.625rem}
 .chan-page-title{font-size:1.75rem;font-weight:700;color:var(--text-primary)}
 .chan-page-count{font-size:.8125rem;color:var(--text-muted)}
 .chan-hdr-controls{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
@@ -2350,12 +2349,12 @@ input[type=range]::-webkit-slider-thumb{
 .chan-icon-btn svg{width:15px;height:15px}
 
 /* ─── Channel Status Bar (uncat banner + bulk actions) ─── */
-.chan-topbar{display:none;flex-direction:column;gap:.5rem;padding:.75rem 1.5rem;flex-shrink:0}
+.chan-topbar{display:none;flex-direction:row;align-items:center;gap:.75rem;flex-wrap:wrap;padding:.75rem 1.5rem;flex-shrink:0}
 .chan-topbar.show{display:flex}
-.chan-uncat-row{display:flex;align-items:center;justify-content:space-between;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);border-radius:var(--radius-md);padding:.625rem 1rem}
+.chan-uncat-row{display:flex;align-items:center;gap:.5rem}
 .chan-uncat-text{display:flex;align-items:center;gap:.5rem;font-size:.8125rem;color:var(--text-secondary)}
 .chan-uncat-text svg{width:14px;height:14px;color:#4ade80;flex-shrink:0}
-.chan-bulk-row{display:flex;align-items:center;gap:.5rem}
+.chan-bulk-row{display:flex;align-items:center;gap:.5rem;margin-left:auto}
 .bb-act:disabled{background:var(--bg-surface);color:var(--text-muted);cursor:default;opacity:.5}
 
 /* ─── Category Pills ─── */
@@ -3319,7 +3318,7 @@ input[type=range]::-webkit-slider-thumb{
   <div class="chan-hdr-controls">
     <label class="chan-ctrl">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
-      Sort:&nbsp;<select id="sortSelect" onchange="chanPage=1;renderChannels()">
+      Sort:&nbsp;<select id="sortSelect" onchange="renderChannels()">
         <option value="name">Name</option>
         <option value="subscribers">Subscribers</option>
         <option value="videoCount">Video count</option>
@@ -3328,7 +3327,7 @@ input[type=range]::-webkit-slider-thumb{
     </label>
     <div class="chan-search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" id="searchInput" placeholder="Search channels…" oninput="chanPage=1;renderChannels()">
+      <input type="text" id="searchInput" placeholder="Search channels…" oninput="renderChannels()">
     </div>
     <div class="chan-view-toggle" id="chanViewToggle">
       <button class="chan-view-btn" id="viewBtnList" onclick="setChanView('list')" title="List view">
@@ -3573,7 +3572,6 @@ input[type=range]::-webkit-slider-thumb{
     </div>
 
     <div class="channel-grid" id="channelGrid"></div>
-    <div class="chan-pages" id="chanPagination"></div>
   </main>
 </div>
 
@@ -5065,11 +5063,7 @@ function renderChannels() {
     resultsEl.innerHTML = `Showing <strong>${filtered.length}</strong> of ${channels.length} channels`;
   }
 
-  // Pagination — disabled on mobile (scroll instead)
-  const isMobile = window.innerWidth <= 640;
-  const totalPages = isMobile ? 1 : Math.ceil(filtered.length / CHAN_PAGE_SIZE);
-  if (!isMobile && chanPage > totalPages) chanPage = Math.max(1, totalPages);
-  const paged = isMobile ? filtered : filtered.slice((chanPage - 1) * CHAN_PAGE_SIZE, chanPage * CHAN_PAGE_SIZE);
+  const paged = filtered;
 
   // Apply view class and sync toggle button states
   grid.classList.remove('view-list','view-hybrid','view-grid');
@@ -5157,24 +5151,6 @@ function renderChannels() {
     </div>`;
   }).join('');
 
-  // Render pagination
-  const pageEl = document.getElementById('chanPagination');
-  if (pageEl) {
-    if (totalPages <= 1) {
-      pageEl.innerHTML = '';
-    } else {
-      let pgHtml = `<button class="pg-btn" onclick="setPage(${chanPage-1})" ${chanPage===1?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>`;
-      for (let p = 1; p <= totalPages; p++) {
-        if (totalPages <= 7 || p === 1 || p === totalPages || (p >= chanPage-1 && p <= chanPage+1)) {
-          pgHtml += `<button class="pg-btn ${p===chanPage?'active':''}" onclick="setPage(${p})">${p}</button>`;
-        } else if (p === chanPage-2 || p === chanPage+2) {
-          pgHtml += `<span style="color:var(--text-muted);display:grid;place-items:center;min-width:32px;font-size:.875rem">…</span>`;
-        }
-      }
-      pgHtml += `<button class="pg-btn" onclick="setPage(${chanPage+1})" ${chanPage===totalPages?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>`;
-      pageEl.innerHTML = pgHtml;
-    }
-  }
 }
 
 function formatCount(n) {
@@ -8110,7 +8086,7 @@ function showView(view) {
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = 'none';
         renderSubcategories();
-        requestAnimationFrame(updateChanPageSize);
+        requestAnimationFrame(() => {});
       } else {
         mainLayout.style.display = 'none';
         document.getElementById('navChannels')?.classList.add('active');
@@ -8575,7 +8551,6 @@ initApp();
 
 // Recalculate cards-per-page when window is resized
 window.addEventListener('resize', () => {
-  if (document.getElementById('channelGrid')?.offsetHeight) updateChanPageSize();
 });
 </script>
 </body>
