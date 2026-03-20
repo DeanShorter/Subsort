@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
       description: post.excerpt || post.title,
       type: 'article',
       publishedTime: post.date,
-      authors: ['Subsort'],
+      authors: ['Freedly'],
     },
   };
 }
@@ -36,8 +36,8 @@ export default async function BlogPost({ params }) {
     headline: post.title,
     datePublished: post.date,
     dateModified: post.date,
-    author: { '@type': 'Organization', name: 'Subsort' },
-    publisher: { '@type': 'Organization', name: 'Subsort' },
+    author: { '@type': 'Organization', name: 'Freedly' },
+    publisher: { '@type': 'Organization', name: 'Freedly' },
     description: post.excerpt || post.title,
   };
 
@@ -80,8 +80,8 @@ export default async function BlogPost({ params }) {
         <footer className={styles.footer}>
           <div className={styles.cta}>
             <h3>Ready to organise your YouTube?</h3>
-            <p>Subsort is free, runs in your browser, and doesn't store your data on any server.</p>
-            <Link href="/dashboard" className={styles.ctaBtn}>Launch Subsort</Link>
+            <p>Freedly is free, runs in your browser, and doesn't store your data on any server.</p>
+            <Link href="/dashboard" className={styles.ctaBtn}>Launch Freedly</Link>
           </div>
         </footer>
       </article>

@@ -1,6 +1,6 @@
 import { getAllSlugs } from '@/lib/blog';
 
-const BASE_URL = 'https://subsort.vercel.app';
+const BASE_URL = 'https://usefreedly.com';
 
 export default function sitemap() {
   const blogSlugs = getAllSlugs();

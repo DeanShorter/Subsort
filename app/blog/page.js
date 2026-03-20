@@ -52,7 +52,7 @@ export default function BlogIndex() {
 
         {posts.length === 0 && (
           <div className={styles.empty}>
-            <p>Articles coming soon. We're working on guides to help you get the most out of Subsort.</p>
+            <p>Articles coming soon. We're working on guides to help you get the most out of Freedly.</p>
           </div>
         )}
       </div>

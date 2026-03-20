@@ -7,6 +7,6 @@ export default function robots() {
         disallow: '/dashboard/',  // Don't index the SPA
       },
     ],
-    sitemap: 'https://subsort.vercel.app/sitemap.xml',
+    sitemap: 'https://usefreedly.com/sitemap.xml',
   };
 }
