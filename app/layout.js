@@ -4,8 +4,8 @@ import Script from 'next/script';
 
 export const metadata = {
   title: {
-    default: 'Freedly — Organise & Discover the Best YouTube Channels',
-    template: '%s | Freedly',
+    default: 'Freedly',
+    template: 'Freedly - %s',
   },
   description: 'Automatically categorise your YouTube subscriptions, discover quality creators, and keep your feed clean. Free forever.',
   keywords: ['YouTube', 'subscriptions', 'organise', 'categorise', 'channels', 'discover', 'feed management'],

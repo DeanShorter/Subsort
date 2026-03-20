@@ -1,10 +1,13 @@
 'use client'
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from '../components/ThemeProvider';
 import styles from './settings.module.css';
 
 export default function Settings() {
   const { theme, setTheme, mounted } = useTheme();
+
+  useEffect(() => { document.title = 'Freedly - Settings'; }, []);
 
   // Don't show active state until client has read localStorage — prevents
   // hydration mismatch that causes buttons to appear locked

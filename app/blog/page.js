@@ -3,7 +3,7 @@ import { getAllPosts } from '@/lib/blog';
 import styles from './blog.module.css';
 
 export const metadata = {
-  title: 'Blog',
+  title: 'Blog',  // → "Freedly - Blog"
   description: 'Tips, guides, and insights on organising your YouTube subscriptions, discovering quality creators, and getting more from your feed.',
 };
 
