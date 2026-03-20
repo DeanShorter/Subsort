@@ -27,7 +27,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroLeft}>
-          <h1 className={styles.heroTitle}>Freely organise<br />your YouTube.</h1>
+          <h1 className={styles.heroTitle}>Your feed.<br />Your rules.</h1>
           <p className={styles.heroDesc}>
             Freedly turns your subscriptions into clean,<br />
             custom feeds – so you see what matters,<br />
