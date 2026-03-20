@@ -1,5 +1,6 @@
 import './globals.css';
 import { ThemeProvider } from './components/ThemeProvider';
+import Script from 'next/script';
 
 export const metadata = {
   title: {
@@ -35,6 +36,8 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-FKDXKKM2R0" strategy="afterInteractive" />
+        <Script id="gtag-init" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-FKDXKKM2R0');` }} />
       </body>
     </html>
   );
