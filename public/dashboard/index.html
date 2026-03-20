@@ -1808,12 +1808,24 @@ input[type=range]::-webkit-slider-thumb{
 .db-profile-btn{width:100%;padding:.5rem;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:.8125rem;cursor:pointer;font-family:var(--font-body);text-align:center}
 .db-profile-btn:hover{background:var(--bg-surface-raised);color:#fff}
 
-/* Right sidebar */
-.home-sidebar{
-  width:280px;flex-shrink:0;overflow-y:auto;
-  border-left:1px solid var(--border-subtle);
-  padding:1.25rem;display:flex;flex-direction:column;gap:1.25rem;
-}
+/* Right sidebar (kept for reference, hidden in new layout) */
+.home-sidebar{display:none}
+
+/* ─── Dashboard redesign ─── */
+.db-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.db-topbar-title{font-family:var(--font-display);font-size:1.5rem;font-weight:800;letter-spacing:-.03em}
+.db-topbar-right{display:flex;align-items:center;gap:.75rem}
+.db-topbar-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:grid;place-items:center;border:none;cursor:pointer;color:#fff;overflow:hidden;flex-shrink:0;padding:0}
+.db-topbar-avatar img{width:100%;height:100%;object-fit:cover}
+.db-health-strip{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.db-health-stats{display:flex;gap:1.5rem;margin-left:auto}
+.db-hstat{display:flex;flex-direction:column;align-items:center;min-width:52px}
+.db-hstat-num{font-size:1.25rem;font-weight:800;font-family:var(--font-display);color:var(--text-primary)}
+.db-hstat-label{font-size:.6875rem;color:var(--text-muted);text-align:center}
+.db-strip-link{margin-left:.25rem;white-space:nowrap}
+.db-body-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.db-col-left,.db-col-right{display:flex;flex-direction:column;gap:1rem}
+.db-col-left .db-card,.db-col-right .db-card{margin-bottom:0}
 
 /* Trending channels card */
 .home-trending{
@@ -1913,6 +1925,8 @@ input[type=range]::-webkit-slider-thumb{
   .home-sidebar{display:none}
 }
 @media(max-width:768px){
+  .db-body-grid{grid-template-columns:1fr}
+  .db-health-stats{margin-left:0;gap:1rem}
   .home-nav-secondary{display:none}
   .home-main{padding:1rem}
 }
@@ -2634,102 +2648,120 @@ input[type=range]::-webkit-slider-thumb{
 
   <!-- Dashboard Content (shown when on dashboard tab) -->
   <main class="home-main" id="homeDashMain">
-    <div class="db-header">
-      <h1 class="db-title">Dashboard</h1>
-      <p class="db-subtitle">Manage your subscriptions and keep your feed healthy.</p>
-    </div>
 
-    <div class="db-card db-today-card">
-      <div class="db-card-hd">
-        <span class="db-card-label">Today's Feed</span>
-        <button class="db-link-btn" onclick="setHomeNav('feeds')">View full feed →</button>
-      </div>
-      <div class="db-feed-scroll" id="dbFeedScroll">
-        <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
-      </div>
-      <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">View full feed →</button>
-    </div>
-
-    <div class="db-grid-2">
-      <div class="db-card">
-        <div class="db-card-hd"><span class="db-card-label">⚡ Quick Actions</span></div>
-        <div id="dbQA1"></div>
-      </div>
-      <div class="db-card">
-        <div class="db-card-hd"><span class="db-card-label">📋 Channel Health</span></div>
-        <div id="dbQA2"></div>
+    <!-- Top bar -->
+    <div class="db-topbar">
+      <h1 class="db-topbar-title">Dashboard</h1>
+      <div class="db-topbar-right">
+        <button class="db-topbar-avatar" id="dbTopAvatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </button>
       </div>
     </div>
 
-    <div class="db-grid-2">
-      <div class="db-card">
-        <div class="db-card-hd"><span class="db-card-label">📊 Category Snapshot</span></div>
-        <div id="dbCatSnap"></div>
+    <!-- Feed Health Strip -->
+    <div class="db-card db-health-strip">
+      <div class="db-health-ring-wrap">
+        <svg viewBox="0 0 80 80" width="80" height="80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border-subtle)" stroke-width="6"/>
+          <circle id="dbScoreArc" cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 1s ease"/>
+        </svg>
+        <div class="db-health-score-inner"><span id="dbScoreValue">—</span></div>
       </div>
-      <div class="db-card">
-        <div class="db-card-hd">
-          <span class="db-card-label">🔥 From Your Favourite Channels</span>
+      <div class="db-health-detail">
+        <div id="dbScoreGrade" class="db-score-grade">Feed Health</div>
+        <div id="dbScoreFactors" class="db-score-factors-mini"></div>
+      </div>
+      <div class="db-health-stats">
+        <div class="db-hstat">
+          <span class="db-hstat-num" id="dbCatPct">—</span>
+          <span class="db-hstat-label">categorised</span>
         </div>
-        <div class="db-fav-grid" id="dbFavChannels">
-          <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
+        <div class="db-hstat">
+          <span class="db-hstat-num" id="dbInactiveCount">—</span>
+          <span class="db-hstat-label">inactive</span>
         </div>
-        <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">View full feed →</button>
+        <div class="db-hstat">
+          <span class="db-hstat-num" id="dbUncatCount">—</span>
+          <span class="db-hstat-label">uncategorised</span>
+        </div>
       </div>
+      <button class="db-link-btn db-strip-link" onclick="showView('analytics')">Full analytics →</button>
     </div>
+
+    <!-- Body: two-column grid -->
+    <div class="db-body-grid">
+
+      <!-- Left column -->
+      <div class="db-col-left">
+
+        <!-- Today's Feed -->
+        <div class="db-card">
+          <div class="db-card-hd">
+            <span class="db-card-label">Today's Feed</span>
+            <button class="db-link-btn" onclick="setHomeNav('feeds')">View all →</button>
+          </div>
+          <div class="db-feed-scroll" id="dbFeedScroll">
+            <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
+          </div>
+        </div>
+
+        <!-- Favourite Channels -->
+        <div class="db-card">
+          <div class="db-card-hd">
+            <span class="db-card-label">Favourite Channels</span>
+          </div>
+          <div class="db-fav-grid" id="dbFavChannels">
+            <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right column -->
+      <div class="db-col-right">
+
+        <!-- Category Snapshot -->
+        <div class="db-card">
+          <div class="db-card-hd">
+            <span class="db-card-label">Category Snapshot</span>
+          </div>
+          <div id="dbCatSnap"></div>
+        </div>
+
+        <!-- Channel Health -->
+        <div class="db-card">
+          <div class="db-card-hd"><span class="db-card-label">Channel Health</span></div>
+          <div id="dbQA2"></div>
+          <div class="db-attention-actions" style="margin-top:.625rem">
+            <button class="db-action-pill" onclick="showView('analytics')">🧹 Clean up</button>
+            <button class="db-action-pill" onclick="openModal('autoCatConfirmModal')">Auto-sort</button>
+          </div>
+        </div>
+
+        <!-- Needs Attention -->
+        <div class="db-card">
+          <div class="db-card-hd"><span class="db-card-label">⚠ Needs Attention</span></div>
+          <div id="dbAttention"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Hidden legacy elements so JS still writes to them without errors -->
+    <div style="display:none">
+      <div id="dbQA1"></div>
+      <div id="dbProfileAvatar"></div>
+      <div id="dbProfileCount"></div>
+      <div id="dbProfileCats"></div>
+    </div>
+
   </main>
 
   <!-- Feeds Content (shown when on feeds tab) -->
   <main class="home-main" id="homeMain" style="display:none"></main>
 
-  <!-- Right Sidebar -->
-  <aside class="home-sidebar">
-    <!-- Feed Health -->
-    <div class="db-card db-health-card">
-      <div class="db-card-hd">
-        <span class="db-card-label">Feed Health</span>
-      </div>
-      <div class="db-health-body">
-        <div class="db-health-ring-wrap">
-          <svg viewBox="0 0 80 80" width="80" height="80">
-            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border-subtle)" stroke-width="6"/>
-            <circle id="dbScoreArc" cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 1s ease"/>
-          </svg>
-          <div class="db-health-score-inner"><span id="dbScoreValue">—</span></div>
-        </div>
-        <div class="db-health-detail">
-          <div id="dbScoreGrade" class="db-score-grade">—</div>
-          <div id="dbScoreFactors" class="db-score-factors-mini"></div>
-        </div>
-      </div>
-      <button class="db-link-btn" onclick="showView('analytics')">View full analytics →</button>
-    </div>
-
-    <!-- Needs Attention -->
-    <div class="db-card">
-      <div class="db-card-hd"><span class="db-card-label">⚠ Needs Attention</span></div>
-      <div id="dbAttention"></div>
-      <div class="db-attention-actions">
-        <button class="db-action-pill" onclick="showView('analytics')">🧹 Cleanmop</button>
-        <button class="db-action-pill" onclick="openModal('autoCatConfirmModal')">Rebalance</button>
-      </div>
-    </div>
-
-    <!-- Your Profile -->
-    <div class="db-card db-profile-card">
-      <div class="db-card-hd"><span class="db-card-label">Your Profile</span></div>
-      <div class="db-profile-row">
-        <div class="db-profile-avatar" id="dbProfileAvatar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="26" height="26"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        </div>
-        <div>
-          <div class="db-profile-name">The Curious <span style="color:var(--accent)">Technologist</span></div>
-          <div class="db-profile-meta">Follows <strong id="dbProfileCount">0</strong> channels</div>
-        </div>
-      </div>
-      <div class="db-profile-cats">Top categories: <span id="dbProfileCats">—</span></div>
-      <button class="db-profile-btn" onclick="toast('Share feature coming soon!')">Share My Profile →</button>
-    </div>
-  </aside>
 </div>
 
 <!-- ═══ Analytics Page ═══ -->
@@ -8340,11 +8372,17 @@ async function renderDashboard() {
   const scoreValEl = document.getElementById('dbScoreValue');
   if (scoreValEl) scoreValEl.textContent = channels.length ? score : '—';
   const gradeEl = document.getElementById('dbScoreGrade');
-  if (gradeEl) gradeEl.textContent = channels.length ? (score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Fair' : 'Needs Work') : 'No data yet';
+  if (gradeEl) gradeEl.textContent = channels.length ? (score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Fair' : 'Needs Work') : 'Feed Health';
   const factorsEl = document.getElementById('dbScoreFactors');
   if (factorsEl) factorsEl.innerHTML = factors.slice(0, 4).map(f =>
     `<div class="db-factor ${f.c}">${f.c==='good'?'✓':f.c==='warn'?'⚠':'✗'} ${f.t}</div>`
   ).join('');
+
+  // Topbar avatar
+  const topAvatarEl = document.getElementById('dbTopAvatar');
+  if (topAvatarEl && sbUser?.user_metadata?.avatar_url) {
+    topAvatarEl.innerHTML = `<img src="${sbUser.user_metadata.avatar_url}" alt="">`;
+  }
 
   if (!channels.length) {
     // Empty state for all dynamic sections
@@ -8361,6 +8399,16 @@ async function renderDashboard() {
 
   const deadChannels = findDeadChannels();
   const uncatCount = channels.filter(ch => chIsUncategorised(ch)).length;
+
+  // Health strip stats
+  const categorised = channels.filter(c => !chIsUncategorised(c)).length;
+  const catPctVal = Math.round((categorised / channels.length) * 100);
+  const catPctEl = document.getElementById('dbCatPct');
+  if (catPctEl) catPctEl.textContent = channels.length ? `${catPctVal}%` : '—';
+  const inactiveEl = document.getElementById('dbInactiveCount');
+  if (inactiveEl) inactiveEl.textContent = channels.length ? deadChannels.length : '—';
+  const uncatEl = document.getElementById('dbUncatCount');
+  if (uncatEl) uncatEl.textContent = channels.length ? uncatCount : '—';
 
   // --- Quick Actions 1 ---
   const qa1 = document.getElementById('dbQA1');
