@@ -2463,6 +2463,36 @@ input[type=range]::-webkit-slider-thumb{
 .channel-card:nth-child(7){animation-delay:.35s}
 .channel-card:nth-child(8){animation-delay:.4s}
 .channel-card:nth-child(9){animation-delay:.45s}
+/* ─── Sync Overlay ─── */
+#syncOverlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;flex-direction:column;gap:1.25rem;
+}
+#syncOverlay.visible{display:flex}
+#syncOverlay .sync-spinner{
+  width:44px;height:44px;border-radius:50%;
+  border:3px solid rgba(56,233,177,.2);
+  border-top-color:#38E9B1;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+#syncOverlay .sync-msg{
+  color:#fff;font-size:1rem;font-weight:600;letter-spacing:-.01em;
+  font-family:var(--font-body);
+}
+#syncOverlay .sync-sub{
+  color:rgba(255,255,255,.5);font-size:.8125rem;
+  font-family:var(--font-body);margin-top:-.5rem;
+}
+#syncOverlay .sync-bar-track{
+  width:220px;height:3px;background:rgba(255,255,255,.12);border-radius:2px;
+}
+#syncOverlay .sync-bar-fill{
+  height:100%;border-radius:2px;background:#38E9B1;
+  transition:width .4s ease;width:0%;
+}
+
 [data-theme="light"]{
   --bg-primary:#f5f5f0;
   --bg-secondary:#efefea;
@@ -3886,6 +3916,14 @@ input[type=range]::-webkit-slider-thumb{
       <div class="detail-actions" id="detailActions"></div>
     </div>
   </div>
+</div>
+
+<!-- ═══ Sync Overlay ═══ -->
+<div id="syncOverlay">
+  <div class="sync-spinner"></div>
+  <div class="sync-msg" id="syncOverlayMsg">Fetching your channels…</div>
+  <div class="sync-sub" id="syncOverlaySub">This may take a moment</div>
+  <div class="sync-bar-track"><div class="sync-bar-fill" id="syncOverlayBar"></div></div>
 </div>
 
 <script>
@@ -6215,6 +6253,8 @@ function updateSyncProgress(label, detail, pct) {
   // Show the progress card if it exists
   const progressCard = document.getElementById('ytProgressCard');
   if (progressCard) progressCard.style.display = '';
+  // Mirror into the full-page overlay
+  showSyncOverlay(label, detail, pct);
 }
 
 function resetImportPage() {
@@ -6224,11 +6264,24 @@ function resetImportPage() {
   if (progress) progress.style.display = 'none';
 }
 
+function showSyncOverlay(msg, sub, pct) {
+  const overlay = document.getElementById('syncOverlay');
+  if (!overlay) return;
+  overlay.classList.add('visible');
+  document.getElementById('syncOverlayMsg').textContent = msg || 'Fetching your channels…';
+  document.getElementById('syncOverlaySub').textContent = sub || 'This may take a moment';
+  document.getElementById('syncOverlayBar').style.width = (pct || 0) + '%';
+}
+function hideSyncOverlay() {
+  document.getElementById('syncOverlay')?.classList.remove('visible');
+}
+
 async function fetchAllSubscriptions() {
   const connectCard = document.getElementById('ytConnectCard');
   const progressCard = document.getElementById('ytProgressCard');
   if (connectCard) connectCard.style.display = 'none';
   if (progressCard) progressCard.style.display = '';
+  showSyncOverlay('Fetching your channels…', 'Loading your channel list', 10);
   updateSyncProgress('Fetching subscriptions…', 'Loading your channel list', 10);
 
   let nextPage = '';
@@ -6345,6 +6398,7 @@ async function fetchAllSubscriptions() {
 
     // After a moment, show app shell and switch to home view
     setTimeout(() => {
+      hideSyncOverlay();
       if (channels.length) {
         document.getElementById('appShell').style.display = '';
         document.getElementById('onboardingEmpty').style.display = 'none';
@@ -6362,6 +6416,7 @@ async function fetchAllSubscriptions() {
     cacheClearPrefix(CACHE_KEYS.feedVideos);
 
   } catch (e) {
+    hideSyncOverlay();
     toast('Sync failed: ' + e.message);
     resetImportPage();
     save();
@@ -7936,6 +7991,7 @@ function showView(view) {
       homeView.classList.add('active');
       document.getElementById('navHome').classList.add('active');
       document.querySelector('.home-nav-item[data-nav="home"]')?.classList.add('active');
+      document.title = 'Freedly - Dashboard';
       setHomeNav('home');
       break;
     case 'analytics':
@@ -7943,16 +7999,19 @@ function showView(view) {
       analyticsPage.classList.add('active');
       document.getElementById('navAnalytics').classList.add('active');
       document.querySelector('.home-nav-item[data-nav="analytics"]')?.classList.add('active');
+      document.title = 'Freedly - Analytics';
       renderAnalytics();
       break;
     case 'marketplace':
       marketplacePage.classList.add('active');
       document.getElementById('navMarketplace').classList.add('active');
       document.querySelector('.home-nav-item[data-nav="marketplace"]')?.classList.add('active');
+      document.title = 'Freedly - Premium';
       break;
     case 'settings':
       document.getElementById('settingsPage').classList.add('active');
       document.querySelector('.home-nav-item[data-nav="settings"]')?.classList.add('active');
+      document.title = 'Freedly - Settings';
       // Calculate storage used
       try {
         let totalBytes = 0;
@@ -7966,6 +8025,7 @@ function showView(view) {
     case 'blog':
       document.getElementById('blogPage').classList.add('active');
       document.querySelector('.home-nav-item[data-nav="blog"]')?.classList.add('active');
+      document.title = 'Freedly - Blog';
       renderBlog();
       break;
 
@@ -7976,6 +8036,7 @@ function showView(view) {
       document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
       document.querySelector('.home-nav-item[data-nav="channels"]')?.classList.add('active');
       document.getElementById('navChannels')?.classList.add('active');
+      document.title = 'Freedly - Channels';
       if (channels.length) {
         document.getElementById('chanHeader')?.classList.add('show');
         document.getElementById('chanTopbar')?.classList.add('show');
