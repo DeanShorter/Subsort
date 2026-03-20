@@ -2550,7 +2550,7 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <span class="home-nav-item-label">Blog</span>
     </button>
-    <button class="home-nav-item home-nav-premium-cta" data-nav="marketplace" onclick="showView('marketplace')">
+    <button class="home-nav-item home-nav-premium-cta" data-nav="marketplace" onclick="startCheckout()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       <span class="home-nav-item-label">Premium</span>
     </button>
@@ -3201,7 +3201,7 @@ input[type=range]::-webkit-slider-thumb{
             <div class="settings-row-label">Subscription Plan</div>
             <div class="settings-row-desc">You're on the <strong>Free</strong> plan.</div>
           </div>
-          <button class="settings-btn settings-btn-accent" onclick="showView('marketplace')">Upgrade</button>
+          <button class="settings-btn settings-btn-accent" onclick="startCheckout()">Upgrade to Premium</button>
         </div>
       </div>
     </div>
@@ -3868,9 +3868,9 @@ input[type=range]::-webkit-slider-thumb{
     <p class="subtitle" id="upgradePromptMessage" style="margin-top:.75rem;line-height:1.6"></p>
     <div class="modal-footer" style="justify-content:center;margin-top:1.5rem;gap:.75rem">
       <button class="btn-cancel" onclick="closeModal('upgradePromptModal')">Maybe later</button>
-      <button class="pricing-btn pricing-btn-primary" style="width:auto;padding:.75rem 1.5rem" onclick="closeModal('upgradePromptModal');showView('marketplace')">
+      <button class="pricing-btn pricing-btn-primary" style="width:auto;padding:.75rem 1.5rem" onclick="startCheckout()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="display:inline;vertical-align:middle;margin-right:.375rem"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        View Premium Plans
+        Get Premium
       </button>
     </div>
   </div>
@@ -4021,6 +4021,19 @@ async function signOutSupabase() {
    ═══════════════════════════════════════════ */
 async function loadUserData() {
   if (!sb || !sbUser) return;
+
+  // Fetch user tier from profiles table
+  try {
+    const { data: profile } = await sb
+      .from('profiles')
+      .select('tier')
+      .eq('id', sbUser.id)
+      .single();
+    if (profile?.tier) {
+      userTier = profile.tier;
+      localStorage.setItem('subsort_user_tier', userTier);
+    }
+  } catch(e) { /* non-fatal — falls back to localStorage value */ }
 
   // Snapshot local state before any overwrite — used for migration
   const localCategories = [...categories];
@@ -6243,6 +6256,24 @@ function showUpgradePrompt(title, message) {
   openModal('upgradePromptModal');
 }
 
+async function startCheckout() {
+  if (!sbUser) { signInWithGoogle(); return; }
+  closeModal('upgradePromptModal');
+  toast('Redirecting to checkout…');
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: sbUser.id, email: sbUser.email }),
+    });
+    const data = await res.json();
+    if (data.error) { toast(data.error); return; }
+    window.location.href = data.url;
+  } catch(e) {
+    toast('Could not start checkout — please try again');
+  }
+}
+
 function updateSyncProgress(label, detail, pct) {
   const labelEl = document.getElementById('syncLabel');
   const detailEl = document.getElementById('syncDetail');
@@ -7192,6 +7223,25 @@ function _navHoverLeave() { this.classList.add('collapsed'); }
 // Restore sidebar mode on load
 (function() {
   setSidebarMode(settings.sidebarMode || 'expanded');
+})();
+
+// Handle return from Stripe Checkout
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('upgraded') === 'true') {
+    history.replaceState({}, '', '/dashboard');
+    // Wait for auth to resolve, then refresh tier from DB
+    setTimeout(async () => {
+      if (sb && sbUser) {
+        const { data: profile } = await sb.from('profiles').select('tier').eq('id', sbUser.id).single();
+        if (profile?.tier === 'premium') {
+          userTier = 'premium';
+          localStorage.setItem('subsort_user_tier', 'premium');
+          toast('Welcome to Premium! 🎉');
+        }
+      }
+    }, 2000);
+  }
 })();
 
 // Theme select
