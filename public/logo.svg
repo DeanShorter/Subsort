@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 183 47" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-431.737159,-1800.973716)">
-        <g transform="matrix(1,0,0,1,-8.72614,23.461914)">
-            <text x="437.387px" y="1813.913px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;fill:white;">myf</text>
-            <text x="526.303px" y="1813.913px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;fill:rgb(56,233,177);">ee</text>
-            <text x="581.918px" y="1813.913px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;fill:white;">d</text>
-            <g transform="matrix(50,0,0,50,626.351971,1813.913169)">
+<svg width="100%" height="100%" viewBox="0 0 317 94" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-2081.980921,-2480.314961)">
+        <g transform="matrix(2.061524,0,0,2.061524,-2209.65112,-2258.52707)">
+            <text x="2080.751px" y="2335.533px" style="font-family:'Lato-Bold', 'Lato', sans-serif;font-weight:700;font-size:50px;fill:rgb(56,233,177);">fr<tspan x="2116.601px " y="2335.533px ">e</tspan>e</text>
+            <g transform="matrix(50,0,0,50,2235.575941,2335.532632)">
             </g>
-            <text x="612.46px" y="1813.913px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;fill:rgb(56,233,177);">.</text>
+            <text x="2170.001px" y="2335.533px" style="font-family:'Lato-Regular', 'Lato', sans-serif;font-size:50px;fill:white;">dly</text>
         </g>
     </g>
 </svg>
