@@ -8585,7 +8585,6 @@ async function renderDashboard() {
       favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Connect YouTube to see recent uploads.</p>';
     } else {
       try {
-        const catColors = {Tech:'#3b82f6',Technology:'#3b82f6',Gaming:'#8b5cf6',Music:'#ec4899',Comedy:'#f59e0b',Sports:'#10b981',Education:'#06b6d4','Science & Education':'#06b6d4',News:'#64748b','News & Politics':'#64748b',Film:'#f97316','Film & TV':'#f97316',Food:'#84cc16','Food & Cooking':'#84cc16',Travel:'#0ea5e9',Health:'#10b981','Health & Fitness':'#10b981',Finance:'#f59e0b',Entertainment:'#a855f7',Lifestyle:'#ec4899'};
         const favVideos = await fetchRecentVideos(favChannels.slice(0, 10));
         if (favVideos.length) {
           favFeedEl.innerHTML = `
@@ -8594,7 +8593,7 @@ async function renderDashboard() {
               const safeId = (v.id||'').replace(/"/g,'');
               const ch = channels.find(c => c.title === v.channel || c.name === v.channel);
               const cat = ch ? (chCats(ch)[0] || '') : '';
-              const tagColor = catColors[cat] || 'var(--accent)';
+              const tagColor = (window._categoryColours && window._categoryColours[cat]) || 'var(--accent)';
               const tagHtml = cat ? `<span class="db-feed-tag" style="background:${tagColor}22;color:${tagColor}">${cat}</span>` : '';
               return `<div class="db-feed-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
                 <div class="db-feed-card-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
