@@ -2182,14 +2182,14 @@ input[type=range]::-webkit-slider-thumb{
 
 /* Stats row */
 .detail-stats{
-  display:flex;gap:2rem;flex-wrap:wrap;
+  display:flex;gap:0;
   padding:1.25rem 0;
   border-bottom:1px solid #f1f5f9;
   margin-bottom:0;
 }
-.detail-stat{display:flex;flex-direction:column;gap:.2rem}
-.detail-stat .stat-value{font-size:1.25rem;font-weight:800;color:#0f172a;letter-spacing:-.02em}
-.detail-stat .stat-label{font-size:.6rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em}
+.detail-stat{display:flex;flex-direction:column;gap:.2rem;flex:1;min-width:0}
+.detail-stat .stat-value{font-size:clamp(.75rem,2vw,1.25rem);font-weight:800;color:#0f172a;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detail-stat .stat-label{font-size:.6rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
 
 /* Meta rows (category / subcategory) */
 .detail-meta-row{
