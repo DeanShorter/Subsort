@@ -2631,7 +2631,7 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <div class="mobile-topbar-brand">
-      <svg viewBox="0 0 1200 360" height="22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M475 92C518 67 569 62 617 76C599 88 582 96 563 101C536 91 506 88 475 92Z" fill="white"/><path d="M604 103C646 74 711 66 771 82C752 90 736 96 717 100C679 96 642 97 604 103Z" fill="white"/><g fill="white"><path d="M287 255V113H401V142H321V171H390V200H321V255H287Z"/><path d="M429 255V161H461V175C470 164 485 158 503 158H513V190H499C474 190 461 201 461 224V255H429Z"/><path d="M620 215H531C536 237 553 249 577 249C595 249 610 243 622 231L641 253C625 269 603 278 575 278C524 278 493 247 493 208C493 169 525 138 571 138C614 138 645 167 645 208C645 211 645 214 644 219L620 215ZM531 192H609C605 172 591 159 571 159C550 159 536 172 531 192Z"/><path d="M779 215H690C695 237 712 249 736 249C754 249 769 243 781 231L800 253C784 269 762 278 734 278C683 278 652 247 652 208C652 169 684 138 730 138C773 138 804 167 804 208C804 211 804 214 803 219L779 215ZM690 192H768C764 172 750 159 730 159C709 159 695 172 690 192Z"/><path d="M893 255V242C881 265 861 278 835 278C793 278 763 249 763 208C763 167 793 138 835 138C860 138 880 150 892 172V100H925V255H893ZM845 248C871 248 892 229 892 208C892 187 871 168 845 168C819 168 798 187 798 208C798 229 819 248 845 248Z"/><path d="M1031 255V241C1019 265 1000 278 972 278C938 278 914 258 914 228C914 197 937 180 984 180H1029V177C1029 154 1015 141 987 141C968 141 948 148 932 160L919 136C941 121 968 113 992 113C1040 113 1063 136 1064 180L1064 255H1031ZM980 252C1003 252 1022 241 1029 221V210H989C962 210 950 210 950 229C950 243 962 252 980 252Z"/></g></svg>
+      <img src="/logo.svg" alt="Freedly" height="22">
     </div>
   </div>
   <!-- Mobile nav backdrop -->
@@ -5518,11 +5518,8 @@ async function toggleFavourite(id) {
 
   // Sync to Supabase
   if (sb && sbUser) {
-    try {
-      await sb.from('channels').update({ favourited: ch.favourited }).eq('id', ch.id);
-    } catch (e) {
-      console.error('Favourite sync failed:', e);
-    }
+    const { error } = await sb.from('channels').update({ favourited: ch.favourited }).eq('id', ch.id);
+    if (error) console.error('Favourite sync failed:', error.message, error);
   }
 }
 
