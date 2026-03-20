@@ -7453,14 +7453,14 @@ let feedView = localStorage.getItem('subsort_feed_view') || 'hybrid';
 let feedTypeFilter = 'all'; // 'all' | 'videos' | 'shorts'
 
 function buildFeedTabsHtml() {
-  const cats = [{name: 'All', key: 'all'}, ...categories.map(c => ({name: c, key: c}))];
+  const cats = [{name: 'All', key: 'all'}, {name: '⭐ Favourites', key: '__favs__'}, ...categories.map(c => ({name: c, key: c}))];
   let tabsHtml = cats.map(c => {
     const safe = c.key.replace(/'/g, "\\'");
     const active = activeFeedCategory === c.key ? 'active' : '';
     return `<button class="cat-tab ${active}" onclick="setFeedCategory('${safe}')">${c.name}</button>`;
   }).join('<span class="cat-tab-sep">·</span>');
 
-  const subs = activeFeedCategory !== 'all' ? (subcategories[activeFeedCategory] || []) : [];
+  const subs = (activeFeedCategory !== 'all' && activeFeedCategory !== '__favs__') ? (subcategories[activeFeedCategory] || []) : [];
   let subHtml = '';
   if (subs.length) {
     subHtml = `<div class="feed-subcats-row">${subs.map(s => {
@@ -7490,7 +7490,7 @@ function buildFeedTabsHtml() {
       </div>
       <select id="feedSortSelect" class="feed-sort-select" onchange="applyFeedSort(this.value)">
         <option value="date" ${feedSortKey==='date'?'selected':''}>Latest</option>
-        ${activeFeedCategory === 'all'
+        ${(activeFeedCategory === 'all' || activeFeedCategory === '__favs__')
           ? `<option value="channel" ${feedSortKey==='channel'?'selected':''}>Channel</option>`
           : `<option value="subcategory" ${feedSortKey==='subcategory'?'selected':''}>Subcategory</option>`}
       </select>
@@ -7596,6 +7596,7 @@ function setFeedCategory(key) {
   activeFeedCategory = key;
   activeFeedSubcategory = null;
   if (key === 'all') loadFeedAll();
+  else if (key === '__favs__') loadFeedFavourites();
   else loadFeedCategory(key, null);
 }
 
@@ -7608,6 +7609,45 @@ function setFeedSubcategory(cat, sub) {
 /* ═══════════════════════════════════════════
    FEED: LOAD VIDEOS
    ═══════════════════════════════════════════ */
+async function loadFeedFavourites() {
+  const main = document.getElementById('homeMain');
+  main.classList.remove('feed-scrolled');
+  main.scrollTop = 0;
+
+  const favChannels = channels.filter(c => c.favourited);
+
+  if (!favChannels.length) {
+    main.innerHTML = buildFeedTabsHtml() + `
+      <p style="color:var(--text-muted);padding:.5rem 0">You haven't added any channels to your favourites list yet.</p>`;
+    initFeedCatsTrack(); return;
+  }
+
+  if (!accessToken) {
+    main.innerHTML = buildFeedTabsHtml() + `
+      <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
+    initFeedCatsTrack(); return;
+  }
+
+  main.innerHTML = buildFeedTabsHtml() + `
+    <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
+  initFeedCatsTrack();
+
+  try {
+    const videos = await fetchRecentVideos(favChannels);
+    const spinner = document.getElementById('feedLoadingSpinner');
+    if (spinner) spinner.remove();
+    const listHtml = videos.length
+      ? `<div class="home-section">${videos.map(v => renderFeedVideoRow(v, null, null)).join('')}</div>`
+      : `<p style="color:var(--text-muted);padding:.5rem 0">No recent videos from your favourite channels.</p>`;
+    main.insertAdjacentHTML('beforeend', listHtml);
+    applyFeedFilters();
+  } catch (err) {
+    const spinner = document.getElementById('feedLoadingSpinner');
+    if (spinner) spinner.remove();
+    main.insertAdjacentHTML('beforeend', `<p style="color:#f87171;padding:.5rem 0">Failed to load: ${err.message}</p>`);
+  }
+}
+
 async function loadFeedCategory(category, subcategory) {
   const main = document.getElementById('homeMain');
   main.classList.remove('feed-scrolled');
