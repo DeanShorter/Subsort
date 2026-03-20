@@ -51,65 +51,90 @@
   gap: 1rem;
 }
 
+/* ── Theme option button ── */
 .themeOption {
   flex: 1;
-  background: none;
+  background: var(--bg-surface);
   border: 2px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: .875rem;
   cursor: pointer;
   color: var(--text-primary);
   text-align: left;
-  position: relative;
-  transition: border-color .15s;
+  transition: border-color .15s, background .15s;
 }
 .themeOption:hover { border-color: var(--text-muted); }
-.themeOption.active { border-color: var(--accent); }
+.themeOption.active {
+  border-color: var(--accent);
+  background: var(--bg-surface-raised);
+}
 
-.themePreview {
+/* ── Dark preview (hardcoded dark colours) ── */
+.previewDark {
+  background: #0a0a14;
   border-radius: 6px;
   overflow: hidden;
   margin-bottom: .75rem;
   height: 72px;
   display: flex;
   flex-direction: column;
+  border: 1px solid #2a2a44;
 }
-.themePreview[data-variant="dark"] { background: #0a0a14; }
-.themePreview[data-variant="light"] { background: #f5f5f0; }
-
-.previewBar {
+.previewDarkBar {
   height: 14px;
-  border-bottom: 1px solid rgba(128,128,128,.15);
+  background: #0c0c18;
+  border-bottom: 1px solid #2a2a44;
 }
-.themePreview[data-variant="dark"] .previewBar { background: #0c0c18; }
-.themePreview[data-variant="light"] .previewBar { background: #ffffff; }
 
-.previewContent {
+/* ── Light preview (hardcoded light colours) ── */
+.previewLight {
+  background: #f5f5f0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: .75rem;
+  height: 72px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddddd6;
+}
+.previewLightBar {
+  height: 14px;
+  background: #ffffff;
+  border-bottom: 1px solid #ddddd6;
+}
+
+/* ── Preview content lines ── */
+.previewLines {
   flex: 1;
   padding: .5rem .625rem;
   display: flex;
   flex-direction: column;
   gap: .375rem;
 }
-
 .previewLine {
   height: 6px;
   width: 80%;
   border-radius: 3px;
+  background: rgba(255,255,255,.15);
 }
-.themePreview[data-variant="dark"] .previewLine { background: rgba(255,255,255,.12); }
-.themePreview[data-variant="light"] .previewLine { background: rgba(0,0,0,.1); }
+.previewLineLight {
+  height: 6px;
+  width: 80%;
+  border-radius: 3px;
+  background: rgba(0,0,0,.12);
+}
 
+/* ── Label row ── */
+.themeLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .themeLabel {
   font-size: .875rem;
   font-weight: 600;
-  display: block;
 }
-
 .activeCheck {
-  position: absolute;
-  top: .625rem;
-  right: .75rem;
   color: var(--accent);
   font-size: .875rem;
   font-weight: 700;

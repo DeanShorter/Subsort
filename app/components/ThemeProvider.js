@@ -1,14 +1,17 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const ThemeContext = createContext({ theme: 'dark', setTheme: () => {} });
+const ThemeContext = createContext({ theme: 'dark', setTheme: () => {}, mounted: false });
 
 export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState('dark');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('theme') || 'dark';
     setThemeState(stored);
+    document.documentElement.setAttribute('data-theme', stored);
+    setMounted(true);
   }, []);
 
   function setTheme(t) {
@@ -18,7 +21,7 @@ export function ThemeProvider({ children }) {
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, mounted }}>
       {children}
     </ThemeContext.Provider>
   );
