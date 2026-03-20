@@ -1739,16 +1739,16 @@ input[type=range]::-webkit-slider-thumb{
 .db-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0}
 .db-grid-2 .db-card{margin-bottom:1rem}
 /* Today's Feed */
-.db-today-card .db-feed-scroll{display:flex;gap:.75rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.25rem}
-.db-today-card .db-feed-scroll::-webkit-scrollbar{display:none}
-.db-feed-card{flex-shrink:0;width:160px;cursor:pointer}
-.db-feed-card-thumb{position:relative;width:160px;height:90px;border-radius:var(--radius-sm);overflow:hidden;background:var(--bg-surface-raised);margin-bottom:.5rem}
+.db-feed-scroll{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.db-feed-card{cursor:pointer;min-width:0}
+.db-feed-card-thumb{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius-sm);overflow:hidden;background:var(--bg-surface-raised);margin-bottom:.5rem}
 .db-feed-card-thumb img{width:100%;height:100%;object-fit:cover;transition:opacity .15s}
 .db-feed-card:hover .db-feed-card-thumb img{opacity:.85}
 .db-feed-ph{width:100%;height:100%;background:linear-gradient(135deg,#1e2030,#161820)}
 .db-feed-duration{position:absolute;bottom:.3rem;right:.3rem;background:rgba(0,0,0,.8);color:#fff;font-size:.65rem;padding:.1rem .35rem;border-radius:3px;font-weight:600}
-.db-feed-card-title{font-size:.75rem;font-weight:500;color:var(--text-primary);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.2rem}
-.db-feed-card-meta{font-size:.6875rem;color:var(--text-muted)}
+.db-feed-card-title{font-size:.75rem;font-weight:500;color:var(--text-primary);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.25rem}
+.db-feed-card-meta{font-size:.6875rem;color:var(--text-muted);margin-bottom:.3rem}
+.db-feed-tag{display:inline-block;font-size:.625rem;font-weight:600;padding:.15rem .45rem;border-radius:3px;letter-spacing:.02em}
 /* Quick Actions */
 .db-qa-row{display:flex;align-items:center;gap:.5rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .db-qa-row:last-child{border-bottom:none}
@@ -2699,11 +2699,11 @@ input[type=range]::-webkit-slider-thumb{
         <div class="db-card">
           <div class="db-card-hd">
             <span class="db-card-label">Today's Feed</span>
-            <button class="db-link-btn" onclick="setHomeNav('feeds')">View all →</button>
           </div>
           <div class="db-feed-scroll" id="dbFeedScroll">
             <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
           </div>
+          <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">View full feed →</button>
         </div>
 
         <!-- Favourite Channels -->
@@ -8504,13 +8504,19 @@ async function renderDashboard() {
       try {
         const videos = await fetchRecentVideos(channels.slice(0, 10));
         if (videos.length) {
-          feedScrollEl.innerHTML = videos.slice(0, 6).map(v => {
+          const catColors = {Tech:'#3b82f6',Technology:'#3b82f6',Gaming:'#8b5cf6',Music:'#ec4899',Comedy:'#f59e0b',Sports:'#10b981',Education:'#06b6d4','Science & Education':'#06b6d4',News:'#64748b','News & Politics':'#64748b',Film:'#f97316','Film & TV':'#f97316',Food:'#84cc16','Food & Cooking':'#84cc16',Travel:'#0ea5e9',Health:'#10b981','Health & Fitness':'#10b981',Finance:'#f59e0b',Entertainment:'#a855f7',Lifestyle:'#ec4899'};
+          feedScrollEl.innerHTML = videos.slice(0, 4).map(v => {
             const thumb = v.thumbnail ? `<img src="${v.thumbnail}" loading="lazy" alt="">` : `<div class="db-feed-ph"></div>`;
             const safeId = (v.id||'').replace(/"/g,'');
+            const ch = channels.find(c => c.title === v.channel || c.name === v.channel);
+            const cat = ch ? (chCats(ch)[0] || '') : '';
+            const tagColor = catColors[cat] || 'var(--accent)';
+            const tagHtml = cat ? `<span class="db-feed-tag" style="background:${tagColor}22;color:${tagColor}">${cat}</span>` : '';
             return `<div class="db-feed-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
               <div class="db-feed-card-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
               <div class="db-feed-card-title">${v.title}</div>
               <div class="db-feed-card-meta">${v.channel} · ${timeAgo(v.publishedAt)}</div>
+              ${tagHtml}
             </div>`;
           }).join('');
         } else {
