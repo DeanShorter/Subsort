@@ -28,7 +28,7 @@ export default function DashboardShell({ children }) {
   return (
     <AuthProvider>
       <ChannelDataProvider>
-        <div className="app-wrapper">
+        <div className="app-shell">
           <DashboardSidebar />
           <div className="app-content" id="appContent">
             {children}
