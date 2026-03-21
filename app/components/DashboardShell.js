@@ -13,14 +13,23 @@ const DASHBOARD_ROUTES = [
   '/discover',
   '/analytics',
   '/settings',
+  '/blog',
+];
+
+// Routes that show the sidebar even without auth
+const ALWAYS_SIDEBAR = [
+  '/dashboard', '/subscriptions', '/feeds', '/discover', '/analytics', '/settings',
 ];
 
 function DashboardInner({ children }) {
   const { user } = useAuth();
+  const pathname = usePathname();
+  const showSidebar = user || ALWAYS_SIDEBAR.some(r => pathname === r || pathname.startsWith(r + '/'));
+
   return (
     <ChannelDataProvider user={user}>
       <div className="app-shell">
-        <DashboardSidebar />
+        {showSidebar && <DashboardSidebar />}
         <div className="app-content" id="appContent">
           {children}
         </div>
