@@ -2405,6 +2405,8 @@ input[type=range]::-webkit-slider-thumb{
 .ch-list-row:first-child{border-top:1px solid var(--border-subtle)}
 .ch-list-row:hover{background:var(--bg-surface)}
 .ch-list-row.selected-card{background:rgba(56,233,177,.06);border-color:var(--accent)}
+.ch-list-row .card-select{position:static;display:none;flex-shrink:0;width:20px;height:20px;margin:0}
+.bulk-mode .ch-list-row .card-select{display:grid}
 .ch-list-star{flex-shrink:0;background:none;border:none;padding:0;cursor:pointer;width:20px;height:20px;display:grid;place-items:center;color:var(--text-muted);transition:color .15s}
 .ch-list-star:hover{color:#f59e0b}
 .ch-list-star.starred{color:#f59e0b}
