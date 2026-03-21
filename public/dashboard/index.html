@@ -1349,7 +1349,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ── Primary nav rail ── */
 .home-nav-primary{
-  width:448px;flex-shrink:0;
+  width:310px;flex-shrink:0;
   background:var(--bg-card);
   border-right:1px solid var(--border-subtle);
   display:flex;flex-direction:column;
@@ -1404,10 +1404,11 @@ input[type=range]::-webkit-slider-thumb{
 .hnp-section{padding:0 8px;margin-bottom:2px}
 
 /* Section label */
-.home-nav-section-label{
-  font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--text-muted);
-  padding:8px 10px 5px;white-space:nowrap;
+.home-nav-section-label,.hnp-section-label{
+  font-family:'DM Sans',sans-serif;
+  font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:1px;color:#5E5D58;
+  padding:8px 8px 6px;white-space:nowrap;display:block;
 }
 .home-nav-primary.collapsed .home-nav-section-label{display:none}
 
@@ -2396,7 +2397,7 @@ input[type=range]::-webkit-slider-thumb{
    ═══════════════════════════════════════════ */
 
 /* Slim sidebar */
-.home-nav-primary{width:155px!important}
+.home-nav-primary{width:310px!important}
 .home-nav-primary.collapsed{width:48px!important}
 @media(max-width:640px){
   .home-nav-primary,.home-nav-primary.collapsed,.home-nav-primary.nav-hover{
@@ -3827,40 +3828,11 @@ input[type=range]::-webkit-slider-thumb{
 <!-- ═══ Channels Layout Wrapper ═══ -->
 <div class="channels-layout" id="channelsLayout" style="display:none">
 
-  <!-- Category Sidebar -->
-  <div class="channels-cat-sidebar" id="channelsCatSidebar">
-    <div class="channels-cat-header">
-      <span class="channels-cat-header-title">Categories</span>
-      <div class="channels-cat-header-actions">
-        <button class="cat-sidebar-btn" onclick="openModal('addCategoryModal')">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add
-        </button>
-        <button class="cat-sidebar-btn" onclick="openManageCategories()">
-          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Categories section (existing JS populates #categoriesTrack) -->
-    <section class="categories-section" id="categoriesSection">
-      <div class="chan-cat-row">
-        <div class="chan-cat-pills" id="categoriesTrack"></div>
-      </div>
-      <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
-        <div class="sidebar-nav-label" style="padding:8px 8px 4px;display:flex;align-items:center;justify-content:space-between">
-          <span>Subcategories</span>
-          <div style="display:flex;gap:3px">
-            <button class="cat-sidebar-btn" onclick="addSubcategory()">
-              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
-            <button class="cat-sidebar-btn" onclick="openManageSubcategories()">
-              <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-          </div>
-        </div>
-        <div class="subcategories-track" id="subcategoriesTrack"></div>
-      </div>
+  <!-- Hidden elements kept for JS compatibility -->
+  <div style="display:none">
+    <section id="categoriesSection">
+      <div id="categoriesTrack"></div>
+      <div id="subcategoriesStrip"><div id="subcategoriesTrack"></div></div>
     </section>
   </div>
 
@@ -5513,7 +5485,6 @@ function renderChannels() {
   const toolbar = document.getElementById('channelsToolbar');
   const onboarding = document.getElementById('onboardingEmpty');
   const sidebar = document.getElementById('sidebar');
-  const catsSection = document.getElementById('categoriesSection');
   const mainLayout = document.querySelector('.main-layout');
   const search = (document.getElementById('searchInput').value || '').toLowerCase();
   const sort = document.getElementById('sortSelect').value;
@@ -5537,7 +5508,6 @@ function renderChannels() {
   const chanTopbar = document.getElementById('chanTopbar');
 
   if (!channels.length) {
-    catsSection.style.display = 'none';
     mainLayout.style.display = 'none';
     document.getElementById('channelsLayout').style.display = 'none';
     toolbar.style.display = 'none';
@@ -5552,7 +5522,6 @@ function renderChannels() {
   document.getElementById('analyticsPage').classList.remove('active');
   document.getElementById('marketplacePage').classList.remove('active');
   document.getElementById('channelsLayout').style.display = 'flex';
-  catsSection.style.display = '';
   mainLayout.style.display = '';
   sidebar.style.display = 'none';
 
@@ -8645,7 +8614,6 @@ function openBlogPost(slug) {
 }
 
 function showView(view) {
-  const catsSection = document.getElementById('categoriesSection');
   const mainLayout = document.querySelector('.main-layout');
   const analyticsPage = document.getElementById('analyticsPage');
   const marketplacePage = document.getElementById('marketplacePage');
@@ -8667,7 +8635,6 @@ function showView(view) {
   if (bulkMode || selectedChannels.size) clearSelection();
 
   // Hide everything first
-  catsSection.style.display = 'none';
   mainLayout.style.display = 'none';
   document.getElementById('channelsLayout').style.display = 'none';
   analyticsPage.classList.remove('active');
@@ -8741,7 +8708,6 @@ function showView(view) {
         document.getElementById('chanHeader')?.classList.add('show');
         document.getElementById('chanTopbar')?.classList.add('show');
         document.getElementById('channelsLayout').style.display = 'flex';
-        catsSection.style.display = '';
         mainLayout.style.display = '';
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = 'none';
