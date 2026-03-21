@@ -3097,6 +3097,11 @@ input[type=range]::-webkit-slider-thumb{
       <!-- CATEGORIES section -->
       <div class="hnp-section" id="sideNavCatsSection" style="display:none">
         <div class="hnp-section-label">CATEGORIES</div>
+        <button class="home-nav-item" data-nav="all" onclick="showView('channels');setCategory('all')">
+          <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+          <span class="home-nav-item-label">All Categories</span>
+          <span class="hnp-count" id="sideNavAllCount"></span>
+        </button>
         <button class="home-nav-item" data-nav="favs" onclick="showView('channels');setCategory('__favs__')">
           <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/></svg>
           <span class="home-nav-item-label">Favourites</span>
@@ -3849,9 +3854,6 @@ input[type=range]::-webkit-slider-thumb{
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="5" rx="1"/><rect x="3" y="17" width="8" height="5" rx="1"/><rect x="13" y="17" width="8" height="5" rx="1"/></svg>
       </button>
     </div>
-    <button class="chan-icon-btn" title="Filters" onclick="toggleChannelsSecNav()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-    </button>
   </div>
 </div>
 
@@ -3878,8 +3880,8 @@ input[type=range]::-webkit-slider-thumb{
           <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h10M4 7h6M6 10h2"/></svg>
           Sort: <span id="chanSortLabel">Name</span>
         </button>
-        <button class="ct-pill-btn" onclick="document.getElementById('sidebar').style.display = document.getElementById('sidebar').style.display === 'none' ? '' : 'none'; renderChannels()">
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M4.5 7h5"/></svg>
+        <button class="ct-pill-btn" onclick="toggleChannelsSecNav()">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h10M4 7h6M6 10h2"/></svg>
           Filters
         </button>
         <div class="view-toggles">
