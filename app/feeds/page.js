@@ -59,7 +59,9 @@ export default function FeedsPage() {
       }
     }).catch((err) => {
       if (!cancelled) {
-        if (err?.status === 403 || err?.message?.includes('403')) {
+        if (err?.reason === 'quotaExceeded') {
+          setQuotaExceeded(true);
+        } else if (err?.status === 403) {
           setTokenExpired(true);
         }
         setLoadingVideos(false);
@@ -214,7 +216,12 @@ export default function FeedsPage() {
 
       {/* Video list */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 2rem 2rem' }}>
-        {tokenExpired ? (
+        {quotaExceeded ? (
+          <div style={{ padding: '2rem 0', textAlign: 'center' }}>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '.5rem' }}>YouTube API quota exceeded for today.</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '.8125rem' }}>Quota resets at midnight Pacific Time. Cached videos will show if available.</p>
+          </div>
+        ) : tokenExpired ? (
           <div style={{ padding: '2rem 0', textAlign: 'center' }}>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '.75rem' }}>Your YouTube session has expired.</p>
             <button className="ct-pill-btn ct-pill-accent" onClick={signIn}>
