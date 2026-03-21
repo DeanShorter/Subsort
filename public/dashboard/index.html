@@ -1347,82 +1347,154 @@ input[type=range]::-webkit-slider-thumb{
 .home-view{display:none;flex:1;overflow:hidden;flex-direction:row}
 .home-view.active{display:flex}
 
-/* Primary nav rail */
+/* ── Primary nav rail ── */
 .home-nav-primary{
-  width:220px;flex-shrink:0;
-  background:linear-gradient(180deg,#0f1117 0%,#111520 100%);
-  border-right:1px solid rgba(255,255,255,.06);
-  display:flex;flex-direction:column;align-items:stretch;
-  padding:1rem .625rem;gap:.125rem;
-  transition:width .35s ease;
+  width:224px;flex-shrink:0;
+  background:var(--bg-card);
+  border-right:1px solid var(--border-subtle);
+  display:flex;flex-direction:column;
+  transition:width .3s cubic-bezier(.16,1,.3,1);
   overflow:hidden;
+  position:relative;z-index:10;
 }
-.home-nav-primary.collapsed{width:64px;align-items:center;padding:.75rem 0}
-.home-nav-brand{
-  display:flex;align-items:center;gap:.625rem;
-  padding:0 .625rem .75rem;margin-bottom:.25rem;
-}
-.home-nav-primary.collapsed .home-nav-brand{justify-content:center;padding:.25rem 0 .625rem}
-.home-nav-primary.collapsed .home-nav-brand-wordmark{display:none}
-.home-nav-brand-wordmark{
-  font-family:'Outfit',sans-serif;
-  font-size:18px;
-  font-weight:700;
-  letter-spacing:-0.5px;
-  color:var(--text-primary);
-  white-space:nowrap;
-  line-height:1;
+.home-nav-primary.collapsed{width:56px}
+
+/* Header */
+.hnp-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 14px 12px;
+  border-bottom:1px solid var(--border-subtle);
   flex-shrink:0;
+  min-height:50px;
 }
-.home-nav-brand-wordmark span{color:#3ECFA0;}
-.home-nav-toggle{
-  width:36px;height:36px;border-radius:var(--radius-sm);
-  background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;
-  display:grid;place-items:center;margin-bottom:.25rem;
-  transition:all .15s;align-self:flex-end;margin-right:.25rem;
+.home-nav-primary.collapsed .hnp-header{justify-content:center;padding:14px 10px 12px}
+.home-nav-brand{display:flex;align-items:center;gap:8px;flex:1;min-width:0;overflow:hidden}
+.home-nav-brand-wordmark{
+  font-family:'Outfit',sans-serif;font-size:18px;font-weight:700;
+  letter-spacing:-0.5px;color:var(--text-primary);
+  white-space:nowrap;line-height:1;flex-shrink:0;cursor:pointer;
+  transition:opacity .2s;
 }
-.home-nav-primary.collapsed .home-nav-toggle{align-self:center;margin-right:0}
-.home-nav-toggle:hover{color:#fff;background:rgba(255,255,255,.06)}
-.home-nav-toggle svg{width:16px;height:16px;transition:transform .2s}
-.home-nav-primary.collapsed .home-nav-toggle svg{transform:rotate(180deg)}
-.home-nav-item{
-  display:flex;align-items:center;gap:.625rem;
-  width:100%;height:38px;border-radius:var(--radius-sm);
-  background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;
-  transition:all .15s;justify-content:flex-start;padding:0 .75rem;
-  flex-shrink:0;position:relative;
+.home-nav-brand-wordmark span{color:#3ECFA0}
+.home-nav-brand-wordmark .hnp-wordmark-dly{color:#fff}
+.home-nav-brand-icon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:block}
+.home-nav-primary.collapsed .home-nav-brand-wordmark{opacity:0;width:0;overflow:hidden}
+
+/* Collapse toggle */
+.hnp-collapse-btn{
+  width:26px;height:26px;border-radius:7px;
+  border:1px solid var(--border-subtle);background:transparent;
+  color:var(--text-muted);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;flex-shrink:0;
 }
-.home-nav-primary.collapsed .home-nav-item{
-  width:40px;height:40px;justify-content:center;padding:0;
+.hnp-collapse-btn:hover{background:var(--bg-surface);color:var(--text-secondary);border-color:var(--border-hover)}
+.hnp-collapse-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.home-nav-primary.collapsed .hnp-collapse-btn svg{transform:rotate(180deg)}
+.home-nav-primary.collapsed .hnp-collapse-btn{margin:0 auto}
+
+/* Scrollable body */
+.hnp-body{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:none;display:flex;flex-direction:column;
+  padding:8px 0 4px;
 }
-.home-nav-item:hover{color:#fff;background:rgba(255,255,255,.06)}
-.home-nav-item.active{
-  color:#fff;
-  background:linear-gradient(90deg,rgba(56,233,177,.2),rgba(56,233,177,.05));
-}
-.home-nav-item.active::before{
-  content:\'\';position:absolute;left:0;top:20%;bottom:20%;width:3px;
-  background:var(--accent);border-radius:0 3px 3px 0;
-}
-.home-nav-primary.collapsed .home-nav-item.active::before{left:-8px}
-.home-nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.7}
-.home-nav-item:hover svg{opacity:1}
-.home-nav-item.active svg{opacity:1}
-.home-nav-item-label{
-  font-size:.8125rem;font-weight:500;white-space:nowrap;
-  transition:opacity .15s;
-}
-.home-nav-primary.collapsed .home-nav-item-label{display:none}
-.home-nav-divider{
-  border:none;border-top:1px solid rgba(255,255,255,.06);
-  width:calc(100% - 1.25rem);margin:.5rem .625rem;
-}
-.home-nav-primary.collapsed .home-nav-divider{width:28px;margin:.5rem auto}
+.hnp-body::-webkit-scrollbar{display:none}
+
+/* Section wrapper */
+.hnp-section{padding:0 8px;margin-bottom:2px}
+
+/* Section label */
 .home-nav-section-label{
-  font-size:.5625rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.1em;color:rgba(255,255,255,.25);padding:0 .75rem;margin-top:.125rem;
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text-muted);
+  padding:8px 10px 5px;white-space:nowrap;
 }
 .home-nav-primary.collapsed .home-nav-section-label{display:none}
+
+/* Nav items */
+.home-nav-item{
+  display:flex;align-items:center;gap:10px;
+  width:100%;min-height:34px;border-radius:8px;
+  background:none;border:none;color:var(--text-secondary);
+  cursor:pointer;transition:all .15s;
+  padding:0 10px;position:relative;flex-shrink:0;
+  text-align:left;font-family:var(--font-body);
+}
+.home-nav-primary.collapsed .home-nav-item{
+  justify-content:center;padding:0;width:38px;height:34px;margin:0 auto;
+}
+.home-nav-item:hover{background:rgba(255,255,255,.04);color:var(--text-primary)}
+.home-nav-item.active{background:rgba(62,207,160,.08);color:#3ECFA0}
+.home-nav-item.active::before{
+  content:'';position:absolute;left:0;top:50%;
+  transform:translateY(-50%);
+  width:3px;height:16px;
+  background:#3ECFA0;border-radius:0 2px 2px 0;
+}
+.home-nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* Label */
+.home-nav-item-label{
+  font-size:13px;font-weight:500;white-space:nowrap;
+  flex:1;overflow:hidden;text-overflow:ellipsis;
+}
+.home-nav-primary.collapsed .home-nav-item-label{display:none}
+
+/* Count badge */
+.hnp-count{
+  font-size:11px;color:var(--text-muted);
+  background:rgba(255,255,255,.06);
+  padding:1px 7px;border-radius:10px;
+  font-variant-numeric:tabular-nums;flex-shrink:0;
+}
+.home-nav-item.active .hnp-count{color:#3ECFA0;background:rgba(62,207,160,.12)}
+.home-nav-primary.collapsed .hnp-count{display:none}
+
+/* Pro badge */
+.hnp-pro-badge{
+  font-size:10px;font-weight:600;color:#3ECFA0;
+  background:rgba(62,207,160,.12);
+  padding:2px 8px;border-radius:6px;flex-shrink:0;
+}
+.home-nav-primary.collapsed .hnp-pro-badge{display:none}
+
+/* Divider */
+.home-nav-divider{
+  border:none;border-top:1px solid var(--border-subtle);
+  margin:4px 10px;flex-shrink:0;
+}
+
+/* ── Category items in side nav ── */
+.hnp-cat-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  transition:all .2s;
+}
+.home-nav-primary.collapsed .hnp-cat-dot{width:20px;height:20px;border-radius:5px}
+
+.hnp-chevron{
+  width:14px;height:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s;
+}
+.hnp-chevron svg{width:10px;height:10px;stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round}
+.hnp-cat-group.open > .home-nav-item .hnp-chevron{transform:rotate(90deg)}
+.home-nav-primary.collapsed .hnp-chevron{display:none}
+
+/* Subcategory rows */
+.hnp-sub-items{max-height:0;overflow:hidden;transition:max-height .25s ease}
+.hnp-cat-group.open .hnp-sub-items{max-height:400px}
+.home-nav-primary.collapsed .hnp-sub-items{max-height:0!important}
+.hnp-sub-item{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 10px 5px 26px;border-radius:7px;
+  cursor:pointer;transition:all .15s;
+  font-size:12px;color:var(--text-muted);font-weight:500;
+  font-family:var(--font-body);
+}
+.hnp-sub-item:hover{background:rgba(255,255,255,.04);color:var(--text-secondary)}
+.hnp-sub-item.active{color:var(--text-primary);background:rgba(255,255,255,.06)}
+.hnp-sub-count{margin-left:auto;font-size:10px;color:var(--text-muted)}
+.hnp-sub-item.active .hnp-sub-count{color:var(--text-secondary)}
 
 .home-nav-premium svg{opacity:.5}
 .home-nav-premium:hover svg{opacity:.8}
@@ -2874,11 +2946,11 @@ input[type=range]::-webkit-slider-thumb{
   border-bottom: 1px solid var(--border-subtle);
 }
 .chan-topbar-title {
-  font-family: var(--font-display);
-  font-size: 15px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.3px;
-  color: var(--text-primary);
+  color: #E8E6E0;
 }
 .chan-topbar-badge {
   font-size: 11px;
@@ -2940,76 +3012,97 @@ input[type=range]::-webkit-slider-thumb{
 
   <!-- Primary Nav Rail (always visible) -->
   <nav class="home-nav-primary" id="homePrimaryNav">
-    <div class="home-nav-brand" onclick="showView('home')" style="cursor:pointer">
-      <span class="home-nav-brand-wordmark"><span>free</span>dly</span>
-      <button class="mobile-nav-close" onclick="event.stopPropagation();closeMobileNav()" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <!-- Free features -->
-    <button class="home-nav-item active" data-nav="home" onclick="showView('home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span class="home-nav-item-label">Dashboard</span>
-    </button>
-    <button class="home-nav-item" data-nav="feeds" onclick="showView('home');setHomeNav('feeds')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-      <span class="home-nav-item-label">Feeds</span>
-    </button>
-    <button class="home-nav-item" data-nav="channels" onclick="showView('channels')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
-      <span class="home-nav-item-label">Channels</span>
-    </button>
-    <button class="home-nav-item" data-nav="analytics" onclick="showView('analytics')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-      <span class="home-nav-item-label">Analytics</span>
-    </button>
-    <button class="home-nav-item" data-nav="blog" onclick="showView('blog')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      <span class="home-nav-item-label">Blog</span>
-    </button>
-    <button class="home-nav-item home-nav-premium-cta" data-nav="marketplace" onclick="startCheckout()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 20h18M5 20V8l4 4 3-6 3 6 4-4v12"/></svg>
-      <span class="home-nav-item-label">Premium</span>
-    </button>
 
-    <!-- Utility (bottom) -->
-    <div style="flex:1"></div>
-    <hr class="home-nav-divider">
-    <button class="home-nav-item" data-nav="settings" onclick="showView('settings')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      <span class="home-nav-item-label">Settings</span>
-    </button>
-    <button class="home-nav-item" id="sideNavSync" data-nav="sync" onclick="syncYouTube()" style="display:none">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2"/></svg>
-      <span class="home-nav-item-label">Sync</span>
-    </button>
-    <button class="home-nav-item" id="sideNavSignIn" data-nav="signin" onclick="signInWithGoogle()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-      <span class="home-nav-item-label">Sign in</span>
-    </button>
-    <button class="home-nav-item" id="sideNavSignOut" data-nav="signout" onclick="signOutSupabase()" style="display:none">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      <span class="home-nav-item-label">Sign out</span>
-    </button>
-    <div class="sidebar-ctrl-wrap">
-      <button class="sidebar-ctrl-btn" onclick="toggleSidebarCtrlMenu(event)" title="Nav Controls">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-        <span class="home-nav-item-label">Nav Controls</span>
-      </button>
-      <div class="sidebar-ctrl-menu" id="sidebarCtrlMenu">
-        <div class="sidebar-ctrl-title">Sidebar control</div>
-        <div class="sidebar-ctrl-option" id="scOptExpanded" onclick="setSidebarMode('expanded')">
-          <div class="sidebar-ctrl-radio"><div class="sidebar-ctrl-radio-dot"></div></div>
-          Expanded
-        </div>
-        <div class="sidebar-ctrl-option" id="scOptCollapsed" onclick="setSidebarMode('collapsed')">
-          <div class="sidebar-ctrl-radio"><div class="sidebar-ctrl-radio-dot"></div></div>
-          Collapsed
-        </div>
-        <div class="sidebar-ctrl-option" id="scOptHover" onclick="setSidebarMode('hover')">
-          <div class="sidebar-ctrl-radio"><div class="sidebar-ctrl-radio-dot"></div></div>
-          Expand on hover
-        </div>
+    <!-- Header: logo + collapse -->
+    <div class="hnp-header">
+      <div class="home-nav-brand" onclick="showView('channels')" style="cursor:pointer">
+        <img src="/icon.svg" alt="Freedly" class="home-nav-brand-icon">
+        <span class="home-nav-brand-wordmark"><span>free</span><span class="hnp-wordmark-dly">dly</span></span>
       </div>
+      <button class="hnp-collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Collapse sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      </button>
+      <button class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
+
+    <!-- Scrollable body -->
+    <div class="hnp-body">
+
+      <!-- PAGES section -->
+      <div class="hnp-section">
+        <div class="hnp-section-label">PAGES</div>
+        <button class="home-nav-item" data-nav="channels" onclick="showView('channels')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+          <span class="home-nav-item-label">Subscriptions</span>
+        </button>
+        <button class="home-nav-item" data-nav="feeds" onclick="showView('home');setHomeNav('feeds')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+          <span class="home-nav-item-label">Feeds</span>
+        </button>
+        <button class="home-nav-item" data-nav="analytics" onclick="showView('analytics')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          <span class="home-nav-item-label">Analytics</span>
+        </button>
+        <button class="home-nav-item" data-nav="discover" onclick="showView('blog')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span class="home-nav-item-label">Discover</span>
+        </button>
+      </div>
+
+      <!-- QUICK ACCESS section -->
+      <div class="hnp-section">
+        <div class="hnp-section-label">QUICK ACCESS</div>
+        <button class="home-nav-item" data-nav="all" onclick="showView('channels');setCategory('all')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span class="home-nav-item-label">All channels</span>
+          <span class="hnp-count" id="sideNavAllCount"></span>
+        </button>
+        <button class="home-nav-item" data-nav="favs" onclick="showView('channels');setCategory('__favs__')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="home-nav-item-label">Favourites</span>
+          <span class="hnp-count" id="sideNavFavCount"></span>
+        </button>
+      </div>
+
+      <hr class="home-nav-divider">
+
+      <!-- CATEGORIES section -->
+      <div class="hnp-section">
+        <div class="hnp-section-label">CATEGORIES</div>
+        <div id="sideNavCategories"></div>
+      </div>
+
+      <div style="flex:1;min-height:16px"></div>
+      <hr class="home-nav-divider">
+
+      <!-- SETTINGS section -->
+      <div class="hnp-section">
+        <button class="home-nav-item" data-nav="settings" onclick="showView('settings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span class="home-nav-item-label">Settings</span>
+        </button>
+        <button class="home-nav-item" data-nav="pro" onclick="startCheckout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 20h18M5 20V8l4 4 3-6 3 6 4-4v12"/></svg>
+          <span class="home-nav-item-label">Watch analytics</span>
+          <span class="hnp-pro-badge">Pro</span>
+        </button>
+        <button class="home-nav-item" id="sideNavSync" data-nav="sync" onclick="syncYouTube()" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+          <span class="home-nav-item-label">Sync</span>
+        </button>
+        <button class="home-nav-item" id="sideNavSignIn" data-nav="signin" onclick="signInWithGoogle()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          <span class="home-nav-item-label">Sign in</span>
+        </button>
+        <button class="home-nav-item" id="sideNavSignOut" data-nav="signout" onclick="signOutSupabase()" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span class="home-nav-item-label">Sign out</span>
+        </button>
+      </div>
+
+    </div><!-- /hnp-body -->
   </nav>
 
   <!-- Mobile topbar (hidden on desktop) -->
@@ -4976,6 +5069,72 @@ function renderCategories() {
   if (badgeEl) badgeEl.textContent = activeCat ? `${activeCat.count} channels` : '';
 
   renderSubcategories();
+  renderSideNavCategories();
+  updateSideNavCounts();
+}
+
+function updateSideNavCounts() {
+  const allEl = document.getElementById('sideNavAllCount');
+  const favEl = document.getElementById('sideNavFavCount');
+  if (allEl) allEl.textContent = channels.length || '';
+  if (favEl) {
+    const f = channels.filter(c => c.favourited).length;
+    favEl.textContent = f || '';
+  }
+}
+
+function renderSideNavCategories() {
+  const container = document.getElementById('sideNavCategories');
+  if (!container) return;
+  if (!categories.length) { container.innerHTML = ''; return; }
+
+  // Build colour map if not yet set
+  if (!window._categoryColours) window._categoryColours = {};
+  let colourIdx = 0;
+  categories.forEach(c => {
+    if (!window._categoryColours[c]) {
+      window._categoryColours[c] = categoryColours[c] || TILE_COLOURS[colourIdx++ % TILE_COLOURS.length];
+    }
+  });
+
+  let html = '';
+  categories.forEach(c => {
+    const safeKey = c.replace(/'/g, "\\'");
+    const colour = window._categoryColours[c] || '#888';
+    const count = channels.filter(ch => chHasCat(ch, c)).length;
+    const subs = subcategories[c] || [];
+    const isActive = activeCategory === c;
+    const hasOpen = isActive && subs.length > 0;
+    const openClass = hasOpen ? ' open' : '';
+
+    if (subs.length > 0) {
+      html += `<div class="hnp-cat-group${openClass}">`;
+      html += `<button class="home-nav-item${isActive ? ' active' : ''}" data-nav="cat-${c}" onclick="showView('channels');setCategory('${safeKey}');renderSideNavCategories()">
+        <span class="hnp-cat-dot" style="background:${colour}"></span>
+        <span class="home-nav-item-label">${c}</span>
+        <span class="hnp-count">${count}</span>
+        <svg class="hnp-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 6l4 4 4-4"/></svg>
+      </button>`;
+      html += `<div class="hnp-sub-items">`;
+      subs.forEach(sub => {
+        const safeSub = sub.replace(/'/g, "\\'");
+        const subCount = channels.filter(ch => chHasCat(ch, c) && (ch.subcategory === sub || (Array.isArray(ch.subcategories) && ch.subcategories.includes(sub)))).length;
+        const subActive = activeCategory === c && activeSubcategory === sub;
+        html += `<button class="hnp-sub-item${subActive ? ' active' : ''}" onclick="showView('channels');setCategory('${safeKey}');setSubcategory('${safeSub}')">
+          <span class="home-nav-item-label">${sub}</span>
+          <span class="hnp-count">${subCount}</span>
+        </button>`;
+      });
+      html += `</div></div>`;
+    } else {
+      html += `<button class="home-nav-item${isActive ? ' active' : ''}" data-nav="cat-${c}" onclick="showView('channels');setCategory('${safeKey}')">
+        <span class="hnp-cat-dot" style="background:${colour}"></span>
+        <span class="home-nav-item-label">${c}</span>
+        <span class="hnp-count">${count}</span>
+      </button>`;
+    }
+  });
+  container.innerHTML = html;
 }
 
 function renderSubcategories() {
@@ -8526,7 +8685,7 @@ function showView(view) {
     case 'home':
       homeView.classList.add('active');
       document.getElementById('navHome').classList.add('active');
-      document.querySelector('.home-nav-item[data-nav="home"]')?.classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="feeds"]')?.classList.add('active');
       document.title = 'Freedly - Dashboard';
       setHomeNav('home');
       break;
@@ -8560,7 +8719,7 @@ function showView(view) {
       break;
     case 'blog':
       document.getElementById('blogPage').classList.add('active');
-      document.querySelector('.home-nav-item[data-nav="blog"]')?.classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="discover"]')?.classList.add('active');
       document.title = 'Freedly - Blog';
       renderBlog();
       break;
