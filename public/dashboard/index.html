@@ -7205,6 +7205,8 @@ function _navHoverLeave() { this.classList.add('collapsed'); }
 })();
 
 function setHomeNav(key) {
+  // Reset feed state when leaving feeds
+  if (key !== 'feeds') resetFeedState();
   // Update primary nav active state
   document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
   document.querySelector(`.home-nav-item[data-nav="${key}"]`)?.classList.add('active');
@@ -7360,6 +7362,15 @@ let feedSearchQuery = '';
 let feedSortKey = 'date';
 let feedView = localStorage.getItem('subsort_feed_view') || 'hybrid';
 let feedTypeFilter = 'all'; // 'all' | 'videos' | 'shorts'
+
+function resetFeedState() {
+  activeFeedCategory = 'all';
+  activeFeedSubcategory = null;
+  feedSearchQuery = '';
+  feedSortKey = 'date';
+  feedTypeFilter = 'all';
+  document.getElementById('homeMain')?.classList.remove('feed-scrolled');
+}
 
 function buildFeedTabsHtml() {
   const cats = [{name: 'All', key: 'all'}, {name: '⭐ Favourites', key: '__favs__'}, ...categories.map(c => ({name: c, key: c}))];
@@ -8003,13 +8014,18 @@ function showView(view) {
   const onboarding = document.getElementById('onboardingEmpty');
   const promoBanner = document.getElementById('promoBanner');
 
-  // Reset channels page state when leaving
+  // Reset page state when leaving
+  resetFeedState();
   document.getElementById('appContent')?.classList.remove('chan-scrolled');
   const searchInput = document.getElementById('searchInput');
   if (searchInput) searchInput.value = '';
+  const sortSelect = document.getElementById('sortSelect');
+  if (sortSelect) sortSelect.value = 'name';
   document.querySelectorAll('[data-filter]').forEach(el => { el.checked = false; });
+  document.getElementById('homeSecondaryNav')?.classList.remove('open');
   activeCategory = 'all';
   activeSubcategory = null;
+  if (bulkMode || selectedChannels.size) clearSelection();
 
   // Hide everything first
   catsSection.style.display = 'none';
