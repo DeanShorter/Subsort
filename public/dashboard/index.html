@@ -1483,6 +1483,8 @@ input[type=range]::-webkit-slider-thumb{
 }
 .home-nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:#5E5D58;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .home-nav-item.active svg{stroke:var(--accent)}
+.hnp-fav-btn svg{fill:#fbbf24;stroke:#fbbf24}
+.hnp-fav-btn.active svg{fill:#fbbf24;stroke:#fbbf24}
 
 /* Label */
 .home-nav-item-label{
@@ -1528,7 +1530,7 @@ input[type=range]::-webkit-slider-thumb{
   display:flex;align-items:center;justify-content:center;
   transition:transform .2s;
 }
-.hnp-chevron svg{width:10px;height:10px;stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round}
+.hnp-chevron svg{width:10px;height:10px;stroke:#5E5D58;fill:none;stroke-width:2;stroke-linecap:round}
 .hnp-chevron-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;padding:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:background .15s}
 .hnp-chevron-btn:hover{background:rgba(255,255,255,.06)}
 .hnp-chevron-btn.open .hnp-chevron{transform:rotate(180deg)}
@@ -1546,9 +1548,10 @@ input[type=range]::-webkit-slider-thumb{
   cursor:pointer;transition:all .15s;
   font-size:12px;color:var(--text-muted);font-weight:500;
   font-family:var(--font-body);
+  background:none!important;border:none;width:100%;text-align:left;
 }
-.hnp-sub-item:hover{color:var(--text-secondary)}
-.hnp-sub-item.active{color:var(--accent)}
+.hnp-sub-item:hover{color:var(--text-secondary);background:none!important}
+.hnp-sub-item.active{color:var(--accent);background:none!important}
 .hnp-sub-count{margin-left:auto;font-size:10px;color:var(--text-muted)}
 .hnp-sub-item.active .hnp-sub-count{color:var(--text-secondary)}
 
@@ -3268,7 +3271,7 @@ input[type=range]::-webkit-slider-thumb{
           <span class="home-nav-item-label">All Categories</span>
           <span class="hnp-count" id="sideNavAllCount"></span>
         </button>
-        <button class="home-nav-item" data-nav="favs" onclick="sideNavCatClick('__favs__')">
+        <button class="home-nav-item hnp-fav-btn" data-nav="favs" onclick="sideNavCatClick('__favs__')">
           <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/></svg>
           <span class="home-nav-item-label">Favourites</span>
           <span class="hnp-count" id="sideNavFavCount"></span>
