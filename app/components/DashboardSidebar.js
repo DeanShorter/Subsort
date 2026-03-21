@@ -138,7 +138,7 @@ export default function DashboardSidebar() {
         {/* Pages section */}
         <div className="hnp-section">
           <div className="hnp-section-label">PAGES</div>
-          {PAGE_ITEMS.map(item => (
+          {PAGE_ITEMS.filter(item => !(item.href === '/blog' && pathname.startsWith('/blog'))).map(item => (
             <NavItem key={item.href} {...item} isActive={isActive(item.href)} />
           ))}
         </div>

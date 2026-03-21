@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/blog';
 import styles from './blog.module.css';
+import BlogNav from './BlogNav';
 
 export const metadata = {
   title: 'Blog',  // → "Freedly - Blog"
@@ -12,15 +13,7 @@ export default function BlogIndex() {
 
   return (
     <div className={styles.page}>
-      <nav className={styles.nav}>
-        <Link href="/" className={styles.navBrand}>
-          <img src="/logo.svg" alt="myfeed." height="30" />
-        </Link>
-        <div className={styles.navLinks}>
-          <Link href="/blog">Blog</Link>
-          <a href="/signin" className={styles.navCta}>Sign In</a>
-        </div>
-      </nav>
+      <BlogNav styles={styles} />
 
       <div className={styles.content}>
         <header className={styles.header}>

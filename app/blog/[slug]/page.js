@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getAllSlugs, getPostBySlug } from '@/lib/blog';
 import styles from './post.module.css';
+import BlogNav from '../BlogNav';
 
 // Generate static paths at build time for all blog posts
 export async function generateStaticParams() {
@@ -48,15 +49,7 @@ export default async function BlogPost({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <nav className={styles.nav}>
-        <Link href="/" className={styles.navBrand}>
-          <img src="/logo.svg" alt="myfeed." height="30" />
-        </Link>
-        <div className={styles.navLinks}>
-          <Link href="/blog">Blog</Link>
-          <a href="/signin" className={styles.navCta}>Sign In</a>
-        </div>
-      </nav>
+      <BlogNav styles={styles} />
 
       <article className={styles.article}>
         <header className={styles.header}>
