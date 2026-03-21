@@ -853,6 +853,56 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .modal-footer .btn-save:hover{background:var(--accent-hover)}
 .modal-footer .btn-save:active{background:var(--accent-pressed)}
 .modal-footer .btn-danger{background:#b91c1c;border:none;color:#fff}
+
+/* ─── Edit Channel Modal (rich design) ─── */
+.ecm-modal{padding:0!important;overflow:hidden;width:460px;max-width:96vw;border-radius:var(--radius-lg)!important}
+.ecm-banner{height:88px;position:relative;overflow:hidden;flex-shrink:0}
+.ecm-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,var(--bg-card) 100%)}
+.ecm-close-btn{position:absolute;top:10px;right:10px;z-index:10;width:28px;height:28px;border-radius:7px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;line-height:1;transition:all .2s}
+.ecm-close-btn:hover{background:rgba(0,0,0,.6);color:var(--text-secondary)}
+.ecm-identity{padding:0 22px;margin-top:-28px;position:relative;z-index:2}
+.ecm-avatar{width:54px;height:54px;border-radius:50%;border:3px solid var(--bg-card);background:var(--bg-surface);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--text-muted);overflow:hidden}
+.ecm-avatar img{width:100%;height:100%;object-fit:cover}
+.ecm-name-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.ecm-channel-name{font-family:var(--font-display);font-size:1.1rem;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);line-height:1.2}
+.ecm-handle{font-size:.6875rem;color:var(--text-muted);margin-top:1px}
+.ecm-action-btns{display:flex;gap:6px;flex-shrink:0}
+.ecm-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:7px;font-size:.6875rem;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:all .15s;border:1px solid var(--border-subtle);background:transparent;color:var(--text-secondary)}
+.ecm-btn:hover{border-color:rgba(255,255,255,.15);color:var(--text-primary)}
+.ecm-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ecm-btn.fav-on{background:var(--accent-soft);border-color:rgba(56,233,177,.25);color:var(--accent)}
+.ecm-btn.fav-on svg{fill:var(--accent);stroke:var(--accent)}
+.ecm-btn.ecm-yt{background:rgba(255,0,51,.08);border-color:rgba(255,0,51,.2);color:#ff4466}
+.ecm-btn.ecm-yt:hover{background:rgba(255,0,51,.14)}
+.ecm-btn.ecm-yt svg{fill:#ff4466;stroke:none}
+.ecm-divider{height:1px;background:var(--border-subtle);margin:14px 22px}
+.ecm-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:0 22px}
+.ecm-stat{text-align:center;padding:8px 2px;border-radius:7px;cursor:default;transition:background .15s}
+.ecm-stat:hover{background:var(--bg-surface)}
+.ecm-stat-value{font-family:var(--font-display);font-size:.9375rem;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);line-height:1}
+.ecm-stat-label{font-size:.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-top:3px}
+.ecm-fields{padding:2px 22px 0}
+.ecm-field-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.ecm-field-label{font-size:.5625rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);min-width:80px;flex-shrink:0;padding-top:5px}
+.ecm-field-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.ecm-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:5px;font-size:.6875rem;font-weight:500}
+.ecm-tag-cat{background:rgba(232,93,80,.1);border:1px solid rgba(232,93,80,.2);color:#e85d50}
+.ecm-tag-sub{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary)}
+.ecm-tag-add{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:5px;font-size:.6875rem;font-weight:500;background:transparent;border:1px dashed var(--border-subtle);color:var(--text-muted);cursor:pointer;transition:all .15s;font-family:var(--font-body)}
+.ecm-tag-add:hover{border-color:rgba(255,255,255,.15);color:var(--text-secondary)}
+.ecm-tag-add svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.ecm-cat-edit-panel{padding:6px 0 2px 90px}
+.ecm-subcat-edit-panel{padding:4px 0 2px 90px}
+.ecm-subcat-edit-panel select{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.35rem .625rem;border-radius:var(--radius-sm);font-size:.75rem;font-family:var(--font-body)}
+.ecm-notes-section{padding:0 22px;margin-top:2px}
+.ecm-notes-label{font-size:.5625rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:6px}
+.ecm-notes-input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:8px;padding:8px 12px;font-size:.75rem;font-family:var(--font-body);color:var(--text-secondary);resize:vertical;min-height:56px;outline:none;transition:border-color .2s;line-height:1.5}
+.ecm-notes-input::placeholder{color:var(--text-muted)}
+.ecm-notes-input:focus{border-color:rgba(255,255,255,.14)}
+.ecm-keywords-section{padding:12px 22px 6px;margin-top:8px;border-top:1px solid var(--border-subtle)}
+.ecm-kw-label{font-size:.5625rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:6px}
+.ecm-kw-list{display:flex;flex-wrap:wrap;gap:4px}
+.ecm-kw{font-size:.625rem;color:var(--text-muted);background:var(--bg-surface);padding:2px 7px;border-radius:3px}
 .modal-footer .btn-danger:hover{filter:brightness(1.15)}
 
 /* ─── Category Colour Picker ─── */
@@ -1912,6 +1962,61 @@ input[type=range]::-webkit-slider-thumb{
 .db-col-left .db-card,.db-col-right .db-card{margin-bottom:0}
 .db-fav-empty{font-size:.8125rem;color:var(--text-muted);margin-bottom:.625rem}
 .db-fav-feed-ctas{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.25rem;margin-top:.625rem}
+
+/* ─── Dashboard v2 ─── */
+.db-greeting{margin-bottom:1.5rem}
+.db-greeting h1{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.04em;margin-bottom:.375rem;color:var(--text-primary)}
+.db-greeting h1 span{color:var(--accent)}
+.db-greeting p{font-size:.875rem;color:var(--text-muted)}
+.db-stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.75rem}
+.db-stat-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1rem 1.125rem;transition:border-color .2s;cursor:default}
+.db-stat-card:hover{border-color:rgba(255,255,255,.1)}
+.db-stat-label{font-size:.625rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.375rem}
+.db-stat-value{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.04em;line-height:1;color:var(--text-primary)}
+.db-stat-mint{color:var(--accent)}
+.db-stat-red{color:#e85d50}
+.db-section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem}
+.db-section-title{font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:-.02em;color:var(--text-primary)}
+.db-section-link2{font-size:.75rem;color:var(--text-muted);cursor:pointer;font-weight:500;background:none;border:none;font-family:var(--font-body)}
+.db-section-link2:hover{color:var(--text-secondary)}
+/* Fav video cards (grid) */
+.db-fav-feed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.875rem;margin-bottom:2rem}
+.db-fvc{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;cursor:pointer;transition:all .2s}
+.db-fvc:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px)}
+.db-fvc-thumb{aspect-ratio:16/9;position:relative;overflow:hidden;background:var(--bg-surface-raised)}
+.db-fvc-thumb img{width:100%;height:100%;object-fit:cover}
+.db-fvc-grad{position:absolute;inset:0;opacity:.4}
+.db-fvc-dur{position:absolute;bottom:.375rem;right:.375rem;background:rgba(0,0,0,.75);color:#fff;font-size:.6rem;font-weight:500;padding:.1rem .3rem;border-radius:3px}
+.db-fvc-body{padding:.625rem .75rem;display:flex;gap:.5rem}
+.db-fvc-av{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.625rem;font-weight:600;color:#fff}
+.db-fvc-meta{flex:1;min-width:0}
+.db-fvc-title{font-size:.75rem;font-weight:500;color:var(--text-primary);line-height:1.35;margin-bottom:.2rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.db-fvc-ch{font-size:.6875rem;color:var(--text-secondary)}
+.db-fvc-stats{font-size:.625rem;color:var(--text-muted);margin-top:.1rem}
+/* Bottom grid */
+.db-bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+/* Category breakdown (new) */
+.db-cat-breakdown{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1rem 1.125rem}
+.db-cat-brow{display:flex;align-items:center;gap:.625rem;padding:.5rem 0;border-bottom:1px solid var(--border-subtle)}
+.db-cat-brow:last-child{border-bottom:none}
+.db-cat-brow-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.db-cat-brow-name{font-size:.75rem;font-weight:500;color:var(--text-secondary);flex:1}
+.db-cat-brow-count{font-size:.75rem;color:var(--text-muted);font-variant-numeric:tabular-nums;margin-right:.5rem}
+.db-cat-brow-barwrap{width:60px;height:4px;background:var(--bg-surface-raised);border-radius:2px;overflow:hidden;flex-shrink:0}
+.db-cat-brow-bar{height:100%;border-radius:2px}
+/* Inactive channels panel (new) */
+.db-inactive-panel{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1rem 1.125rem}
+.db-inactive-desc{font-size:.6875rem;color:var(--text-muted);margin-bottom:.75rem}
+.db-inactive-row2{display:flex;align-items:center;gap:.625rem;padding:.5rem 0;border-bottom:1px solid var(--border-subtle)}
+.db-inactive-row2:last-child{border-bottom:none}
+.db-inactive-av2{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.625rem;font-weight:600;color:#fff;opacity:.65}
+.db-inactive-info2{flex:1;min-width:0}
+.db-inactive-name2{font-size:.75rem;font-weight:500;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-inactive-last2{font-size:.6875rem;color:var(--text-muted)}
+.db-inactive-act2{font-size:.6875rem;color:var(--text-muted);padding:.2rem .5rem;border:1px solid var(--border-subtle);border-radius:5px;cursor:pointer;background:transparent;font-family:var(--font-body);font-weight:500;white-space:nowrap}
+.db-inactive-act2:hover{border-color:rgba(255,255,255,.1);color:var(--text-secondary)}
+/* Clock */
+.db-clock{font-size:.75rem;color:var(--text-muted);font-variant-numeric:tabular-nums}
 
 /* Trending channels card */
 .home-trending{
@@ -3171,108 +3276,80 @@ input[type=range]::-webkit-slider-thumb{
     <div class="db-topbar">
       <h1 class="page-title">Dashboard</h1>
       <div class="db-topbar-right">
+        <span class="db-clock" id="dbClock"></span>
         <button class="db-topbar-avatar" id="dbTopAvatar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- Feed Health Strip -->
-    <div class="db-card db-health-strip">
-      <div class="db-health-ring-wrap">
-        <svg viewBox="0 0 80 80" width="80" height="80">
-          <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border-subtle)" stroke-width="6"/>
-          <circle id="dbScoreArc" cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 1s ease"/>
-        </svg>
-        <div class="db-health-score-inner"><span id="dbScoreValue">—</span></div>
-      </div>
-      <div class="db-health-detail">
-        <div id="dbScoreGrade" class="db-score-grade">Feed Health</div>
-        <div id="dbScoreFactors" class="db-score-factors-mini"></div>
-      </div>
-      <div class="db-health-stats">
-        <div class="db-hstat">
-          <span class="db-hstat-num" id="dbCatPct">—</span>
-          <span class="db-hstat-label">categorised</span>
-        </div>
-        <div class="db-hstat">
-          <span class="db-hstat-num" id="dbInactiveCount">—</span>
-          <span class="db-hstat-label">inactive</span>
-        </div>
-        <div class="db-hstat">
-          <span class="db-hstat-num" id="dbUncatCount">—</span>
-          <span class="db-hstat-label">uncategorised</span>
-        </div>
-      </div>
-      <button class="db-link-btn db-strip-link" onclick="showView('analytics')">Full analytics →</button>
+    <!-- Greeting -->
+    <div class="db-greeting">
+      <h1>Good <span id="dbGreetingTime">day</span>, <span id="dbGreetingName">there</span>.</h1>
+      <p id="dbGreetingSub">Sync your subscriptions to get started.</p>
     </div>
 
-    <!-- Body: two-column grid -->
-    <div class="db-body-grid">
-
-      <!-- Left column -->
-      <div class="db-col-left">
-
-        <!-- Today's Feed -->
-        <div class="db-card">
-          <div class="db-card-hd">
-            <span class="db-card-label">Today's Feed</span>
-          </div>
-          <div class="db-feed-scroll" id="dbFeedScroll">
-            <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
-          </div>
-          <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">View full feed →</button>
-        </div>
-
-        <!-- Recently Uploaded by Favourite Channels -->
-        <div class="db-card">
-          <div class="db-card-hd">
-            <span class="db-card-label">Recently Uploaded by your Favourite Channels</span>
-          </div>
-          <div id="dbFavFeed">
-            <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
-          </div>
-        </div>
-
+    <!-- Stat strip -->
+    <div class="db-stat-strip">
+      <div class="db-stat-card">
+        <div class="db-stat-label">Subscriptions</div>
+        <div class="db-stat-value" id="dbStatSubs">—</div>
       </div>
-
-      <!-- Right column -->
-      <div class="db-col-right">
-
-        <!-- Category Snapshot -->
-        <div class="db-card">
-          <div class="db-card-hd">
-            <span class="db-card-label">Category Snapshot</span>
-          </div>
-          <div id="dbCatSnap"></div>
-        </div>
-
-        <!-- Channel Health -->
-        <div class="db-card">
-          <div class="db-card-hd"><span class="db-card-label">Channel Health</span></div>
-          <div id="dbQA2"></div>
-          <div class="db-attention-actions" style="margin-top:.625rem">
-            <button class="db-action-pill" onclick="showView('analytics')">🧹 Clean up</button>
-            <button class="db-action-pill" onclick="openModal('autoCatConfirmModal')">Auto-sort</button>
-          </div>
-        </div>
-
-        <!-- Needs Attention -->
-        <div class="db-card">
-          <div class="db-card-hd"><span class="db-card-label">⚠ Needs Attention</span></div>
-          <div id="dbAttention"></div>
-        </div>
-
+      <div class="db-stat-card">
+        <div class="db-stat-label">Favourites</div>
+        <div class="db-stat-value db-stat-mint" id="dbStatFavs">—</div>
       </div>
-
+      <div class="db-stat-card">
+        <div class="db-stat-label">Inactive channels</div>
+        <div class="db-stat-value db-stat-red" id="dbStatInactive">—</div>
+      </div>
+      <div class="db-stat-card">
+        <div class="db-stat-label">Uncategorised</div>
+        <div class="db-stat-value" id="dbStatUncat">—</div>
+      </div>
     </div>
 
-    <!-- Hidden legacy elements so JS still writes to them without errors -->
+    <!-- New from favourites -->
+    <div class="db-section-hd">
+      <span class="db-section-title">New from favourites</span>
+      <button class="db-section-link2" onclick="setHomeNav('feeds')">View all →</button>
+    </div>
+    <div class="db-fav-feed-grid" id="dbFavFeed">
+      <div class="home-feed-loading"><span class="spinner"></span> Loading…</div>
+    </div>
+
+    <!-- Bottom grid: Category breakdown + Needs attention -->
+    <div class="db-bottom-grid">
+      <div>
+        <div class="db-section-hd">
+          <span class="db-section-title">Category breakdown</span>
+        </div>
+        <div class="db-cat-breakdown" id="dbCatSnap"></div>
+      </div>
+      <div>
+        <div class="db-section-hd">
+          <span class="db-section-title">Needs attention</span>
+          <button class="db-section-link2" onclick="showView('analytics')">Review all →</button>
+        </div>
+        <div class="db-inactive-panel" id="dbAttention"></div>
+      </div>
+    </div>
+
+    <!-- Hidden legacy stubs so existing JS writes don't throw errors -->
     <div style="display:none">
       <div id="dbQA1"></div>
+      <div id="dbQA2"></div>
+      <div id="dbScoreArc"></div>
+      <span id="dbScoreValue"></span>
+      <div id="dbScoreGrade"></div>
+      <div id="dbScoreFactors"></div>
+      <span id="dbCatPct"></span>
+      <span id="dbInactiveCount"></span>
+      <span id="dbUncatCount"></span>
       <div id="dbProfileAvatar"></div>
       <div id="dbProfileCount"></div>
       <div id="dbProfileCats"></div>
+      <div id="dbFeedScroll"></div>
     </div>
 
   </main>
@@ -4142,26 +4219,87 @@ input[type=range]::-webkit-slider-thumb{
 
 <!-- ═══ Edit Channel Modal ═══ -->
 <div class="modal-overlay" id="editChannelModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('editChannelModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    <h2>Edit channel</h2>
-    <p class="subtitle" id="editChannelName"></p>
-    <div class="form-group">
-      <label>Categories <span style="opacity:.5">select multiple</span></label>
-      <div class="cat-checkbox-list" id="editChannelCategories"></div>
+  <div class="modal ecm-modal">
+
+    <!-- Banner (colour set by editChannel()) -->
+    <div class="ecm-banner" id="ecmBanner">
+      <button class="ecm-close-btn" onclick="closeModal('editChannelModal')">&#x2715;</button>
     </div>
-    <div class="form-group" id="editSubcatGroup" style="display:none">
-      <label>Subcategory</label>
-      <select id="editChannelSubcategory" class="sort-select"></select>
+
+    <!-- Identity: avatar, name, handle, action buttons -->
+    <div class="ecm-identity">
+      <div class="ecm-avatar" id="ecmAvatar"></div>
+      <div class="ecm-name-row">
+        <div>
+          <div class="ecm-channel-name" id="ecmChannelName"></div>
+          <div class="ecm-handle" id="ecmHandle"></div>
+        </div>
+        <div class="ecm-action-btns">
+          <button class="ecm-btn" id="ecmFavBtn" onclick="ecmToggleFav()">
+            <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/></svg>
+            Favourite
+          </button>
+          <button class="ecm-btn ecm-yt" id="ecmYtBtn">
+            <svg viewBox="0 0 16 16"><path d="M14.4 4.6s-.2-1.2-.7-1.7c-.6-.7-1.4-.7-1.7-.7C9.6 2 8 2 8 2s-1.6 0-4 .2c-.3 0-1.1 0-1.7.7-.5.5-.7 1.7-.7 1.7S1.4 6 1.4 7.4v1.2c0 1.4.2 2.8.2 2.8s.2 1.2.7 1.7c.6.7 1.5.7 1.9.7 1.4.1 5.8.2 5.8.2s1.6 0 4-.2c.3 0 1.1 0 1.7-.7.5-.5.7-1.7.7-1.7s.2-1.4.2-2.8V7.4c0-1.4-.2-2.8-.2-2.8zM6.4 10.2V5.8L10.4 8l-4 2.2z"/></svg>
+            YouTube
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Notes</label>
-      <textarea id="editChannelNotes" placeholder="Add notes…"></textarea>
+
+    <div class="ecm-divider"></div>
+
+    <!-- Stats: subscribers, videos, views, subscribed, created -->
+    <div class="ecm-stats" id="ecmStats"></div>
+
+    <div class="ecm-divider"></div>
+
+    <!-- Category & subcategory fields -->
+    <div class="ecm-fields">
+      <div class="ecm-field-row">
+        <span class="ecm-field-label">Category</span>
+        <div class="ecm-field-tags" id="ecmCatTags"></div>
+        <button class="ecm-tag-add" onclick="ecmToggleCatEdit()">
+          <svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10"/></svg>
+          Edit
+        </button>
+      </div>
+      <!-- Hidden checkbox list toggled by Edit button — used by saveChannelEdit() -->
+      <div class="ecm-cat-edit-panel" id="ecmCatEditPanel" style="display:none">
+        <div class="cat-checkbox-list" id="editChannelCategories"></div>
+      </div>
+
+      <div class="ecm-field-row">
+        <span class="ecm-field-label">Subcategory</span>
+        <div class="ecm-field-tags" id="ecmSubcatTags"></div>
+        <button class="ecm-tag-add" id="ecmSubcatEditBtn" onclick="ecmToggleSubcatEdit()">
+          <svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10"/></svg>
+          <span id="ecmSubcatEditLabel">Add</span>
+        </button>
+      </div>
+      <!-- Subcategory select — used by saveChannelEdit() -->
+      <div class="ecm-subcat-edit-panel" id="editSubcatGroup" style="display:none">
+        <select id="editChannelSubcategory" class="sort-select"></select>
+      </div>
     </div>
+
+    <!-- Notes -->
+    <div class="ecm-notes-section">
+      <div class="ecm-notes-label">Notes</div>
+      <textarea class="ecm-notes-input" id="editChannelNotes" placeholder="Add a note about this channel…"></textarea>
+    </div>
+
+    <!-- Keywords -->
+    <div class="ecm-keywords-section" id="ecmKeywordsSection" style="display:none">
+      <div class="ecm-kw-label">Keywords</div>
+      <div class="ecm-kw-list" id="ecmKeywordsList"></div>
+    </div>
+
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('editChannelModal')">Cancel</button>
       <button class="btn-save" onclick="saveChannelEdit()">Save</button>
     </div>
+
   </div>
 </div>
 
@@ -5921,19 +6059,121 @@ function editChannel(id) {
   const ch = channels.find(c => c.id === id);
   if (!ch) return;
   editingChannelId = id;
-  document.getElementById('editChannelName').textContent = ch.name;
+
+  const cats = chCats(ch);
+
+  // Banner: gradient from first category colour or default
+  const bannerEl = document.getElementById('ecmBanner');
+  const col = (cats[0] && categoryColours[cats[0]]) || '#38E9B1';
+  bannerEl.style.background = `linear-gradient(135deg,${col}88 0%,${col}44 60%,${col}22 100%)`;
+
+  // Avatar: thumbnail image or initials fallback
+  const avatarEl = document.getElementById('ecmAvatar');
+  const initials = ch.name ? ch.name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase() : '?';
+  avatarEl.innerHTML = ch.thumbnail
+    ? `<img src="${ch.thumbnail}" alt="" onerror="this.parentElement.innerHTML='${initials}'">`
+    : initials;
+
+  // Name & handle
+  document.getElementById('ecmChannelName').textContent = ch.name || '';
+  document.getElementById('ecmHandle').textContent = ch.customUrl ? `@${ch.customUrl.replace(/^@/,'')}` : '';
+
+  // Favourite button state
+  const favBtn = document.getElementById('ecmFavBtn');
+  favBtn.className = `ecm-btn${ch.favourited ? ' fav-on' : ''}`;
+
+  // YouTube link
+  const ytBtn = document.getElementById('ecmYtBtn');
+  const ytUrl = ch.customUrl
+    ? `https://youtube.com/@${ch.customUrl.replace(/^@/,'')}`
+    : `https://youtube.com/channel/${ch.channelId || ch.id}`;
+  ytBtn.onclick = () => window.open(ytUrl, '_blank');
+
+  // Stats
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}) : '—';
+  document.getElementById('ecmStats').innerHTML = [
+    {v: ch.subscriberCount ? formatCount(ch.subscriberCount) : '—', l: 'Subscribers'},
+    {v: ch.videoCount != null ? ch.videoCount.toLocaleString() : '—', l: 'Videos'},
+    {v: ch.viewCount ? formatCount(ch.viewCount) : '—', l: 'Total views'},
+    {v: fmtDate(ch.subscribedAt), l: 'Subscribed'},
+    {v: fmtDate(ch.channelCreatedAt), l: 'Created'},
+  ].map(s => `<div class="ecm-stat"><div class="ecm-stat-value">${s.v}</div><div class="ecm-stat-label">${s.l}</div></div>`).join('');
+
+  // Category checkboxes (hidden panel, used by saveChannelEdit)
   const list = document.getElementById('editChannelCategories');
-  const currentCats = chCats(ch);
   list.innerHTML = categories.map(c => {
-    const checked = currentCats.includes(c);
+    const checked = cats.includes(c);
     return `<label class="cat-check-item ${checked?'checked':''}" onclick="this.classList.toggle('checked')">
-      <input type="checkbox" value="${c}" ${checked?'checked':''} onchange="this.parentElement.classList.toggle('checked',this.checked);updateEditSubcategoryOptions()">
+      <input type="checkbox" value="${c}" ${checked?'checked':''} onchange="this.parentElement.classList.toggle('checked',this.checked);updateEditSubcategoryOptions();ecmRenderCatTags()">
       ${c}
     </label>`;
   }).join('');
+
+  // Category tags display
+  ecmRenderCatTags();
+
+  // Subcategory
   updateEditSubcategoryOptions(ch.subcategory);
+  ecmRenderSubcatTag();
+
+  // Hide edit panels
+  document.getElementById('ecmCatEditPanel').style.display = 'none';
+  document.getElementById('editSubcatGroup').style.display = 'none';
+
+  // Notes
   document.getElementById('editChannelNotes').value = ch.notes || '';
+
+  // Keywords
+  const kwSec = document.getElementById('ecmKeywordsSection');
+  const kwList = document.getElementById('ecmKeywordsList');
+  const kws = (ch.keywords || '').split(',').map(k=>k.trim()).filter(Boolean);
+  if (kws.length) {
+    kwSec.style.display = '';
+    kwList.innerHTML = kws.map(k=>`<span class="ecm-kw">${k}</span>`).join('');
+  } else {
+    kwSec.style.display = 'none';
+  }
+
   openModal('editChannelModal');
+}
+
+/* Update visible category tags in the modal */
+function ecmRenderCatTags() {
+  const checked = [...document.querySelectorAll('#editChannelCategories input:checked')].map(i=>i.value);
+  document.getElementById('ecmCatTags').innerHTML = checked.length
+    ? checked.map(c=>`<span class="ecm-tag ecm-tag-cat">${c}</span>`).join('')
+    : '';
+  ecmRenderSubcatTag();
+}
+
+/* Update visible subcategory tag in the modal */
+function ecmRenderSubcatTag() {
+  const sel = document.getElementById('editChannelSubcategory');
+  const val = sel?.value || '';
+  document.getElementById('ecmSubcatTags').innerHTML = val ? `<span class="ecm-tag ecm-tag-sub">${val}</span>` : '';
+  document.getElementById('ecmSubcatEditLabel').textContent = val ? 'Edit' : 'Add';
+}
+
+/* Toggle category checkbox panel */
+function ecmToggleCatEdit() {
+  const panel = document.getElementById('ecmCatEditPanel');
+  panel.style.display = panel.style.display === 'none' ? '' : 'none';
+}
+
+/* Toggle subcategory select panel */
+function ecmToggleSubcatEdit() {
+  const panel = document.getElementById('editSubcatGroup');
+  panel.style.display = panel.style.display === 'none' ? '' : 'none';
+}
+
+/* Toggle favourite directly from modal */
+function ecmToggleFav() {
+  const ch = channels.find(c => c.id === editingChannelId);
+  if (!ch) return;
+  ch.favourited = !ch.favourited;
+  const btn = document.getElementById('ecmFavBtn');
+  btn.className = `ecm-btn${ch.favourited ? ' fav-on' : ''}`;
+  save();
 }
 
 function updateEditSubcategoryOptions(currentSubcat) {
@@ -5955,6 +6195,8 @@ function updateEditSubcategoryOptions(currentSubcat) {
   group.style.display = '';
   const current = currentSubcat !== undefined ? currentSubcat : (channels.find(c => c.id === editingChannelId)?.subcategory || '');
   sel.innerHTML = '<option value="">None</option>' + allSubs.map(s => `<option value="${s}" ${current===s?'selected':''}>${s}</option>`).join('');
+  sel.onchange = () => ecmRenderSubcatTag?.();
+  ecmRenderSubcatTag?.();
 }
 
 async function saveChannelEdit() {
@@ -9025,51 +9267,29 @@ async function applyBulkSubcategory() {
    DASHBOARD
    ═══════════════════════════════════════════ */
 async function renderDashboard() {
-  // --- Health Score (mirrors renderAnalytics logic) ---
-  let score = 100;
-  const factors = [];
   const catCounts = {};
   channels.forEach(ch => { for (const cat of chCats(ch)) catCounts[cat] = (catCounts[cat]||0)+1; });
   const catKeys = Object.keys(catCounts);
 
-  if (channels.length) {
-    const categorised = channels.filter(c => !chIsUncategorised(c)).length;
-    const catPct = Math.round((categorised / channels.length) * 100);
-    if (catPct >= 80) factors.push({t:`${catPct}% categorised`, c:'good'});
-    else if (catPct >= 40) { score -= 15; factors.push({t:`Only ${catPct}% categorised`, c:'warn'}); }
-    else { score -= 30; factors.push({t:`Only ${catPct}% categorised`, c:'bad'}); }
+  // Clock and greeting time-of-day
+  const _dbUpdateGreeting = () => {
+    const h = new Date().getHours();
+    const m = new Date().getMinutes();
+    const timeStr = `${h%12||12}:${m<10?'0':''}${m} ${h>=12?'PM':'AM'}`;
+    const greetWord = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+    const clockEl = document.getElementById('dbClock');
+    if (clockEl) clockEl.textContent = timeStr;
+    const gtEl = document.getElementById('dbGreetingTime');
+    if (gtEl) gtEl.textContent = greetWord;
+  };
+  _dbUpdateGreeting();
 
-    const deadChannels = findDeadChannels();
-    if (deadChannels.length <= channels.length * 0.05) factors.push({t:'Few inactive channels', c:'good'});
-    else if (deadChannels.length <= channels.length * 0.2) { score -= 10; factors.push({t:`${deadChannels.length} inactive channels`, c:'warn'}); }
-    else { score -= 25; factors.push({t:`${deadChannels.length} inactive channels`, c:'bad'}); }
-
-    if (catKeys.length >= 5) factors.push({t:`${catKeys.length} categories — diverse`, c:'good'});
-    else if (catKeys.length >= 2) { score -= 5; factors.push({t:`${catKeys.length} categories`, c:'warn'}); }
-    else { score -= 15; factors.push({t:'Needs more categories', c:'bad'}); }
-
-    if (catKeys.length > 1) {
-      const max = Math.max(...Object.values(catCounts));
-      if (max / channels.length > 0.5) { score -= 10; factors.push({t:'Unbalanced distribution', c:'warn'}); }
-      else factors.push({t:'Balanced distribution', c:'good'});
-    }
-    score = Math.max(0, Math.min(100, score));
+  // Greeting name from Supabase user metadata
+  const gnEl = document.getElementById('dbGreetingName');
+  if (gnEl && sbUser) {
+    const fullName = sbUser.user_metadata?.full_name || sbUser.user_metadata?.name || '';
+    gnEl.textContent = fullName.split(' ')[0] || 'there';
   }
-
-  const arc = document.getElementById('dbScoreArc');
-  if (arc) {
-    const circ = 2 * Math.PI * 32;
-    arc.style.strokeDashoffset = circ - (score / 100) * circ;
-    arc.style.stroke = score >= 70 ? '#34d399' : score >= 40 ? '#f59e0b' : '#f87171';
-  }
-  const scoreValEl = document.getElementById('dbScoreValue');
-  if (scoreValEl) scoreValEl.textContent = channels.length ? score : '—';
-  const gradeEl = document.getElementById('dbScoreGrade');
-  if (gradeEl) gradeEl.textContent = channels.length ? (score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Fair' : 'Needs Work') : 'Feed Health';
-  const factorsEl = document.getElementById('dbScoreFactors');
-  if (factorsEl) factorsEl.innerHTML = factors.slice(0, 4).map(f =>
-    `<div class="db-factor ${f.c}">${f.c==='good'?'✓':f.c==='warn'?'⚠':'✗'} ${f.t}</div>`
-  ).join('');
 
   // Topbar avatar
   const topAvatarEl = document.getElementById('dbTopAvatar');
@@ -9078,189 +9298,120 @@ async function renderDashboard() {
   }
 
   if (!channels.length) {
-    // Empty state for all dynamic sections
-    ['dbQA1','dbQA2','dbCatSnap','dbAttention'].forEach(id => {
+    document.getElementById('dbGreetingSub').textContent = 'Sync your subscriptions to get started.';
+    ['dbStatSubs','dbStatFavs','dbStatInactive','dbStatUncat'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.25rem 0">Sync your subscriptions to see data.</p>';
+      if (el) el.textContent = '—';
     });
-    const fs = document.getElementById('dbFeedScroll');
-    if (fs) fs.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Sync your YouTube account to see your feed.</p>';
-    const fv = document.getElementById('dbFavFeed');
-    if (fv) fv.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Sync to see your top channels.</p>';
+    const catSnapEl = document.getElementById('dbCatSnap');
+    if (catSnapEl) catSnapEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Sync your subscriptions to see data.</p>';
+    const attnEl = document.getElementById('dbAttention');
+    if (attnEl) attnEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Sync your subscriptions to see data.</p>';
+    const favFeedEl = document.getElementById('dbFavFeed');
+    if (favFeedEl) favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Sync your subscriptions to get started.</p>';
     return;
   }
 
   const deadChannels = findDeadChannels();
   const uncatCount = channels.filter(ch => chIsUncategorised(ch)).length;
+  const favCount = channels.filter(c => c.favourited).length;
 
-  // Health strip stats
-  const categorised = channels.filter(c => !chIsUncategorised(c)).length;
-  const catPctVal = Math.round((categorised / channels.length) * 100);
-  const catPctEl = document.getElementById('dbCatPct');
-  if (catPctEl) catPctEl.textContent = channels.length ? `${catPctVal}%` : '—';
-  const inactiveEl = document.getElementById('dbInactiveCount');
-  if (inactiveEl) inactiveEl.textContent = channels.length ? deadChannels.length : '—';
-  const uncatEl = document.getElementById('dbUncatCount');
-  if (uncatEl) uncatEl.textContent = channels.length ? uncatCount : '—';
+  // Greeting subtitle
+  const subEl = document.getElementById('dbGreetingSub');
+  if (subEl) subEl.innerHTML = favCount
+    ? `You have <strong style="color:var(--text-secondary)">${favCount} favourite channel${favCount!==1?'s':''}</strong>.`
+    : 'Star channels to track your favourites.';
 
-  // --- Quick Actions 1 ---
-  const qa1 = document.getElementById('dbQA1');
-  if (qa1) qa1.innerHTML = `
-    <div class="db-qa-row">
-      <span class="db-qa-label">Clean up your feed</span>
-      <button class="db-qa-btn" onclick="showView('analytics')">Review</button>
-    </div>
-    <div class="db-qa-row">
-      ${uncatCount === 0
-        ? `<span class="db-qa-check">✓</span><span class="db-qa-label db-qa-good">0 uncategorised</span>`
-        : `<span class="db-qa-num">${uncatCount}</span><span class="db-qa-label">uncategorised</span><button class="db-qa-btn" onclick="openModal('autoCatConfirmModal')">Sort</button>`}
-    </div>
-    <div class="db-qa-row">
-      <span class="db-qa-num">${categories.length}</span>
-      <span class="db-qa-label">categories active</span>
-    </div>`;
+  // Stat strip
+  const setStatEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setStatEl('dbStatSubs', channels.length.toLocaleString());
+  setStatEl('dbStatFavs', favCount.toLocaleString());
+  setStatEl('dbStatInactive', deadChannels.length.toLocaleString());
+  setStatEl('dbStatUncat', uncatCount.toLocaleString());
 
-  // --- Quick Actions 2 ---
-  const qa2 = document.getElementById('dbQA2');
-  if (qa2) qa2.innerHTML = `
-    <div class="db-qa-row">
-      <span class="db-qa-num ${deadChannels.length > 10 ? 'db-qa-num-warn' : ''}">${deadChannels.length}</span>
-      <span class="db-qa-label">inactive channels</span>
-      <button class="db-qa-btn" onclick="showView('analytics')">Review</button>
-    </div>
-    <div class="db-qa-row">
-      ${uncatCount === 0
-        ? `<span class="db-qa-check">✓</span><span class="db-qa-label db-qa-good">0 uncategorised</span>`
-        : `<span class="db-qa-num">${uncatCount}</span><span class="db-qa-label">uncategorised</span><button class="db-qa-btn" onclick="openModal('autoCatConfirmModal')">Review</button>`}
-    </div>
-    <div class="db-qa-row">
-      <span class="db-qa-num">${channels.length}</span>
-      <span class="db-qa-label">total subscriptions</span>
-    </div>`;
-
-  // --- Needs Attention ---
-  const attnEl = document.getElementById('dbAttention');
-  if (attnEl) {
-    const items = [
-      deadChannels.length ? {n: deadChannels.length, l:'inactive channels', btn:'Review', a:"showView('analytics')"} : null,
-      uncatCount ? {n: uncatCount, l:'uncategorised channels', btn:'Fix', a:"openModal('autoCatConfirmModal')"} : null,
-      catKeys.length < 3 ? {n: Math.max(0, 3 - catKeys.length), l:'more categories needed', btn:'Fix', a:"showView('analytics')"} : null,
-    ].filter(Boolean).slice(0, 3);
-    attnEl.innerHTML = items.length
-      ? items.map(i => `<div class="db-attention-row"><span class="db-attention-num">${i.n}</span><span class="db-attention-label">${i.l}</span><button class="db-attention-btn" onclick="${i.a}">${i.btn}</button></div>`).join('')
-      : '<p style="color:#34d399;font-size:.8125rem;padding:.375rem 0">✓ Everything looks good!</p>';
-  }
-
-  // --- Category Snapshot ---
+  // Category breakdown (new visual style)
   const catSnap = document.getElementById('dbCatSnap');
   if (catSnap) {
     if (catKeys.length) {
-      const sorted = [...catKeys].sort((a,b) => (catCounts[b]||0) - (catCounts[a]||0)).slice(0, 4);
-      const icons = {Music:'🎵',Sports:'⚽',Lifestyle:'❤',Tech:'💻',Technology:'💻',Gaming:'🎮',Education:'📚','Science & Education':'🔬',News:'📰','News & Politics':'📰',Film:'🎬','Film & TV':'🎬',Food:'🍳','Food & Cooking':'🍳',Travel:'✈',Health:'💪','Health & Fitness':'💪',Finance:'💰',Comedy:'😂',Entertainment:'🎭'};
+      const sorted = [...catKeys].sort((a,b) => (catCounts[b]||0) - (catCounts[a]||0)).slice(0, 8);
+      const maxCount = catCounts[sorted[0]] || 1;
       catSnap.innerHTML = sorted.map(cat => {
-        const pct = Math.round((catCounts[cat] / channels.length) * 100);
-        return `<div class="db-cat-snap-row">
-          <div class="db-cat-icon">${icons[cat] || '📁'}</div>
-          <div class="db-cat-info">
-            <div class="db-cat-name-row"><span class="db-cat-name">${cat}</span><span class="db-cat-pct">${pct}%</span></div>
-            <div class="db-cat-bar-track"><div class="db-cat-bar" style="width:${pct}%"></div></div>
-            <div class="db-cat-sub">${catCounts[cat]} channel${catCounts[cat]!==1?'s':''}</div>
-          </div>
+        const col = categoryColours[cat] || 'var(--accent)';
+        const barPct = Math.round((catCounts[cat] / maxCount) * 100);
+        return `<div class="db-cat-brow">
+          <div class="db-cat-brow-dot" style="background:${col}"></div>
+          <span class="db-cat-brow-name">${cat}</span>
+          <span class="db-cat-brow-count">${catCounts[cat]}</span>
+          <div class="db-cat-brow-barwrap"><div class="db-cat-brow-bar" style="width:${barPct}%;background:${col}"></div></div>
         </div>`;
       }).join('');
     } else {
-      catSnap.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">No categories yet.</p>';
+      catSnap.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">No categories yet.</p>';
     }
   }
 
-  // --- Profile ---
-  const profileCountEl = document.getElementById('dbProfileCount');
-  if (profileCountEl) profileCountEl.textContent = channels.length;
-  const profileCatsEl = document.getElementById('dbProfileCats');
-  if (profileCatsEl) {
-    const top2 = categories.slice(0, 2);
-    profileCatsEl.innerHTML = top2.length
-      ? top2.map((c,i) => `<strong>${c}</strong>${i < top2.length-1 ? ' & ' : ''}`).join('')
-      : '—';
-  }
-  const avatarEl = document.getElementById('dbProfileAvatar');
-  if (avatarEl && sbUser?.user_metadata?.avatar_url) {
-    avatarEl.innerHTML = `<img src="${sbUser.user_metadata.avatar_url}" alt="">`;
-  }
-
-  // --- Today's Feed ---
-  const feedScrollEl = document.getElementById('dbFeedScroll');
-  if (feedScrollEl) {
-    if (!accessToken) {
-      feedScrollEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Connect YouTube to see your feed.</p>';
+  // Needs attention — show actual inactive channel rows
+  const attnEl = document.getElementById('dbAttention');
+  if (attnEl) {
+    if (deadChannels.length) {
+      const COLORS = ['#e85d50','#b07ced','#378add','#ef9f27','#d4537e','#5dcaa5'];
+      attnEl.innerHTML = `<div class="db-inactive-desc">Channels with low engagement or no uploads</div>` +
+        deadChannels.slice(0, 6).map(({ch}, i) => {
+          const initials = ch.name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+          const col = (chCats(ch)[0] && categoryColours[chCats(ch)[0]]) || COLORS[i % COLORS.length];
+          const sub = ch.subscriberCount ? `${formatCount(ch.subscriberCount)} subs` : ch.reason || 'Low activity';
+          return `<div class="db-inactive-row2">
+            <div class="db-inactive-av2" style="background:${col}">${initials}</div>
+            <div class="db-inactive-info2">
+              <div class="db-inactive-name2">${ch.name}</div>
+              <div class="db-inactive-last2">${sub}</div>
+            </div>
+            <button class="db-inactive-act2" onclick="showView('analytics')">Review</button>
+          </div>`;
+        }).join('');
     } else {
-      try {
-        const videos = await fetchRecentVideos(channels.slice(0, 10));
-        if (videos.length) {
-
-          feedScrollEl.innerHTML = videos.slice(0, 4).map(v => {
-            const thumb = v.thumbnail ? `<img src="${v.thumbnail}" loading="lazy" alt="">` : `<div class="db-feed-ph"></div>`;
-            const safeId = (v.id||'').replace(/"/g,'');
-            const ch = channels.find(c => c.title === v.channel || c.name === v.channel);
-            const cat = ch ? (chCats(ch)[0] || '') : '';
-            const tagColor = (window._categoryColours && window._categoryColours[cat]) || 'var(--accent)';
-            const tagHtml = cat ? `<span class="db-feed-tag" style="background:${tagColor}22;color:${tagColor}">${cat}</span>` : '';
-            return `<div class="db-feed-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
-              <div class="db-feed-card-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
-              <div class="db-feed-card-title">${v.title}</div>
-              <div class="db-feed-card-meta">${v.channel} · ${timeAgo(v.publishedAt)}</div>
-              ${tagHtml}
-            </div>`;
-          }).join('');
-        } else {
-          feedScrollEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">No recent videos found.</p>';
-        }
-      } catch(e) {
-        feedScrollEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Could not load feed.</p>';
-      }
+      attnEl.innerHTML = '<p style="color:var(--accent);font-size:.8125rem;padding:.375rem 0">✓ Everything looks good!</p>';
     }
   }
 
-  // --- Recently Uploaded by Favourite Channels ---
+  // New from favourites feed
   const favFeedEl = document.getElementById('dbFavFeed');
   if (favFeedEl) {
     const favChannels = channels.filter(c => c.favourited);
     if (!favChannels.length) {
-      favFeedEl.innerHTML = `
-        <p class="db-fav-empty">You haven't added any channels to your favourites list yet.</p>
-        <button class="db-link-btn" onclick="showView('channels')">Add channels to your favourites list →</button>`;
+      favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Mark channels as favourites to see new videos here.</p>';
     } else if (!accessToken) {
-      favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Connect YouTube to see recent uploads.</p>';
+      favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Connect YouTube to see recent uploads.</p>';
     } else {
       try {
-        const favVideos = await fetchRecentVideos(favChannels.slice(0, 10));
+        const favVideos = await fetchRecentVideos(favChannels.slice(0, 12));
         if (favVideos.length) {
-          favFeedEl.innerHTML = `
-            <div class="db-feed-scroll">${favVideos.slice(0, 4).map(v => {
-              const thumb = v.thumbnail ? `<img src="${v.thumbnail}" loading="lazy" alt="">` : `<div class="db-feed-ph"></div>`;
-              const safeId = (v.id||'').replace(/"/g,'');
-              const ch = channels.find(c => c.title === v.channel || c.name === v.channel);
-              const cat = ch ? (chCats(ch)[0] || '') : '';
-              const tagColor = (window._categoryColours && window._categoryColours[cat]) || 'var(--accent)';
-              const tagHtml = cat ? `<span class="db-feed-tag" style="background:${tagColor}22;color:${tagColor}">${cat}</span>` : '';
-              return `<div class="db-feed-card" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
-                <div class="db-feed-card-thumb">${thumb}${v.duration?`<span class="db-feed-duration">${v.duration}</span>`:''}</div>
-                <div class="db-feed-card-title">${v.title}</div>
-                <div class="db-feed-card-meta">${v.channel} · ${timeAgo(v.publishedAt)}</div>
-                ${tagHtml}
-              </div>`;
-            }).join('')}</div>
-            <div class="db-fav-feed-ctas">
-              <button class="db-link-btn db-link-bottom" onclick="setHomeNav('feeds')">See more →</button>
-              <button class="db-link-btn db-link-bottom" onclick="showView('channels')">Add more channels to your favourites list →</button>
+          favFeedEl.innerHTML = favVideos.slice(0, 5).map(v => {
+            const safeId = (v.id||'').replace(/"/g,'');
+            const ch = channels.find(c => c.title === v.channel || c.name === v.channel);
+            const cat = ch ? (chCats(ch)[0] || '') : '';
+            const col = (cat && categoryColours[cat]) || 'var(--accent)';
+            const initials = v.channel ? v.channel.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase() : '?';
+            const thumbInner = v.thumbnail
+              ? `<img src="${v.thumbnail}" loading="lazy" alt="">`
+              : `<div class="db-fvc-grad" style="background:linear-gradient(135deg,${col}66,${col}22)"></div>`;
+            return `<div class="db-fvc" onclick="window.open('https://youtube.com/watch?v=${safeId}','_blank')">
+              <div class="db-fvc-thumb">${thumbInner}${v.duration?`<span class="db-fvc-dur">${v.duration}</span>`:''}</div>
+              <div class="db-fvc-body">
+                <div class="db-fvc-av" style="background:${col}">${initials}</div>
+                <div class="db-fvc-meta">
+                  <div class="db-fvc-title">${v.title}</div>
+                  <div class="db-fvc-ch">${v.channel}</div>
+                  <div class="db-fvc-stats">${timeAgo(v.publishedAt)}</div>
+                </div>
+              </div>
             </div>`;
+          }).join('');
         } else {
-          favFeedEl.innerHTML = `
-            <p style="color:var(--text-muted);font-size:.8125rem;margin-bottom:.625rem">No recent uploads from your favourite channels.</p>
-            <button class="db-link-btn" onclick="showView('channels')">Add more channels to your favourites list →</button>`;
+          favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">No recent uploads from your favourites.</p>';
         }
       } catch(e) {
-        favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem">Could not load.</p>';
+        favFeedEl.innerHTML = '<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Could not load feed.</p>';
       }
     }
   }
