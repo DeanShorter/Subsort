@@ -1898,7 +1898,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ─── Dashboard redesign ─── */
 .db-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
-.db-topbar-title{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.03em;color:#000}
+.db-topbar-title{font-family:'Outfit',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.03em;color:#000}
 .db-topbar-right{display:flex;align-items:center;gap:.75rem}
 .db-topbar-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:grid;place-items:center;border:none;cursor:pointer;color:#fff;overflow:hidden;flex-shrink:0;padding:0}
 .db-topbar-avatar img{width:100%;height:100%;object-fit:cover}
@@ -3034,6 +3034,10 @@ input[type=range]::-webkit-slider-thumb{
       <!-- PAGES section -->
       <div class="hnp-section">
         <div class="hnp-section-label">PAGES</div>
+        <button class="home-nav-item" data-nav="home" onclick="showView('home')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="home-nav-item-label">Dashboard</span>
+        </button>
         <button class="home-nav-item" data-nav="channels" onclick="showView('channels')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
           <span class="home-nav-item-label">Subscriptions</span>
@@ -8657,7 +8661,7 @@ function showView(view) {
     case 'home':
       homeView.classList.add('active');
       document.getElementById('navHome').classList.add('active');
-      document.querySelector('.home-nav-item[data-nav="feeds"]')?.classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="home"]')?.classList.add('active');
       document.title = 'Freedly - Dashboard';
       setHomeNav('home');
       break;
