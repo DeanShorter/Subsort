@@ -25,6 +25,7 @@ export default function FeedsPage() {
   const [feedView, setFeedView] = useState('hybrid');
   const [typeFilter, setTypeFilter] = useState('all');
   const [tokenExpired, setTokenExpired] = useState(false);
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
 
   const sortKey = SORT_OPTIONS[sortIdx].value;
   const allVideos = feedVideos;
