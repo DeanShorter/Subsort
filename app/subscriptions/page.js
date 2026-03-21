@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '../components/AuthProvider';
 import { useChannelData } from '../components/ChannelDataProvider';
 import ChannelCard from '../components/ChannelCard';
@@ -78,6 +78,14 @@ export default function SubscriptionsPage() {
   }, [activeCategory, subcategories]);
 
   const uncatCount = useMemo(() => channels.filter(c => chIsUncategorised(c)).length, [channels, chIsUncategorised]);
+
+  // Register callback so the sidebar can set the active category
+  useEffect(() => {
+    window.__subsortCat = (cat) => {
+      handleCategoryClick(cat);
+    };
+    return () => { delete window.__subsortCat; };
+  }, [handleCategoryClick]);
 
   if (loading) {
     return <div className="home-feed-loading"><span className="spinner" /> Loading subscriptions…</div>;
@@ -175,77 +183,32 @@ export default function SubscriptionsPage() {
         )}
       </div>
 
-      {/* Sidebar category pills (inside content area) */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Category sidebar */}
-        <div style={{ width: 180, flexShrink: 0, overflowY: 'auto', padding: '0.75rem 0.5rem', borderRight: '1px solid var(--border-subtle)' }}>
-          <button
-            className={`home-nav-item${activeCategory === 'all' ? ' active' : ''}`}
-            onClick={() => handleCategoryClick('all')}
-            style={{ fontSize: '.75rem' }}
-          >
-            <span className="home-nav-item-label">All</span>
-            <span className="hnp-count">{channels.length}</span>
-          </button>
-          <button
-            className={`home-nav-item hnp-fav-btn${activeCategory === '__favs__' ? ' active' : ''}`}
-            onClick={() => handleCategoryClick('__favs__')}
-            style={{ fontSize: '.75rem' }}
-          >
-            <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg>
-            <span className="home-nav-item-label">Favourites</span>
-            <span className="hnp-count">{channels.filter(c => c.favourited).length}</span>
-          </button>
-          <button
-            className={`home-nav-item${activeCategory === '__uncat__' ? ' active' : ''}`}
-            onClick={() => handleCategoryClick('__uncat__')}
-            style={{ fontSize: '.75rem' }}
-          >
-            <span className="home-nav-item-label">Uncategorised</span>
-            <span className="hnp-count">{uncatCount}</span>
-          </button>
-          <hr className="home-nav-divider" style={{ margin: '.5rem 0' }} />
-          {categories.map(cat => (
-            <button
-              key={cat}
-              className={`home-nav-item${activeCategory === cat ? ' active' : ''}`}
-              onClick={() => handleCategoryClick(cat)}
-              style={{ fontSize: '.75rem' }}
-            >
-              <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || '#888' }} />
-              <span className="home-nav-item-label">{cat}</span>
-              <span className="hnp-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
-            </button>
-          ))}
-        </div>
+      {/* Channel grid */}
+      <div className="channels-area" id="channelsArea" style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
+        {filtered.length === 0 ? (
+          <p style={{ color: 'var(--text-muted)', padding: '2rem', textAlign: 'center' }}>
+            {channels.length === 0 ? 'No channels yet. Sync your YouTube subscriptions to get started.' : 'No channels match your filters.'}
+          </p>
+        ) : (
+          <div className={`channel-grid view-${chanView}`}>
+            {filtered.map((ch, i) => (
+              <ChannelCard
+                key={ch.id}
+                channel={ch}
+                view={chanView}
+                index={i}
+                onClick={(id) => setEditingId(id)}
+              />
+            ))}
+          </div>
+        )}
 
-        {/* Channel grid */}
-        <div className="channels-area" id="channelsArea" style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
-          {filtered.length === 0 ? (
-            <p style={{ color: 'var(--text-muted)', padding: '2rem', textAlign: 'center' }}>
-              {channels.length === 0 ? 'No channels yet. Sync your YouTube subscriptions to get started.' : 'No channels match your filters.'}
-            </p>
-          ) : (
-            <div className={`channel-grid view-${chanView}`}>
-              {filtered.map((ch, i) => (
-                <ChannelCard
-                  key={ch.id}
-                  channel={ch}
-                  view={chanView}
-                  index={i}
-                  onClick={(id) => setEditingId(id)}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Results count */}
-          {search || activeCategory !== 'all' ? (
-            <div style={{ padding: '.5rem 0', fontSize: '.75rem', color: 'var(--text-muted)' }}>
-              Showing {filtered.length} of {channels.length} channels
-            </div>
-          ) : null}
-        </div>
+        {/* Results count */}
+        {search || activeCategory !== 'all' ? (
+          <div style={{ padding: '.5rem 0', fontSize: '.75rem', color: 'var(--text-muted)' }}>
+            Showing {filtered.length} of {channels.length} channels
+          </div>
+        ) : null}
       </div>
 
       {/* Edit channel modal */}
