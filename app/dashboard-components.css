@@ -1975,7 +1975,7 @@ input[type=range]::-webkit-slider-thumb{
 .db-greeting h1{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.04em;margin-bottom:.375rem;color:var(--text-primary)}
 .db-greeting h1 span{color:var(--accent)}
 .db-greeting p{font-size:.875rem;color:var(--text-muted)}
-.db-stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.75rem}
+.db-stat-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:1.75rem}
 .db-stat-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1rem 1.125rem;transition:border-color .2s;cursor:default}
 .db-stat-card:hover{border-color:var(--surface-raised)}
 .db-stat-label{font-size:.625rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.375rem}

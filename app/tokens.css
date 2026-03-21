@@ -280,3 +280,13 @@
   --cat-color-19: #c8a87c;
   --cat-color-20: #7cc8c8;
 }
+
+/* ── Watch streak ── */
+.streak-row{display:flex;gap:4px;margin-top:.5rem}
+.streak-dot{width:18px;height:18px;border-radius:4px;background:var(--surface-active);flex-shrink:0}
+.streak-dot.active{background:var(--accent)}
+.streak-dot.today{background:var(--accent);opacity:.5}
+
+/* ── Change metrics ── */
+.change-up-metric{font-size:.6875rem;font-weight:500;color:var(--accent);margin-top:.25rem}
+.change-down-metric{font-size:.6875rem;font-weight:500;color:var(--color-red-500);margin-top:.25rem}

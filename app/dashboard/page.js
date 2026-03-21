@@ -37,6 +37,101 @@ export default function DashboardPage() {
   const uncatCount = useMemo(() => channels.filter(ch => chIsUncategorised(ch)).length, [channels, chIsUncategorised]);
   const favCount = useMemo(() => channels.filter(c => c.favourited).length, [channels]);
 
+  // ── Change metrics (compare to stored snapshots) ──────
+  const changes = useMemo(() => {
+    if (!channels.length) return { subs: null, favs: null, inactive: null };
+
+    const now = Date.now();
+    const WEEK = 7 * 24 * 60 * 60 * 1000;
+    const MONTH = 30 * 24 * 60 * 60 * 1000;
+
+    // Current values
+    const current = {
+      subs: channels.length,
+      favs: favCount,
+      inactive: deadChannels.length,
+      uncat: uncatCount,
+      ts: now,
+    };
+
+    // Read stored snapshots
+    let weekSnap = null;
+    let monthSnap = null;
+    try {
+      const snapshots = JSON.parse(localStorage.getItem('subsort_stat_snapshots') || '[]');
+      // Find oldest snapshot within the last week / month
+      for (const snap of snapshots) {
+        if (now - snap.ts <= WEEK && now - snap.ts > 60000) weekSnap = weekSnap || snap;
+        if (now - snap.ts <= MONTH && now - snap.ts > 60000) monthSnap = monthSnap || snap;
+      }
+    } catch (e) {}
+
+    // Store current snapshot (keep last 30 entries)
+    try {
+      const snapshots = JSON.parse(localStorage.getItem('subsort_stat_snapshots') || '[]');
+      // Only add if last entry is >1 hour old
+      const last = snapshots[snapshots.length - 1];
+      if (!last || now - last.ts > 60 * 60 * 1000) {
+        snapshots.push(current);
+        // Keep only last 30
+        if (snapshots.length > 30) snapshots.splice(0, snapshots.length - 30);
+        localStorage.setItem('subsort_stat_snapshots', JSON.stringify(snapshots));
+      }
+    } catch (e) {}
+
+    return {
+      subs: weekSnap ? { diff: current.subs - weekSnap.subs, period: 'this week' } : null,
+      favs: weekSnap ? { diff: current.favs - weekSnap.favs, period: 'this week' } : null,
+      inactive: monthSnap ? { diff: current.inactive - monthSnap.inactive, period: 'this month' } : null,
+      uncat: weekSnap ? { diff: current.uncat - weekSnap.uncat, period: 'this week' } : null,
+    };
+  }, [channels, favCount, deadChannels, uncatCount]);
+
+  // ── Watch streak ──────────────────────────────────────
+  const streak = useMemo(() => {
+    if (!channels.length) return { count: 0, dots: [] };
+
+    const KEY = 'subsort_watch_streak';
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    let data;
+    try {
+      data = JSON.parse(localStorage.getItem(KEY) || '{}');
+    } catch (e) { data = {}; }
+
+    // Record today's visit
+    if (!data.days) data.days = [];
+    if (!data.days.includes(today)) data.days.push(today);
+
+    // Keep only last 30 days
+    if (data.days.length > 30) data.days = data.days.slice(-30);
+    localStorage.setItem(KEY, JSON.stringify(data));
+
+    // Calculate streak: count consecutive days ending at today
+    const sorted = [...data.days].sort().reverse();
+    let count = 0;
+    const d = new Date();
+    for (let i = 0; i < 14; i++) {
+      const check = new Date(d);
+      check.setDate(d.getDate() - i);
+      const dateStr = check.toISOString().slice(0, 10);
+      if (sorted.includes(dateStr)) count++;
+      else break;
+    }
+
+    // Build 14-day dot array (oldest first)
+    const dots = [];
+    for (let i = 13; i >= 0; i--) {
+      const check = new Date(d);
+      check.setDate(d.getDate() - i);
+      const dateStr = check.toISOString().slice(0, 10);
+      const isToday = i === 0;
+      const isActive = sorted.includes(dateStr);
+      dots.push({ isActive, isToday });
+    }
+
+    return { count, dots };
+  }, [channels]);
+
   // ── Category breakdown ─────────────────────────────────
   const catBreakdown = useMemo(() => {
     const counts = {};
@@ -99,18 +194,47 @@ export default function DashboardPage() {
             <div className="db-stat-card">
               <div className="db-stat-label">Subscriptions</div>
               <div className="db-stat-value">{channels.length}</div>
+              {changes.subs && changes.subs.diff !== 0 && (
+                <div className={changes.subs.diff > 0 ? 'change-up-metric' : 'change-down-metric'}>
+                  {changes.subs.diff > 0 ? '+' : ''}{changes.subs.diff} {changes.subs.period}
+                </div>
+              )}
             </div>
             <div className="db-stat-card">
               <div className="db-stat-label">Favourites</div>
               <div className="db-stat-value db-stat-mint">{favCount}</div>
+              {changes.favs && changes.favs.diff !== 0 && (
+                <div className={changes.favs.diff > 0 ? 'change-up-metric' : 'change-down-metric'}>
+                  {changes.favs.diff > 0 ? '+' : ''}{changes.favs.diff} {changes.favs.period}
+                </div>
+              )}
             </div>
             <div className="db-stat-card">
               <div className="db-stat-label">Inactive channels</div>
               <div className="db-stat-value db-stat-red">{deadChannels.length}</div>
+              {changes.inactive && changes.inactive.diff !== 0 && (
+                <div className={changes.inactive.diff > 0 ? 'change-down-metric' : 'change-up-metric'}>
+                  {changes.inactive.diff > 0 ? '+' : ''}{changes.inactive.diff} {changes.inactive.period}
+                </div>
+              )}
             </div>
             <div className="db-stat-card">
               <div className="db-stat-label">Uncategorised</div>
               <div className="db-stat-value">{uncatCount}</div>
+              {changes.uncat && changes.uncat.diff !== 0 && (
+                <div className={changes.uncat.diff < 0 ? 'change-up-metric' : 'change-down-metric'}>
+                  {changes.uncat.diff > 0 ? '+' : ''}{changes.uncat.diff} {changes.uncat.period}
+                </div>
+              )}
+            </div>
+            <div className="db-stat-card">
+              <div className="db-stat-label">Watch Streak</div>
+              <div className="db-stat-value">{streak.count}<span style={{ fontSize: '.75rem', fontWeight: 500, color: 'var(--text-muted)', marginLeft: 2 }}>days</span></div>
+              <div className="streak-row">
+                {streak.dots.map((dot, i) => (
+                  <div key={i} className={`streak-dot${dot.isActive ? (dot.isToday ? ' today' : ' active') : ''}`} />
+                ))}
+              </div>
             </div>
           </div>
 
