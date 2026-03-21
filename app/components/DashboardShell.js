@@ -4,6 +4,7 @@ import { AuthProvider } from './AuthProvider';
 import { useAuth } from './AuthContext';
 import { ChannelDataProvider } from './ChannelDataProvider';
 import DashboardSidebar from './DashboardSidebar';
+import Toast from './Toast';
 
 const DASHBOARD_ROUTES = [
   '/dashboard',
@@ -23,6 +24,7 @@ function DashboardInner({ children }) {
         <div className="app-content" id="appContent">
           {children}
         </div>
+        <Toast />
       </div>
     </ChannelDataProvider>
   );

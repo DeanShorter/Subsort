@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from './AuthContext';
 import { useChannelData } from './ChannelDataContext';
 import { syncYouTubeSubscriptions } from '../../lib/sync';
+import { showToast } from './Toast';
 
 // Routes that show the categories section in the sidebar
 const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];
@@ -65,13 +66,14 @@ export default function DashboardSidebar() {
   const handleSync = useCallback(async () => {
     if (!accessToken || !user || syncing) return;
 
-    // Throttle: check last sync
+    // Throttle: check last sync (30 min cooldown)
     const lastSync = parseInt(localStorage.getItem('subsort_sync_ts') || '0');
     if (lastSync && channels.length > 0) {
       const elapsed = Date.now() - lastSync;
-      const mins = Math.round(elapsed / 60000);
       if (elapsed < 30 * 60 * 1000) {
-        if (!confirm(`You last synced ${mins} minutes ago. Sync again?`)) return;
+        const mins = Math.round(elapsed / 60000);
+        showToast(`Synced ${mins} minute${mins !== 1 ? 's' : ''} ago — try again later.`, 3000);
+        return;
       }
     }
 
@@ -79,20 +81,23 @@ export default function DashboardSidebar() {
     setSyncProgress({ label: 'Starting…', detail: '', pct: 0 });
 
     try {
-      await syncYouTubeSubscriptions(
+      const result = await syncYouTubeSubscriptions(
         accessToken, user.id, channels,
         (label, detail, pct) => setSyncProgress({ label, detail, pct })
       );
       // Reload data from DB to pick up new channels
       await reload();
       setSyncProgress({ label: 'Done!', detail: '', pct: 100 });
+      showToast(`Synced! ${result.newCount} new channels, ${result.channels.length} total`);
       setTimeout(() => { setSyncProgress(null); setSyncing(false); }, 1500);
     } catch (e) {
       if (e.message === 'SESSION_EXPIRED') {
-        alert('YouTube session expired — please sign in again.');
+        showToast('YouTube session expired — please sign in again.');
         signIn();
+      } else if (e.message?.includes('quota')) {
+        showToast('YouTube API quota exceeded — resets at midnight PT.', 5000);
       } else {
-        alert('Sync failed: ' + e.message);
+        showToast('Sync failed: ' + e.message, 5000);
       }
       setSyncProgress(null);
       setSyncing(false);
