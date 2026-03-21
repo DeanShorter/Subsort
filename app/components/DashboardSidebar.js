@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from './AuthProvider';
@@ -56,6 +56,13 @@ export default function DashboardSidebar() {
   const { user, signIn, signOut } = useAuth();
   const { channels, categories, subcategories, categoryColours, chHasCat } = useChannelData();
   const [openCats, setOpenCats] = useState(new Set());
+  const [activeCat, setActiveCat] = useState('all');
+  const [activeSub, setActiveSub] = useState(null);
+
+  // Reset category selection when navigating to a non-category page
+  useEffect(() => {
+    if (!showCategories) { setActiveCat('all'); setActiveSub(null); }
+  }, [showCategories]);
 
   const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
   const showCategories = CAT_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'));
@@ -86,12 +93,12 @@ export default function DashboardSidebar() {
         {showCategories && categories.length > 0 && (
           <div className="hnp-section">
             <div className="hnp-section-label">CATEGORIES</div>
-            <Link href={pathname} className="home-nav-item" onClick={() => window.__subsortCat?.('all')}>
+            <button className={`home-nav-item${activeCat === 'all' ? ' active' : ''}`} onClick={() => { setActiveCat('all'); setActiveSub(null); window.__subsortCat?.('all'); }}>
               <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
               <span className="home-nav-item-label">All Categories</span>
               <span className="hnp-count">{channels.length}</span>
-            </Link>
-            <button className="home-nav-item hnp-fav-btn" onClick={() => window.__subsortCat?.('__favs__')}>
+            </button>
+            <button className={`home-nav-item hnp-fav-btn${activeCat === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCat('__favs__'); setActiveSub(null); window.__subsortCat?.('__favs__'); }}>
               <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/></svg>
               <span className="home-nav-item-label">Favourites</span>
               <span className="hnp-count">{channels.filter(c => c.favourited).length}</span>
@@ -111,8 +118,8 @@ export default function DashboardSidebar() {
               return (
                 <div key={cat} className={`hnp-cat-group${isOpen ? ' open' : ''}`}>
                   <button
-                    className="home-nav-item"
-                    onClick={() => window.__subsortCat?.(cat)}
+                    className={`home-nav-item${activeCat === cat ? ' active' : ''}`}
+                    onClick={() => { setActiveCat(cat); setActiveSub(null); window.__subsortCat?.(cat); }}
                   >
                     <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || '#888' }} />
                     <span className="home-nav-item-label">{cat}</span>
@@ -128,8 +135,8 @@ export default function DashboardSidebar() {
                       {subs.map(sub => (
                         <button
                           key={sub}
-                          className="hnp-sub-item"
-                          onClick={() => window.__subsortSub?.(cat, sub)}
+                          className={`hnp-sub-item${activeCat === cat && activeSub === sub ? ' active' : ''}`}
+                          onClick={() => { setActiveCat(cat); setActiveSub(prev => prev === sub ? null : sub); window.__subsortSub?.(cat, sub); }}
                         >
                           <span className="home-nav-item-label">{sub}</span>
                           <span className="hnp-count">
