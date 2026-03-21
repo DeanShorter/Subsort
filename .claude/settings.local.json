@@ -13,7 +13,10 @@
       "Bash(grep -o \"#[0-9a-fA-F]\\\\{3,8\\\\}\" /d/Subsort/public/dashboard/index.html)",
       "Bash(sed -n '18,3175p' \"D:/Subsort/public/dashboard/index.html\")",
       "Bash(\"D:/Subsort/public/dashboard/components.css\")",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(npx next:*)",
+      "Bash(npx next@14 build)",
+      "Bash(npm install:*)"
     ]
   }
 }

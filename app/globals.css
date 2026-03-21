@@ -1,27 +1,12 @@
+/* ═══════════════════════════════════════════
+   GLOBAL STYLES
+   Tokens are defined in tokens.css (imported via layout).
+   This file handles base resets and light theme overrides.
+   ═══════════════════════════════════════════ */
+
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@700&display=swap');
 
-:root {
-  --bg-primary: #0a0a14;
-  --bg-secondary: #0c0c18;
-  --bg-card: #12121e;
-  --bg-card-hover: #18182a;
-  --bg-surface: #141422;
-  --bg-surface-raised: #1a1a2e;
-  --border-subtle: #1e1e32;
-  --text-primary: #f0f0f0;
-  --text-secondary: #999;
-  --text-muted: #666;
-  --accent: #38E9B1;
-  --accent-hover: #5DEFC6;
-  --accent-pressed: #28C99A;
-  --accent-soft: rgba(56,233,177,0.12);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --font-body: 'DM Sans', sans-serif;
-  --font-display: 'Sora', sans-serif;
-}
-
+/* Light theme overrides — tokens.css defines the dark (default) palette */
 [data-theme="light"] {
   --bg-primary: #f5f5f0;
   --bg-secondary: #efefea;
@@ -30,9 +15,18 @@
   --bg-surface: #f0f0eb;
   --bg-surface-raised: #e8e8e2;
   --border-subtle: #e0e0d8;
+  --border-hover: #d0d0c8;
   --text-primary: #111111;
   --text-secondary: #555555;
   --text-muted: #888888;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-700: #d0d0c8;
+  --color-gray-600: #c0c0b8;
+  --surface-hover: rgba(0, 0, 0, 0.03);
+  --surface-active: rgba(0, 0, 0, 0.05);
+  --surface-selected: rgba(0, 0, 0, 0.07);
+  --surface-raised: rgba(0, 0, 0, 0.08);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

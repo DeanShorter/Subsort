@@ -1,5 +1,8 @@
+import './tokens.css';
+import './dashboard-components.css';
 import './globals.css';
 import { ThemeProvider } from './components/ThemeProvider';
+import DashboardShell from './components/DashboardShell';
 import Script from 'next/script';
 
 export const metadata = {
@@ -22,14 +25,8 @@ export const metadata = {
     title: 'Freedly — Organise & Discover the Best YouTube Channels',
     description: 'Automatically categorise your YouTube subscriptions and discover quality creators.',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  icons: {
-    icon: '/icon.svg',
-    shortcut: '/icon.svg',
-  },
+  robots: { index: true, follow: true },
+  icons: { icon: '/icon.svg', shortcut: '/icon.svg' },
 };
 
 export default function RootLayout({ children }) {
@@ -39,7 +36,9 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t)})()` }} />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <DashboardShell>{children}</DashboardShell>
+        </ThemeProvider>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-FKDXKKM2R0" strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-FKDXKKM2R0');` }} />
       </body>
