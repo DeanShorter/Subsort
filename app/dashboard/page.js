@@ -55,7 +55,9 @@ export default function DashboardPage() {
     if (!accessToken || !channels.length) return;
     const favChannels = channels.filter(c => c.favourited).slice(0, 12);
     if (!favChannels.length) return;
-    fetchRecentVideos(favChannels, accessToken).then(vids => setFavVideos(vids.slice(0, 5)));
+    fetchRecentVideos(favChannels, accessToken)
+      .then(vids => setFavVideos(vids.slice(0, 5)))
+      .catch(() => {});
   }, [accessToken, channels]);
 
   // ── Greeting subtitle ──────────────────────────────────
