@@ -91,5 +91,3 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-
-// useAuth hook is exported from ./AuthContext.js

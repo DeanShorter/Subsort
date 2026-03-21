@@ -177,5 +177,3 @@ export function ChannelDataProvider({ children, user }) {
     </ChannelDataContext.Provider>
   );
 }
-
-// useChannelData hook is exported from ./ChannelDataContext.js
