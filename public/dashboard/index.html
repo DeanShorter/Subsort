@@ -1529,8 +1529,12 @@ input[type=range]::-webkit-slider-thumb{
   transition:transform .2s;
 }
 .hnp-chevron svg{width:10px;height:10px;stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round}
-.hnp-cat-group.open > .home-nav-item .hnp-chevron{transform:rotate(90deg)}
-.home-nav-primary.collapsed .hnp-chevron{display:none}
+.hnp-chevron-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;padding:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:background .15s}
+.hnp-chevron-btn:hover{background:rgba(255,255,255,.06)}
+.hnp-chevron-btn.open .hnp-chevron{transform:rotate(180deg)}
+.hnp-cat-group{position:relative}
+.hnp-cat-group>.home-nav-item{padding-right:28px}
+.home-nav-primary.collapsed .hnp-chevron-btn{display:none}
 
 /* Subcategory rows */
 .hnp-sub-items{max-height:0;overflow:hidden;transition:max-height .25s ease}
@@ -1543,8 +1547,8 @@ input[type=range]::-webkit-slider-thumb{
   font-size:12px;color:var(--text-muted);font-weight:500;
   font-family:var(--font-body);
 }
-.hnp-sub-item:hover{background:rgba(255,255,255,.04);color:var(--text-secondary)}
-.hnp-sub-item.active{color:var(--text-primary);background:rgba(255,255,255,.06)}
+.hnp-sub-item:hover{color:var(--text-secondary)}
+.hnp-sub-item.active{color:var(--accent)}
 .hnp-sub-count{margin-left:auto;font-size:10px;color:var(--text-muted)}
 .hnp-sub-item.active .hnp-sub-count{color:var(--text-secondary)}
 
@@ -5363,6 +5367,8 @@ function updateSideNavCounts() {
 }
 
 function _isFeedActive() {
+  const hv = document.getElementById('homeView');
+  if (!hv || !hv.classList.contains('active')) return false;
   const fm = document.getElementById('homeMain');
   return fm && fm.style.display !== 'none';
 }
@@ -5378,14 +5384,37 @@ function sideNavCatClick(key) {
   }
 }
 
+// Track which sidebar cat groups are expanded (user-controlled, not auto)
+const _sideNavOpenCats = new Set();
+
+function sideNavToggleSubs(cat) {
+  if (_sideNavOpenCats.has(cat)) _sideNavOpenCats.delete(cat);
+  else _sideNavOpenCats.add(cat);
+  renderSideNavCategories();
+}
+
 function sideNavSubClick(cat, sub) {
   if (_isFeedActive()) {
-    setFeedSubcategory(cat, sub);
-    renderSideNavCategories();
+    // Toggle: clicking the same sub deselects it
+    if (activeFeedSubcategory === sub && activeFeedCategory === cat) {
+      activeFeedSubcategory = null;
+      renderSideNavCategories();
+      loadFeedCategory(cat, null);
+    } else {
+      setFeedSubcategory(cat, sub);
+      renderSideNavCategories();
+    }
   } else {
-    showView('channels');
-    setCategory(cat);
-    setSubcategory(sub);
+    // Toggle: clicking the same sub deselects it
+    if (activeCategory === cat && activeSubcategory === sub) {
+      activeSubcategory = null;
+      renderChannels();
+      renderSideNavCategories();
+    } else {
+      showView('channels');
+      setCategory(cat);
+      setSubcategory(sub);
+    }
   }
 }
 
@@ -5415,15 +5444,16 @@ function renderSideNavCategories() {
     const count = channels.filter(ch => chHasCat(ch, c)).length;
     const subs = subcategories[c] || [];
     const isActive = curCat === c;
-    const hasOpen = isActive && subs.length > 0;
-    const openClass = hasOpen ? ' open' : '';
+    const isOpen = _sideNavOpenCats.has(c);
 
     if (subs.length > 0) {
-      html += `<div class="hnp-cat-group${openClass}">`;
+      html += `<div class="hnp-cat-group${isOpen ? ' open' : ''}">`;
       html += `<button class="home-nav-item${isActive ? ' active' : ''}" data-nav="cat-${c}" onclick="sideNavCatClick('${safeKey}')">
         <span class="hnp-cat-dot" style="background:${colour}"></span>
         <span class="home-nav-item-label">${c}</span>
         <span class="hnp-count">${count}</span>
+      </button>`;
+      html += `<button class="hnp-chevron-btn${isOpen ? ' open' : ''}" onclick="event.stopPropagation();sideNavToggleSubs('${safeKey}')">
         <svg class="hnp-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 6l4 4 4-4"/></svg>
       </button>`;
       html += `<div class="hnp-sub-items">`;
