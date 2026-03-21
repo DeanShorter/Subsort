@@ -1,11 +1,12 @@
 'use client';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from './AuthProvider';
 import { useChannelData } from './ChannelDataProvider';
 
 // Routes that show the categories section in the sidebar
-const CAT_ROUTES = ['/subscriptions', '/feeds'];
+const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];
 
 const PAGE_ITEMS = [
   {
@@ -53,7 +54,8 @@ function NavItem({ href, label, svg, isActive }) {
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const { user, signIn, signOut } = useAuth();
-  const { channels, categories, categoryColours, chHasCat } = useChannelData();
+  const { channels, categories, subcategories, categoryColours, chHasCat } = useChannelData();
+  const [openCats, setOpenCats] = useState(new Set());
 
   const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
   const showCategories = CAT_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'));
@@ -94,17 +96,52 @@ export default function DashboardSidebar() {
               <span className="home-nav-item-label">Favourites</span>
               <span className="hnp-count">{channels.filter(c => c.favourited).length}</span>
             </button>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                className="home-nav-item"
-                onClick={() => window.__subsortCat?.(cat)}
-              >
-                <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || '#888' }} />
-                <span className="home-nav-item-label">{cat}</span>
-                <span className="hnp-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
-              </button>
-            ))}
+            {categories.map(cat => {
+              const subs = subcategories[cat] || [];
+              const isOpen = openCats.has(cat);
+              const toggleOpen = (e) => {
+                e.stopPropagation();
+                setOpenCats(prev => {
+                  const next = new Set(prev);
+                  if (next.has(cat)) next.delete(cat); else next.add(cat);
+                  return next;
+                });
+              };
+
+              return (
+                <div key={cat} className={`hnp-cat-group${isOpen ? ' open' : ''}`}>
+                  <button
+                    className="home-nav-item"
+                    onClick={() => window.__subsortCat?.(cat)}
+                  >
+                    <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || '#888' }} />
+                    <span className="home-nav-item-label">{cat}</span>
+                    <span className="hnp-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
+                  </button>
+                  {subs.length > 0 && (
+                    <button className={`hnp-chevron-btn${isOpen ? ' open' : ''}`} onClick={toggleOpen}>
+                      <svg className="hnp-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12"><path d="M4 6l4 4 4-4" /></svg>
+                    </button>
+                  )}
+                  {subs.length > 0 && (
+                    <div className="hnp-sub-items">
+                      {subs.map(sub => (
+                        <button
+                          key={sub}
+                          className="hnp-sub-item"
+                          onClick={() => window.__subsortSub?.(cat, sub)}
+                        >
+                          <span className="home-nav-item-label">{sub}</span>
+                          <span className="hnp-count">
+                            {channels.filter(c => chHasCat(c, cat) && c.subcategory === sub).length}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
 

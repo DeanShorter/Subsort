@@ -79,12 +79,14 @@ export default function SubscriptionsPage() {
 
   const uncatCount = useMemo(() => channels.filter(c => chIsUncategorised(c)).length, [channels, chIsUncategorised]);
 
-  // Register callback so the sidebar can set the active category
+  // Register callbacks so the sidebar can set category/subcategory
   useEffect(() => {
-    window.__subsortCat = (cat) => {
-      handleCategoryClick(cat);
+    window.__subsortCat = (cat) => handleCategoryClick(cat);
+    window.__subsortSub = (cat, sub) => {
+      setActiveCategory(cat);
+      setActiveSubcategory(prev => prev === sub ? null : sub);
     };
-    return () => { delete window.__subsortCat; };
+    return () => { delete window.__subsortCat; delete window.__subsortSub; };
   }, [handleCategoryClick]);
 
   if (loading) {
