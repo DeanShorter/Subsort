@@ -7795,7 +7795,12 @@ function setSidebarMode(mode) {
   });
   settings.sidebarMode = mode;
   save();
-  document.getElementById('sidebarCtrlMenu').classList.remove('open');
+  document.getElementById('sidebarCtrlMenu')?.classList.remove('open');
+}
+function toggleSidebar() {
+  const nav = document.getElementById('homePrimaryNav');
+  const isCollapsed = nav.classList.contains('collapsed');
+  setSidebarMode(isCollapsed ? 'expanded' : 'collapsed');
 }
 function _navHoverEnter() { this.classList.remove('collapsed'); }
 function _navHoverLeave() { this.classList.add('collapsed'); }
