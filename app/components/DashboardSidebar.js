@@ -59,13 +59,13 @@ export default function DashboardSidebar() {
   const [activeCat, setActiveCat] = useState('all');
   const [activeSub, setActiveSub] = useState(null);
 
+  const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
+  const showCategories = CAT_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'));
+
   // Reset category selection when navigating to a non-category page
   useEffect(() => {
     if (!showCategories) { setActiveCat('all'); setActiveSub(null); }
   }, [showCategories]);
-
-  const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
-  const showCategories = CAT_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'));
 
   return (
     <nav className="home-nav-primary">
