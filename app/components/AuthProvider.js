@@ -17,36 +17,58 @@ export function AuthProvider({ children }) {
     const cachedTier = localStorage.getItem('subsort_user_tier');
     if (cachedTier) setUserTier(cachedTier);
 
+    let resolved = false;
+
+    const handleSession = async (session) => {
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+      setUser(session.user);
+
+      if (session.provider_token) {
+        setAccessToken(session.provider_token);
+        localStorage.setItem('subsort_yt_token', session.provider_token);
+      }
+
+      // Fetch user tier (non-blocking for loading state)
+      setLoading(false);
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('tier')
+          .eq('id', session.user.id)
+          .single();
+        if (profile?.tier) {
+          setUserTier(profile.tier);
+          localStorage.setItem('subsort_user_tier', profile.tier);
+        }
+      } catch (e) {
+        // Non-fatal — falls back to cached value
+      }
+    };
+
+    // Explicitly get session first — don't rely solely on onAuthStateChange
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!resolved) {
+        resolved = true;
+        handleSession(session);
+      }
+    }).catch(() => {
+      if (!resolved) { resolved = true; setLoading(false); }
+    });
+
+    // Also listen for future auth changes (sign in, sign out, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
-          setUser(session.user);
-
-          // Extract Google provider token for YouTube API
-          if (session.provider_token) {
-            setAccessToken(session.provider_token);
-            localStorage.setItem('subsort_yt_token', session.provider_token);
+        if (event === 'INITIAL_SESSION') {
+          // Only handle if getSession hasn't resolved yet
+          if (!resolved) {
+            resolved = true;
+            handleSession(session);
           }
-
-          // Fetch user tier
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('tier')
-              .eq('id', session.user.id)
-              .single();
-            if (profile?.tier) {
-              setUserTier(profile.tier);
-              localStorage.setItem('subsort_user_tier', profile.tier);
-            }
-          } catch (e) {
-            // Non-fatal — falls back to cached value
-          }
-
-          setLoading(false);
-        } else if (event === 'INITIAL_SESSION' && !session) {
-          // No session on initial load
-          setLoading(false);
+        } else if (event === 'SIGNED_IN') {
+          handleSession(session);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
           setAccessToken(null);
@@ -62,7 +84,15 @@ export function AuthProvider({ children }) {
       }
     );
 
-    return () => subscription.unsubscribe();
+    // Safety timeout — if neither resolves in 5s, stop loading
+    const timeout = setTimeout(() => {
+      if (!resolved) { resolved = true; setLoading(false); }
+    }, 5000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const signIn = useCallback(async () => {
