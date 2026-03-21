@@ -1,9 +1,10 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from './AuthContext';
 import { useChannelData } from './ChannelDataContext';
+import { syncYouTubeSubscriptions } from '../../lib/sync';
 
 // Routes that show the categories section in the sidebar
 const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];
@@ -53,11 +54,50 @@ function NavItem({ href, label, svg, isActive }) {
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
-  const { user, signIn, signOut } = useAuth();
-  const { channels, categories, subcategories, categoryColours, chHasCat } = useChannelData();
+  const { user, accessToken, signIn, signOut } = useAuth();
+  const { channels, categories, subcategories, categoryColours, chHasCat, reload } = useChannelData();
   const [openCats, setOpenCats] = useState(new Set());
   const [activeCat, setActiveCat] = useState('all');
   const [activeSub, setActiveSub] = useState(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncProgress, setSyncProgress] = useState(null);
+
+  const handleSync = useCallback(async () => {
+    if (!accessToken || !user || syncing) return;
+
+    // Throttle: check last sync
+    const lastSync = parseInt(localStorage.getItem('subsort_sync_ts') || '0');
+    if (lastSync && channels.length > 0) {
+      const elapsed = Date.now() - lastSync;
+      const mins = Math.round(elapsed / 60000);
+      if (elapsed < 30 * 60 * 1000) {
+        if (!confirm(`You last synced ${mins} minutes ago. Sync again?`)) return;
+      }
+    }
+
+    setSyncing(true);
+    setSyncProgress({ label: 'Starting…', detail: '', pct: 0 });
+
+    try {
+      await syncYouTubeSubscriptions(
+        accessToken, user.id, channels,
+        (label, detail, pct) => setSyncProgress({ label, detail, pct })
+      );
+      // Reload data from DB to pick up new channels
+      await reload();
+      setSyncProgress({ label: 'Done!', detail: '', pct: 100 });
+      setTimeout(() => { setSyncProgress(null); setSyncing(false); }, 1500);
+    } catch (e) {
+      if (e.message === 'SESSION_EXPIRED') {
+        alert('YouTube session expired — please sign in again.');
+        signIn();
+      } else {
+        alert('Sync failed: ' + e.message);
+      }
+      setSyncProgress(null);
+      setSyncing(false);
+    }
+  }, [accessToken, user, channels, syncing, reload, signIn]);
 
   const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
   const showCategories = CAT_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'));
@@ -170,6 +210,19 @@ export default function DashboardSidebar() {
           {SETTINGS_ITEMS.map(item => (
             <NavItem key={item.href} {...item} isActive={isActive(item.href)} />
           ))}
+
+          {/* Sync */}
+          {user && (
+            <button className={`home-nav-item${syncing ? ' active' : ''}`} onClick={handleSync} disabled={syncing}>
+              <svg viewBox="0 0 16 16" className={syncing ? 'spin' : ''}>
+                <path d="M13.5 2.5v4h-4M2.5 13.5v-4h4" />
+                <path d="M2.5 7.5a5.5 5.5 0 019.4-2.5M13.5 8.5a5.5 5.5 0 01-9.4 2.5" />
+              </svg>
+              <span className="home-nav-item-label">
+                {syncProgress ? syncProgress.label : 'Sync'}
+              </span>
+            </button>
+          )}
 
           {/* Auth */}
           {user ? (

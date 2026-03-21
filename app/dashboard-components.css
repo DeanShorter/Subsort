@@ -922,6 +922,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   margin-right:.5rem;vertical-align:middle;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite}
 
 /* Range input */
 input[type=range]{
