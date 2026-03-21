@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import styles from './page.module.css';
+import SessionRedirect from './components/SessionRedirect';
 
 const avatarColors = ['#E85D50','#378ADD','#3ECFA0','#EF9F27','#B07CED'];
 const barWidths    = [[75,50],[85,40],[60,65],[70,35],[55,45]];
@@ -7,6 +8,7 @@ const barWidths    = [[75,50],[85,40],[60,65],[70,35],[55,45]];
 export default function HomePage() {
   return (
     <div className={styles.page}>
+      <SessionRedirect />
 
       {/* NAV */}
       <nav className={styles.nav}>
