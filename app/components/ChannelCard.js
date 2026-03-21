@@ -1,5 +1,5 @@
 'use client';
-import { useChannelData } from './ChannelDataProvider';
+import { useChannelData } from './ChannelDataContext';
 
 export default function ChannelCard({ channel, view = 'hybrid', index = 0, selected = false, onSelect, onClick }) {
   const { chCats, formatCount, categoryColours } = useChannelData();

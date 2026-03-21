@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from './AuthProvider';
-import { useChannelData } from './ChannelDataProvider';
+import { useAuth } from './AuthContext';
+import { useChannelData } from './ChannelDataContext';
 
 // Routes that show the categories section in the sidebar
 const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];

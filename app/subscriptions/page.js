@@ -1,7 +1,7 @@
 'use client';
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useAuth } from '../components/AuthProvider';
-import { useChannelData } from '../components/ChannelDataProvider';
+import { useAuth } from '../components/AuthContext';
+import { useChannelData } from '../components/ChannelDataContext';
 import ChannelCard from '../components/ChannelCard';
 import EditChannelModal from '../components/EditChannelModal';
 

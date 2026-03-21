@@ -1,6 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { AuthProvider, useAuth } from './AuthProvider';
+import { AuthProvider } from './AuthProvider';
+import { useAuth } from './AuthContext';
 import { ChannelDataProvider } from './ChannelDataProvider';
 import DashboardSidebar from './DashboardSidebar';
 

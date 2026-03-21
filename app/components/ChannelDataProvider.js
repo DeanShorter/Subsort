@@ -1,6 +1,7 @@
 'use client';
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
+import { ChannelDataContext } from './ChannelDataContext';
 
 const TILE_COLOURS = [
   '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
@@ -8,23 +9,6 @@ const TILE_COLOURS = [
   '#8bb8a0','#a0b8d4','#d4a0b8','#b8d4a0','#d4b8a0',
   '#7caae8','#c87c9a','#9ac87c','#c8a87c','#7cc8c8',
 ];
-
-const ChannelDataContext = createContext({
-  channels: [],
-  categories: [],
-  subcategories: {},
-  categoryColours: {},
-  dbCategories: [],
-  dbSubcategories: [],
-  loading: true,
-  reload: () => {},
-  // Helpers
-  chCats: () => [],
-  chHasCat: () => false,
-  chIsUncategorised: () => true,
-  formatCount: () => '—',
-  findDeadChannels: () => [],
-});
 
 export function ChannelDataProvider({ children, user }) {
   const [channels, setChannels] = useState([]);
@@ -194,4 +178,4 @@ export function ChannelDataProvider({ children, user }) {
   );
 }
 
-export const useChannelData = () => useContext(ChannelDataContext);
+// useChannelData hook is exported from ./ChannelDataContext.js

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useMemo } from 'react';
-import { useAuth } from '../components/AuthProvider';
-import { useChannelData } from '../components/ChannelDataProvider';
+import { useAuth } from '../components/AuthContext';
+import { useChannelData } from '../components/ChannelDataContext';
 import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
 
 export default function DashboardPage() {

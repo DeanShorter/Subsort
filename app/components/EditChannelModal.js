@@ -1,8 +1,8 @@
 'use client';
 import { useState, useMemo, useEffect } from 'react';
-import { useChannelData } from './ChannelDataProvider';
+import { useChannelData } from './ChannelDataContext';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from './AuthProvider';
+import { useAuth } from './AuthContext';
 
 export default function EditChannelModal({ channelId, onClose }) {
   const { user } = useAuth();

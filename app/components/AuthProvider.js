@@ -1,15 +1,7 @@
 'use client';
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
-
-const AuthContext = createContext({
-  user: null,
-  accessToken: null,
-  userTier: 'free',
-  loading: true,
-  signIn: () => {},
-  signOut: () => {},
-});
+import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -100,4 +92,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+// useAuth hook is exported from ./AuthContext.js
