@@ -8003,8 +8003,13 @@ function showView(view) {
   const onboarding = document.getElementById('onboardingEmpty');
   const promoBanner = document.getElementById('promoBanner');
 
-  // Remove channels scroll class when leaving
+  // Reset channels page state when leaving
   document.getElementById('appContent')?.classList.remove('chan-scrolled');
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) searchInput.value = '';
+  document.querySelectorAll('[data-filter]').forEach(el => { el.checked = false; });
+  activeCategory = 'all';
+  activeSubcategory = null;
 
   // Hide everything first
   catsSection.style.display = 'none';
@@ -8083,7 +8088,9 @@ function showView(view) {
         mainLayout.style.display = '';
         if (onboarding) onboarding.style.display = 'none';
         document.getElementById('sidebar').style.display = 'none';
+        renderCategories();
         renderSubcategories();
+        renderChannels();
         // Set up scroll-to-hide header behaviour (like feeds page)
         const chanArea = document.getElementById('channelsArea');
         if (chanArea && !chanArea._chanScrollBound) {
