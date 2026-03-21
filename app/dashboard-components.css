@@ -2050,10 +2050,10 @@ input[type=range]::-webkit-slider-thumb{
 /* Channel card */
 .disc-ch-card{flex-shrink:0;width:200px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;cursor:pointer;transition:all .2s}
 .disc-ch-card:hover{border-color:var(--surface-raised);transform:translateY(-2px)}
-.disc-ch-banner{height:56px;position:relative}
-.disc-ch-av{width:44px;height:44px;border-radius:var(--radius-full);border:2.5px solid var(--bg-card);position:absolute;bottom:-22px;left:14px;background:var(--bg-surface);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--text-muted);overflow:hidden}
+.disc-ch-banner{height:56px}
+.disc-ch-av{width:44px;height:44px;border-radius:var(--radius-full);border:2.5px solid var(--bg-card);margin-top:-22px;margin-left:14px;position:relative;z-index:1;background:var(--bg-surface);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--text-muted);overflow:hidden}
 .disc-ch-av img{width:100%;height:100%;object-fit:cover}
-.disc-ch-body{padding:28px 14px 14px}
+.disc-ch-body{padding:6px 14px 14px}
 .disc-ch-name{font-size:.8125rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
 .disc-ch-handle{font-size:.6875rem;color:var(--text-muted);margin-bottom:.5rem}
 .disc-ch-desc{font-size:.6875rem;color:var(--text-secondary);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.625rem}
