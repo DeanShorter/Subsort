@@ -9,7 +9,8 @@
       "Skill(update-config)",
       "Skill(update-config:*)",
       "Bash(node -e \"const s = require\\(''C:/Users/toon-/.claude/settings.json''\\); console.log\\(''valid JSON, Stop hooks:'', s.hooks.Stop.length\\)\")",
-      "Bash(powershell -Command \"Get-Content ''C:\\\\Users\\\\toon-\\\\.claude\\\\settings.json'' | ConvertFrom-Json | ConvertTo-Json -Depth 10\")"
+      "Bash(powershell -Command \"Get-Content ''C:\\\\Users\\\\toon-\\\\.claude\\\\settings.json'' | ConvertFrom-Json | ConvertTo-Json -Depth 10\")",
+      "Bash(grep -o \"#[0-9a-fA-F]\\\\{3,8\\\\}\" /d/Subsort/public/dashboard/index.html)"
     ]
   }
 }
