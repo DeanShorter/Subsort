@@ -3009,6 +3009,7 @@ input[type=range]::-webkit-slider-thumb{
 .ct-pill-btn:hover { border-color: var(--border-hover); background: var(--bg-surface); color: var(--text-primary); }
 .ct-pill-accent{background:var(--accent-soft)!important;border-color:rgba(56,233,177,.25)!important;color:var(--accent)!important}
 .ct-pill-accent:hover{background:rgba(56,233,177,.18)!important;border-color:rgba(56,233,177,.4)!important}
+.ct-pill-btn.feed-type-chip.active{background:var(--accent-soft);border-color:rgba(56,233,177,.25);color:var(--accent)}
 
 /* Row 2: category dot + name + badge + subcategory pills */
 .ct-cat-row {
@@ -3258,12 +3259,12 @@ input[type=range]::-webkit-slider-thumb{
       <!-- CATEGORIES section -->
       <div class="hnp-section" id="sideNavCatsSection" style="display:none">
         <div class="hnp-section-label">CATEGORIES</div>
-        <button class="home-nav-item" data-nav="all" onclick="showView('channels');setCategory('all')">
+        <button class="home-nav-item" data-nav="all" onclick="sideNavCatClick('all')">
           <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
           <span class="home-nav-item-label">All Categories</span>
           <span class="hnp-count" id="sideNavAllCount"></span>
         </button>
-        <button class="home-nav-item" data-nav="favs" onclick="showView('channels');setCategory('__favs__')">
+        <button class="home-nav-item" data-nav="favs" onclick="sideNavCatClick('__favs__')">
           <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/></svg>
           <span class="home-nav-item-label">Favourites</span>
           <span class="hnp-count" id="sideNavFavCount"></span>
@@ -5361,6 +5362,33 @@ function updateSideNavCounts() {
   }
 }
 
+function _isFeedActive() {
+  const fm = document.getElementById('homeMain');
+  return fm && fm.style.display !== 'none';
+}
+
+function sideNavCatClick(key) {
+  if (_isFeedActive()) {
+    setFeedCategory(key);
+    renderSideNavCategories();
+  } else {
+    showView('channels');
+    setCategory(key);
+    renderSideNavCategories();
+  }
+}
+
+function sideNavSubClick(cat, sub) {
+  if (_isFeedActive()) {
+    setFeedSubcategory(cat, sub);
+    renderSideNavCategories();
+  } else {
+    showView('channels');
+    setCategory(cat);
+    setSubcategory(sub);
+  }
+}
+
 function renderSideNavCategories() {
   const container = document.getElementById('sideNavCategories');
   if (!container) return;
@@ -5375,19 +5403,24 @@ function renderSideNavCategories() {
     }
   });
 
+  // Determine active state based on current page (feeds vs channels)
+  const onFeed = _isFeedActive();
+  const curCat = onFeed ? activeFeedCategory : activeCategory;
+  const curSub = onFeed ? activeFeedSubcategory : activeSubcategory;
+
   let html = '';
   categories.forEach(c => {
     const safeKey = c.replace(/'/g, "\\'");
     const colour = window._categoryColours[c] || '#888';
     const count = channels.filter(ch => chHasCat(ch, c)).length;
     const subs = subcategories[c] || [];
-    const isActive = activeCategory === c;
+    const isActive = curCat === c;
     const hasOpen = isActive && subs.length > 0;
     const openClass = hasOpen ? ' open' : '';
 
     if (subs.length > 0) {
       html += `<div class="hnp-cat-group${openClass}">`;
-      html += `<button class="home-nav-item${isActive ? ' active' : ''}" data-nav="cat-${c}" onclick="showView('channels');setCategory('${safeKey}');renderSideNavCategories()">
+      html += `<button class="home-nav-item${isActive ? ' active' : ''}" data-nav="cat-${c}" onclick="sideNavCatClick('${safeKey}')">
         <span class="hnp-cat-dot" style="background:${colour}"></span>
         <span class="home-nav-item-label">${c}</span>
         <span class="hnp-count">${count}</span>
@@ -5397,15 +5430,15 @@ function renderSideNavCategories() {
       subs.forEach(sub => {
         const safeSub = sub.replace(/'/g, "\\'");
         const subCount = channels.filter(ch => chHasCat(ch, c) && (ch.subcategory === sub || (Array.isArray(ch.subcategories) && ch.subcategories.includes(sub)))).length;
-        const subActive = activeCategory === c && activeSubcategory === sub;
-        html += `<button class="hnp-sub-item${subActive ? ' active' : ''}" onclick="showView('channels');setCategory('${safeKey}');setSubcategory('${safeSub}')">
+        const subActive = curCat === c && curSub === sub;
+        html += `<button class="hnp-sub-item${subActive ? ' active' : ''}" onclick="sideNavSubClick('${safeKey}','${safeSub}')">
           <span class="home-nav-item-label">${sub}</span>
           <span class="hnp-count">${subCount}</span>
         </button>`;
       });
       html += `</div></div>`;
     } else {
-      html += `<button class="home-nav-item${isActive ? ' active' : ''}" data-nav="cat-${c}" onclick="showView('channels');setCategory('${safeKey}')">
+      html += `<button class="home-nav-item${isActive ? ' active' : ''}" data-nav="cat-${c}" onclick="sideNavCatClick('${safeKey}')">
         <span class="hnp-cat-dot" style="background:${colour}"></span>
         <span class="home-nav-item-label">${c}</span>
         <span class="hnp-count">${count}</span>
@@ -5413,6 +5446,10 @@ function renderSideNavCategories() {
     }
   });
   container.innerHTML = html;
+
+  // Update All/Favs active states in sidebar
+  document.querySelector('.home-nav-item[data-nav="all"]')?.classList.toggle('active', curCat === 'all');
+  document.querySelector('.home-nav-item[data-nav="favs"]')?.classList.toggle('active', curCat === '__favs__');
 }
 
 function renderSubcategories() {
@@ -8273,7 +8310,7 @@ function setHomeNav(key) {
     return;
   }
 
-  // Feeds uses inline category strip — no sidebar
+  // Feeds — show sidebar categories, no secondary nav panel
   if (key === 'feeds') {
     sec.classList.remove('open');
     content.innerHTML = '';
@@ -8281,6 +8318,10 @@ function setHomeNav(key) {
     const feedMain = document.getElementById('homeMain');
     if (dashMain) dashMain.style.display = 'none';
     if (feedMain) feedMain.style.display = '';
+    // Show sidebar categories
+    const catsSection = document.getElementById('sideNavCatsSection');
+    if (catsSection) catsSection.style.display = '';
+    renderSideNavCategories();
     loadFeedAll();
     return;
   }
@@ -8413,23 +8454,9 @@ function resetFeedState() {
 }
 
 function buildFeedTabsHtml() {
-  const cats = [{name: 'All', key: 'all'}, {name: '⭐ Favourites', key: '__favs__'}, ...categories.map(c => ({name: c, key: c}))];
-  let tabsHtml = cats.map(c => {
-    const safe = c.key.replace(/'/g, "\\'");
-    const active = activeFeedCategory === c.key ? 'active' : '';
-    return `<button class="cat-tab ${active}" onclick="setFeedCategory('${safe}')">${c.name}</button>`;
-  }).join('<span class="cat-tab-sep">·</span>');
-
-  const subs = (activeFeedCategory !== 'all' && activeFeedCategory !== '__favs__') ? (subcategories[activeFeedCategory] || []) : [];
-  let subHtml = '';
-  if (subs.length) {
-    subHtml = `<div class="feed-subcats-row">${subs.map(s => {
-      const safe = s.replace(/'/g, "\\'");
-      const safeCat = activeFeedCategory.replace(/'/g, "\\'");
-      const active = activeFeedSubcategory === s ? 'active' : '';
-      return `<button class="subcat-pill ${active}" onclick="setFeedSubcategory('${safeCat}', activeFeedSubcategory === '${safe}' ? null : '${safe}')">${s}</button>`;
-    }).join('')}</div>`;
-  }
+  const _sortLabel = feedSortKey === 'date' ? 'Latest'
+    : feedSortKey === 'channel' ? 'Channel'
+    : feedSortKey === 'subcategory' ? 'Subcategory' : 'Latest';
 
   const headerHtml = `
     <div class="db-header">
@@ -8438,35 +8465,33 @@ function buildFeedTabsHtml() {
     </div>`;
 
   const controlsHtml = `
-    <div class="feed-controls-row">
-      <div class="feed-type-toggle">
-        <button class="feed-type-btn ${feedTypeFilter==='all'?'active':''}" onclick="setFeedTypeFilter('all')">All</button>
-        <button class="feed-type-btn ${feedTypeFilter==='videos'?'active':''}" onclick="setFeedTypeFilter('videos')">Videos</button>
-        <button class="feed-type-btn ${feedTypeFilter==='shorts'?'active':''}" onclick="setFeedTypeFilter('shorts')">Shorts</button>
-      </div>
-      <div class="feed-search-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input id="feedSearchInput" class="feed-search-input" placeholder="Search videos…" value="${feedSearchQuery.replace(/"/g,'&quot;')}" oninput="applyFeedSearch(this.value)">
-      </div>
-      <select id="feedSortSelect" class="feed-sort-select" onchange="applyFeedSort(this.value)">
-        <option value="date" ${feedSortKey==='date'?'selected':''}>Latest</option>
-        ${(activeFeedCategory === 'all' || activeFeedCategory === '__favs__')
-          ? `<option value="channel" ${feedSortKey==='channel'?'selected':''}>Channel</option>`
-          : `<option value="subcategory" ${feedSortKey==='subcategory'?'selected':''}>Subcategory</option>`}
-      </select>
-      <div class="feed-view-toggle">
-        <button class="feed-view-btn ${feedView==='list'?'active':''}" onclick="setFeedView('list')" title="List view">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
+    <div class="ct-controls-row">
+      <button class="ct-pill-btn feed-type-chip ${feedTypeFilter==='all'?'active':''}" onclick="setFeedTypeFilter('all')">All</button>
+      <button class="ct-pill-btn feed-type-chip ${feedTypeFilter==='videos'?'active':''}" onclick="setFeedTypeFilter('videos')">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="3" width="12" height="8" rx="1.5"/><path d="M5.5 6v2.5l2.5-1.25z"/></svg>
+        Videos
+      </button>
+      <button class="ct-pill-btn feed-type-chip ${feedTypeFilter==='shorts'?'active':''}" onclick="setFeedTypeFilter('shorts')">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="4" y="1" width="6" height="12" rx="1.5"/><circle cx="7" cy="10.5" r=".5" fill="currentColor"/></svg>
+        Shorts
+      </button>
+      <button class="ct-pill-btn" id="feedSortBtn" onclick="cycleFeedSort()">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h10M4 7h6M6 10h2"/></svg>
+        Sort: <span id="feedSortLabel">${_sortLabel}</span>
+      </button>
+      <div class="view-toggles">
+        <button class="view-toggle-btn feed-view-chip ${feedView==='list'?'active':''}" title="List" onclick="setFeedView('list')">
+          <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12"/></svg>
         </button>
-        <button class="feed-view-btn ${feedView==='hybrid'?'active':''}" onclick="setFeedView('hybrid')" title="Hybrid view">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="5" rx="1"/><rect x="3" y="17" width="8" height="5" rx="1"/><rect x="13" y="17" width="8" height="5" rx="1"/></svg>
+        <button class="view-toggle-btn feed-view-chip ${feedView==='hybrid'?'active':''}" title="Hybrid" onclick="setFeedView('hybrid')">
+          <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
         </button>
-        <button class="feed-view-btn ${feedView==='grid'?'active':''}" onclick="setFeedView('grid')" title="Grid view">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <button class="view-toggle-btn feed-view-chip ${feedView==='grid'?'active':''}" title="Grid" onclick="setFeedView('grid')">
+          <svg viewBox="0 0 14 14"><rect x="1" y="1" width="3" height="12" rx="1"/><path d="M6 3h7M6 7h7M6 11h7"/></svg>
         </button>
       </div>
     </div>`;
-  return headerHtml + `<div class="feed-sticky-bar">${controlsHtml}<div class="feed-cats-row"><div class="cat-tabs-track" id="feedCatsTrack">${tabsHtml}</div></div>${subHtml}</div>`;
+  return headerHtml + `<div class="feed-sticky-bar">${controlsHtml}</div>`;
 }
 
 function initFeedCatsTrack() {
@@ -8509,8 +8534,9 @@ function applyFeedSearch(q) {
 function setFeedTypeFilter(type) {
   feedTypeFilter = type;
   // Update button states in sticky bar
-  document.querySelectorAll('#homeMain .feed-type-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.toLowerCase() === type || (type === 'all' && btn.textContent === 'All'));
+  document.querySelectorAll('#homeMain .feed-type-chip').forEach(btn => {
+    const label = btn.textContent.trim().toLowerCase();
+    btn.classList.toggle('active', label === type || (type === 'all' && label === 'all'));
   });
   applyFeedFilters();
 }
@@ -8540,7 +8566,7 @@ function setFeedView(v) {
   // Re-render sticky bar to update button states
   const stickyBar = document.querySelector('#homeMain .feed-sticky-bar');
   if (stickyBar) {
-    stickyBar.querySelectorAll('.feed-view-btn').forEach(btn => {
+    stickyBar.querySelectorAll('.feed-view-chip').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${v}'`));
     });
   }
@@ -8549,12 +8575,27 @@ function setFeedView(v) {
 function applyFeedSort(val) {
   feedSortKey = val || 'date';
   if (activeFeedCategory === 'all') loadFeedAll();
+  else if (activeFeedCategory === '__favs__') loadFeedFavourites();
   else loadFeedCategory(activeFeedCategory, activeFeedSubcategory);
+}
+
+const _FEED_SORT_CYCLE = [
+  { value: 'date', label: 'Latest' },
+  { value: 'channel', label: 'Channel' },
+];
+function cycleFeedSort() {
+  const idx = _FEED_SORT_CYCLE.findIndex(s => s.value === feedSortKey);
+  const next = _FEED_SORT_CYCLE[(idx + 1) % _FEED_SORT_CYCLE.length];
+  feedSortKey = next.value;
+  const lbl = document.getElementById('feedSortLabel');
+  if (lbl) lbl.textContent = next.label;
+  applyFeedSort(next.value);
 }
 
 function setFeedCategory(key) {
   activeFeedCategory = key;
   activeFeedSubcategory = null;
+  renderSideNavCategories();
   if (key === 'all') loadFeedAll();
   else if (key === '__favs__') loadFeedFavourites();
   else loadFeedCategory(key, null);
@@ -8563,6 +8604,7 @@ function setFeedCategory(key) {
 function setFeedSubcategory(cat, sub) {
   activeFeedCategory = cat;
   activeFeedSubcategory = sub;
+  renderSideNavCategories();
   loadFeedCategory(cat, sub);
 }
 
@@ -8579,18 +8621,18 @@ async function loadFeedFavourites() {
   if (!favChannels.length) {
     main.innerHTML = buildFeedTabsHtml() + `
       <p style="color:var(--text-muted);padding:.5rem 0">You haven't added any channels to your favourites list yet.</p>`;
-    initFeedCatsTrack(); return;
+    return;
   }
 
   if (!accessToken) {
     main.innerHTML = buildFeedTabsHtml() + `
       <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
-    initFeedCatsTrack(); return;
+    return;
   }
 
   main.innerHTML = buildFeedTabsHtml() + `
     <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
-  initFeedCatsTrack();
+
 
   try {
     const videos = await fetchRecentVideos(favChannels);
@@ -8620,18 +8662,18 @@ async function loadFeedCategory(category, subcategory) {
   if (!accessToken) {
     main.innerHTML = buildFeedTabsHtml() + `
       <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
-    initFeedCatsTrack(); return;
+    return;
   }
 
   if (!catChannels.length) {
     main.innerHTML = buildFeedTabsHtml() + `
       <p style="color:var(--text-muted);padding:.5rem 0">No channels in this category yet.</p>`;
-    initFeedCatsTrack(); return;
+    return;
   }
 
   main.innerHTML = buildFeedTabsHtml() + `
     <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
-  initFeedCatsTrack();
+
 
   const subMap = {};
   catChannels.forEach(ch => { if (ch.subcategory) subMap[ch.channelId] = ch.subcategory; });
@@ -8661,20 +8703,20 @@ async function loadFeedAll() {
   if (!channels.length) {
     main.innerHTML = buildFeedTabsHtml() + `
       <p style="color:var(--text-muted);padding:.5rem 0">Sync your YouTube account to see recent videos.</p>`;
-    initFeedCatsTrack(); return;
+    return;
   }
 
   if (!accessToken) {
     main.innerHTML = buildFeedTabsHtml() + `
       <p style="color:var(--text-muted);padding:.5rem 0">Sign in with YouTube to see recent videos.</p>`;
-    initFeedCatsTrack(); return;
+    return;
   }
 
   const catsWithChannels = categories.filter(cat => channels.some(ch => chHasCat(ch, cat)));
 
   main.innerHTML = buildFeedTabsHtml() + `
     <div class="home-feed-loading" id="feedLoadingSpinner"><span class="spinner"></span> Fetching latest videos…</div>`;
-  initFeedCatsTrack();
+
 
   try {
     // Fetch all categories in parallel, then flatten and shuffle
@@ -9574,13 +9616,21 @@ async function renderDashboard() {
   setStatEl('dbStatUncat', uncatCount.toLocaleString());
 
   // Category breakdown (new visual style)
+  // Ensure sidebar colour map is built so dashboard dots match nav dots
+  if (!window._categoryColours) window._categoryColours = {};
+  let _dbColIdx = 0;
+  categories.forEach(c => {
+    if (!window._categoryColours[c]) {
+      window._categoryColours[c] = categoryColours[c] || TILE_COLOURS[_dbColIdx++ % TILE_COLOURS.length];
+    }
+  });
   const catSnap = document.getElementById('dbCatSnap');
   if (catSnap) {
     if (catKeys.length) {
       const sorted = [...catKeys].sort((a,b) => (catCounts[b]||0) - (catCounts[a]||0)).slice(0, 8);
       const maxCount = catCounts[sorted[0]] || 1;
       catSnap.innerHTML = sorted.map(cat => {
-        const col = categoryColours[cat] || 'var(--accent)';
+        const col = window._categoryColours[cat] || categoryColours[cat] || 'var(--accent)';
         const barPct = Math.round((catCounts[cat] / maxCount) * 100);
         return `<div class="db-cat-brow">
           <div class="db-cat-brow-dot" style="background:${col}"></div>
@@ -9602,7 +9652,7 @@ async function renderDashboard() {
       attnEl.innerHTML = `<div class="db-inactive-desc">Channels with low engagement or no uploads</div>` +
         deadChannels.slice(0, 6).map(({ch}, i) => {
           const initials = ch.name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
-          const col = (chCats(ch)[0] && categoryColours[chCats(ch)[0]]) || COLORS[i % COLORS.length];
+          const col = (chCats(ch)[0] && (window._categoryColours?.[chCats(ch)[0]] || categoryColours[chCats(ch)[0]])) || COLORS[i % COLORS.length];
           const sub = ch.subscriberCount ? `${formatCount(ch.subscriberCount)} subs` : ch.reason || 'Low activity';
           return `<div class="db-inactive-row2">
             <div class="db-inactive-av2" style="background:${col}">${initials}</div>
@@ -9634,7 +9684,7 @@ async function renderDashboard() {
             const safeId = (v.id||'').replace(/"/g,'');
             const ch = channels.find(c => c.title === v.channel || c.name === v.channel);
             const cat = ch ? (chCats(ch)[0] || '') : '';
-            const col = (cat && categoryColours[cat]) || 'var(--accent)';
+            const col = (cat && (window._categoryColours?.[cat] || categoryColours[cat])) || 'var(--accent)';
             const initials = v.channel ? v.channel.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase() : '?';
             const thumbInner = v.thumbnail
               ? `<img src="${v.thumbnail}" loading="lazy" alt="">`
