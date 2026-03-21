@@ -26,7 +26,7 @@ const PAGE_ITEMS = [
   },
   {
     href: '/blog', label: 'Blog',
-    svg: <path d="M6 13h7"/>,
+    svg: <path d="M3 4h10M3 8h6M3 12h8"/>,
   },
 ];
 
