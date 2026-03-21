@@ -1,176 +1,227 @@
 import Link from 'next/link';
 import styles from './page.module.css';
 
-const avatarColors = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6'];
+const avatarColors = ['#E85D50','#378ADD','#3ECFA0','#EF9F27','#B07CED'];
+const barWidths    = [[75,50],[85,40],[60,65],[70,35],[55,45]];
 
 export default function HomePage() {
   return (
     <div className={styles.page}>
 
-      {/* Navigation */}
+      {/* NAV */}
       <nav className={styles.nav}>
-        <div className={styles.navInner}>
-          <div className={styles.navLeft}>
-            <img src="/logo-dark.svg" alt="freedly" height="26" />
-            <div className={styles.navLinks}>
-              <a href="#features">Features</a>
-              <a href="#how-it-works">How it Works</a>
-              <a href="#pricing">Pricing</a>
-              <Link href="/blog">Blog</Link>
-            </div>
-          </div>
-          <div className={styles.navRight}>
-            <a href="/signin" className={styles.navLogin}>Sign in</a>
-            <a href="/signin" className={styles.navCta}>Get started</a>
-          </div>
-        </div>
+        <a href="/" className={styles.logo}>
+          <img src="/icon.svg" alt="Freedly" className={styles.logoIcon} />
+          <span className={styles.logoText}><span>free</span>dly</span>
+        </a>
+        <ul className={styles.navLinks}>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="/signin">Sign in</a></li>
+          <li><a href="/signin" className={styles.navCta}>Get started</a></li>
+        </ul>
       </nav>
 
-      {/* Hero */}
+      {/* HERO */}
       <section className={styles.hero}>
-        <div className={styles.heroInner}>
-          <div className={styles.heroLeft}>
-            <h1 className={styles.heroTitle}>
-              Your YouTube.<br />
-              Finally organised.
-            </h1>
-            <p className={styles.heroSub}>What YouTube should have been.</p>
-            <p className={styles.heroDesc}>
-              Freedly organises your subscriptions into clean, custom feeds – so you only see what matters.
-            </p>
-            <div className={styles.heroCtas}>
-              <a href="/signin" className={styles.btnPrimary}>Get started free</a>
-              <a href="#features" className={styles.btnSecondary}>See how it works</a>
-            </div>
-            <p className={styles.heroTagline}>Set up in under 2 minutes · Free plan available</p>
-          </div>
-
-          <div className={styles.heroRight}>
-            <div className={styles.appMockup}>
-              <div className={styles.mockupInner}>
-                <div className={styles.mockupHeader}>
-                  <img src="/logo.svg" alt="freedly" height="15" />
-                  <div className={styles.mockupTabs}>
-                    <span className={styles.mockupTabActive}>Subscriptions</span>
-                    <span>Feeds</span>
-                    <span>Discover</span>
-                  </div>
-                </div>
-                <div className={styles.mockupBody}>
-                  <div className={styles.mockupSidebar}>
-                    {['All','Tech','Gaming','Music','News','Comedy','Sports'].map((c,i) => (
-                      <div key={c} className={i === 0 ? `${styles.mockupCat} ${styles.mockupCatActive}` : styles.mockupCat}>{c}</div>
-                    ))}
-                  </div>
-                  <div className={styles.mockupFeed}>
-                    <div className={styles.mockupSubTabs}>
-                      <span className={styles.mockupSubActive}>Entertainment</span>
-                      <span className={styles.mockupSubTab}>Feeds</span>
-                      <span className={styles.mockupSubTab}>Discover</span>
-                    </div>
-                    {avatarColors.map((color, i) => (
-                      <div key={i} className={styles.mockupRow}>
-                        <div className={styles.mockupAvatar} style={{background: color}} />
-                        <div className={styles.mockupMeta}>
-                          <div className={styles.mockupLine} />
-                          <div className={`${styles.mockupLine} ${styles.mockupLineSm}`} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating stat cards */}
-              <div className={`${styles.statCard} ${styles.statCard1}`}>
-                <span className={styles.statNum}>146</span>
-                <span className={styles.statLabel}>channels you haven't watched<br/>in months</span>
-              </div>
-              <div className={`${styles.statCard} ${styles.statCard2}`}>
-                <span className={styles.statNum}>12</span>
-                <span className={styles.statLabel}>still uncategorised</span>
-              </div>
-              <div className={`${styles.statCard} ${styles.statCard3}`}>
-                <div className={styles.statCard3Row}>
-                  <div className={styles.statCard3Icon}>
-                    <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
-                      <rect x="3" y="3" width="14" height="14" rx="3" fill="#38E9B1" opacity=".25"/>
-                      <rect x="3" y="3" width="14" height="14" rx="3" stroke="#38E9B1" strokeWidth="1.5"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <span className={styles.statSmall}>Entertainment</span>
-                    <span className={styles.statLabel}>feed: <strong>Clean</strong></span>
-                  </div>
-                  <div className={styles.statCheckCircle}>
-                    <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
-                      <circle cx="10" cy="10" r="9" fill="#38E9B1"/>
-                      <path d="M6 10l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className={`${styles.statCard} ${styles.statCard4}`}>
-                <span className={styles.statSmall}>Health Score</span>
-                <span className={styles.statNum}>82</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className={styles.features} id="features">
-        <div className={styles.featuresInner}>
-          <h2 className={styles.featuresTitle}>What YouTube should have been.</h2>
-          <p className={styles.featuresSubtitle}>
-            Freedly organises your subscriptions into clean, custom feeds.
+        <div className={styles.heroText}>
+          <h1>Your YouTube.<br/>Finally organised.</h1>
+          <p className={styles.heroSub}>
+            Freedly sorts your subscriptions into clean, custom feeds automatically — so you only see what matters.
           </p>
-          <div className={styles.featureGrid}>
-            <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>
-                <svg viewBox="0 0 24 24" fill="none" width="22" height="22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 7a2 2 0 0 1 2-2h3.17a2 2 0 0 1 1.42.59L11 7h10a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>
-                </svg>
+          <div className={styles.heroButtons}>
+            <a href="/signin" className={styles.btnPrimary}>
+              Get started free
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M3 8h10M9 4l4 4-4 4"/>
+              </svg>
+            </a>
+            <a href="#features" className={styles.btnSecondary}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <circle cx="8" cy="8" r="6"/><polygon points="7,5.5 11,8 7,10.5" fill="currentColor" stroke="none"/>
+              </svg>
+              See how it works
+            </a>
+          </div>
+          <p className={styles.heroMeta}>
+            <svg viewBox="0 0 16 16" fill="none" strokeWidth="2" strokeLinecap="round" width="14" height="14" stroke="#38E9B1">
+              <path d="M13.5 4.5l-7 7L3 8"/>
+            </svg>
+            Set up in under 2 minutes · Free plan available
+          </p>
+        </div>
+
+        <div className={styles.heroVisual}>
+          <div className={styles.productFrame}>
+            <div className={styles.productTopbar}>
+              <span className={styles.productLogo}><span>free</span>dly</span>
+              <div className={styles.productTabs}>
+                <span className={styles.tabActive}>Subscriptions</span>
+                <span>Feeds</span>
+                <span>Discover</span>
               </div>
-              <h3>Organise your<br/>subscriptions</h3>
-              <p>324 channels sorted</p>
             </div>
-            <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>
-                <svg viewBox="0 0 24 24" fill="none" width="22" height="22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                  <line x1="3" y1="6" x2="21" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
-                  <line x1="3" y1="14" x2="15" y2="14"/>
-                  <line x1="3" y1="18" x2="18" y2="18"/>
-                </svg>
+            <div className={styles.productBody}>
+              <div className={styles.productSidebar}>
+                {['All','Entertainment','Tech','Gaming','Music','News','Comedy','Sports'].map((c,i) => (
+                  <div key={c} className={i === 1 ? `${styles.sidebarItem} ${styles.sidebarActive}` : styles.sidebarItem}>{c}</div>
+                ))}
               </div>
-              <h3>Build clean feeds</h3>
-              <p>No algorithm noise</p>
+              <div className={styles.productFeed}>
+                {avatarColors.map((color, i) => (
+                  <div key={i} className={styles.feedRow}>
+                    <div className={styles.feedDot} style={{background: color}} />
+                    <div className={styles.feedBars}>
+                      <div className={styles.feedBar} style={{width: `${barWidths[i][0]}%`}} />
+                      <div className={styles.feedBar} style={{width: `${barWidths[i][1]}%`, opacity: 0.5}} />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>
-                <svg viewBox="0 0 24 24" fill="none" width="22" height="22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2"/>
-                  <line x1="8" y1="21" x2="16" y2="21"/>
-                  <line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-              </div>
-              <h3>Stay in control</h3>
-              <p>146 inactive removed</p>
+          </div>
+
+          <div className={`${styles.floatCard} ${styles.floatCard1}`}>
+            <div className={styles.floatNum}>146</div>
+            <div className={styles.floatLabel}>channels you haven't<br/>watched in months</div>
+          </div>
+          <div className={`${styles.floatCard} ${styles.floatCard2}`}>
+            <div className={`${styles.floatNum} ${styles.floatMint}`}>8</div>
+            <div className={styles.floatLabel}>custom feeds<br/>created automatically</div>
+          </div>
+          <div className={`${styles.floatCard} ${styles.floatCard3}`}>
+            <div className={styles.floatNum}>324</div>
+            <div className={styles.floatLabel}>subscriptions<br/>sorted instantly</div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROOF BAR */}
+      <section className={styles.proofBar}>
+        <div className={styles.proofInner}>
+          <span>
+            <svg viewBox="0 0 16 16" fill="none" strokeWidth="1.5" strokeLinecap="round" width="16" height="16" stroke="#38E9B1">
+              <circle cx="8" cy="8" r="7"/><path d="M5 8l2.5 2.5L11 6"/>
+            </svg>
+            Built for viewers, not creators
+          </span>
+          <div className={styles.proofDivider} />
+          <span>
+            <svg viewBox="0 0 16 16" fill="none" strokeWidth="1.5" strokeLinecap="round" width="16" height="16" stroke="#38E9B1">
+              <rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 6h12"/>
+            </svg>
+            No algorithm interference
+          </span>
+          <div className={styles.proofDivider} />
+          <span>
+            <svg viewBox="0 0 16 16" fill="none" strokeWidth="1.5" strokeLinecap="round" width="16" height="16" stroke="#38E9B1">
+              <path d="M4 8l3 3 5-6"/>
+            </svg>
+            No missed uploads
+          </span>
+          <div className={styles.proofDivider} />
+          <span>
+            <svg viewBox="0 0 16 16" fill="none" strokeWidth="1.5" strokeLinecap="round" width="16" height="16" stroke="#38E9B1">
+              <path d="M8 3v5l3 2"/><circle cx="8" cy="8" r="6"/>
+            </svg>
+            Set up in 2 minutes
+          </span>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className={styles.features} id="features">
+        <div className={styles.featuresHeader}>
+          <h2>Everything in its place.</h2>
+          <p>Connect your Google account and Freedly does the rest. Your subscriptions, sorted into feeds that actually make sense.</p>
+        </div>
+        <div className={styles.featuresGrid}>
+          <div className={styles.featureCard}>
+            <div className={`${styles.featureIcon} ${styles.iconGreen}`}>
+              <svg viewBox="0 0 20 20" fill="none" strokeWidth="1.5" strokeLinecap="round" width="20" height="20" stroke="#38E9B1">
+                <rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/>
+                <rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/>
+              </svg>
+            </div>
+            <h3>Auto-sorted subscriptions</h3>
+            <p>Your channels are instantly grouped by topic — tech, sports, music, gaming, news — using YouTube's own category data. No manual work.</p>
+            <div className={styles.featureStat}><span className={styles.statNum}>324</span> channels sorted in seconds</div>
+          </div>
+          <div className={styles.featureCard}>
+            <div className={`${styles.featureIcon} ${styles.iconAmber}`}>
+              <svg viewBox="0 0 20 20" fill="none" strokeWidth="1.5" strokeLinecap="round" width="20" height="20" stroke="#D4920D">
+                <path d="M4 5h12M4 10h8M4 15h10"/>
+              </svg>
+            </div>
+            <h3>Clean, focused feeds</h3>
+            <p>Browse by category instead of one chaotic stream. Want just your tech channels? One click. Only favourites? Done. No algorithm deciding for you.</p>
+            <div className={styles.featureStat}><span className={styles.statNum}>8</span> topic feeds generated</div>
+          </div>
+          <div className={styles.featureCard}>
+            <div className={`${styles.featureIcon} ${styles.iconBlue}`}>
+              <svg viewBox="0 0 20 20" fill="none" strokeWidth="1.5" strokeLinecap="round" width="20" height="20" stroke="#378ADD">
+                <circle cx="10" cy="10" r="8"/><path d="M10 6v4l2.5 2.5"/>
+              </svg>
+            </div>
+            <h3>Spot the dead weight</h3>
+            <p>Freedly flags channels you haven't watched in months and inactive uploaders cluttering your feed. Clean house without losing anything good.</p>
+            <div className={styles.featureStat}><span className={styles.statNum}>146</span> inactive channels found</div>
+          </div>
+        </div>
+      </section>
+
+      {/* STORY */}
+      <section className={styles.story} id="how-it-works">
+        <div className={styles.storyInner}>
+          <div className={styles.storyText}>
+            <h2>I had 400+ subscriptions and no idea what half of them were.</h2>
+            <p>YouTube's subscription page is a wall of noise. Videos from channels I forgot I subscribed to, buried between ones I actually care about. I wanted something that just... organised it for me.</p>
+            <p>So I built Freedly. Connect your account, and it sorts everything into clean feeds automatically. No manual setup, no tagging — it just works.</p>
+            <div className={styles.signature}>— The person building this</div>
+          </div>
+          <div className={styles.storyStats}>
+            <div className={styles.storyStat}>
+              <div className={styles.storyNum}>2min</div>
+              <div className={styles.storyLabel}>Setup time</div>
+            </div>
+            <div className={styles.storyStat}>
+              <div className={styles.storyNum}>100%</div>
+              <div className={styles.storyLabel}>Automatic sorting</div>
+            </div>
+            <div className={styles.storyStat}>
+              <div className={`${styles.storyNum} ${styles.storyNumMint}`}>0</div>
+              <div className={styles.storyLabel}>Algorithm interference</div>
+            </div>
+            <div className={styles.storyStat}>
+              <div className={styles.storyNum}>3</div>
+              <div className={styles.storyLabel}>Feed views: list,<br/>grid, hybrid</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Bottom bar */}
-      <div className={styles.bottomBar}>
-        <span>No algorithm interference</span>
-        <span className={styles.sep}>·</span>
-        <span>No missed uploads</span>
-        <span className={styles.sep}>·</span>
-        <span>No subscription chaos</span>
-      </div>
+      {/* BOTTOM CTA */}
+      <section className={styles.cta}>
+        <h2>Ready to take back your feed?</h2>
+        <p>Free to start. Set up in under 2 minutes. No credit card.</p>
+        <a href="/signin" className={`${styles.btnPrimary} ${styles.btnLarge}`}>
+          Get started free
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M3 8h10M9 4l4 4-4 4"/>
+          </svg>
+        </a>
+      </section>
+
+      {/* FOOTER */}
+      <footer className={styles.footer}>
+        <span>© 2026 Freedly</span>
+        <div className={styles.footerLinks}>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <Link href="/blog">Blog</Link>
+        </div>
+      </footer>
 
     </div>
   );

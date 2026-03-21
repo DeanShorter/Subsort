@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Freedly - Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-FKDXKKM2R0"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-FKDXKKM2R0');</script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -15,17 +16,18 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-primary:#0f1117;
-  --bg-secondary:#111318;
-  --bg-card:#161b25;
-  --bg-card-hover:#1c2130;
-  --bg-surface:#1a1f2c;
-  --bg-surface-raised:#1f2535;
-  --border-subtle:#252e3b;
+  --bg-primary:#111110;
+  --bg-secondary:#191917;
+  --bg-card:#1A1A18;
+  --bg-card-hover:#222220;
+  --bg-surface:#222220;
+  --bg-surface-raised:#2A2A27;
+  --border-subtle:rgba(255,255,255,0.06);
+  --border-hover:rgba(255,255,255,0.1);
   --border-active:#38E9B1;
-  --text-primary:#e8eaf0;
-  --text-secondary:#8892a4;
-  --text-muted:#4d5668;
+  --text-primary:#E8E6E0;
+  --text-secondary:#9A9890;
+  --text-muted:#5E5D58;
   --accent:#38E9B1;
   --accent-hover:#5DEFC6;
   --accent-pressed:#28C99A;
@@ -38,6 +40,7 @@
   --font-body:'DM Sans',sans-serif;
   --font-display:'Sora',sans-serif;
   --transition:cubic-bezier(.25,.46,.45,.94);
+  --channels-sidebar-w:224px;
 }
 html{font-size:16px;scroll-behavior:smooth}
 body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-primary);min-height:100vh;-webkit-font-smoothing:antialiased}
@@ -2504,6 +2507,406 @@ input[type=range]::-webkit-slider-thumb{
   --text-secondary:#555555;
   --text-muted:#888888;
 }
+
+/* ═══ CHANNELS PAGE REDESIGN ═══ */
+
+/* Make app-content pass height down properly */
+.app-content { overflow: hidden !important; }
+
+/* Channels page wrapper — flex row: sidebar + main */
+.channels-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Category sidebar */
+.channels-cat-sidebar {
+  width: var(--channels-sidebar-w);
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.channels-cat-sidebar-inner {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 10px;
+  scrollbar-width: none;
+}
+.channels-cat-sidebar-inner::-webkit-scrollbar { display: none; }
+
+/* Category sidebar header */
+.channels-cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+.channels-cat-header-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+.channels-cat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cat-sidebar-btn {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .15s;
+  font: 500 11px/1 var(--font-body);
+  gap: 3px;
+  white-space: nowrap;
+  padding: 0 6px;
+}
+.cat-sidebar-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.cat-sidebar-btn:hover { background: var(--bg-surface); color: var(--text-secondary); border-color: var(--border-hover); }
+
+/* Nav label */
+.sidebar-nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 8px 8px 6px;
+}
+
+/* Redesigned cat-tab for sidebar (overrides old pill style) */
+#categoriesSection .cat-tab {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  color: var(--text-secondary) !important;
+  font: 500 12px/1 var(--font-body) !important;
+  cursor: pointer;
+  background: transparent !important;
+  white-space: nowrap;
+  transition: all .15s;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  flex-shrink: unset !important;
+}
+#categoriesSection .cat-tab:hover {
+  background: rgba(255,255,255,0.04) !important;
+  color: var(--text-primary) !important;
+}
+#categoriesSection .cat-tab.active {
+  background: rgba(255,255,255,0.06) !important;
+  color: var(--text-primary) !important;
+}
+#categoriesSection .cat-tab.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 16px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+#categoriesSection .cat-tab-count {
+  font-size: 11px !important;
+  color: var(--text-muted) !important;
+  background: rgba(255,255,255,0.06) !important;
+  padding: 1px 7px !important;
+  border-radius: 10px !important;
+  margin-left: auto !important;
+  opacity: 1 !important;
+}
+#categoriesSection .cat-tab.active .cat-tab-count {
+  color: var(--accent) !important;
+  background: rgba(56,233,177,0.12) !important;
+}
+
+/* Cat dot (colour indicator) */
+.cat-tab-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Sidebar category pills container — now vertical */
+#categoriesSection .chan-cat-pills {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  flex: none !important;
+}
+
+/* Subcategory pills in sidebar */
+#categoriesSection .subcategories-strip {
+  border-top: 1px solid var(--border-subtle) !important;
+  background: transparent !important;
+  padding: 8px 0 4px !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+
+#categoriesSection .subcategories-track {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 2px !important;
+  padding: 0 !important;
+  overflow-x: visible !important;
+}
+
+#categoriesSection .subcat-pill {
+  width: 100%;
+  padding: 6px 8px !important;
+  border-radius: 7px !important;
+  font-size: 11px !important;
+  justify-content: flex-start !important;
+}
+
+#categoriesSection .subcat-pill .subcat-count {
+  margin-left: auto !important;
+}
+
+/* Channels cat-row — becomes the sidebar container */
+.chan-cat-row {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 4px 0 !important;
+  border-bottom: none !important;
+  background: transparent !important;
+  gap: 2px;
+}
+
+/* Cat edit buttons row */
+.chan-cat-edit {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 4px !important;
+  padding: 6px 0 2px !important;
+  flex-shrink: 0;
+}
+.chan-cat-edit .cat-tab-vdivider { display: none !important; }
+
+/* Override categories-section layout */
+#categoriesSection {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  flex: 1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none;
+  min-height: 0;
+}
+#categoriesSection::-webkit-scrollbar { display: none; }
+
+/* Channels main content area */
+.channels-main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Redesigned chan-topbar */
+.chan-topbar {
+  flex-shrink: 0 !important;
+  background: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  padding: 0 20px !important;
+  display: none;
+  flex-direction: column !important;
+}
+.chan-topbar.show { display: flex !important; }
+
+.chan-uncat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  border-bottom: 1px solid var(--border-subtle);
+  gap: 8px;
+}
+.chan-uncat-text {
+  font-size: 13px !important;
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+}
+.chan-uncat-text svg { width: 14px !important; height: 14px !important; }
+.chan-bulk-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+}
+
+.bb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font: 500 12px/1 var(--font-body);
+  cursor: pointer;
+  transition: all .15s;
+}
+.bb-btn:hover { border-color: var(--border-hover); background: var(--bg-surface); color: var(--text-primary); }
+
+.bb-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: rgba(56,233,177,0.1);
+  border: 1px solid rgba(56,233,177,0.3);
+  color: var(--accent);
+  font: 600 12px/1 var(--font-body);
+  cursor: pointer;
+  transition: all .15s;
+}
+.bb-act:hover { background: rgba(56,233,177,0.2); border-color: var(--accent); }
+
+/* View toggle buttons */
+.channels-view-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.channels-sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font: 500 12px/1 var(--font-body);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.channels-sort-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; }
+.channels-sort-btn:hover { border-color: var(--border-hover); background: var(--bg-surface); color: var(--text-primary); }
+
+.view-toggles {
+  display: flex;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.view-toggle-btn {
+  width: 32px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.view-toggle-btn:hover { color: var(--text-secondary); background: var(--bg-surface); }
+.view-toggle-btn.active { background: var(--bg-surface-raised); color: var(--accent); }
+.view-toggle-btn + .view-toggle-btn { border-left: 1px solid var(--border-subtle); }
+.view-toggle-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; }
+
+/* Main layout override — no sidebar visible */
+.main-layout {
+  padding: 16px 20px !important;
+  gap: 0 !important;
+  flex: 1 !important;
+  overflow: hidden !important;
+}
+
+/* Channel card updates for new theme */
+.channel-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-subtle) !important;
+  border-radius: 12px !important;
+}
+.channel-card:hover {
+  border-color: var(--border-hover) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+}
+
+/* Topbar title row for channels */
+.chan-topbar-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.chan-topbar-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+.chan-topbar-badge {
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(56,233,177,0.1);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* Subcategory pills in topbar */
+.chan-topbar-subcats {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chan-topbar-subcats::-webkit-scrollbar { display: none; }
+
+.subcats-topbar-pill {
+  padding: 4px 12px;
+  border-radius: 100px;
+  font: 500 11px/1 var(--font-body);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.subcats-topbar-pill:hover { border-color: var(--border-hover); color: var(--text-secondary); background: var(--bg-surface); }
+.subcats-topbar-pill.active { background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary); }
+
+/* ═══ END CHANNELS REDESIGN ═══ */
 </style>
 <script>(function(){var t=(JSON.parse(localStorage.getItem('subsort_settings')||'{}')).theme||'dark';document.documentElement.setAttribute('data-theme',t)})()</script>
 </head>
@@ -2606,7 +3009,7 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <div class="mobile-topbar-brand" onclick="showView('home')" style="cursor:pointer">
-      <img src="/logo.svg" alt="Freedly" height="22">
+      <img src="/icon.svg" alt="Freedly" height="28" style="border-radius:7px;">
     </div>
   </div>
   <!-- Mobile nav backdrop -->
@@ -3319,57 +3722,95 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
-<!-- ═══ Categories Strip ═══ -->
-<section class="categories-section" id="categoriesSection">
-  <div class="chan-cat-row">
-    <div class="chan-cat-pills" id="categoriesTrack"></div>
-    <div class="chan-cat-edit">
-      <div class="cat-tab-vdivider"></div>
-      <button class="cat-edit-btn" onclick="openModal('addCategoryModal')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add
-      </button>
-      <button class="cat-edit-btn" onclick="openManageCategories()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Edit
-      </button>
+<!-- ═══ Channels Layout Wrapper ═══ -->
+<div class="channels-layout" id="channelsLayout" style="display:none">
+
+  <!-- Category Sidebar -->
+  <div class="channels-cat-sidebar" id="channelsCatSidebar">
+    <div class="channels-cat-header">
+      <span class="channels-cat-header-title">Categories</span>
+      <div class="channels-cat-header-actions">
+        <button class="cat-sidebar-btn" onclick="openModal('addCategoryModal')">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add
+        </button>
+        <button class="cat-sidebar-btn" onclick="openManageCategories()">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
     </div>
-  </div>
-  <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
-    <button class="cat-edit-btn" onclick="addSubcategory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</button>
-    <button class="cat-edit-btn" onclick="openManageSubcategories()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
-    <div class="cat-tab-vdivider"></div>
-    <div class="subcategories-track" id="subcategoriesTrack"></div>
-  </div>
-</section>
 
-<!-- ═══ Channel Status Bar (uncat + bulk) ═══ -->
-<div class="chan-topbar" id="chanTopbar">
-  <div class="chan-uncat-row" id="bbUncatInfo">
-    <div class="chan-uncat-text">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span id="bbUncatText"></span>
+    <!-- Categories section (existing JS populates #categoriesTrack) -->
+    <section class="categories-section" id="categoriesSection">
+      <div class="chan-cat-row">
+        <div class="chan-cat-pills" id="categoriesTrack"></div>
+      </div>
+      <div class="subcategories-strip" id="subcategoriesStrip" style="display:none">
+        <div class="sidebar-nav-label" style="padding:8px 8px 4px;display:flex;align-items:center;justify-content:space-between">
+          <span>Subcategories</span>
+          <div style="display:flex;gap:3px">
+            <button class="cat-sidebar-btn" onclick="addSubcategory()">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <button class="cat-sidebar-btn" onclick="openManageSubcategories()">
+              <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="subcategories-track" id="subcategoriesTrack"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Main content: topbar + channel grid -->
+  <div class="channels-main-content">
+
+    <!-- Topbar -->
+    <div class="chan-topbar" id="chanTopbar">
+      <!-- Title + controls row -->
+      <div class="chan-topbar-title-row">
+        <span class="chan-topbar-title" id="chanTopbarTitle">Channels</span>
+        <span class="chan-topbar-badge" id="chanTopbarBadge"></span>
+        <div class="channels-view-controls">
+          <button class="channels-sort-btn" onclick="document.getElementById('sortSelect')?.click()">
+            <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2"/></svg>
+            Sort
+          </button>
+          <div class="view-toggles">
+            <button class="view-toggle-btn active" title="Grid" onclick="setChannelView(this,'grid')">
+              <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
+            </button>
+            <button class="view-toggle-btn" title="List" onclick="setChannelView(this,'list')">
+              <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Uncat info -->
+      <div class="chan-uncat-row" id="bbUncatInfo" style="display:none">
+        <div class="chan-uncat-text">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="bbUncatText"></span>
+        </div>
+        <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
+        <div style="margin-left:auto;display:flex;gap:4px">
+          <button class="bb-btn" id="bbBulkEditBtn" onclick="toggleBulkMode()">Bulk Edit</button>
+          <button class="bb-btn" id="bbBulkEditAction" onclick="openBulkCategoryModal()" style="display:none">Edit selected</button>
+          <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
+        </div>
+      </div>
     </div>
-    <button class="bb-act" onclick="openModal('autoCatConfirmModal')" id="bbSortNow">Sort now</button>
-  </div>
-  <div class="chan-bulk-row">
-    <button class="bb-btn" id="bbBulkEditBtn" onclick="toggleBulkMode()">Bulk Edit</button>
-    <button class="bb-btn" id="bbBulkEditAction" onclick="openBulkCategoryModal()">Edit</button>
-    <button class="bb-btn" onclick="showView('analytics')">Clean Up</button>
-  </div>
-</div>
 
-<!-- Ad: Banner below categories -->
-<div class="promo-slot promo-slot-banner" id="promoBanner">
-  <!-- Replace with AdSense unit: data-ad-slot="YOUR_SLOT_ID" -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16" style="opacity:.4"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
-  Advertisement
-</div>
+    <!-- Ad: Banner -->
+    <div class="promo-slot promo-slot-banner" id="promoBanner" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16" style="opacity:.4"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+      Advertisement
+    </div>
 
-<!-- ═══ Main Layout ═══ -->
-<div class="main-layout">
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
+    <!-- ═══ Main Layout ═══ -->
+    <div class="main-layout" id="mainLayoutInner">
+      <!-- Sidebar (filters — hidden by default, can be toggled) -->
+      <aside class="sidebar" id="sidebar" style="display:none">
     <h3>Filters</h3>
 
     <!-- Channel Size -->
@@ -3549,7 +3990,10 @@ input[type=range]::-webkit-slider-thumb{
 
     <div class="channel-grid" id="channelGrid"></div>
   </main>
-</div>
+</div><!-- end .main-layout -->
+
+  </div><!-- end .channels-main-content -->
+</div><!-- end .channels-layout -->
 
 
   </div><!-- end .app-content -->
@@ -4502,14 +4946,25 @@ function renderCategories() {
     }
   });
 
-  // Render as pill tabs
+  // Render as sidebar nav items
   let tabHtml = '';
   cats.forEach(c => {
     const safeKey = c.key.replace(/'/g, "\\'");
     const active = activeCategory === c.key ? 'active' : '';
-    tabHtml += `<button class="cat-tab ${active}" onclick="setCategory('${safeKey}')">${c.name} <span class="cat-tab-count">${c.count}</span></button>`;
+    const colour = window._categoryColours?.[c.name];
+    const dot = (c.key !== 'all' && c.key !== '__favs__' && colour)
+      ? `<span class="cat-tab-dot" style="background:${colour}"></span>`
+      : '';
+    tabHtml += `<button class="cat-tab ${active}" onclick="setCategory('${safeKey}')">${dot}<span style="flex:1;overflow:hidden;text-overflow:ellipsis">${c.name}</span><span class="cat-tab-count">${c.count}</span></button>`;
   });
   track.innerHTML = tabHtml;
+
+  // Update topbar title
+  const activeCat = cats.find(c => c.key === activeCategory);
+  const titleEl = document.getElementById('chanTopbarTitle');
+  const badgeEl = document.getElementById('chanTopbarBadge');
+  if (titleEl) titleEl.textContent = activeCat ? activeCat.name.replace('⭐ ', '') : 'Channels';
+  if (badgeEl) badgeEl.textContent = activeCat ? `${activeCat.count} channels` : '';
 
   renderSubcategories();
 }
@@ -4760,6 +5215,18 @@ async function deleteSubcategoryModal() {
   closeModal('editSubcategoryModal');
 }
 
+function setChannelView(btn, mode) {
+  document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('channelGrid');
+  if (!grid) return;
+  if (mode === 'list') {
+    grid.style.gridTemplateColumns = '1fr';
+  } else {
+    grid.style.gridTemplateColumns = '';
+  }
+}
+
 function setCategory(key) {
   // Hide discover if switching away from a category that had it
   if (activeCategory !== key) {
@@ -4904,8 +5371,9 @@ function renderChannels() {
   if (!channels.length) {
     catsSection.style.display = 'none';
     mainLayout.style.display = 'none';
+    document.getElementById('channelsLayout').style.display = 'none';
     toolbar.style.display = 'none';
-      document.getElementById('analyticsPage').classList.remove('active');
+    document.getElementById('analyticsPage').classList.remove('active');
     document.getElementById('marketplacePage').classList.remove('active');
     grid.innerHTML = '';
     onboarding.style.display = 'flex';
@@ -4915,6 +5383,7 @@ function renderChannels() {
   onboarding.style.display = 'none';
   document.getElementById('analyticsPage').classList.remove('active');
   document.getElementById('marketplacePage').classList.remove('active');
+  document.getElementById('channelsLayout').style.display = 'flex';
   catsSection.style.display = '';
   mainLayout.style.display = '';
   sidebar.style.display = 'none';
@@ -4926,8 +5395,10 @@ function renderChannels() {
   const uncatCount = channels.filter(ch => chIsUncategorised(ch)).length;
   const bbText = document.getElementById('bbUncatText');
   const bbSortNow = document.getElementById('bbSortNow');
+  const bbUncatInfo = document.getElementById('bbUncatInfo');
   if (bbText) bbText.textContent = `${uncatCount} uncategorised channel${uncatCount !== 1 ? 's' : ''}`;
   if (bbSortNow) bbSortNow.disabled = uncatCount === 0;
+  if (bbUncatInfo) bbUncatInfo.style.display = uncatCount > 0 ? 'flex' : 'none';
 
   document.getElementById('navChannels')?.classList.add('active');
 
@@ -8025,6 +8496,7 @@ function showView(view) {
   // Hide everything first
   catsSection.style.display = 'none';
   mainLayout.style.display = 'none';
+  document.getElementById('channelsLayout').style.display = 'none';
   analyticsPage.classList.remove('active');
   marketplacePage.classList.remove('active');
   homeView.classList.remove('active');
@@ -8095,6 +8567,7 @@ function showView(view) {
       if (channels.length) {
         document.getElementById('chanHeader')?.classList.add('show');
         document.getElementById('chanTopbar')?.classList.add('show');
+        document.getElementById('channelsLayout').style.display = 'flex';
         catsSection.style.display = '';
         mainLayout.style.display = '';
         if (onboarding) onboarding.style.display = 'none';

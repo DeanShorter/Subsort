@@ -3,7 +3,9 @@
     "allow": [
       "Bash(xargs wc:*)",
       "Bash(find /d/Subsort -type f -name *dashboard* -o -name *auth*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(ls /d/Subsort/app/page*)",
+      "Bash(node -e \"const fs = require\\(''fs''\\); const content = fs.readFileSync\\(''app/page.js'', ''utf8''\\); console.log\\(''page.js lines:'', content.split\\(''\\\\n''\\).length\\); console.log\\(''has export default:'', content.includes\\(''export default''\\)\\);\")"
     ]
   }
 }
