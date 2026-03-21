@@ -10,7 +10,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Sora:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@700&display=swap" rel="stylesheet">
 <!-- AdSense: Replace YOUR_PUB_ID with your actual publisher ID, then uncomment -->
 <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUB_ID" crossorigin="anonymous"></script> -->
 <style>
@@ -1363,9 +1363,18 @@ input[type=range]::-webkit-slider-thumb{
   padding:0 .625rem .75rem;margin-bottom:.25rem;
 }
 .home-nav-primary.collapsed .home-nav-brand{justify-content:center;padding:.25rem 0 .625rem}
+.home-nav-primary.collapsed .home-nav-brand-wordmark{display:none}
 .home-nav-brand-wordmark{
-  height:20px;width:auto;flex-shrink:0;
+  font-family:'Outfit',sans-serif;
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:-0.5px;
+  color:var(--text-primary);
+  white-space:nowrap;
+  line-height:1;
+  flex-shrink:0;
 }
+.home-nav-brand-wordmark span{color:#3ECFA0;}
 .home-nav-toggle{
   width:36px;height:36px;border-radius:var(--radius-sm);
   background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;
@@ -2932,7 +2941,7 @@ input[type=range]::-webkit-slider-thumb{
   <!-- Primary Nav Rail (always visible) -->
   <nav class="home-nav-primary" id="homePrimaryNav">
     <div class="home-nav-brand" onclick="showView('home')" style="cursor:pointer">
-      <img class="home-nav-brand-wordmark" src="/logo.svg" alt="myfeed." />
+      <span class="home-nav-brand-wordmark"><span>free</span>dly</span>
       <button class="mobile-nav-close" onclick="event.stopPropagation();closeMobileNav()" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <!-- Free features -->
