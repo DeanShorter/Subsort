@@ -2028,7 +2028,7 @@ input[type=range]::-webkit-slider-thumb{
 .disc-page{display:none;overflow-y:auto;flex:1;padding:1.5rem}
 .disc-page.active{display:block}
 .disc-topbar{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
-.disc-topbar h1{font-family:var(--font-display);font-size:1.25rem;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);flex:1}
+.disc-topbar .page-title{flex:1}
 .disc-search-wrap{position:relative;width:240px;flex-shrink:0}
 .disc-search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);pointer-events:none}
 .disc-search-wrap input{width:100%;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:.5rem .75rem .5rem 2rem;font-size:.8125rem;font-family:var(--font-body);color:var(--text-primary);outline:none;transition:border-color .2s}

@@ -67,6 +67,15 @@ export default function DashboardSidebar() {
     if (!showCategories) { setActiveCat('all'); setActiveSub(null); }
   }, [showCategories]);
 
+  // Expose scroll-to-categories for the Filters button
+  useEffect(() => {
+    window.__subsortScrollToCats = () => {
+      const el = document.getElementById('sidebarCatsSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    return () => { delete window.__subsortScrollToCats; };
+  }, []);
+
   return (
     <nav className="home-nav-primary">
       {/* Header */}
@@ -91,7 +100,7 @@ export default function DashboardSidebar() {
 
         {/* Categories section — only on subscriptions & feeds */}
         {showCategories && categories.length > 0 && (
-          <div className="hnp-section">
+          <div className="hnp-section" id="sidebarCatsSection">
             <div className="hnp-section-label">CATEGORIES</div>
             <button className={`home-nav-item${activeCat === 'all' ? ' active' : ''}`} onClick={() => { setActiveCat('all'); setActiveSub(null); window.__subsortCat?.('all'); }}>
               <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>

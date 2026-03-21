@@ -123,10 +123,7 @@ export default function SubscriptionsPage() {
             Sort: <span>{SORT_OPTIONS[sortIdx].label}</span>
           </button>
 
-          <button className="ct-pill-btn" onClick={() => {
-            const sidebar = document.querySelector('.home-nav-primary');
-            if (sidebar) sidebar.scrollTo({ top: sidebar.scrollHeight, behavior: 'smooth' });
-          }}>
+          <button className="ct-pill-btn" onClick={() => window.__subsortScrollToCats?.()}>
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
             Filters
           </button>
