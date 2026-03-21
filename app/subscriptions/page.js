@@ -95,22 +95,20 @@ export default function SubscriptionsPage() {
 
   if (!user) {
     return (
-      <main className="home-main" style={{ padding: '1.75rem 2rem', overflowY: 'auto', flex: 1 }}>
-        <div className="db-topbar"><h1 className="page-title">Subscriptions</h1></div>
-        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Sign in to see your subscriptions.</p>
-          <button className="btn-accent" onClick={signIn} style={{ padding: '.625rem 1.5rem', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
-            Sign in with Google
-          </button>
+      <main className="home-main">
+        <div className="db-header"><h1 className="page-title">Subscriptions</h1></div>
+        <div className="home-feed-empty">
+          <p className="home-feed-empty-text">Sign in to see your subscriptions.</p>
+          <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="home-main" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+    <main className="home-main" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Header */}
-      <div className="chan-header" style={{ display: 'block' }}>
+      <div className="db-header">
         <div className="chan-hdr-top">
           <h1 className="page-title">Subscriptions</h1>
           <span className="chan-page-count">{channels.length} subscription{channels.length !== 1 ? 's' : ''}</span>
@@ -123,6 +121,14 @@ export default function SubscriptionsPage() {
           <button className="ct-pill-btn" onClick={cycleSort}>
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
             Sort: <span>{SORT_OPTIONS[sortIdx].label}</span>
+          </button>
+
+          <button className="ct-pill-btn" onClick={() => {
+            const sidebar = document.querySelector('.home-nav-primary');
+            if (sidebar) sidebar.scrollTo({ top: sidebar.scrollHeight, behavior: 'smooth' });
+          }}>
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
+            Filters
           </button>
 
           <div className="view-toggles">

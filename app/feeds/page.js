@@ -123,13 +123,11 @@ export default function FeedsPage() {
 
   if (!user) {
     return (
-      <main id="homeMain" style={{ padding: '1.75rem 2rem', overflowY: 'auto', flex: 1 }}>
-        <h1 className="page-title">Feeds</h1>
-        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Sign in to see your feed.</p>
-          <button className="btn-accent" onClick={signIn} style={{ padding: '.625rem 1.5rem', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
-            Sign in with Google
-          </button>
+      <main id="homeMain" className="home-main">
+        <div className="db-header"><h1 className="page-title">Feeds</h1></div>
+        <div className="home-feed-empty">
+          <p className="home-feed-empty-text">Sign in to see your feed.</p>
+          <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
         </div>
       </main>
     );
@@ -142,7 +140,7 @@ export default function FeedsPage() {
       style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}
     >
       {/* Header */}
-      <div className="db-header" style={{ padding: '1.75rem 2rem 0' }}>
+      <div className="db-header" style={{ padding: '0 2rem' }}>
         <h1 className="page-title">Your Feed</h1>
         <p className="db-subtitle">Recent videos from your subscriptions.</p>
       </div>

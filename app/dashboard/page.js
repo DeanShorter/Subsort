@@ -70,7 +70,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="home-main" style={{ padding: '1.75rem 2rem', overflowY: 'auto', flex: 1 }}>
+    <main className="home-main">
       {/* Topbar */}
       <div className="db-topbar">
         <h1 className="page-title">Dashboard</h1>
@@ -86,11 +86,9 @@ export default function DashboardPage() {
       </div>
 
       {!user && (
-        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Sign in to see your dashboard.</p>
-          <button className="btn-accent" onClick={signIn} style={{ padding: '.625rem 1.5rem', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
-            Sign in with Google
-          </button>
+        <div className="home-feed-empty">
+          <p className="home-feed-empty-text">Sign in to see your dashboard.</p>
+          <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
         </div>
       )}
 

@@ -93,13 +93,11 @@ export default function DiscoverPage() {
 
   if (!user) {
     return (
-      <main style={{ padding: '1.75rem 2rem', overflowY: 'auto', flex: 1 }}>
-        <h1 className="page-title">Discover</h1>
-        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Sign in to discover channels.</p>
-          <button className="btn-accent" onClick={signIn} style={{ padding: '.625rem 1.5rem', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
-            Sign in with Google
-          </button>
+      <main className="home-main">
+        <div className="db-header"><h1 className="page-title">Discover</h1></div>
+        <div className="home-feed-empty">
+          <p className="home-feed-empty-text">Sign in to discover channels.</p>
+          <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
         </div>
       </main>
     );
@@ -107,18 +105,18 @@ export default function DiscoverPage() {
 
   if (!channels.length) {
     return (
-      <main style={{ padding: '1.75rem 2rem', overflowY: 'auto', flex: 1 }}>
-        <h1 className="page-title">Discover</h1>
-        <p style={{ color: 'var(--text-muted)', marginTop: '1rem' }}>Sync your subscriptions to see recommendations.</p>
+      <main className="home-main">
+        <div className="db-header"><h1 className="page-title">Discover</h1></div>
+        <p className="home-feed-empty-text">Sync your subscriptions to see recommendations.</p>
       </main>
     );
   }
 
   return (
-    <main style={{ padding: '1.5rem 2rem', overflowY: 'auto', flex: 1 }}>
+    <main className="home-main">
       {/* Topbar */}
       <div className="disc-topbar">
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-.03em', color: 'var(--text-primary)', flex: 1 }}>Discover</h1>
+        <h1 className="page-title">Discover</h1>
         <div className="disc-search-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <input type="text" placeholder="Search channels…" value={search} onChange={e => setSearch(e.target.value)} />
