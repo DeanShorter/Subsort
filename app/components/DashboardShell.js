@@ -1,6 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { AuthProvider } from './AuthProvider';
+import { AuthProvider, useAuth } from './AuthProvider';
 import { ChannelDataProvider } from './ChannelDataProvider';
 import DashboardSidebar from './DashboardSidebar';
 
@@ -14,6 +14,20 @@ const DASHBOARD_ROUTES = [
   '/settings',
 ];
 
+function DashboardInner({ children }) {
+  const { user } = useAuth();
+  return (
+    <ChannelDataProvider user={user}>
+      <div className="app-shell">
+        <DashboardSidebar />
+        <div className="app-content" id="appContent">
+          {children}
+        </div>
+      </div>
+    </ChannelDataProvider>
+  );
+}
+
 export default function DashboardShell({ children }) {
   const pathname = usePathname();
   const isDashboard = DASHBOARD_ROUTES.some(
@@ -21,20 +35,12 @@ export default function DashboardShell({ children }) {
   );
 
   if (!isDashboard) {
-    // Non-dashboard pages (landing, blog, signin) — render without shell
     return children;
   }
 
   return (
     <AuthProvider>
-      <ChannelDataProvider>
-        <div className="app-shell">
-          <DashboardSidebar />
-          <div className="app-content" id="appContent">
-            {children}
-          </div>
-        </div>
-      </ChannelDataProvider>
+      <DashboardInner>{children}</DashboardInner>
     </AuthProvider>
   );
 }

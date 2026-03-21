@@ -1,7 +1,6 @@
 'use client';
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from './AuthProvider';
 
 const TILE_COLOURS = [
   '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
@@ -27,8 +26,7 @@ const ChannelDataContext = createContext({
   findDeadChannels: () => [],
 });
 
-export function ChannelDataProvider({ children }) {
-  const { user } = useAuth();
+export function ChannelDataProvider({ children, user }) {
   const [channels, setChannels] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState({});
