@@ -4202,6 +4202,22 @@ async function dbSaveSubcategory(categoryName, subName) {
   return data;
 }
 
+async function logRecategorisation(ch, fromCats, toCats) {
+  if (!sb || !sbUser) return;
+  if (!fromCats) fromCats = [];
+  // Skip if nothing actually changed
+  const same = fromCats.length === toCats.length && fromCats.every(c => toCats.includes(c));
+  if (same) return;
+  const topics = ch.topics || ch.keywords?.split(',').map(k => k.trim()).filter(Boolean) || [];
+  await sb.from('channel_recategorisations').insert({
+    user_id: sbUser.id,
+    channel_id: ch.channelId,
+    from_cats: fromCats.length ? fromCats : null,
+    to_cats: toCats,
+    youtube_topics: topics.length ? topics : null,
+  });
+}
+
 async function dbSaveChannel(channel) {
   if (!sb || !sbUser) return null;
   const { data, error } = await sb
@@ -5257,6 +5273,7 @@ function updateEditSubcategoryOptions(currentSubcat) {
 async function saveChannelEdit() {
   const ch = channels.find(c => c.id === editingChannelId);
   if (!ch) return;
+  const oldCats = [...(ch.categories || [])];
   const newCats = [...document.querySelectorAll('#editChannelCategories input:checked')].map(i => i.value);
   ch.categories = newCats;
   const subSel = document.getElementById('editChannelSubcategory');
@@ -5266,6 +5283,7 @@ async function saveChannelEdit() {
   closeModal('editChannelModal');
   toast('Channel updated');
   if (sb && sbUser) {
+    logRecategorisation(ch, oldCats, newCats);
     const dbRow = await dbSaveChannel(ch);
     if (dbRow) {
       await dbSetChannelCategories(dbRow.id, newCats);
@@ -8220,15 +8238,18 @@ async function applyBulkCategories() {
 
   let updated = 0;
   const updatedChannels = [];
+  const recatLog = [];
   for (const id of selectedChannels) {
     const ch = channels.find(c => c.id === id);
     if (!ch) continue;
+    const oldCats = [...(ch.categories || [])];
     ch.categories = [...newCats];
     // Set subcategory: use the first matching subcategory for the channel's categories
     // If multiple subcats selected, prefer one whose parent matches the channel's first category
     const matchingSub = newSubs.find(s => newCats.includes(s.parent));
     ch.subcategory = matchingSub ? matchingSub.name : '';
     updatedChannels.push(ch);
+    recatLog.push({ ch, oldCats, newCats: [...newCats] });
     updated++;
   }
 
@@ -8239,6 +8260,7 @@ async function applyBulkCategories() {
   toast(`Updated ${updated} channel${updated > 1 ? 's' : ''}`);
 
   if (sb && sbUser && updatedChannels.length) {
+    recatLog.forEach(({ ch, oldCats, newCats }) => logRecategorisation(ch, oldCats, newCats));
     await dbSyncChannelCategories(updatedChannels, []);
   }
 }
