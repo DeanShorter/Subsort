@@ -2405,9 +2405,12 @@ input[type=range]::-webkit-slider-thumb{
 .ch-list-row:first-child{border-top:1px solid var(--border-subtle)}
 .ch-list-row:hover{background:var(--bg-surface)}
 .ch-list-row.selected-card{background:rgba(56,233,177,.06);border-color:var(--accent)}
-.ch-list-info{flex:1;min-width:0;display:flex;align-items:center;gap:.75rem}
-.ch-list-row .ch-name{font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:120px;max-width:220px}
-.ch-list-row .ch-stats{font-size:.75rem;color:var(--text-muted);white-space:nowrap}
+.ch-list-star{flex-shrink:0;background:none;border:none;padding:0;cursor:pointer;width:20px;height:20px;display:grid;place-items:center;color:var(--text-muted);transition:color .15s}
+.ch-list-star:hover{color:#f59e0b}
+.ch-list-star.starred{color:#f59e0b}
+.ch-list-star svg{width:14px;height:14px}
+.ch-list-row .ch-name{font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:120px;max-width:220px;flex-shrink:0}
+.ch-list-stat{font-size:.75rem;color:var(--text-muted);white-space:nowrap;min-width:72px;flex-shrink:0}
 .ch-list-row .ch-badges{display:flex;flex-wrap:wrap;gap:.25rem;flex:1;min-width:0}
 .ch-list-row .ch-menu{flex-shrink:0}
 
@@ -5082,18 +5085,14 @@ function renderChannels() {
     const menuEl = `<button class="ch-menu" title="Options" onclick="event.stopPropagation();editChannel('${ch.id}')">${menuSvg}</button>`;
 
     if (chanView === 'list') {
-      const statsHtml = [
-        ch.subscriberCount ? `${formatCount(ch.subscriberCount)} subs` : '',
-        ch.videoCount ? `${formatCount(ch.videoCount)} videos` : ''
-      ].filter(Boolean).join(' · ');
+      const starSvg = `<svg viewBox="0 0 24 24" fill="${ch.favourited?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
       return `<div class="ch-list-row ${isSelected?'selected-card':''}" onclick="openDetail('${ch.id}')">
         ${selectEl}
-        <div class="ch-list-info">
-          <div class="ch-name">${ch.name || 'Unknown'}</div>
-          ${statsHtml ? `<div class="ch-stats">${statsHtml}</div>` : ''}
-        </div>
+        <button class="ch-list-star ${ch.favourited?'starred':''}" onclick="event.stopPropagation();toggleFavourite('${ch.id}')" title="${ch.favourited?'Remove from favourites':'Add to favourites'}">${starSvg}</button>
+        <div class="ch-name">${ch.name || 'Unknown'}</div>
+        <span class="ch-list-stat">${ch.subscriberCount ? formatCount(ch.subscriberCount)+' subs' : '—'}</span>
+        <span class="ch-list-stat">${ch.videoCount ? formatCount(ch.videoCount)+' videos' : '—'}</span>
         <div class="ch-badges">${catBadges}${subcatBadge}</div>
-        ${ch.favourited ? '<div class="ch-fav-dot" title="Favourite"></div>' : ''}
         ${menuEl}
       </div>`;
     }
