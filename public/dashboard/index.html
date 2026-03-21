@@ -1432,7 +1432,8 @@ input[type=range]::-webkit-slider-thumb{
   width:3px;height:16px;
   background:#3ECFA0;border-radius:0 2px 2px 0;
 }
-.home-nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.home-nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:#5E5D58;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.home-nav-item.active svg{stroke:var(--accent)}
 
 /* Label */
 .home-nav-item-label{
@@ -2818,8 +2819,60 @@ input[type=range]::-webkit-slider-thumb{
   padding: 0 20px !important;
   display: none;
   flex-direction: column !important;
+  gap: 0;
 }
 .chan-topbar.show { display: flex !important; }
+
+/* Row 1: right-aligned controls */
+.ct-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 10px 0 9px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ct-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font: 500 12px/1 var(--font-body);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.ct-pill-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.ct-pill-btn:hover { border-color: var(--border-hover); background: var(--bg-surface); color: var(--text-primary); }
+
+/* Row 2: category dot + name + badge + subcategory pills */
+.ct-cat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-wrap: nowrap;
+}
+.ct-cat-row::-webkit-scrollbar { display: none; }
+.ct-cat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--text-muted);
+}
+.ct-subcat-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
 
 .chan-uncat-row {
   display: flex;
@@ -2935,20 +2988,14 @@ input[type=range]::-webkit-slider-thumb{
   box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
 }
 
-/* Topbar title row for channels */
-.chan-topbar-title-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 48px;
-  border-bottom: 1px solid var(--border-subtle);
-}
 .chan-topbar-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.3px;
   color: #E8E6E0;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .chan-topbar-badge {
   font-size: 11px;
@@ -2957,24 +3004,14 @@ input[type=range]::-webkit-slider-thumb{
   padding: 3px 10px;
   border-radius: 6px;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-
-/* Subcategory pills in topbar */
-.chan-topbar-subcats {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.chan-topbar-subcats::-webkit-scrollbar { display: none; }
-
 .subcats-topbar-pill {
   padding: 4px 12px;
   border-radius: 100px;
-  font: 500 11px/1 var(--font-body);
-  color: var(--text-muted);
+  font: 500 12px/1 var(--font-body);
+  color: var(--text-secondary);
   background: transparent;
   border: 1px solid var(--border-subtle);
   cursor: pointer;
@@ -2982,7 +3019,7 @@ input[type=range]::-webkit-slider-thumb{
   white-space: nowrap;
   flex-shrink: 0;
 }
-.subcats-topbar-pill:hover { border-color: var(--border-hover); color: var(--text-secondary); background: var(--bg-surface); }
+.subcats-topbar-pill:hover { border-color: var(--border-hover); color: var(--text-primary); background: var(--bg-surface); }
 .subcats-topbar-pill.active { background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary); }
 
 /* ═══ END CHANNELS REDESIGN ═══ */
@@ -3032,51 +3069,39 @@ input[type=range]::-webkit-slider-thumb{
       <div class="hnp-section">
         <div class="hnp-section-label">PAGES</div>
         <button class="home-nav-item" data-nav="home" onclick="showView('home')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <svg viewBox="0 0 16 16"><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 14V8h4v6"/></svg>
           <span class="home-nav-item-label">Dashboard</span>
         </button>
         <button class="home-nav-item" data-nav="channels" onclick="showView('channels')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+          <svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2 6h12"/></svg>
           <span class="home-nav-item-label">Subscriptions</span>
         </button>
         <button class="home-nav-item" data-nav="feeds" onclick="showView('home');setHomeNav('feeds')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+          <svg viewBox="0 0 16 16"><path d="M3 4h10M3 8h6M3 12h8"/></svg>
           <span class="home-nav-item-label">Feeds</span>
         </button>
         <button class="home-nav-item" data-nav="analytics" onclick="showView('analytics')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          <svg viewBox="0 0 16 16"><path d="M2 12l3-4 3 2 4-6 2 2"/><rect x="2" y="2" width="12" height="12" rx="1.5"/></svg>
           <span class="home-nav-item-label">Analytics</span>
         </button>
-        <button class="home-nav-item" data-nav="blog" onclick="showView('blog')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          <span class="home-nav-item-label">Blog</span>
-        </button>
         <button class="home-nav-item" data-nav="discover" onclick="showView('discover')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M10.5 5.5l-1 3.5-3.5 1 1-3.5z"/></svg>
           <span class="home-nav-item-label">Discover</span>
+        </button>
+        <button class="home-nav-item" data-nav="blog" onclick="showView('blog')">
+          <svg viewBox="0 0 16 16"><path d="M3 4h10M3 8h6M3 12h8"/></svg>
+          <span class="home-nav-item-label">Blog</span>
         </button>
       </div>
 
-      <!-- QUICK ACCESS section -->
-      <div class="hnp-section">
-        <div class="hnp-section-label">QUICK ACCESS</div>
-        <button class="home-nav-item" data-nav="all" onclick="showView('channels');setCategory('all')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          <span class="home-nav-item-label">All channels</span>
-          <span class="hnp-count" id="sideNavAllCount"></span>
-        </button>
+      <!-- CATEGORIES section -->
+      <div class="hnp-section" id="sideNavCatsSection" style="display:none">
+        <div class="hnp-section-label">CATEGORIES</div>
         <button class="home-nav-item" data-nav="favs" onclick="showView('channels');setCategory('__favs__')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/></svg>
           <span class="home-nav-item-label">Favourites</span>
           <span class="hnp-count" id="sideNavFavCount"></span>
         </button>
-      </div>
-
-      <hr class="home-nav-divider">
-
-      <!-- CATEGORIES section -->
-      <div class="hnp-section">
-        <div class="hnp-section-label">CATEGORIES</div>
         <div id="sideNavCategories"></div>
       </div>
 
@@ -3086,11 +3111,11 @@ input[type=range]::-webkit-slider-thumb{
       <!-- SETTINGS section -->
       <div class="hnp-section">
         <button class="home-nav-item" data-nav="settings" onclick="showView('settings')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2"/><path d="M13.5 8a5.5 5.5 0 01-.3 1.8l1.3.8-.8 1.4-1.3-.8a5.5 5.5 0 01-1.5 1l.2 1.5h-1.6l.2-1.5a5.5 5.5 0 01-1.5-1l-1.3.8-.8-1.4 1.3-.8A5.5 5.5 0 016.5 8a5.5 5.5 0 01.3-1.8l-1.3-.8.8-1.4 1.3.8a5.5 5.5 0 011.5-1l-.2-1.5h1.6l-.2 1.5a5.5 5.5 0 011.5 1l1.3-.8.8 1.4-1.3.8a5.5 5.5 0 01.3 1.8z"/></svg>
           <span class="home-nav-item-label">Settings</span>
         </button>
         <button class="home-nav-item" data-nav="pro" onclick="startCheckout()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 20h18M5 20V8l4 4 3-6 3 6 4-4v12"/></svg>
+          <svg viewBox="0 0 16 16"><path d="M2 12l3-4 3 2 4-6 2 2"/><rect x="2" y="2" width="12" height="12" rx="1.5"/></svg>
           <span class="home-nav-item-label">Watch analytics</span>
           <span class="hnp-pro-badge">Pro</span>
         </button>
@@ -3846,26 +3871,39 @@ input[type=range]::-webkit-slider-thumb{
 
     <!-- Topbar -->
     <div class="chan-topbar" id="chanTopbar">
-      <!-- Title + controls row -->
-      <div class="chan-topbar-title-row">
-        <span class="chan-topbar-title" id="chanTopbarTitle">Channels</span>
-        <span class="chan-topbar-badge" id="chanTopbarBadge"></span>
-        <div class="channels-view-controls">
-          <button class="channels-sort-btn" onclick="document.getElementById('sortSelect')?.click()">
-            <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2"/></svg>
-            Sort
+
+      <!-- Row 1: Controls (right-aligned) -->
+      <div class="ct-controls-row">
+        <button class="ct-pill-btn" id="chanSortBtn" onclick="cycleChanSort()">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h10M4 7h6M6 10h2"/></svg>
+          Sort: <span id="chanSortLabel">Name</span>
+        </button>
+        <button class="ct-pill-btn" onclick="document.getElementById('sidebar').style.display = document.getElementById('sidebar').style.display === 'none' ? '' : 'none'; renderChannels()">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M4.5 7h5"/></svg>
+          Filters
+        </button>
+        <div class="view-toggles">
+          <button class="view-toggle-btn active" title="Grid" onclick="setChannelView(this,'grid')">
+            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
           </button>
-          <div class="view-toggles">
-            <button class="view-toggle-btn active" title="Grid" onclick="setChannelView(this,'grid')">
-              <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
-            </button>
-            <button class="view-toggle-btn" title="List" onclick="setChannelView(this,'list')">
-              <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12"/></svg>
-            </button>
-          </div>
+          <button class="view-toggle-btn" title="List" onclick="setChannelView(this,'list')">
+            <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12"/></svg>
+          </button>
+          <button class="view-toggle-btn" title="Compact" onclick="setChannelView(this,'compact')">
+            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="3" height="12" rx="1"/><path d="M6 3h7M6 7h7M6 11h7"/></svg>
+          </button>
         </div>
       </div>
-      <!-- Uncat info -->
+
+      <!-- Row 2: Category + subcategory pills (only shown when category with subcats is active) -->
+      <div class="ct-cat-row" id="chanCatRow" style="display:none">
+        <span class="ct-cat-dot" id="chanTopbarDot"></span>
+        <span class="chan-topbar-title" id="chanTopbarTitle">Channels</span>
+        <span class="chan-topbar-badge" id="chanTopbarBadge"></span>
+        <div class="ct-subcat-pills" id="chanTopbarSubcats"></div>
+      </div>
+
+      <!-- Uncat info row -->
       <div class="chan-uncat-row" id="bbUncatInfo" style="display:none">
         <div class="chan-uncat-text">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -5038,12 +5076,24 @@ function renderCategories() {
   });
   track.innerHTML = tabHtml;
 
-  // Update topbar title
+  // Update topbar title + dot
   const activeCat = cats.find(c => c.key === activeCategory);
   const titleEl = document.getElementById('chanTopbarTitle');
   const badgeEl = document.getElementById('chanTopbarBadge');
+  const dotEl = document.getElementById('chanTopbarDot');
   if (titleEl) titleEl.textContent = activeCat ? activeCat.name.replace('⭐ ', '') : 'Channels';
   if (badgeEl) badgeEl.textContent = activeCat ? `${activeCat.count} channels` : '';
+  if (dotEl) {
+    const dotColour = window._categoryColours?.[activeCat?.name];
+    dotEl.style.background = dotColour || 'transparent';
+    dotEl.style.display = dotColour ? 'block' : 'none';
+  }
+  // Show/hide cat row: only visible for a real category
+  const catRow = document.getElementById('chanCatRow');
+  if (catRow) {
+    const isSpecial = !activeCategory || activeCategory === 'all' || activeCategory === '__favs__' || activeCategory === '__uncat__';
+    catRow.style.display = isSpecial ? 'none' : 'flex';
+  }
 
   renderSubcategories();
   renderSideNavCategories();
@@ -5115,34 +5165,39 @@ function renderSideNavCategories() {
 }
 
 function renderSubcategories() {
+  // Hidden legacy elements (kept for JS compatibility)
   const strip = document.getElementById('subcategoriesStrip');
   const track = document.getElementById('subcategoriesTrack');
+  const topbarPills = document.getElementById('chanTopbarSubcats');
+  const catRow = document.getElementById('chanCatRow');
 
-  // Only show when a real category is selected
-  if (activeCategory === 'all' || activeCategory === '__uncat__' || activeCategory === '__favs__') {
-    strip.style.display = 'none';
+  const isSpecial = activeCategory === 'all' || activeCategory === '__uncat__' || activeCategory === '__favs__';
+  if (strip) strip.style.display = 'none';
+
+  if (!topbarPills) return;
+
+  if (isSpecial) {
+    topbarPills.innerHTML = '';
+    if (catRow) catRow.style.display = 'none';
     return;
   }
 
+  if (catRow) catRow.style.display = 'flex';
+
   const subs = subcategories[activeCategory] || [];
-  strip.style.display = 'flex';
+  if (!subs.length) { topbarPills.innerHTML = ''; return; }
 
   const catChannels = channels.filter(ch => chHasCat(ch, activeCategory));
   const allCount = catChannels.length;
 
-  let html = `<span class="subcat-pill subcat-pill-all ${!activeSubcategory ? 'active' : ''}" onclick="setSubcategory(null)">All <span class="subcat-count">${allCount}</span></span>`;
-
-  if (subs.length) {
-    for (const sub of subs) {
-      const count = catChannels.filter(ch => ch.subcategory === sub).length;
-      const safeSub = sub.replace(/'/g, "\\'");
-      html += `<span class="subcat-pill ${activeSubcategory === sub ? 'active' : ''}" onclick="setSubcategory('${safeSub}')">${sub} <span class="subcat-count">${count}</span></span>`;
-    }
-  } else {
-    html += `<span class="subcat-empty-hint">No subcategories yet</span>`;
+  let html = `<button class="subcats-topbar-pill ${!activeSubcategory ? 'active' : ''}" onclick="setSubcategory(null)">All <span style="opacity:.6">${allCount}</span></button>`;
+  for (const sub of subs) {
+    const count = catChannels.filter(ch => ch.subcategory === sub).length;
+    const safeSub = sub.replace(/'/g, "\\'");
+    html += `<button class="subcats-topbar-pill ${activeSubcategory === sub ? 'active' : ''}" onclick="setSubcategory('${safeSub}')">${sub} <span style="opacity:.6">${count}</span></button>`;
   }
-
-  track.innerHTML = html;
+  topbarPills.innerHTML = html;
+  if (track) track.innerHTML = html;
 }
 
 function setSubcategory(sub) {
@@ -5358,6 +5413,23 @@ async function deleteSubcategoryModal() {
   save();
   renderAll();
   closeModal('editSubcategoryModal');
+}
+
+const _SORT_CYCLE = [
+  { value: 'name', label: 'Name' },
+  { value: 'subscribers', label: 'Subscribers' },
+  { value: 'videoCount', label: 'Video count' },
+  { value: 'subDate', label: 'Latest' },
+];
+function cycleChanSort() {
+  const sel = document.getElementById('sortSelect');
+  if (!sel) return;
+  const idx = _SORT_CYCLE.findIndex(s => s.value === sel.value);
+  const next = _SORT_CYCLE[(idx + 1) % _SORT_CYCLE.length];
+  sel.value = next.value;
+  const lbl = document.getElementById('chanSortLabel');
+  if (lbl) lbl.textContent = next.label;
+  renderChannels();
 }
 
 function setChannelView(btn, mode) {
@@ -8658,6 +8730,10 @@ function showView(view) {
   // Clear all nav active states
   document.querySelectorAll('.topnav-links button').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.home-nav-item').forEach(b => b.classList.remove('active'));
+
+  // Show categories section only for relevant pages
+  const catsSection = document.getElementById('sideNavCatsSection');
+  if (catsSection) catsSection.style.display = ['channels','feeds','discover'].includes(view) ? '' : 'none';
 
   switch(view) {
     case 'home':
