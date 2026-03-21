@@ -146,16 +146,8 @@ export function ChannelDataProvider({ children, user }) {
     }
   }, [user, buildColourMap]);
 
-  // Load on auth
+  // Load cached data immediately on mount (before auth resolves)
   useEffect(() => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-    if (loadedRef.current) return;
-    loadedRef.current = true;
-
-    // Load cached data immediately for fast first paint
     try {
       const cached = JSON.parse(localStorage.getItem('subsort_channels') || '[]');
       if (cached.length) setChannels(cached);
@@ -163,10 +155,22 @@ export function ChannelDataProvider({ children, user }) {
       if (cachedCats.length) setCategories(cachedCats);
       const cachedSubs = JSON.parse(localStorage.getItem('subsort_subcategories') || '{}');
       if (Object.keys(cachedSubs).length) setSubcategories(cachedSubs);
+      // If we have cached data, stop showing the loading spinner
+      if (cached.length) setLoading(false);
     } catch (e) {}
+  }, []);
 
+  // Fetch fresh data from Supabase once user is authenticated
+  useEffect(() => {
+    if (!user) {
+      // No user yet — if no cached data either, stop loading
+      if (!channels.length) setLoading(false);
+      return;
+    }
+    if (loadedRef.current) return;
+    loadedRef.current = true;
     loadUserData();
-  }, [user, loadUserData]);
+  }, [user, loadUserData, channels.length]);
 
   return (
     <ChannelDataContext.Provider value={{
