@@ -15,6 +15,9 @@ export const ChannelDataContext = createContext({
   chIsUncategorised: () => true,
   formatCount: () => '—',
   findDeadChannels: () => [],
+  feedVideos: [],
+  feedVideosLoaded: false,
+  setFeedVideos: () => {},
 });
 
 export const useChannelData = () => useContext(ChannelDataContext);

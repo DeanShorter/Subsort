@@ -14,6 +14,7 @@ export default function FeedsPage() {
   const {
     channels, categories, subcategories, categoryColours, loading: dataLoading,
     chCats, chHasCat,
+    feedVideos, feedVideosLoaded, setFeedVideos,
   } = useChannelData();
 
   const [activeCategory, setActiveCategory] = useState('all');
@@ -25,6 +26,7 @@ export default function FeedsPage() {
   const [typeFilter, setTypeFilter] = useState('all');
 
   const sortKey = SORT_OPTIONS[sortIdx].value;
+  const allVideos = feedVideos;
 
   // ── Sidebar callbacks ──────────────────────────────────
   const handleCategoryClick = useCallback((cat) => {
@@ -41,21 +43,16 @@ export default function FeedsPage() {
     return () => { delete window.__subsortCat; delete window.__subsortSub; };
   }, [handleCategoryClick]);
 
-  // ── Fetch ALL videos once, then filter client-side ─────
-  const [allVideos, setAllVideos] = useState([]);
-
+  // ── Fetch videos once, cache in context ──────────────────
   useEffect(() => {
-    if (!accessToken || !channels.length) {
-      setAllVideos([]);
-      return;
-    }
+    if (!accessToken || !channels.length || feedVideosLoaded) return;
 
     let cancelled = false;
     setLoadingVideos(true);
 
     fetchRecentVideos(channels, accessToken).then(vids => {
       if (!cancelled) {
-        setAllVideos(vids);
+        setFeedVideos(vids);
         setLoadingVideos(false);
       }
     }).catch(() => {
@@ -63,7 +60,7 @@ export default function FeedsPage() {
     });
 
     return () => { cancelled = true; };
-  }, [accessToken, channels]);
+  }, [accessToken, channels, feedVideosLoaded, setFeedVideos]);
 
   // ── Filter by category + sort (instant, no API call) ───
   const filtered = useMemo(() => {

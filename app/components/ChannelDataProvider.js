@@ -18,6 +18,8 @@ export function ChannelDataProvider({ children, user }) {
   const [dbCategories, setDbCategories] = useState([]);
   const [dbSubcategories, setDbSubcategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [feedVideos, setFeedVideos] = useState([]);
+  const [feedVideosLoaded, setFeedVideosLoaded] = useState(false);
   const loadedRef = useRef(false);
 
   // ── Helpers (stable references) ──────────────────────────
@@ -172,6 +174,8 @@ export function ChannelDataProvider({ children, user }) {
       dbCategories, dbSubcategories, loading,
       reload: loadUserData,
       chCats, chHasCat, chIsUncategorised, formatCount, findDeadChannels,
+      feedVideos, feedVideosLoaded,
+      setFeedVideos: (vids) => { setFeedVideos(vids); setFeedVideosLoaded(true); },
     }}>
       {children}
     </ChannelDataContext.Provider>
