@@ -1,69 +1,64 @@
-'use client'
-import { useEffect } from 'react';
-import Link from 'next/link';
+'use client';
+import { useAuth } from '../components/AuthContext';
 import { useTheme } from '../components/ThemeProvider';
-import styles from './settings.module.css';
 
-export default function Settings() {
+export default function SettingsPage() {
+  const { user, signOut } = useAuth();
   const { theme, setTheme, mounted } = useTheme();
-
-  useEffect(() => { document.title = 'Freedly - Settings'; }, []);
-
-  // Don't show active state until client has read localStorage — prevents
-  // hydration mismatch that causes buttons to appear locked
   const activeTheme = mounted ? theme : null;
 
   return (
-    <div className={styles.page}>
-      <nav className={styles.nav}>
-        <Link href="/" className={styles.navBrand}>
-          <img src="/logo.svg" alt="Freedly" height="26" />
-        </Link>
-      </nav>
+    <main style={{ padding: '2.5rem', maxWidth: 700, margin: '0 auto', overflowY: 'auto', flex: 1 }}>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 700, letterSpacing: '-.02em', marginBottom: '.375rem', color: 'var(--text-primary)' }}>Settings</h1>
+      <p style={{ fontSize: '.875rem', color: 'var(--text-secondary)', marginBottom: '2rem' }}>Manage your account, preferences, and data.</p>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>Settings</h1>
-
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Theme</h2>
-          <p className={styles.sectionDesc}>Choose how Freedly looks to you.</p>
-          <div className={styles.themeGrid}>
-            <button
-              onClick={() => setTheme('dark')}
-              className={`${styles.themeOption} ${activeTheme === 'dark' ? styles.active : ''}`}
-            >
-              <div className={styles.previewDark}>
-                <div className={styles.previewDarkBar} />
-                <div className={styles.previewLines}>
-                  <div className={styles.previewLine} />
-                  <div className={styles.previewLine} style={{ width: '55%' }} />
-                </div>
-              </div>
-              <div className={styles.themeLabelRow}>
-                <span className={styles.themeLabel}>Dark</span>
-                {activeTheme === 'dark' && <span className={styles.activeCheck}>✓</span>}
-              </div>
-            </button>
-
-            <button
-              onClick={() => setTheme('light')}
-              className={`${styles.themeOption} ${activeTheme === 'light' ? styles.active : ''}`}
-            >
-              <div className={styles.previewLight}>
-                <div className={styles.previewLightBar} />
-                <div className={styles.previewLines}>
-                  <div className={styles.previewLineLight} />
-                  <div className={styles.previewLineLight} style={{ width: '55%' }} />
-                </div>
-              </div>
-              <div className={styles.themeLabelRow}>
-                <span className={styles.themeLabel}>Light</span>
-                {activeTheme === 'light' && <span className={styles.activeCheck}>✓</span>}
-              </div>
-            </button>
+      {/* Account */}
+      <section style={{ marginBottom: '2rem' }}>
+        <h3 className="settings-section-title">Account</h3>
+        <div className="settings-card">
+          <div className="settings-row">
+            <div className="settings-row-info">
+              <div className="settings-row-label">Signed in as</div>
+              <div className="settings-row-desc">{user?.email || 'Not signed in'}</div>
+            </div>
+            {user && (
+              <button className="settings-row-action" onClick={signOut}>Sign out</button>
+            )}
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+
+      {/* Theme */}
+      <section style={{ marginBottom: '2rem' }}>
+        <h3 className="settings-section-title">Theme</h3>
+        <p style={{ fontSize: '.8125rem', color: 'var(--text-secondary)', marginBottom: '.75rem' }}>Choose how Freedly looks to you.</p>
+        <div style={{ display: 'flex', gap: '.75rem' }}>
+          <button
+            onClick={() => setTheme('dark')}
+            style={{
+              flex: 1, padding: '1rem', borderRadius: 'var(--radius-md)',
+              border: `2px solid ${activeTheme === 'dark' ? 'var(--accent)' : 'var(--border-subtle)'}`,
+              background: activeTheme === 'dark' ? 'var(--accent-soft)' : 'var(--bg-card)',
+              cursor: 'pointer', textAlign: 'center', fontFamily: 'var(--font-body)',
+              color: 'var(--text-primary)', fontSize: '.875rem', fontWeight: 600,
+            }}
+          >
+            Dark {activeTheme === 'dark' && '✓'}
+          </button>
+          <button
+            onClick={() => setTheme('light')}
+            style={{
+              flex: 1, padding: '1rem', borderRadius: 'var(--radius-md)',
+              border: `2px solid ${activeTheme === 'light' ? 'var(--accent)' : 'var(--border-subtle)'}`,
+              background: activeTheme === 'light' ? 'var(--accent-soft)' : 'var(--bg-card)',
+              cursor: 'pointer', textAlign: 'center', fontFamily: 'var(--font-body)',
+              color: 'var(--text-primary)', fontSize: '.875rem', fontWeight: 600,
+            }}
+          >
+            Light {activeTheme === 'light' && '✓'}
+          </button>
+        </div>
+      </section>
+    </main>
   );
 }
