@@ -233,7 +233,7 @@ export default function DashboardPage() {
               )}
             </div>
             <div className="db-stat-card">
-              <div className="db-stat-label">Watch Streak</div>
+              <div className="db-stat-label">Login Streak</div>
               <div className="db-stat-value">{streak.count}<span style={{ fontSize: '.75rem', fontWeight: 500, color: 'var(--text-muted)', marginLeft: 2 }}>days</span></div>
               <div className="streak-row">
                 {streak.dots.map((dot, i) => (
