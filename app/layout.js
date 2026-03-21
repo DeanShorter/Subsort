@@ -2,10 +2,8 @@ import './tokens.css';
 import './dashboard-components.css';
 import './globals.css';
 import { ThemeProvider } from './components/ThemeProvider';
+import DashboardShell from './components/DashboardShell';
 import Script from 'next/script';
-import dynamic from 'next/dynamic';
-
-const DashboardShell = dynamic(() => import('./components/DashboardShell'), { ssr: false });
 
 export const metadata = {
   title: {
