@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
+import PageHeader from '../components/PageHeader';
 
 export default function DashboardPage() {
   const { user, accessToken, signIn } = useAuth();
@@ -171,13 +172,7 @@ export default function DashboardPage() {
 
   return (
     <main className="home-main">
-      {/* Topbar */}
-      <div className="db-topbar">
-        <h1 className="page-title">Dashboard</h1>
-        <div className="db-topbar-right">
-          <span className="db-clock">{clock}</span>
-        </div>
-      </div>
+      <PageHeader title="Dashboard" right={<span className="db-clock">{clock}</span>} />
 
       {/* Greeting */}
       <div className="db-greeting">

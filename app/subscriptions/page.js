@@ -4,6 +4,7 @@ import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import ChannelCard from '../components/ChannelCard';
 import EditChannelModal from '../components/EditChannelModal';
+import PageHeader from '../components/PageHeader';
 
 const SORT_OPTIONS = [
   { value: 'name', label: 'Name' },
@@ -107,13 +108,10 @@ export default function SubscriptionsPage() {
 
   return (
     <main className="home-main" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      {/* Header */}
-      <div className="db-header">
-        <div className="chan-hdr-top">
-          <h1 className="page-title">Subscriptions</h1>
-          <span className="chan-page-count">{channels.length} subscription{channels.length !== 1 ? 's' : ''}</span>
-        </div>
-      </div>
+      <PageHeader
+        title="Subscriptions"
+        count={`${channels.length} subscription${channels.length !== 1 ? 's' : ''}`}
+      />
 
       {/* Topbar controls */}
       <div className="chan-topbar" style={{ display: 'flex' }}>

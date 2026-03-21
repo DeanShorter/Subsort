@@ -1,6 +1,7 @@
 'use client';
 import { useAuth } from '../components/AuthContext';
 import { useTheme } from '../components/ThemeProvider';
+import PageHeader from '../components/PageHeader';
 
 export default function SettingsPage() {
   const { user, signOut } = useAuth();
@@ -9,8 +10,7 @@ export default function SettingsPage() {
 
   return (
     <main style={{ padding: '2.5rem', maxWidth: 700, margin: '0 auto', overflowY: 'auto', flex: 1 }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 700, letterSpacing: '-.02em', marginBottom: '.375rem', color: 'var(--text-primary)' }}>Settings</h1>
-      <p style={{ fontSize: '.875rem', color: 'var(--text-secondary)', marginBottom: '2rem' }}>Manage your account, preferences, and data.</p>
+      <PageHeader title="Settings" subtitle="Manage your account, preferences, and data." />
 
       {/* Account */}
       <section style={{ marginBottom: '2rem' }}>

@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
+import PageHeader from '../components/PageHeader';
 
 const SORT_OPTIONS = [
   { value: 'date', label: 'Latest' },
@@ -139,10 +140,8 @@ export default function FeedsPage() {
       className={feedView === 'list' ? 'feed-view-list' : feedView === 'grid' ? 'feed-view-grid' : ''}
       style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}
     >
-      {/* Header */}
-      <div className="db-header" style={{ padding: '0 2rem' }}>
-        <h1 className="page-title">Your Feed</h1>
-        <p className="db-subtitle">Recent videos from your subscriptions.</p>
+      <div style={{ padding: '0 2rem' }}>
+        <PageHeader title="Your Feed" subtitle="Recent videos from your subscriptions." />
       </div>
 
       {/* Controls */}

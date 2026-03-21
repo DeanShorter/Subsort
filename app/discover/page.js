@@ -2,6 +2,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
+import PageHeader from '../components/PageHeader';
 
 export default function DiscoverPage() {
   const { user, signIn } = useAuth();
@@ -114,14 +115,15 @@ export default function DiscoverPage() {
 
   return (
     <main className="home-main">
-      {/* Topbar */}
-      <div className="disc-topbar">
-        <h1 className="page-title">Discover</h1>
-        <div className="disc-search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-          <input type="text" placeholder="Search channels…" value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
-      </div>
+      <PageHeader
+        title="Discover"
+        right={
+          <div className="disc-search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+            <input type="text" placeholder="Search channels…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+        }
+      />
 
       {/* Because you follow */}
       <div className="disc-section">

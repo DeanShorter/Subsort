@@ -62,6 +62,7 @@ export default function DashboardSidebar() {
   const [activeSub, setActiveSub] = useState(null);
   const [syncing, setSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState(null);
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleSync = useCallback(async () => {
     if (!accessToken || !user || syncing) return;
@@ -122,7 +123,7 @@ export default function DashboardSidebar() {
   }, []);
 
   return (
-    <nav className="home-nav-primary">
+    <nav className={`home-nav-primary${collapsed ? ' collapsed' : ''}`}>
       {/* Header */}
       <div className="hnp-header">
         <Link href="/dashboard" className="home-nav-brand" style={{ textDecoration: 'none' }}>
@@ -131,6 +132,9 @@ export default function DashboardSidebar() {
             <span>free</span><span className="hnp-wordmark-dly">dly</span>
           </span>
         </Link>
+        <button className="hnp-collapse-btn" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand' : 'Collapse'}>
+          <svg viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" /></svg>
+        </button>
       </div>
 
       {/* Scrollable body */}

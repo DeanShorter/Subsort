@@ -980,6 +980,13 @@ input[type=range]::-webkit-slider-thumb{
 .an-header{margin-bottom:1rem}
 .page-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;letter-spacing:-0.3px;color:#E8E6E0}
 .page-title em{color:var(--accent);font-style:normal}
+/* ── Shared page header ── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding-bottom:1.25rem}
+.page-header-left{flex:1;min-width:0}
+.page-header-title-row{display:flex;align-items:baseline;gap:.5rem}
+.page-header-count{font-size:.75rem;color:var(--text-muted);font-weight:500}
+.page-header-subtitle{font-size:.8125rem;color:var(--text-muted);margin-top:.25rem}
+.page-header-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
 .an-subtitle{font-size:.875rem;color:var(--text-secondary)}
 /* Tab strip */
 .an-tabstrip-wrap{border-bottom:1px solid var(--border-subtle);margin-bottom:1.25rem;overflow:hidden}
@@ -1395,7 +1402,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ── Primary nav rail ── */
 .home-nav-primary{
-  width:310px;flex-shrink:0;
+  width:220px;flex-shrink:0;
   background:var(--bg-card);
   border-right:1px solid var(--border-subtle);
   display:flex;flex-direction:column;
@@ -1423,7 +1430,8 @@ input[type=range]::-webkit-slider-thumb{
 }
 .home-nav-brand-wordmark span{color:var(--accent-text)}
 .home-nav-brand-wordmark .hnp-wordmark-dly{color:var(--color-white)}
-.home-nav-brand-icon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:block}
+.home-nav-brand-icon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:none}
+@media(max-width:768px){.home-nav-brand-icon{display:block}.hnp-wordmark-dly{display:none}}
 .home-nav-primary.collapsed .home-nav-brand-wordmark{opacity:0;width:0;overflow:hidden}
 
 /* Collapse toggle */
@@ -2566,7 +2574,7 @@ input[type=range]::-webkit-slider-thumb{
    ═══════════════════════════════════════════ */
 
 /* Slim sidebar */
-.home-nav-primary{width:310px!important}
+.home-nav-primary{width:220px!important}
 .home-nav-primary.collapsed{width:48px!important}
 @media(max-width:640px){
   .home-nav-primary,.home-nav-primary.collapsed,.home-nav-primary.nav-hover{

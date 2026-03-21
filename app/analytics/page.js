@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
+import PageHeader from '../components/PageHeader';
 
 export default function AnalyticsPage() {
   const { user, signIn } = useAuth();
@@ -109,13 +110,11 @@ export default function AnalyticsPage() {
 
   if (!user) {
     return (
-      <main style={{ padding: '1.75rem 2rem', overflowY: 'auto', flex: 1 }}>
-        <h1 className="page-title">Analytics</h1>
-        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Sign in to see your analytics.</p>
-          <button className="btn-accent" onClick={signIn} style={{ padding: '.625rem 1.5rem', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
-            Sign in with Google
-          </button>
+      <main className="home-main">
+        <PageHeader title="Analytics" />
+        <div className="home-feed-empty">
+          <p className="home-feed-empty-text">Sign in to see your analytics.</p>
+          <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
         </div>
       </main>
     );
@@ -123,16 +122,16 @@ export default function AnalyticsPage() {
 
   if (!channels.length) {
     return (
-      <main style={{ padding: '1.75rem 2rem', overflowY: 'auto', flex: 1 }}>
-        <h1 className="page-title">Analytics</h1>
-        <p style={{ color: 'var(--text-muted)', marginTop: '1rem' }}>Sync your subscriptions to see analytics.</p>
+      <main className="home-main">
+        <PageHeader title="Analytics" />
+        <p className="home-feed-empty-text">Sync your subscriptions to see analytics.</p>
       </main>
     );
   }
 
   return (
-    <main style={{ padding: '1.75rem 2rem', overflowY: 'auto', flex: 1 }}>
-      <h1 className="page-title" style={{ marginBottom: '1.5rem' }}>Analytics</h1>
+    <main className="home-main">
+      <PageHeader title="Analytics" />
 
       {/* Feed Health Score */}
       <div className="analytics-card" style={{ marginBottom: '1.5rem' }}>
