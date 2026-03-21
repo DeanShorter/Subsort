@@ -18,7 +18,6 @@ export default function FeedsPage() {
 
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeSubcategory, setActiveSubcategory] = useState(null);
-  const [videos, setVideos] = useState([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
   const [sortIdx, setSortIdx] = useState(0);
@@ -42,30 +41,21 @@ export default function FeedsPage() {
     return () => { delete window.__subsortCat; delete window.__subsortSub; };
   }, [handleCategoryClick]);
 
-  // ── Determine which channels to fetch videos for ───────
-  const feedChannels = useMemo(() => {
-    if (activeCategory === '__favs__') return channels.filter(c => c.favourited);
-    if (activeCategory !== 'all') {
-      let result = channels.filter(c => chHasCat(c, activeCategory));
-      if (activeSubcategory) result = result.filter(c => c.subcategory === activeSubcategory);
-      return result;
-    }
-    return channels;
-  }, [channels, activeCategory, activeSubcategory, chHasCat]);
+  // ── Fetch ALL videos once, then filter client-side ─────
+  const [allVideos, setAllVideos] = useState([]);
 
-  // ── Fetch videos when channels or category changes ─────
   useEffect(() => {
-    if (!accessToken || !feedChannels.length) {
-      setVideos([]);
+    if (!accessToken || !channels.length) {
+      setAllVideos([]);
       return;
     }
 
     let cancelled = false;
     setLoadingVideos(true);
 
-    fetchRecentVideos(feedChannels, accessToken).then(vids => {
+    fetchRecentVideos(channels, accessToken).then(vids => {
       if (!cancelled) {
-        setVideos(vids);
+        setAllVideos(vids);
         setLoadingVideos(false);
       }
     }).catch(() => {
@@ -73,11 +63,26 @@ export default function FeedsPage() {
     });
 
     return () => { cancelled = true; };
-  }, [accessToken, feedChannels]);
+  }, [accessToken, channels]);
 
-  // ── Filter + sort videos ───────────────────────────────
+  // ── Filter by category + sort (instant, no API call) ───
   const filtered = useMemo(() => {
-    let result = [...videos];
+    let result = [...allVideos];
+
+    // Category filter
+    if (activeCategory === '__favs__') {
+      const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
+      result = result.filter(v => favIds.has(v.channelId));
+    } else if (activeCategory !== 'all') {
+      const catIds = new Set(
+        channels.filter(c => {
+          if (!chHasCat(c, activeCategory)) return false;
+          if (activeSubcategory && c.subcategory !== activeSubcategory) return false;
+          return true;
+        }).map(c => c.channelId)
+      );
+      result = result.filter(v => catIds.has(v.channelId));
+    }
 
     // Type filter
     if (typeFilter === 'shorts') result = result.filter(v => v.type === 'short');
@@ -99,7 +104,7 @@ export default function FeedsPage() {
     // 'date' is default order from API (newest first)
 
     return result;
-  }, [videos, search, sortKey, typeFilter]);
+  }, [allVideos, channels, activeCategory, activeSubcategory, chHasCat, search, sortKey, typeFilter]);
 
   // ── Handlers ───────────────────────────────────────────
   const cycleSort = useCallback(() => {
@@ -211,7 +216,7 @@ export default function FeedsPage() {
           <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>Connect YouTube to see recent videos.</p>
         ) : filtered.length === 0 ? (
           <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>
-            {videos.length === 0 ? 'No videos in the last 7 days.' : 'No videos match your filters.'}
+            {allVideos.length === 0 ? 'No videos in the last 7 days.' : 'No videos match your filters.'}
           </p>
         ) : (
           <div className="home-section">
