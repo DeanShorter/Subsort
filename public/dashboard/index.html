@@ -4203,19 +4203,22 @@ async function dbSaveSubcategory(categoryName, subName) {
 }
 
 async function logRecategorisation(ch, fromCats, toCats) {
-  if (!sb || !sbUser) return;
+  if (!sb || !sbUser) { console.warn('[recat] no sb or sbUser'); return; }
   if (!fromCats) fromCats = [];
-  // Skip if nothing actually changed
   const same = fromCats.length === toCats.length && fromCats.every(c => toCats.includes(c));
-  if (same) return;
+  if (same) { console.log('[recat] skipped — no change', fromCats, toCats); return; }
   const topics = ch.topics || ch.keywords?.split(',').map(k => k.trim()).filter(Boolean) || [];
-  await sb.from('channel_recategorisations').insert({
+  const payload = {
     user_id: sbUser.id,
-    channel_id: ch.channelId,
+    channel_id: ch.channelId || ch.id,
     from_cats: fromCats.length ? fromCats : null,
     to_cats: toCats,
     youtube_topics: topics.length ? topics : null,
-  });
+  };
+  console.log('[recat] inserting', payload);
+  const { error } = await sb.from('channel_recategorisations').insert(payload);
+  if (error) console.error('[recat] insert failed:', error);
+  else console.log('[recat] logged successfully');
 }
 
 async function dbSaveChannel(channel) {
