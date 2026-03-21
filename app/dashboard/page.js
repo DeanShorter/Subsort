@@ -37,15 +37,16 @@ export default function DashboardPage() {
   const uncatCount = useMemo(() => channels.filter(ch => chIsUncategorised(ch)).length, [channels, chIsUncategorised]);
   const favCount = useMemo(() => channels.filter(c => c.favourited).length, [channels]);
 
-  // ── Change metrics (compare to stored snapshots) ──────
+  // ── Change metrics (compare to stored weekly/monthly baselines) ──
   const changes = useMemo(() => {
-    if (!channels.length) return { subs: null, favs: null, inactive: null };
+    if (!channels.length) return { subs: null, favs: null, inactive: null, uncat: null };
 
+    const WEEK_KEY = 'subsort_baseline_week';
+    const MONTH_KEY = 'subsort_baseline_month';
     const now = Date.now();
     const WEEK = 7 * 24 * 60 * 60 * 1000;
     const MONTH = 30 * 24 * 60 * 60 * 1000;
 
-    // Current values
     const current = {
       subs: channels.length,
       favs: favCount,
@@ -54,36 +55,40 @@ export default function DashboardPage() {
       ts: now,
     };
 
-    // Read stored snapshots
-    let weekSnap = null;
-    let monthSnap = null;
+    // Read or create weekly baseline
+    let weekBase = null;
     try {
-      const snapshots = JSON.parse(localStorage.getItem('subsort_stat_snapshots') || '[]');
-      // Find oldest snapshot within the last week / month
-      for (const snap of snapshots) {
-        if (now - snap.ts <= WEEK && now - snap.ts > 60000) weekSnap = weekSnap || snap;
-        if (now - snap.ts <= MONTH && now - snap.ts > 60000) monthSnap = monthSnap || snap;
+      const stored = JSON.parse(localStorage.getItem(WEEK_KEY));
+      if (stored && now - stored.ts < WEEK) {
+        weekBase = stored;
+      } else {
+        // Expired or missing — set current as new baseline
+        localStorage.setItem(WEEK_KEY, JSON.stringify(current));
+        weekBase = null; // No comparison on reset
       }
-    } catch (e) {}
+    } catch (e) {
+      localStorage.setItem(WEEK_KEY, JSON.stringify(current));
+    }
 
-    // Store current snapshot (keep last 30 entries)
+    // Read or create monthly baseline
+    let monthBase = null;
     try {
-      const snapshots = JSON.parse(localStorage.getItem('subsort_stat_snapshots') || '[]');
-      // Only add if last entry is >1 hour old
-      const last = snapshots[snapshots.length - 1];
-      if (!last || now - last.ts > 60 * 60 * 1000) {
-        snapshots.push(current);
-        // Keep only last 30
-        if (snapshots.length > 30) snapshots.splice(0, snapshots.length - 30);
-        localStorage.setItem('subsort_stat_snapshots', JSON.stringify(snapshots));
+      const stored = JSON.parse(localStorage.getItem(MONTH_KEY));
+      if (stored && now - stored.ts < MONTH) {
+        monthBase = stored;
+      } else {
+        localStorage.setItem(MONTH_KEY, JSON.stringify(current));
+        monthBase = null;
       }
-    } catch (e) {}
+    } catch (e) {
+      localStorage.setItem(MONTH_KEY, JSON.stringify(current));
+    }
 
     return {
-      subs: weekSnap ? { diff: current.subs - weekSnap.subs, period: 'this week' } : null,
-      favs: weekSnap ? { diff: current.favs - weekSnap.favs, period: 'this week' } : null,
-      inactive: monthSnap ? { diff: current.inactive - monthSnap.inactive, period: 'this month' } : null,
-      uncat: weekSnap ? { diff: current.uncat - weekSnap.uncat, period: 'this week' } : null,
+      subs: weekBase ? { diff: current.subs - weekBase.subs, period: 'this week' } : null,
+      favs: weekBase ? { diff: current.favs - weekBase.favs, period: 'this week' } : null,
+      inactive: monthBase ? { diff: current.inactive - monthBase.inactive, period: 'this month' } : null,
+      uncat: weekBase ? { diff: current.uncat - (weekBase.uncat ?? current.uncat), period: 'this week' } : null,
     };
   }, [channels, favCount, deadChannels, uncatCount]);
 
