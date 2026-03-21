@@ -2523,9 +2523,9 @@ input[type=range]::-webkit-slider-thumb{
 
   <!-- Primary Nav Rail (always visible) -->
   <nav class="home-nav-primary" id="homePrimaryNav">
-    <div class="home-nav-brand">
+    <div class="home-nav-brand" onclick="showView('home')" style="cursor:pointer">
       <img class="home-nav-brand-wordmark" src="/logo.svg" alt="myfeed." />
-      <button class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="mobile-nav-close" onclick="event.stopPropagation();closeMobileNav()" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <!-- Free features -->
     <button class="home-nav-item active" data-nav="home" onclick="showView('home')">
@@ -2540,6 +2540,10 @@ input[type=range]::-webkit-slider-thumb{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
       <span class="home-nav-item-label">Channels</span>
     </button>
+    <button class="home-nav-item" data-nav="analytics" onclick="showView('analytics')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      <span class="home-nav-item-label">Analytics</span>
+    </button>
     <button class="home-nav-item" data-nav="blog" onclick="showView('blog')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <span class="home-nav-item-label">Blog</span>
@@ -2547,18 +2551,6 @@ input[type=range]::-webkit-slider-thumb{
     <button class="home-nav-item home-nav-premium-cta" data-nav="marketplace" onclick="startCheckout()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       <span class="home-nav-item-label">Premium</span>
-    </button>
-
-    <!-- Premium features -->
-    <hr class="home-nav-divider">
-    <span class="home-nav-section-label">Pro Tools</span>
-    <button class="home-nav-item" data-nav="analytics" onclick="showView('analytics')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-      <span class="home-nav-item-label">Analytics</span>
-    </button>
-    <button class="home-nav-item" data-nav="ai" onclick="openModal('aiModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10h16V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
-      <span class="home-nav-item-label">AI Categorise</span>
     </button>
 
     <!-- Utility (bottom) -->
@@ -2608,7 +2600,7 @@ input[type=range]::-webkit-slider-thumb{
     <button class="mobile-hamburger" onclick="openMobileNav()" aria-label="Open menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <div class="mobile-topbar-brand">
+    <div class="mobile-topbar-brand" onclick="showView('home')" style="cursor:pointer">
       <img src="/logo.svg" alt="Freedly" height="22">
     </div>
   </div>
