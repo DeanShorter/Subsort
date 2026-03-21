@@ -855,8 +855,8 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
 .modal-footer .btn-danger{background:#b91c1c;border:none;color:#fff}
 
 /* ─── Edit Channel Modal (rich design) ─── */
-.ecm-modal{padding:0!important;overflow:hidden;width:460px;max-width:96vw;border-radius:var(--radius-lg)!important}
-.ecm-banner{height:88px;position:relative;overflow:hidden;flex-shrink:0}
+.ecm-modal{padding:0!important;overflow-x:hidden!important;overflow-y:auto!important;width:460px;max-width:96vw;border-radius:var(--radius-lg)!important}
+.ecm-banner{height:88px;position:relative;overflow:hidden;flex-shrink:0;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
 .ecm-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,var(--bg-card) 100%)}
 .ecm-close-btn{position:absolute;top:10px;right:10px;z-index:10;width:28px;height:28px;border-radius:7px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;line-height:1;transition:all .2s}
 .ecm-close-btn:hover{background:rgba(0,0,0,.6);color:var(--text-secondary)}
@@ -2018,6 +2018,60 @@ input[type=range]::-webkit-slider-thumb{
 /* Clock */
 .db-clock{font-size:.75rem;color:var(--text-muted);font-variant-numeric:tabular-nums}
 
+/* ─── Discover Page ─── */
+.disc-page{display:none;overflow-y:auto;flex:1;padding:1.5rem}
+.disc-page.active{display:block}
+.disc-topbar{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+.disc-topbar h1{font-family:var(--font-display);font-size:1.25rem;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);flex:1}
+.disc-search-wrap{position:relative;width:240px;flex-shrink:0}
+.disc-search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);pointer-events:none}
+.disc-search-wrap input{width:100%;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:.5rem .75rem .5rem 2rem;font-size:.8125rem;font-family:var(--font-body);color:var(--text-primary);outline:none;transition:border-color .2s}
+.disc-search-wrap input::placeholder{color:var(--text-muted)}
+.disc-search-wrap input:focus{border-color:rgba(255,255,255,.14)}
+.disc-section{margin-bottom:2rem}
+.disc-section-hd{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.875rem}
+.disc-section-title{font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:-.02em;color:var(--text-primary)}
+.disc-section-sub{font-size:.75rem;color:var(--text-muted)}
+/* Category filter chips */
+.disc-cat-strip{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.disc-cat-chip{padding:.3rem .75rem;border-radius:20px;font-size:.75rem;font-weight:500;font-family:var(--font-body);border:1px solid var(--border-subtle);background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .15s;white-space:nowrap}
+.disc-cat-chip:hover{border-color:rgba(255,255,255,.15);color:var(--text-primary)}
+.disc-cat-chip.active{background:var(--accent-soft);border-color:rgba(56,233,177,.25);color:var(--accent)}
+/* Horizontal scroll cards row */
+.disc-ch-scroll{display:flex;gap:.875rem;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:none}
+.disc-ch-scroll::-webkit-scrollbar{display:none}
+/* Channel card */
+.disc-ch-card{flex-shrink:0;width:200px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;cursor:pointer;transition:all .2s}
+.disc-ch-card:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px)}
+.disc-ch-banner{height:56px;position:relative}
+.disc-ch-av{width:44px;height:44px;border-radius:50%;border:2.5px solid var(--bg-card);position:absolute;bottom:-22px;left:14px;background:var(--bg-surface);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--text-muted);overflow:hidden}
+.disc-ch-av img{width:100%;height:100%;object-fit:cover}
+.disc-ch-body{padding:28px 14px 14px}
+.disc-ch-name{font-size:.8125rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
+.disc-ch-handle{font-size:.6875rem;color:var(--text-muted);margin-bottom:.5rem}
+.disc-ch-desc{font-size:.6875rem;color:var(--text-secondary);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.625rem}
+.disc-ch-stats{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.disc-ch-stat{font-size:.6rem;color:var(--text-muted);background:var(--bg-surface);padding:2px 6px;border-radius:3px}
+.disc-ch-btn{margin-top:.625rem;width:100%;padding:.375rem;border-radius:var(--radius-sm);font-size:.6875rem;font-weight:500;font-family:var(--font-body);border:1px solid var(--border-subtle);background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.disc-ch-btn:hover{background:var(--bg-surface-raised);color:var(--text-primary)}
+.disc-ch-btn.subbed{background:var(--accent-soft);border-color:rgba(56,233,177,.25);color:var(--accent)}
+/* Trending grid */
+.disc-trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.875rem}
+/* Rising channels ranked list */
+.disc-rising-grid{display:flex;flex-direction:column;gap:.375rem}
+.disc-rising-card{display:flex;align-items:center;gap:.75rem;padding:.625rem .875rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);cursor:pointer;transition:all .15s}
+.disc-rising-card:hover{border-color:rgba(255,255,255,.1);background:var(--bg-card-hover)}
+.disc-rising-rank{font-family:var(--font-display);font-size:.875rem;font-weight:700;color:var(--text-muted);min-width:1.5rem;text-align:right}
+.disc-rising-rank.top{color:var(--accent)}
+.disc-rising-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--bg-surface);display:flex;align-items:center;justify-content:center;font-size:.625rem;font-weight:700;color:var(--text-muted);overflow:hidden}
+.disc-rising-av img{width:100%;height:100%;object-fit:cover}
+.disc-rising-info{flex:1;min-width:0}
+.disc-rising-name{font-size:.8125rem;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.disc-rising-cat{font-size:.6875rem;color:var(--text-muted)}
+.disc-rising-stat{font-size:.75rem;font-weight:600;color:var(--text-secondary);flex-shrink:0;font-variant-numeric:tabular-nums}
+/* Popular grid (2 cols) */
+.disc-popular-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.875rem}
+
 /* Trending channels card */
 .home-trending{
   background:var(--bg-card);border:1px solid var(--border-subtle);
@@ -2953,6 +3007,8 @@ input[type=range]::-webkit-slider-thumb{
 }
 .ct-pill-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
 .ct-pill-btn:hover { border-color: var(--border-hover); background: var(--bg-surface); color: var(--text-primary); }
+.ct-pill-accent{background:var(--accent-soft)!important;border-color:rgba(56,233,177,.25)!important;color:var(--accent)!important}
+.ct-pill-accent:hover{background:rgba(56,233,177,.18)!important;border-color:rgba(56,233,177,.4)!important}
 
 /* Row 2: category dot + name + badge + subcategory pills */
 .ct-cat-row {
@@ -3903,6 +3959,53 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
+<!-- ═══ Discover Page ═══ -->
+<div class="disc-page" id="discoverPage">
+  <div class="disc-topbar">
+    <h1>Discover</h1>
+    <div class="disc-search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="discSearchInput" placeholder="Search channels…" oninput="discFilterSearch(this.value)">
+    </div>
+  </div>
+
+  <!-- Because you follow -->
+  <div class="disc-section" id="discBecauseSection">
+    <div class="disc-section-hd">
+      <span class="disc-section-title">Because you follow</span>
+      <span class="disc-section-sub" id="discBecauseSub"></span>
+    </div>
+    <div class="disc-ch-scroll" id="discBecauseRow"></div>
+  </div>
+
+  <!-- Trending by category -->
+  <div class="disc-section">
+    <div class="disc-section-hd">
+      <span class="disc-section-title">Trending by category</span>
+    </div>
+    <div class="disc-cat-strip" id="discCatChips"></div>
+    <div class="disc-trend-grid" id="discTrendGrid"></div>
+  </div>
+
+  <!-- Popular with Freedly users -->
+  <div class="disc-section">
+    <div class="disc-section-hd">
+      <span class="disc-section-title">Popular with Freedly users</span>
+      <span class="disc-section-sub">Your most-watched categories</span>
+    </div>
+    <div class="disc-popular-grid" id="discPopularGrid"></div>
+  </div>
+
+  <!-- Rising channels -->
+  <div class="disc-section">
+    <div class="disc-section-hd">
+      <span class="disc-section-title">Rising channels</span>
+      <span class="disc-section-sub">Newer subscriptions in your library</span>
+    </div>
+    <div class="disc-rising-grid" id="discRisingGrid"></div>
+  </div>
+</div>
+
 <!-- ═══ Channels Page Header ═══ -->
 <div class="chan-header" id="chanHeader">
   <div class="chan-hdr-top">
@@ -3960,6 +4063,14 @@ input[type=range]::-webkit-slider-thumb{
         <button class="ct-pill-btn" onclick="toggleChannelsSecNav()">
           <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h10M4 7h6M6 10h2"/></svg>
           Filters
+        </button>
+        <button class="ct-pill-btn" id="ctBulkEditBtn" onclick="toggleBulkMode()">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="3" width="12" height="2" rx=".5"/><rect x="1" y="7" width="8" height="2" rx=".5"/><rect x="1" y="11" width="10" height="2" rx=".5"/></svg>
+          Bulk Edit
+        </button>
+        <button class="ct-pill-btn ct-pill-accent" onclick="openModal('autoCatConfirmModal')">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
+          Sort now
         </button>
         <div class="view-toggles">
           <button class="view-toggle-btn active" title="Grid" onclick="setChannelView(this,'grid')">
@@ -8874,6 +8985,142 @@ function setBlogFilter(el, tag) {
   renderBlog();
 }
 
+/* ─── Discover Page ─── */
+let _discActiveCat = null;
+
+function renderDiscover() {
+  if (!channels.length) {
+    ['discBecauseRow','discTrendGrid','discPopularGrid','discRisingGrid'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Sync your subscriptions to see recommendations.</p>`;
+    });
+    document.getElementById('discCatChips').innerHTML = '';
+    return;
+  }
+
+  // ── Category filter chips ──────────────────────────────
+  const allCats = [...new Set(channels.flatMap(ch => chCats(ch)))].sort();
+  const chips = document.getElementById('discCatChips');
+  chips.innerHTML = '<button class="disc-cat-chip active" onclick="discFilterCat(this,null)">All</button>'
+    + allCats.map(c => `<button class="disc-cat-chip" onclick="discFilterCat(this,'${c.replace(/'/g,"\\'")}')">
+        ${c}
+      </button>`).join('');
+  _discActiveCat = null;
+
+  // ── Because you follow: recently subscribed channels ──
+  const favs = channels.filter(c => c.favourited);
+  const becauseSub = document.getElementById('discBecauseSub');
+  let becauseChannels;
+  if (favs.length) {
+    // Show channels from same categories as favorites, not yet favorited
+    const favCats = new Set(favs.flatMap(c => chCats(c)));
+    becauseChannels = channels.filter(c => !c.favourited && chCats(c).some(cat => favCats.has(cat)));
+    becauseSub.textContent = `Based on your favourites`;
+  } else {
+    becauseChannels = [...channels].sort((a, b) => (b.subscriberCount||0) - (a.subscriberCount||0));
+    becauseSub.textContent = '';
+  }
+  _discRenderCards(document.getElementById('discBecauseRow'), becauseChannels.slice(0, 12), 'scroll');
+
+  // ── Trending by category: top channels per active category ──
+  _discRenderTrend();
+
+  // ── Popular: top by subscriber count in user's top categories ──
+  const catCounts = {};
+  channels.forEach(ch => chCats(ch).forEach(c => catCounts[c] = (catCounts[c]||0)+1));
+  const topCats = Object.entries(catCounts).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>e[0]);
+  const popular = channels
+    .filter(ch => chCats(ch).some(c => topCats.includes(c)))
+    .sort((a,b) => (b.subscriberCount||0)-(a.subscriberCount||0))
+    .slice(0, 8);
+  _discRenderCards(document.getElementById('discPopularGrid'), popular, 'grid');
+
+  // ── Rising: recently subbed channels sorted by sub date (newest first) ──
+  const rising = [...channels]
+    .filter(ch => ch.subscribedAt)
+    .sort((a,b) => new Date(b.subscribedAt) - new Date(a.subscribedAt))
+    .slice(0, 10);
+  _discRenderRising(rising);
+}
+
+function _discRenderTrend() {
+  const grid = document.getElementById('discTrendGrid');
+  const cat = _discActiveCat;
+  let pool = cat ? channels.filter(ch => chCats(ch).includes(cat)) : channels;
+  const sorted = [...pool].sort((a,b) => (b.subscriberCount||0)-(a.subscriberCount||0)).slice(0, 8);
+  _discRenderCards(grid, sorted, 'grid');
+}
+
+function discFilterCat(el, cat) {
+  document.querySelectorAll('.disc-cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  _discActiveCat = cat;
+  _discRenderTrend();
+}
+
+function discFilterSearch(q) {
+  const v = q.trim().toLowerCase();
+  document.querySelectorAll('#discBecauseRow .disc-ch-card, #discTrendGrid .disc-ch-card, #discPopularGrid .disc-ch-card').forEach(card => {
+    const name = (card.dataset.name || '').toLowerCase();
+    card.style.display = (!v || name.includes(v)) ? '' : 'none';
+  });
+}
+
+function _discChCard(ch) {
+  const cats = chCats(ch);
+  const col = (cats[0] && categoryColours[cats[0]]) || '#38E9B1';
+  const initials = ch.name ? ch.name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase() : '?';
+  const img = ch.thumbnail ? `<img src="${ch.thumbnail}" alt="" onerror="this.style.display='none'">` : '';
+  const handle = ch.customUrl ? `@${ch.customUrl.replace(/^@/,'')}` : '';
+  const subbed = !!ch.id;
+  return `<div class="disc-ch-card" data-name="${(ch.name||'').toLowerCase()}" onclick="editChannel('${ch.id}')">
+    <div class="disc-ch-banner" style="background:linear-gradient(135deg,${col}88,${col}22)"></div>
+    <div class="disc-ch-av">${img}${img?'':initials}</div>
+    <div class="disc-ch-body">
+      <div class="disc-ch-name">${ch.name||''}</div>
+      <div class="disc-ch-handle">${handle}</div>
+      <div class="disc-ch-stats">
+        ${ch.subscriberCount ? `<span class="disc-ch-stat">${formatCount(ch.subscriberCount)} subs</span>` : ''}
+        ${cats[0] ? `<span class="disc-ch-stat">${cats[0]}</span>` : ''}
+      </div>
+      <button class="disc-ch-btn${subbed?' subbed':''}" onclick="event.stopPropagation();editChannel('${ch.id}')">${subbed?'Subscribed':'View'}</button>
+    </div>
+  </div>`;
+}
+
+function _discRenderCards(container, list, mode) {
+  if (!container) return;
+  if (!list.length) {
+    container.innerHTML = `<p style="color:var(--text-muted);font-size:.8125rem;padding:.5rem 0">Nothing to show yet.</p>`;
+    return;
+  }
+  container.innerHTML = list.map(_discChCard).join('');
+}
+
+function _discRenderRising(list) {
+  const grid = document.getElementById('discRisingGrid');
+  if (!list.length) {
+    grid.innerHTML = `<p style="color:var(--text-muted);font-size:.8125rem">No recent subscriptions found.</p>`;
+    return;
+  }
+  grid.innerHTML = list.map((ch, i) => {
+    const cats = chCats(ch);
+    const col = (cats[0] && categoryColours[cats[0]]) || '#38E9B1';
+    const initials = ch.name ? ch.name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase() : '?';
+    const img = ch.thumbnail ? `<img src="${ch.thumbnail}" alt="" onerror="this.style.display='none'">` : '';
+    const subDate = ch.subscribedAt ? new Date(ch.subscribedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+    return `<div class="disc-rising-card" onclick="editChannel('${ch.id}')">
+      <span class="disc-rising-rank${i<3?' top':''}">${i+1}</span>
+      <div class="disc-rising-av" style="background:${col}44;color:${col}">${img}${img?'':initials}</div>
+      <div class="disc-rising-info">
+        <div class="disc-rising-name">${ch.name||''}</div>
+        <div class="disc-rising-cat">${cats[0]||'Uncategorised'}</div>
+      </div>
+      <span class="disc-rising-stat">${subDate}</span>
+    </div>`;
+  }).join('');
+}
+
 function renderBlog() {
   const grid = document.getElementById('blogGrid');
   if (!grid) return;
@@ -8963,6 +9210,7 @@ function showView(view) {
   homeView.classList.remove('active');
   document.getElementById('settingsPage').classList.remove('active');
   document.getElementById('blogPage').classList.remove('active');
+  document.getElementById('discoverPage')?.classList.remove('active');
   document.getElementById('blogArticlePage').classList.remove('active');
   if (onboarding) onboarding.style.display = 'none';
   if (promoBanner) promoBanner.style.display = 'none';
@@ -9025,12 +9273,8 @@ function showView(view) {
     case 'discover':
       document.querySelector('.home-nav-item[data-nav="discover"]')?.classList.add('active');
       document.title = 'Freedly - Discover';
-      // Coming soon placeholder
-      const discoverEl = document.createElement('div');
-      discoverEl.id = 'discoverPlaceholder';
-      discoverEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:2rem;';
-      discoverEl.innerHTML = `<h2 style="font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:.5rem;color:var(--text-primary)">Discover is coming soon</h2><p style="color:var(--text-secondary);max-width:360px">Find quality creators outside your subscriptions. We\'re building it now.</p>`;
-      document.getElementById('appContent').appendChild(discoverEl);
+      document.getElementById('discoverPage').classList.add('active');
+      renderDiscover();
       break;
 
     case 'channels':
