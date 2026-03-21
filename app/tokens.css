@@ -290,3 +290,4 @@
 /* ── Change metrics ── */
 .change-up-metric{font-size:.6875rem;font-weight:500;color:var(--accent);margin-top:.25rem}
 .change-down-metric{font-size:.6875rem;font-weight:500;color:var(--color-red-500);margin-top:.25rem}
+.change-neutral-metric{font-size:.6875rem;font-weight:500;color:var(--text-muted);margin-top:.25rem}

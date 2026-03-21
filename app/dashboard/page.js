@@ -199,37 +199,37 @@ export default function DashboardPage() {
             <div className="db-stat-card">
               <div className="db-stat-label">Subscriptions</div>
               <div className="db-stat-value">{channels.length}</div>
-              {changes.subs && changes.subs.diff !== 0 && (
-                <div className={changes.subs.diff > 0 ? 'change-up-metric' : 'change-down-metric'}>
-                  {changes.subs.diff > 0 ? '+' : ''}{changes.subs.diff} {changes.subs.period}
-                </div>
+              {changes.subs && (
+                changes.subs.diff === 0
+                  ? <div className="change-neutral-metric">No change {changes.subs.period}</div>
+                  : <div className={changes.subs.diff > 0 ? 'change-up-metric' : 'change-down-metric'}>{changes.subs.diff > 0 ? '+' : ''}{changes.subs.diff} {changes.subs.period}</div>
               )}
             </div>
             <div className="db-stat-card">
               <div className="db-stat-label">Favourites</div>
               <div className="db-stat-value db-stat-mint">{favCount}</div>
-              {changes.favs && changes.favs.diff !== 0 && (
-                <div className={changes.favs.diff > 0 ? 'change-up-metric' : 'change-down-metric'}>
-                  {changes.favs.diff > 0 ? '+' : ''}{changes.favs.diff} {changes.favs.period}
-                </div>
+              {changes.favs && (
+                changes.favs.diff === 0
+                  ? <div className="change-neutral-metric">No change {changes.favs.period}</div>
+                  : <div className={changes.favs.diff > 0 ? 'change-up-metric' : 'change-down-metric'}>{changes.favs.diff > 0 ? '+' : ''}{changes.favs.diff} {changes.favs.period}</div>
               )}
             </div>
             <div className="db-stat-card">
               <div className="db-stat-label">Inactive channels</div>
               <div className="db-stat-value db-stat-red">{deadChannels.length}</div>
-              {changes.inactive && changes.inactive.diff !== 0 && (
-                <div className={changes.inactive.diff > 0 ? 'change-down-metric' : 'change-up-metric'}>
-                  {changes.inactive.diff > 0 ? '+' : ''}{changes.inactive.diff} {changes.inactive.period}
-                </div>
+              {changes.inactive && (
+                changes.inactive.diff === 0
+                  ? <div className="change-neutral-metric">No change {changes.inactive.period}</div>
+                  : <div className={changes.inactive.diff > 0 ? 'change-down-metric' : 'change-up-metric'}>{changes.inactive.diff > 0 ? '+' : ''}{changes.inactive.diff} {changes.inactive.period}</div>
               )}
             </div>
             <div className="db-stat-card">
               <div className="db-stat-label">Uncategorised</div>
               <div className="db-stat-value">{uncatCount}</div>
-              {changes.uncat && changes.uncat.diff !== 0 && (
-                <div className={changes.uncat.diff < 0 ? 'change-up-metric' : 'change-down-metric'}>
-                  {changes.uncat.diff > 0 ? '+' : ''}{changes.uncat.diff} {changes.uncat.period}
-                </div>
+              {changes.uncat && (
+                changes.uncat.diff === 0
+                  ? <div className="change-neutral-metric">No change {changes.uncat.period}</div>
+                  : <div className={changes.uncat.diff < 0 ? 'change-up-metric' : 'change-down-metric'}>{changes.uncat.diff > 0 ? '+' : ''}{changes.uncat.diff} {changes.uncat.period}</div>
               )}
             </div>
             <div className="db-stat-card">
