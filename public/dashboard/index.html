@@ -936,8 +936,8 @@ input[type=range]::-webkit-slider-thumb{
 .analytics-page.active{display:flex;flex-direction:column}
 .an-inner{padding:1.75rem 2rem 3rem;flex:1}
 .an-header{margin-bottom:1rem}
-.an-title{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.25rem;color:#000}
-.an-title em{color:var(--accent);font-style:italic}
+.page-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;letter-spacing:-0.3px;color:#E8E6E0}
+.page-title em{color:var(--accent);font-style:normal}
 .an-subtitle{font-size:.875rem;color:var(--text-secondary)}
 /* Tab strip */
 .an-tabstrip-wrap{border-bottom:1px solid var(--border-subtle);margin-bottom:1.25rem;overflow:hidden}
@@ -1813,7 +1813,6 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ─── Dashboard Cards ─── */
 .db-header{padding:.25rem 0 1.25rem}
-.db-title{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.25rem;color:#000}
 .db-subtitle{font-size:.875rem;color:var(--text-secondary)}
 .db-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.125rem 1.25rem;margin-bottom:1rem}
 .db-card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem}
@@ -1898,7 +1897,6 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ─── Dashboard redesign ─── */
 .db-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
-.db-topbar-title{font-family:'Outfit',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.03em;color:#000}
 .db-topbar-right{display:flex;align-items:center;gap:.75rem}
 .db-topbar-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:grid;place-items:center;border:none;cursor:pointer;color:#fff;overflow:hidden;flex-shrink:0;padding:0}
 .db-topbar-avatar img{width:100%;height:100%;object-fit:cover}
@@ -2418,7 +2416,6 @@ input[type=range]::-webkit-slider-thumb{
 .chan-scrolled .chan-header.show{max-height:0;opacity:0;padding-top:0;padding-bottom:0;margin:0}
 .chan-scrolled .categories-section{border-bottom:1px solid var(--border-subtle);box-shadow:0 4px 16px rgba(0,0,0,.25)}
 .chan-hdr-top{display:flex;align-items:baseline;gap:.625rem}
-.chan-page-title{font-family:var(--font-display);font-size:2rem;font-weight:700;color:#000;letter-spacing:-.02em}
 .chan-page-count{font-size:.8125rem;color:var(--text-muted)}
 .chan-hdr-controls{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
 .chan-hdr-right{display:flex;align-items:center;gap:.5rem}
@@ -3050,7 +3047,11 @@ input[type=range]::-webkit-slider-thumb{
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
           <span class="home-nav-item-label">Analytics</span>
         </button>
-        <button class="home-nav-item" data-nav="discover" onclick="showView('blog')">
+        <button class="home-nav-item" data-nav="blog" onclick="showView('blog')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="home-nav-item-label">Blog</span>
+        </button>
+        <button class="home-nav-item" data-nav="discover" onclick="showView('discover')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <span class="home-nav-item-label">Discover</span>
         </button>
@@ -3138,7 +3139,7 @@ input[type=range]::-webkit-slider-thumb{
 
     <!-- Top bar -->
     <div class="db-topbar">
-      <h1 class="db-topbar-title">Dashboard</h1>
+      <h1 class="page-title">Dashboard</h1>
       <div class="db-topbar-right">
         <button class="db-topbar-avatar" id="dbTopAvatar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -3257,7 +3258,7 @@ input[type=range]::-webkit-slider-thumb{
 
     <!-- Header -->
     <div class="an-header">
-      <h1 class="an-title"><em>Analytics</em></h1>
+      <h1 class="page-title">Analytics</h1>
       <p class="an-subtitle">Understand your subscription habits and keep your feed healthy.</p>
     </div>
 
@@ -3635,7 +3636,7 @@ input[type=range]::-webkit-slider-thumb{
 <div class="blog-page" id="blogPage">
   <div class="blog-inner">
     <div class="db-header">
-      <h1 class="db-title">Blog</h1>
+      <h1 class="page-title">Blog</h1>
       <p class="db-subtitle">Tips, guides, and insights on organising your YouTube subscriptions.</p>
     </div>
 
@@ -3798,7 +3799,7 @@ input[type=range]::-webkit-slider-thumb{
 <!-- ═══ Channels Page Header ═══ -->
 <div class="chan-header" id="chanHeader">
   <div class="chan-hdr-top">
-    <h1 class="chan-page-title">Channels</h1>
+    <h1 class="page-title">Subscriptions</h1>
     <span class="chan-page-count" id="chanSubCount"></span>
   </div>
   <div class="chan-hdr-controls">
@@ -8005,7 +8006,7 @@ function buildFeedTabsHtml() {
 
   const headerHtml = `
     <div class="db-header">
-      <h1 class="db-title">Your Feed</h1>
+      <h1 class="page-title">Your Feed</h1>
       <p class="db-subtitle">Recent videos from your subscriptions, sorted by category.</p>
     </div>`;
 
@@ -8651,6 +8652,7 @@ function showView(view) {
   if (promoBanner) promoBanner.style.display = 'none';
   document.getElementById('homeSecondaryNav').classList.remove('open');
   document.getElementById('channelsEmpty')?.remove();
+  document.getElementById('discoverPlaceholder')?.remove();
   document.getElementById('chanTopbar')?.classList.remove('show');
   document.getElementById('chanHeader')?.classList.remove('show');
   // Clear all nav active states
@@ -8695,9 +8697,20 @@ function showView(view) {
       break;
     case 'blog':
       document.getElementById('blogPage').classList.add('active');
-      document.querySelector('.home-nav-item[data-nav="discover"]')?.classList.add('active');
+      document.querySelector('.home-nav-item[data-nav="blog"]')?.classList.add('active');
       document.title = 'Freedly - Blog';
       renderBlog();
+      break;
+
+    case 'discover':
+      document.querySelector('.home-nav-item[data-nav="discover"]')?.classList.add('active');
+      document.title = 'Freedly - Discover';
+      // Coming soon placeholder
+      const discoverEl = document.createElement('div');
+      discoverEl.id = 'discoverPlaceholder';
+      discoverEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:2rem;';
+      discoverEl.innerHTML = `<h2 style="font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:.5rem;color:var(--text-primary)">Discover is coming soon</h2><p style="color:var(--text-secondary);max-width:360px">Find quality creators outside your subscriptions. We\'re building it now.</p>`;
+      document.getElementById('appContent').appendChild(discoverEl);
       break;
 
     case 'channels':
