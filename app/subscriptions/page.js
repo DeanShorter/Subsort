@@ -140,6 +140,18 @@ export default function SubscriptionsPage() {
             ))}
           </div>
 
+          {/* Bulk Edit */}
+          <button className="ct-pill-btn" onClick={() => {}}>
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="3" width="12" height="2" rx=".5" /><rect x="1" y="7" width="8" height="2" rx=".5" /><rect x="1" y="11" width="10" height="2" rx=".5" /></svg>
+            Bulk Edit
+          </button>
+
+          {/* Sort Now */}
+          <button className="ct-pill-btn ct-pill-accent" onClick={() => {}}>
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M7 1v12M1 7h12" /></svg>
+            Sort now
+          </button>
+
           {/* Search */}
           <div className="feed-search-wrap" style={{ maxWidth: 220 }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
