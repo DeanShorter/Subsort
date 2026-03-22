@@ -47,21 +47,47 @@ function SignupChart() {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const [activeTab, setActiveTab] = useState('30d');
+  const [signupDates, setSignupDates] = useState([]);
 
+  // Fetch all signup dates once
   useEffect(() => {
+    supabase
+      .from('profiles')
+      .select('created_at')
+      .order('created_at', { ascending: true })
+      .then(({ data }) => {
+        if (data) setSignupDates(data.map(r => r.created_at));
+      });
+  }, []);
+
+  // Render chart when data or tab changes
+  useEffect(() => {
+    if (!signupDates.length) return;
     let cancelled = false;
+
     import('chart.js/auto').then(({ default: Chart }) => {
       if (cancelled || !canvasRef.current) return;
       if (chartRef.current) chartRef.current.destroy();
 
       const now = new Date();
-      const days = activeTab === '7d' ? 7 : activeTab === '90d' ? 90 : activeTab === 'All' ? 180 : 30;
+      const days = activeTab === '7d' ? 7 : activeTab === '90d' ? 90 : activeTab === 'All' ? 365 : 30;
+
+      // Build a map of date → count
+      const countMap = {};
+      for (const dateStr of signupDates) {
+        if (!dateStr) continue;
+        const day = dateStr.slice(0, 10); // YYYY-MM-DD
+        countMap[day] = (countMap[day] || 0) + 1;
+      }
+
+      // Build labels + data for the range
       const labels = [];
       const data = [];
       for (let i = days - 1; i >= 0; i--) {
         const d = new Date(now); d.setDate(d.getDate() - i);
+        const key = d.toISOString().slice(0, 10);
         labels.push(d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }));
-        data.push(Math.round(20 + Math.random() * 25 + Math.max(0, (days - 1 - i) * 1.2)));
+        data.push(countMap[key] || 0);
       }
 
       chartRef.current = new Chart(canvasRef.current, {
@@ -81,13 +107,13 @@ function SignupChart() {
           plugins: { legend: { display: false } },
           scales: {
             x: { grid: { display: false }, ticks: { color: '#5E5D58', font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
-            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5E5D58', font: { size: 10 }, stepSize: 10 }, beginAtZero: true },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5E5D58', font: { size: 10 }, stepSize: 1 }, beginAtZero: true },
           },
         },
       });
     });
     return () => { cancelled = true; if (chartRef.current) chartRef.current.destroy(); };
-  }, [activeTab]);
+  }, [activeTab, signupDates]);
 
   const tabs = ['7d', '30d', '90d', 'All'];
 
