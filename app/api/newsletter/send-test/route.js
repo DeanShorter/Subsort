@@ -86,6 +86,10 @@ export async function POST(request) {
       to,
       subject: `[TEST] ${subject || 'No subject'}`,
       html,
+      headers: {
+        'List-Unsubscribe': `<https://usefreedly.com/unsubscribe?email=${encodeURIComponent(to)}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      },
     });
 
     return NextResponse.json({ sent: 1, to });

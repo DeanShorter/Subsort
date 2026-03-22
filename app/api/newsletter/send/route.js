@@ -89,6 +89,10 @@ export async function POST(request) {
           to: email,
           subject,
           html: wrapInTemplate(htmlContent, previewText, email),
+          headers: {
+            'List-Unsubscribe': `<https://usefreedly.com/unsubscribe?email=${encodeURIComponent(email)}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
         }))
       );
 
