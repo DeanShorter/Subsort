@@ -64,6 +64,40 @@
   font-size: .6875rem; color: var(--text-muted);
 }
 
+.toolbar {
+  display: flex; align-items: center; gap: .75rem; margin-bottom: 2rem; flex-wrap: wrap;
+}
+.searchWrap {
+  position: relative; flex: 1; min-width: 180px;
+}
+.searchWrap svg {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  width: 14px; height: 14px; color: var(--text-muted); pointer-events: none;
+}
+.searchInput {
+  width: 100%; background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: .5rem .75rem .5rem 2rem;
+  font-size: .8125rem; font-family: var(--font-body); color: var(--text-primary);
+  outline: none; transition: border-color .2s;
+}
+.searchInput::placeholder { color: var(--text-muted); }
+.searchInput:focus { border-color: rgba(255,255,255,.14); }
+.filterChips { display: flex; gap: .375rem; flex-wrap: wrap; }
+.chip {
+  padding: .3rem .75rem; border-radius: 20px; font-size: .75rem; font-weight: 500;
+  font-family: var(--font-body); border: 1px solid var(--border-subtle);
+  background: transparent; color: var(--text-secondary); cursor: pointer;
+  transition: all .15s; white-space: nowrap;
+}
+.chip:hover { border-color: rgba(255,255,255,.15); color: var(--text-primary); }
+.chipActive {
+  background: var(--accent-soft); border-color: rgba(56,233,177,.25); color: var(--accent);
+}
+.noResults {
+  text-align: center; padding: 3rem 2rem;
+  color: var(--text-muted); font-size: .875rem;
+}
+
 .empty {
   text-align: center; padding: 4rem 2rem;
   color: var(--text-muted); font-size: .9375rem;
