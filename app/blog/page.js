@@ -1,7 +1,5 @@
 import { getAllPosts } from '@/lib/blog';
-import styles from './blog.module.css';
-import BlogNav from './BlogNav';
-import BlogGrid from './BlogGrid';
+import BlogContent from './BlogContent';
 
 export const metadata = {
   title: 'Blog',
@@ -10,28 +8,5 @@ export const metadata = {
 
 export default function BlogIndex() {
   const posts = getAllPosts();
-
-  return (
-    <div className={styles.page}>
-      <BlogNav styles={styles} />
-
-      <div className={styles.content}>
-        <header className={styles.header}>
-          <h1 className={styles.heading}>Blog</h1>
-          <p className={styles.subtitle}>
-            Tips, guides, and insights on organising your YouTube subscriptions
-            and discovering quality creators.
-          </p>
-        </header>
-
-        {posts.length > 0 ? (
-          <BlogGrid posts={posts} />
-        ) : (
-          <div className={styles.empty}>
-            <p>Articles coming soon. We're working on guides to help you get the most out of Freedly.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  return <BlogContent posts={posts} />;
 }
