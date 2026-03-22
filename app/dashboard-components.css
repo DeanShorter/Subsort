@@ -3152,6 +3152,13 @@ input[type=range]::-webkit-slider-thumb{
 .view-toggle-btn + .view-toggle-btn { border-left: 1px solid var(--border-subtle); }
 .view-toggle-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; }
 
+/* Pill toggle group (text-based, like view-toggles but for labels) */
+.pill-toggle{display:flex;border:1px solid var(--border-subtle);border-radius:8px;overflow:hidden}
+.pill-toggle-btn{padding:5px 12px;background:transparent;border:none;font:500 12px/1 var(--font-body);color:var(--text-muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.pill-toggle-btn:hover{color:var(--text-secondary);background:var(--bg-surface)}
+.pill-toggle-btn.active{background:var(--bg-surface-raised);color:var(--accent)}
+.pill-toggle-btn+.pill-toggle-btn{border-left:1px solid var(--border-subtle)}
+
 /* Main layout override — no sidebar visible */
 .main-layout {
   padding: 16px 20px !important;

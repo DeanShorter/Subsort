@@ -187,39 +187,19 @@ export default function FeedsPage() {
       {/* Controls */}
       <div className="feed-sticky-bar">
         <div className="ct-controls-row">
-          {/* Type filter */}
-          <button
-            className={`ct-pill-btn feed-type-chip${typeFilter === 'all' ? ' active' : ''}`}
-            onClick={() => setTypeFilter('all')}
-          >All</button>
-          <button
-            className={`ct-pill-btn feed-type-chip${typeFilter === 'videos' ? ' active' : ''}`}
-            onClick={() => setTypeFilter('videos')}
-          >
-            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="3" width="12" height="8" rx="1.5" /><path d="M5.5 6v2.5l2.5-1.25z" /></svg>
-            Videos
-          </button>
-          <button
-            className={`ct-pill-btn feed-type-chip${typeFilter === 'shorts' ? ' active' : ''}`}
-            onClick={() => setTypeFilter('shorts')}
-          >
-            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="4" y="1" width="6" height="12" rx="1.5" /><circle cx="7" cy="10.5" r=".5" fill="currentColor" /></svg>
-            Shorts
-          </button>
+          {/* Type filter toggle */}
+          <div className="pill-toggle">
+            <button className={`pill-toggle-btn${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
+            <button className={`pill-toggle-btn${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
+            <button className={`pill-toggle-btn${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
+          </div>
 
-          {/* Time range */}
-          <button
-            className={`ct-pill-btn${timeRange === 'today' ? ' active' : ''}`}
-            onClick={() => setTimeRange('today')}
-          >Today</button>
-          <button
-            className={`ct-pill-btn${timeRange === 'week' ? ' active' : ''}`}
-            onClick={() => setTimeRange('week')}
-          >This Week</button>
-          <button
-            className={`ct-pill-btn${timeRange === 'month' ? ' active' : ''}`}
-            onClick={() => setTimeRange('month')}
-          >This Month</button>
+          {/* Time range toggle */}
+          <div className="pill-toggle">
+            <button className={`pill-toggle-btn${timeRange === 'today' ? ' active' : ''}`} onClick={() => setTimeRange('today')}>Today</button>
+            <button className={`pill-toggle-btn${timeRange === 'week' ? ' active' : ''}`} onClick={() => setTimeRange('week')}>This Week</button>
+            <button className={`pill-toggle-btn${timeRange === 'month' ? ' active' : ''}`} onClick={() => setTimeRange('month')}>This Month</button>
+          </div>
 
           {/* Sort */}
           <button className="ct-pill-btn" onClick={cycleSort}>
