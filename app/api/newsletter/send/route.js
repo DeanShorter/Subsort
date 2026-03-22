@@ -8,14 +8,14 @@ function getResend() {
 
 function getSupabaseAdmin() {
   return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 }
 
-export async function POST(request: Request) {
+export async function POST(request) {
   try {
-    // Auth check — verify caller is admin using anon client for JWT validation
+    // Auth check
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
     if (!token) {
@@ -23,8 +23,8 @@ export async function POST(request: Request) {
     }
 
     const authClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
     const { data: { user }, error: authError } = await authClient.auth.getUser(token);
     if (authError || !user) {
@@ -32,7 +32,6 @@ export async function POST(request: Request) {
     }
 
     const supabase = getSupabaseAdmin();
-    // Try matching by id first, then user_id
     let { data: profile } = await supabase
       .from('profiles')
       .select('tier')
@@ -47,13 +46,13 @@ export async function POST(request: Request) {
       profile = res2.data;
     }
     if (profile?.tier !== 'admin' && profile?.tier !== 'pro') {
-      return NextResponse.json({ error: `Forbidden — tier is "${profile?.tier || 'null'}" for user ${user.id}` }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden — admin only' }, { status: 403 });
     }
 
     const { subject, previewText, htmlContent, audience } = await request.json();
     const resend = getResend();
 
-    // Build query based on audience selection
+    // Build query
     let query = supabase
       .from('profiles')
       .select('email')
@@ -76,16 +75,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No recipients found' }, { status: 400 });
     }
 
-    // Resend supports batch sending — up to 100 emails per call
     const batchSize = 100;
-    const emails = users.map((u: any) => u.email).filter(Boolean);
+    const emails = users.map(u => u.email).filter(Boolean);
     let totalSent = 0;
 
     for (let i = 0; i < emails.length; i += batchSize) {
       const batch = emails.slice(i, i + batchSize);
 
       await resend.batch.send(
-        batch.map((email: string) => ({
+        batch.map(email => ({
           from: 'Freedly <hello@usefreedly.com>',
           replyTo: 'deanage95@gmail.com',
           to: email,
@@ -107,12 +105,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ sent: totalSent });
 
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-function wrapInTemplate(content: string, previewText: string, email: string) {
+function wrapInTemplate(content, previewText, email) {
   const unsubscribeUrl = `https://usefreedly.com/unsubscribe?email=${encodeURIComponent(email)}`;
 
   return `
