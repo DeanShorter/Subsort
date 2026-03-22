@@ -14,10 +14,8 @@ export default function PageHeader({ title, subtitle, count, right }) {
   return (
     <div className="page-header">
       <div className="page-header-left">
-        <div className="page-header-title-row">
-          <h1 className="page-title">{title}</h1>
-          {count && <span className="page-header-count">{count}</span>}
-        </div>
+        <h1 className="page-title">{title}</h1>
+        {count && <p className="page-header-count">{count}</p>}
         {subtitle && <p className="page-header-subtitle">{subtitle}</p>}
       </div>
       {right && <div className="page-header-right">{right}</div>}
