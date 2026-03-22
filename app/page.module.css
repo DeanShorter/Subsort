@@ -16,28 +16,12 @@
   padding: 20px 32px;
 }
 
-.logo {
-  font-family: 'Outfit', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: #1A1A1A;
-  letter-spacing: -0.5px;
+.navBrand {
   display: flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none;
 }
-
-.logoText span { color: #3ECFA0; }
-
-.logoIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  flex-shrink: 0;
-  display: none;
-}
-
-.logoText { display: block; }
 
 .navLinks {
   display: flex;
@@ -568,6 +552,4 @@
 @media (max-width: 600px) {
   .nav { padding: 16px 20px; }
   .navLinks { display: none; }
-  .logoIcon { display: block; }
-  .logoText { display: none; }
 }

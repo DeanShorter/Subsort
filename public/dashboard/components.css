@@ -1421,7 +1421,7 @@ input[type=range]::-webkit-slider-thumb{
   transition:opacity .2s;
 }
 .home-nav-brand-wordmark span{color:var(--accent-text)}
-.home-nav-brand-wordmark .hnp-wordmark-dly{color:var(--color-white)}
+.home-nav-brand-wordmark .hnp-wordmark{color:var(--color-white)}
 .home-nav-brand-icon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:block}
 .home-nav-primary.collapsed .home-nav-brand-wordmark{opacity:0;width:0;overflow:hidden}
 

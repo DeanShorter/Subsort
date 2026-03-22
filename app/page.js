@@ -12,9 +12,11 @@ export default function HomePage() {
 
       {/* NAV */}
       <nav className={styles.nav}>
-        <a href="/" className={styles.logo}>
-          <img src="/icon.svg" alt="Freedly" className={styles.logoIcon} />
-          <span className={styles.logoText}><span>free</span>dly</span>
+        <a href="/" className={`home-nav-brand ${styles.navBrand}`}>
+          <img src="/icon.svg" alt="Freedly" className="home-nav-brand-icon" />
+          <span className="home-nav-brand-wordmark">
+            <span>free</span><span className="hnp-wordmark">dly</span>
+          </span>
         </a>
         <ul className={styles.navLinks}>
           <li><a href="#features">Features</a></li>

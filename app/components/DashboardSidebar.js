@@ -140,7 +140,7 @@ export default function DashboardSidebar() {
         <Link href="/dashboard" className="home-nav-brand" style={{ textDecoration: 'none' }}>
           <img src="/icon.svg" alt="Freedly" className="home-nav-brand-icon" />
           <span className="home-nav-brand-wordmark">
-            <span>free</span><span className="hnp-wordmark-dly">dly</span>
+            <span>free</span><span className="hnp-wordmark">dly</span>
           </span>
         </Link>
         {user && <span className={`tier-badge ${userTier}`}>{userTier}</span>}
