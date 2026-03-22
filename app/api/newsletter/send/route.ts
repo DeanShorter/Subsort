@@ -37,8 +37,8 @@ export async function POST(request: Request) {
       .select('tier')
       .eq('id', user.id)
       .single();
-    if (profile?.tier !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden — admin only' }, { status: 403 });
+    if (profile?.tier !== 'admin' && profile?.tier !== 'pro') {
+      return NextResponse.json({ error: `Forbidden — tier is "${profile?.tier || 'null'}" for user ${user.id}` }, { status: 403 });
     }
 
     const { subject, previewText, htmlContent, audience } = await request.json();
