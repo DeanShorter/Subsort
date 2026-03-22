@@ -138,7 +138,7 @@ function SignupChart() {
 }
 
 // ── Newsletter view ─────────────────────────────────────
-function NewsletterView({ stats }) {
+function NewsletterView({ stats, accessToken }) {
   const [subject, setSubject] = useState('');
   const [preview, setPreview] = useState('');
   const [audience, setAudience] = useState('all');
@@ -159,12 +159,11 @@ function NewsletterView({ stats }) {
     if (!editorRef.current?.innerHTML?.trim()) return;
     setSending(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token || ''}`,
+          'Authorization': `Bearer ${accessToken || ''}`,
         },
         body: JSON.stringify({
           subject,
@@ -332,6 +331,7 @@ export default function AdminPage() {
   const [recentUsers, setRecentUsers] = useState([]);
   const [authChecked, setAuthChecked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [accessToken, setAccessToken] = useState(null);
   const [featureData, setFeatureData] = useState([]);
   const [apiUsage, setApiUsage] = useState({ today: 0, limit: 10000, byEndpoint: [], byDay: [] });
   const [videoClicks, setVideoClicks] = useState({ feeds: 0, dashboard: 0 });
@@ -353,6 +353,7 @@ export default function AdminPage() {
     async function load() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { setAuthChecked(true); return; }
+      setAccessToken(session.access_token);
 
       // Check admin (you can adjust this check)
       const { data: profile } = await supabase
@@ -551,7 +552,7 @@ export default function AdminPage() {
         <main className="home-main">
 
           {activeNav === 'newsletter' ? (
-            <NewsletterView stats={stats} />
+            <NewsletterView stats={stats} accessToken={accessToken} />
           ) : (
           <>
           {/* Header */}

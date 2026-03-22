@@ -73,6 +73,7 @@ export async function POST(request: Request) {
       await resend.batch.send(
         batch.map((email: string) => ({
           from: 'Freedly <hello@usefreedly.com>',
+          replyTo: 'deanage95@gmail.com',
           to: email,
           subject,
           html: wrapInTemplate(htmlContent, previewText, email),
