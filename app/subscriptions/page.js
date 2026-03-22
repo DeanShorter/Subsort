@@ -114,7 +114,7 @@ export default function SubscriptionsPage() {
       />
 
       {/* Topbar controls */}
-      <div className="chan-topbar" style={{ display: 'flex' }}>
+      <div className="ctrls-row">
         <div className="ct-controls-row">
           <button className="ct-pill-btn" onClick={cycleSort}>
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>

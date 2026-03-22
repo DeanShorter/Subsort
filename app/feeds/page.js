@@ -136,7 +136,7 @@ export default function FeedsPage() {
 
   return (
     <main className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
-      <PageHeader title="Your Feed" subtitle="Recent videos from your subscriptions." />
+      <PageHeader title="Feeds" subtitle="Videos uploaded by your subscriptions within the last 7 days" />
 
       {/* Controls */}
       <div className="feed-sticky-bar">

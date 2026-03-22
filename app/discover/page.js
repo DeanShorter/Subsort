@@ -117,6 +117,7 @@ export default function DiscoverPage() {
     <main className="home-main">
       <PageHeader
         title="Discover"
+        subtitle="Find new channels based on what you watch"
         right={
           <div className="disc-search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
