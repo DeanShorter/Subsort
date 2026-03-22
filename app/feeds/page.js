@@ -182,10 +182,9 @@ export default function FeedsPage() {
 
   return (
     <main className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
-      <PageHeader title="Feeds" subtitle={`Videos uploaded by your subscriptions ${timeRange === 'today' ? 'today' : timeRange === 'week' ? 'within the last 7 days' : 'within the last 30 days'}`} />
-
       {/* Controls */}
-      <div className="feed-sticky-bar">
+      <div className="sticky-bar">
+        <PageHeader title="Feeds" subtitle={`Videos uploaded by your subscriptions ${timeRange === 'today' ? 'today' : timeRange === 'week' ? 'within the last 7 days' : 'within the last 30 days'}`} />
         <div className="ct-controls-row">
           {/* Type filter toggle */}
           <div className="pill-toggle">

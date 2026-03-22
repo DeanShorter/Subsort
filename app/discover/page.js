@@ -117,7 +117,7 @@ export default function DiscoverPage() {
 
   return (
     <main className="home-main">
-      <div className="feed-sticky-bar">
+      <div className="sticky-bar">
         <PageHeader
           title="Discover"
           subtitle="Find new channels based on what you watch"

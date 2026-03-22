@@ -175,13 +175,12 @@ export default function SubscriptionsPage() {
 
   return (
     <main className="home-main" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <PageHeader
-        title="Subscriptions"
-        count={`${channels.length} subscription${channels.length !== 1 ? 's' : ''}`}
-      />
-
       {/* Topbar controls */}
-      <div className="ctrls-row">
+      <div className="sticky-bar">
+        <PageHeader
+          title="Subscriptions"
+          count={`${channels.length} subscription${channels.length !== 1 ? 's' : ''}`}
+        />
         <div className="ct-controls-row">
           <button className="ct-pill-btn" onClick={cycleSort}>
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
