@@ -3208,7 +3208,7 @@ input[type=range]::-webkit-slider-thumb{
 /* ═══ END CHANNELS REDESIGN ═══ */
 
 /* ═══ Admin Page ═══ */
-.tier-badge{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;padding:2px 7px;border-radius:4px}
+.tier-badge{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;padding:2px 7px;border-radius:4px;margin-right:10px}
 .tier-badge.free{color:var(--text-muted);background:var(--bg-surface-raised)}
 .tier-badge.pro{color:#EF9F27;background:rgba(239,159,39,.1)}
 .tier-badge.admin{color:#E85D50;background:rgba(232,93,80,.1)}
