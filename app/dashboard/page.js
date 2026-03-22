@@ -4,6 +4,7 @@ import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
 import PageHeader from '../components/PageHeader';
+import { trackEvent } from '../../lib/track';
 
 export default function DashboardPage() {
   const { user, accessToken, signIn } = useAuth();
@@ -249,7 +250,7 @@ export default function DashboardPage() {
               const col = categoryColours[cat] || 'var(--accent)';
               const initials = v.channel ? v.channel.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase() : '?';
               return (
-                <a key={v.id} className="db-fvc" href={`https://youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer">
+                <a key={v.id} className="db-fvc" href={`https://youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('video_click_dashboard')}>
                   <div className="db-fvc-thumb">
                     {v.thumbnail ? <img src={v.thumbnail} alt="" /> : null}
                   </div>
