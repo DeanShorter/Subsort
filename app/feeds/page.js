@@ -28,9 +28,26 @@ export default function FeedsPage() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [tokenExpired, setTokenExpired] = useState(false);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
+  const [timeRange, setTimeRange] = useState('week'); // 'today', 'week', 'month'
 
   const sortKey = SORT_OPTIONS[sortIdx].value;
-  const allVideos = feedVideos;
+
+  // Filter videos by selected time range
+  const allVideos = useMemo(() => {
+    if (!feedVideos.length) return feedVideos;
+    const now = new Date();
+    let cutoff;
+    if (timeRange === 'today') {
+      cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    } else if (timeRange === 'week') {
+      cutoff = new Date(now);
+      cutoff.setDate(cutoff.getDate() - 7);
+    } else {
+      cutoff = new Date(now);
+      cutoff.setDate(cutoff.getDate() - 30);
+    }
+    return feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt) >= cutoff);
+  }, [feedVideos, timeRange]);
 
   // ── Push video counts to sidebar ───────────────────────
   useEffect(() => {
@@ -165,7 +182,7 @@ export default function FeedsPage() {
 
   return (
     <main className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
-      <PageHeader title="Feeds" subtitle="Videos uploaded by your subscriptions within the last 7 days" />
+      <PageHeader title="Feeds" subtitle={`Videos uploaded by your subscriptions ${timeRange === 'today' ? 'today' : timeRange === 'week' ? 'within the last 7 days' : 'within the last 30 days'}`} />
 
       {/* Controls */}
       <div className="feed-sticky-bar">
@@ -189,6 +206,20 @@ export default function FeedsPage() {
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="4" y="1" width="6" height="12" rx="1.5" /><circle cx="7" cy="10.5" r=".5" fill="currentColor" /></svg>
             Shorts
           </button>
+
+          {/* Time range */}
+          <button
+            className={`ct-pill-btn${timeRange === 'today' ? ' active' : ''}`}
+            onClick={() => setTimeRange('today')}
+          >Today</button>
+          <button
+            className={`ct-pill-btn${timeRange === 'week' ? ' active' : ''}`}
+            onClick={() => setTimeRange('week')}
+          >This Week</button>
+          <button
+            className={`ct-pill-btn${timeRange === 'month' ? ' active' : ''}`}
+            onClick={() => setTimeRange('month')}
+          >This Month</button>
 
           {/* Sort */}
           <button className="ct-pill-btn" onClick={cycleSort}>
