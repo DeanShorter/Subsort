@@ -288,9 +288,24 @@ function NewsletterView({ stats, accessToken }) {
                 <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" /><path d="M8 5v3l2 1.5" /></svg>
                 Schedule for later
               </button>
-              <button className="nl-btn">
+              <button className="nl-btn" onClick={async () => {
+                const to = prompt('Send test to:', 'deanage95@gmail.com');
+                if (!to) return;
+                setSending(true);
+                try {
+                  const res = await fetch('/api/newsletter/send-test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken || ''}` },
+                    body: JSON.stringify({ subject, previewText: preview, htmlContent: editorRef.current?.innerHTML || '', to }),
+                  });
+                  const data = await res.json();
+                  setSentMsg(data.error ? `Error: ${data.error}` : `Test sent to ${to}`);
+                } catch (e) { setSentMsg('Test failed'); }
+                setSending(false);
+                setTimeout(() => setSentMsg(null), 4000);
+              }}>
                 <svg viewBox="0 0 16 16"><path d="M2 4l6 4 6-4" /><rect x="2" y="3" width="12" height="10" rx="1.5" /></svg>
-                Send test to myself
+                Send test email
               </button>
             </div>
           </div>
