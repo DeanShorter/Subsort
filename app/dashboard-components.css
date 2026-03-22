@@ -2189,6 +2189,19 @@ input[type=range]::-webkit-slider-thumb{
   .db-health-stats{margin-left:0;gap:1rem}
   .home-nav-secondary{display:none}
   .home-main{padding:1rem}
+  /* Stat strips: 2 cols on tablet */
+  .db-stat-strip{grid-template-columns:repeat(2,1fr)}
+  /* Bottom grid: stack */
+  .db-bottom-grid{grid-template-columns:1fr}
+  /* Page header: tighter */
+  .page-header{padding:.75rem 1rem}
+  .page-title{font-size:1.125rem}
+  /* Sticky bar: tighter */
+  .sticky-bar{padding:0 1rem}
+  /* Controls row: wrap */
+  .ct-controls-row{flex-wrap:wrap;gap:6px}
+  /* Feed grid: 1 col */
+  .db-fav-feed-grid{grid-template-columns:1fr}
 }
 @media(max-width:640px){
   /* Show topbar, push app content below it */
@@ -2237,13 +2250,38 @@ input[type=range]::-webkit-slider-thumb{
   .main-layout{overflow:visible!important;flex:none!important;padding:1rem!important}
   .channels-area{overflow:visible!important;flex:none!important;min-height:unset!important}
   #channelGrid{overflow:visible!important;flex:none!important;padding:.75rem 0 2rem!important}
-.chan-view-toggle{display:none!important}
+  .chan-view-toggle{display:none!important}
   /* Chan header: tighten on mobile */
   .chan-header{padding:1rem 1rem .375rem!important}
   .chan-hdr-controls{flex-wrap:wrap}
   .chan-topbar{padding:.625rem 1rem!important}
   .chan-cat-row{padding:.625rem 1rem!important}
   .chan-bulk-row{margin-left:0}
+  /* Stat strip: single col on small mobile */
+  .db-stat-strip{grid-template-columns:1fr!important}
+  /* Table: horizontal scroll */
+  .ch-table{font-size:.6875rem}
+  .ch-table th,.ch-table td{padding:6px 4px}
+  .ch-table-av{width:22px;height:22px;font-size:.5rem}
+  .ch-table-label{font-size:.6875rem}
+  .ch-badge{font-size:.5625rem;padding:1px 5px}
+  /* Page header */
+  .page-header{padding:.625rem 1rem}
+  .page-title{font-size:1rem}
+  .page-header-subtitle{font-size:.6875rem}
+  /* Home main */
+  .home-main{padding:.75rem!important}
+  /* Sticky bar */
+  .sticky-bar{padding:0 .75rem}
+  .ct-controls-row{padding:8px 0!important}
+  /* Toggle groups: smaller */
+  .pill-toggle{font-size:.6875rem}
+  .pill-toggle-btn{padding:3px 8px}
+  /* Discover: single col */
+  .disc-trend-grid,.disc-popular-grid{grid-template-columns:1fr!important}
+  .disc-ch-card{width:160px}
+  /* Feed sections */
+  .home-section{grid-template-columns:1fr!important}
 }
 
 /* ─── Ad Placements ─── */

@@ -54,7 +54,7 @@ function NavItem({ href, label, svg, isActive }) {
   );
 }
 
-export default function DashboardSidebar() {
+export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) {
   const pathname = usePathname();
   const { user, accessToken, userTier, signIn, signOut } = useAuth();
   const { channels, categories, subcategories, categoryColours, chHasCat, reload } = useChannelData();
@@ -133,8 +133,14 @@ export default function DashboardSidebar() {
     return () => { delete window.__subsortScrollToCats; };
   }, []);
 
+  // Close mobile nav on route change
+  useEffect(() => {
+    if (mobileOpen && onMobileClose) onMobileClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   return (
-    <nav className={`home-nav-primary${collapsed ? ' collapsed' : ''}`}>
+    <nav className={`home-nav-primary${collapsed ? ' collapsed' : ''}${mobileOpen ? ' mobile-open' : ''}`}>
       {/* Header */}
       <div className="hnp-header">
         <Link href="/dashboard" className="home-nav-brand" style={{ textDecoration: 'none' }}>
@@ -146,6 +152,12 @@ export default function DashboardSidebar() {
         {user && <span className={`tier-badge ${userTier}`}>{userTier}</span>}
         <button className="hnp-collapse-btn" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand' : 'Collapse'}>
           <svg viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" /></svg>
+        </button>
+        {/* Mobile close button */}
+        <button className="mobile-nav-close" onClick={onMobileClose}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
         </button>
       </div>
 

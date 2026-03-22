@@ -1,5 +1,7 @@
 'use client';
+import { useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { AuthProvider } from './AuthProvider';
 import { useAuth } from './AuthContext';
 import { ChannelDataProvider } from './ChannelDataProvider';
@@ -25,11 +27,44 @@ function DashboardInner({ children }) {
   const { user } = useAuth();
   const pathname = usePathname();
   const showSidebar = user || ALWAYS_SIDEBAR.some(r => pathname === r || pathname.startsWith(r + '/'));
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
     <ChannelDataProvider user={user}>
       <div className="app-shell">
-        {showSidebar && <DashboardSidebar />}
+        {/* Mobile topbar — only visible at ≤640px */}
+        {showSidebar && (
+          <div className="mobile-topbar">
+            <button className="mobile-hamburger" onClick={() => setMobileOpen(true)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M3 6h18M3 12h18M3 18h18" />
+              </svg>
+            </button>
+            <Link href="/dashboard" className="mobile-topbar-brand" style={{ textDecoration: 'none' }}>
+              <img src="/icon.svg" alt="Freedly" style={{ width: 24, height: 24 }} />
+              <span className="home-nav-brand-wordmark" style={{ marginLeft: 6 }}>
+                <span>free</span><span className="hnp-wordmark">dly</span>
+              </span>
+            </Link>
+          </div>
+        )}
+
+        {/* Mobile backdrop */}
+        {showSidebar && (
+          <div
+            className={`mobile-nav-backdrop${mobileOpen ? ' show' : ''}`}
+            onClick={closeMobile}
+          />
+        )}
+
+        {showSidebar && (
+          <DashboardSidebar
+            mobileOpen={mobileOpen}
+            onMobileClose={closeMobile}
+          />
+        )}
         <div className="app-content" id="appContent">
           {children}
         </div>
