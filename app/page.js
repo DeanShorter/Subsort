@@ -219,8 +219,8 @@ export default function HomePage() {
       <footer className={styles.footer}>
         <span>© 2026 Freedly</span>
         <div className={styles.footerLinks}>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/terms">Terms</Link>
           <Link href="/blog">Blog</Link>
         </div>
       </footer>
