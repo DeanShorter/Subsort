@@ -61,6 +61,7 @@ export default function DashboardSidebar() {
   const [openCats, setOpenCats] = useState(new Set());
   const [activeCat, setActiveCat] = useState('all');
   const [activeSub, setActiveSub] = useState(null);
+  const [feedCounts, setFeedCounts] = useState(null); // { all, favs, cats: { catName: count }, subs: { 'cat|sub': count } }
   const [syncing, setSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -110,10 +111,18 @@ export default function DashboardSidebar() {
   const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
   const showCategories = CAT_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'));
 
-  // Reset category selection when navigating to a non-category page
+  // Reset category selection and feed counts when navigating
   useEffect(() => {
     if (!showCategories) { setActiveCat('all'); setActiveSub(null); }
-  }, [showCategories]);
+    // Clear feed counts when leaving feeds page
+    if (pathname !== '/feeds') setFeedCounts(null);
+  }, [showCategories, pathname]);
+
+  // Listen for feeds page to push video counts
+  useEffect(() => {
+    window.__subsortFeedCounts = (counts) => setFeedCounts(counts);
+    return () => { delete window.__subsortFeedCounts; };
+  }, []);
 
   // Expose scroll-to-categories for the Filters button
   useEffect(() => {
@@ -157,12 +166,12 @@ export default function DashboardSidebar() {
             <button className={`home-nav-item${activeCat === 'all' ? ' active' : ''}`} onClick={() => { setActiveCat('all'); setActiveSub(null); window.__subsortCat?.('all'); }}>
               <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
               <span className="home-nav-item-label">All Categories</span>
-              <span className="hnp-count">{channels.length}</span>
+              <span className="hnp-count">{feedCounts ? feedCounts.all : channels.length}</span>
             </button>
             <button className={`home-nav-item hnp-fav-btn${activeCat === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCat('__favs__'); setActiveSub(null); window.__subsortCat?.('__favs__'); }}>
               <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/></svg>
               <span className="home-nav-item-label">Favourites</span>
-              <span className="hnp-count">{channels.filter(c => c.favourited).length}</span>
+              <span className="hnp-count">{feedCounts ? feedCounts.favs : channels.filter(c => c.favourited).length}</span>
             </button>
             {categories.map(cat => {
               const subs = subcategories[cat] || [];
@@ -184,7 +193,7 @@ export default function DashboardSidebar() {
                   >
                     <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || '#888' }} />
                     <span className="home-nav-item-label">{cat}</span>
-                    <span className="hnp-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
+                    <span className="hnp-count">{feedCounts ? (feedCounts.cats?.[cat] || 0) : channels.filter(c => chHasCat(c, cat)).length}</span>
                   </button>
                   {subs.length > 0 && (
                     <button className={`hnp-chevron-btn${isOpen ? ' open' : ''}`} onClick={toggleOpen}>
@@ -201,7 +210,7 @@ export default function DashboardSidebar() {
                         >
                           <span className="home-nav-item-label">{sub}</span>
                           <span className="hnp-count">
-                            {channels.filter(c => chHasCat(c, cat) && c.subcategory === sub).length}
+                            {feedCounts ? (feedCounts.subs?.[`${cat}|${sub}`] || 0) : channels.filter(c => chHasCat(c, cat) && c.subcategory === sub).length}
                           </span>
                         </button>
                       ))}

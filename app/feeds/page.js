@@ -32,6 +32,33 @@ export default function FeedsPage() {
   const sortKey = SORT_OPTIONS[sortIdx].value;
   const allVideos = feedVideos;
 
+  // ── Push video counts to sidebar ───────────────────────
+  useEffect(() => {
+    if (!allVideos.length || !channels.length) return;
+    const channelMap = {};
+    channels.forEach(ch => { channelMap[ch.channelId] = ch; });
+
+    const cats = {};
+    const subs = {};
+    let favs = 0;
+
+    allVideos.forEach(v => {
+      const ch = channelMap[v.channelId];
+      if (!ch) return;
+      if (ch.favourited) favs++;
+      const chCatsList = ch.categories || [];
+      chCatsList.forEach(cat => {
+        cats[cat] = (cats[cat] || 0) + 1;
+        if (ch.subcategory) {
+          const key = `${cat}|${ch.subcategory}`;
+          subs[key] = (subs[key] || 0) + 1;
+        }
+      });
+    });
+
+    window.__subsortFeedCounts?.({ all: allVideos.length, favs, cats, subs });
+  }, [allVideos, channels]);
+
   // ── Sidebar callbacks ──────────────────────────────────
   const handleCategoryClick = useCallback((cat) => {
     setActiveCategory(cat);
