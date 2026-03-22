@@ -34,6 +34,30 @@ export function ChannelDataProvider({ children, user }) {
     return n.toLocaleString();
   }, []);
 
+  const toggleFavourite = useCallback(async (channelId) => {
+    const ch = channels.find(c => c.id === channelId);
+    if (!ch) return;
+    const newVal = !ch.favourited;
+    // Optimistic update
+    ch.favourited = newVal;
+    setChannels([...channels]);
+    // Persist to DB
+    try {
+      await supabase.from('channels').update({ favourited: newVal }).eq('id', channelId);
+    } catch (e) {
+      console.error('[ChannelData] Toggle favourite failed:', e);
+      ch.favourited = !newVal;
+      setChannels([...channels]);
+    }
+  }, [channels]);
+
+  const getChannelState = useCallback((ch) => {
+    if (ch.videoCount === 0) return 'dead';
+    if (ch.subscriberCount < 100 && ch.videoCount < 5) return 'dead';
+    if (ch.subscriberCount > 0 && ch.subscriberCount < 500) return 'inactive';
+    return 'active';
+  }, []);
+
   const findDeadChannels = useCallback(() => {
     const dead = [];
     for (const ch of channels) {
@@ -177,7 +201,7 @@ export function ChannelDataProvider({ children, user }) {
       channels, categories, subcategories, categoryColours,
       dbCategories, dbSubcategories, loading,
       reload: loadUserData,
-      chCats, chHasCat, chIsUncategorised, formatCount, findDeadChannels,
+      chCats, chHasCat, chIsUncategorised, formatCount, findDeadChannels, toggleFavourite, getChannelState,
       feedVideos, feedVideosLoaded,
       setFeedVideos: (vids) => { setFeedVideos(vids); setFeedVideosLoaded(true); },
     }}>

@@ -3173,6 +3173,17 @@ input[type=range]::-webkit-slider-thumb{
 .ch-table .ch-table-fav:hover,.ch-table .ch-table-fav.starred{color:var(--color-warning)}
 .ch-table .ch-table-fav svg{width:14px;height:14px}
 
+/* Channel state badges */
+.ch-state-badge{font-size:.625rem;font-weight:600;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.ch-state-badge.active{color:var(--accent);background:rgba(56,233,177,.1)}
+.ch-state-badge.inactive{color:#EF9F27;background:rgba(239,159,39,.1)}
+.ch-state-badge.dead{color:#E85D50;background:rgba(232,93,80,.1)}
+
+/* Table column resizer */
+.ch-table th{position:relative}
+.ch-table-resizer{position:absolute;right:0;top:0;bottom:0;width:4px;cursor:col-resize;background:transparent;transition:background .15s}
+.ch-table-resizer:hover,.ch-table-resizer:active{background:var(--accent)}
+
 /* Pill toggle group (text-based, like view-toggles but for labels) */
 .pill-toggle{display:flex;border:1px solid var(--border-subtle);border-radius:8px;overflow:hidden}
 .pill-toggle-btn{padding:5px 12px;background:transparent;border:none;font:500 12px/1 var(--font-body);color:var(--text-muted);cursor:pointer;transition:all .15s;white-space:nowrap}

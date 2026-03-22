@@ -15,6 +15,8 @@ export const ChannelDataContext = createContext({
   chIsUncategorised: () => true,
   formatCount: () => '—',
   findDeadChannels: () => [],
+  toggleFavourite: () => {},
+  getChannelState: () => 'active',
   feedVideos: [],
   feedVideosLoaded: false,
   setFeedVideos: () => {},

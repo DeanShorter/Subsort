@@ -68,6 +68,13 @@ export default function SubscriptionsPage() {
         case 'subcategory': cmp = (a.subcategory || '').localeCompare(b.subcategory || ''); break;
         case 'created': cmp = (a.channelCreatedAt || '').localeCompare(b.channelCreatedAt || ''); break;
         case 'favourited': cmp = (a.favourited ? 1 : 0) - (b.favourited ? 1 : 0); break;
+        case 'state': {
+          const order = { dead: 0, inactive: 1, active: 2 };
+          const aState = a.videoCount === 0 || (a.subscriberCount < 100 && a.videoCount < 5) ? 'dead' : a.subscriberCount < 500 ? 'inactive' : 'active';
+          const bState = b.videoCount === 0 || (b.subscriberCount < 100 && b.videoCount < 5) ? 'dead' : b.subscriberCount < 500 ? 'inactive' : 'active';
+          cmp = (order[aState] || 0) - (order[bState] || 0);
+          break;
+        }
         default: cmp = 0;
       }
       return cmp * dir;
@@ -299,6 +306,7 @@ export default function SubscriptionsPage() {
             sortDir={sortDir}
             onSort={handleColumnSort}
             bulkMode={bulkMode}
+            setBulkMode={setBulkMode}
             selectedChannels={selectedChannels}
             onToggleSelect={toggleChannelSelect}
             onClickChannel={(id) => setEditingId(id)}
