@@ -287,7 +287,7 @@ export default function AdminPage() {
               <span>free</span><span className="hnp-wordmark-dly">dly</span>
             </span>
           </Link>
-          <span className="admin-badge">Admin</span>
+          <span className="tier-badge admin">Admin</span>
         </div>
 
         <div className="hnp-body">

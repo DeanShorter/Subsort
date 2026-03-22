@@ -56,7 +56,7 @@ function NavItem({ href, label, svg, isActive }) {
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
-  const { user, accessToken, signIn, signOut } = useAuth();
+  const { user, accessToken, userTier, signIn, signOut } = useAuth();
   const { channels, categories, subcategories, categoryColours, chHasCat, reload } = useChannelData();
   const [openCats, setOpenCats] = useState(new Set());
   const [activeCat, setActiveCat] = useState('all');
@@ -134,6 +134,7 @@ export default function DashboardSidebar() {
             <span>free</span><span className="hnp-wordmark-dly">dly</span>
           </span>
         </Link>
+        {user && <span className={`tier-badge ${userTier}`}>{userTier}</span>}
         <button className="hnp-collapse-btn" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand' : 'Collapse'}>
           <svg viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" /></svg>
         </button>
