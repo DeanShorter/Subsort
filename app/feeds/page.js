@@ -135,16 +135,11 @@ export default function FeedsPage() {
   }
 
   return (
-    <main
-      className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}
-      style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
-    >
-      <div style={{ padding: '0 2rem' }}>
-        <PageHeader title="Your Feed" subtitle="Recent videos from your subscriptions." />
-      </div>
+    <main className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
+      <PageHeader title="Your Feed" subtitle="Recent videos from your subscriptions." />
 
       {/* Controls */}
-      <div className="feed-sticky-bar" style={{ padding: '0 2rem' }}>
+      <div className="feed-sticky-bar">
         <div className="ct-controls-row">
           {/* Type filter */}
           <button
@@ -211,7 +206,7 @@ export default function FeedsPage() {
       </div>
 
       {/* Video list */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 2rem 2rem' }}>
+      <div className="home-section">
         {quotaExceeded ? (
           <div style={{ padding: '2rem 0', textAlign: 'center' }}>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '.5rem' }}>YouTube API quota exceeded for today.</p>
