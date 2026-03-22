@@ -22,17 +22,20 @@ const TOOL_ITEMS = [
   { id: 'flags', label: 'Feature flags', icon: <path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/> },
 ];
 
-const FEATURE_DATA = [
-  { name: 'Auto-sort', pct: 94, color: 'var(--accent)' },
-  { name: 'Favourites', pct: 71, color: '#378ADD' },
-  { name: 'Category edit', pct: 48, color: '#B07CED' },
-  { name: 'Grid view', pct: 62, color: '#5DCAA5' },
-  { name: 'List view', pct: 28, color: '#5DCAA5' },
-  { name: 'Hybrid view', pct: 10, color: '#5DCAA5' },
-  { name: 'Notes', pct: 23, color: '#EF9F27' },
-  { name: 'Takeout upload', pct: 8, color: '#D4537E' },
-  { name: 'Discover page', pct: 35, color: '#E8875C' },
-];
+// Colour map for known events — unknown events get a default
+const EVENT_COLOURS = {
+  sync: 'var(--accent)',
+  favourite: '#378ADD',
+  category_edit: '#B07CED',
+  view_feeds: '#E8875C',
+  view_discover: '#E8875C',
+  view_grid: '#5DCAA5',
+  view_list: '#5DCAA5',
+  view_hybrid: '#5DCAA5',
+  add_note: '#EF9F27',
+  bulk_edit: '#D4537E',
+  search: '#85B7EB',
+};
 
 const TOP_CATS = [
   { name: 'Entertainment', count: 891, pct: 100, color: '#E85D50' },
@@ -142,6 +145,7 @@ export default function AdminPage() {
   const [recentUsers, setRecentUsers] = useState([]);
   const [authChecked, setAuthChecked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [featureData, setFeatureData] = useState([]);
 
   // Clock
   useEffect(() => {
@@ -173,10 +177,11 @@ export default function AdminPage() {
       setAuthChecked(true);
       if (!admin) return;
 
-      // Fetch stats
-      const [usersRes, channelsRes] = await Promise.all([
+      // Fetch stats + events in parallel
+      const [usersRes, channelsRes, eventsRes] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: false }),
         supabase.from('channels').select('id', { count: 'exact', head: true }),
+        supabase.from('events').select('event, user_id'),
       ]);
 
       const users = usersRes.data || [];
@@ -189,6 +194,24 @@ export default function AdminPage() {
         pro: proCount,
         channels: totalChannels,
       });
+
+      // Feature usage — count distinct users per event
+      const events = eventsRes.data || [];
+      const eventUsers = {};
+      for (const e of events) {
+        if (!eventUsers[e.event]) eventUsers[e.event] = new Set();
+        eventUsers[e.event].add(e.user_id);
+      }
+      const totalUsers = Math.max(users.length, 1);
+      const features = Object.entries(eventUsers)
+        .map(([event, userSet]) => ({
+          name: event.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+          pct: Math.round((userSet.size / totalUsers) * 100),
+          color: EVENT_COLOURS[event] || '#85B7EB',
+          users: userSet.size,
+        }))
+        .sort((a, b) => b.pct - a.pct);
+      setFeatureData(features);
 
       // Recent signups (last 7)
       const recent = [...users]
@@ -349,7 +372,7 @@ export default function AdminPage() {
             {/* Feature usage */}
             <div className="admin-panel">
               <div className="admin-panel-title">Feature usage</div>
-              {FEATURE_DATA.map(f => (
+              {featureData.length > 0 ? featureData.map(f => (
                 <div key={f.name} className="admin-feature-row">
                   <span className="admin-feature-name">{f.name}</span>
                   <div className="admin-bar-wrap">
@@ -357,7 +380,9 @@ export default function AdminPage() {
                   </div>
                   <span className="admin-feature-pct">{f.pct}%</span>
                 </div>
-              ))}
+              )) : (
+                <p style={{ color: 'var(--text-muted)', fontSize: '.8125rem' }}>No events tracked yet.</p>
+              )}
             </div>
 
             {/* Engagement */}

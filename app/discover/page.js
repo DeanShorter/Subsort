@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import PageHeader from '../components/PageHeader';
+import { trackEvent } from '../../lib/track';
 
 export default function DiscoverPage() {
   const { user, signIn } = useAuth();
@@ -14,8 +15,9 @@ export default function DiscoverPage() {
   const [activeCat, setActiveCat] = useState(null);
   const [search, setSearch] = useState('');
 
-  // Sidebar callback
+  // Sidebar callback + page view tracking
   useEffect(() => {
+    trackEvent('view_discover');
     window.__subsortCat = (cat) => { setActiveCat(cat === 'all' ? null : cat); };
     window.__subsortSub = () => {};
     return () => { delete window.__subsortCat; delete window.__subsortSub; };

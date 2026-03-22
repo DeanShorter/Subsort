@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useChannelData } from './ChannelDataContext';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from './AuthContext';
+import { trackEvent } from '../../lib/track';
 
 export default function EditChannelModal({ channelId, onClose }) {
   const { user } = useAuth();
@@ -73,6 +74,10 @@ export default function EditChannelModal({ channelId, onClose }) {
     setSaving(true);
 
     try {
+      // Track which features were used
+      trackEvent('category_edit');
+      if (notes && notes !== ch.notes) trackEvent('add_note');
+
       // Update local channel object
       ch.categories = selectedCats;
       ch.subcategory = selectedSub;

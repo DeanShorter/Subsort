@@ -6,6 +6,7 @@ import { useAuth } from './AuthContext';
 import { useChannelData } from './ChannelDataContext';
 import { syncYouTubeSubscriptions } from '../../lib/sync';
 import { showToast } from './Toast';
+import { trackEvent } from '../../lib/track';
 
 // Routes that show the categories section in the sidebar
 const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];
@@ -81,6 +82,7 @@ export default function DashboardSidebar() {
     setSyncing(true);
     setSyncProgress({ label: 'Starting…', detail: '', pct: 0 });
 
+    trackEvent('sync');
     try {
       const result = await syncYouTubeSubscriptions(
         accessToken, user.id, channels,

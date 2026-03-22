@@ -4,6 +4,7 @@ import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
 import PageHeader from '../components/PageHeader';
+import { trackEvent } from '../../lib/track';
 
 const SORT_OPTIONS = [
   { value: 'date', label: 'Latest' },
@@ -38,6 +39,7 @@ export default function FeedsPage() {
   }, []);
 
   useEffect(() => {
+    trackEvent('view_feeds');
     window.__subsortCat = (cat) => handleCategoryClick(cat);
     window.__subsortSub = (cat, sub) => {
       setActiveCategory(cat);
