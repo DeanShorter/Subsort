@@ -2,6 +2,8 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
+import { supabase } from '../../lib/supabase';
+import { autoCategoriseAll } from '../../lib/auto-categorise';
 import ChannelCard from '../components/ChannelCard';
 import EditChannelModal from '../components/EditChannelModal';
 import PageHeader from '../components/PageHeader';
@@ -18,6 +20,7 @@ export default function SubscriptionsPage() {
   const {
     channels, categories, subcategories, categoryColours, loading,
     chCats, chHasCat, chIsUncategorised, formatCount,
+    dbCategories, reload,
   } = useChannelData();
 
   const [activeCategory, setActiveCategory] = useState('all');
@@ -27,6 +30,10 @@ export default function SubscriptionsPage() {
   const [sortIdx, setSortIdx] = useState(0);
   const [chanView, setChanView] = useState('hybrid');
   const [editingId, setEditingId] = useState(null);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedChannels, setSelectedChannels] = useState(new Set());
+  const [sorting, setSorting] = useState(false);
+  const [showSortConfirm, setShowSortConfirm] = useState(false);
 
   // ── Filter + sort ──────────────────────────────────────
   const filtered = useMemo(() => {
@@ -79,6 +86,66 @@ export default function SubscriptionsPage() {
   }, [activeCategory, subcategories]);
 
   const uncatCount = useMemo(() => channels.filter(c => chIsUncategorised(c)).length, [channels, chIsUncategorised]);
+
+  // ── Bulk mode ────────────────────────────────────────
+  const toggleBulkMode = useCallback(() => {
+    setBulkMode(prev => {
+      if (prev) setSelectedChannels(new Set());
+      return !prev;
+    });
+  }, []);
+
+  const toggleChannelSelect = useCallback((id) => {
+    setSelectedChannels(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  // ── Auto-categorise ──────────────────────────────────
+  const handleAutoCategorise = useCallback(async () => {
+    setSorting(true);
+    setShowSortConfirm(false);
+    try {
+      const { assignments, assigned, skipped } = autoCategoriseAll(channels, chIsUncategorised);
+      if (assigned === 0) {
+        alert(`All channels already have categories (${skipped} skipped).`);
+        setSorting(false);
+        return;
+      }
+
+      // Save each assignment to Supabase
+      for (const { channel, category } of assignments) {
+        // Ensure category exists in DB
+        let catRow = dbCategories.find(c => c.name === category);
+        if (!catRow) {
+          const { data } = await supabase.from('categories')
+            .insert({ name: category, user_id: user.id })
+            .select()
+            .single();
+          catRow = data;
+        }
+        if (catRow) {
+          await supabase.from('channel_categories').delete().eq('channel_id', channel.id);
+          await supabase.from('channel_categories').insert({
+            user_id: user.id,
+            channel_id: channel.id,
+            category_id: catRow.id,
+          });
+        }
+      }
+
+      await reload();
+      alert(`Auto-categorised ${assigned} channels (${skipped} already had categories).`);
+    } catch (e) {
+      console.error('[AutoCat] Failed:', e);
+      alert('Auto-categorise failed. Check console for details.');
+    } finally {
+      setSorting(false);
+    }
+  }, [channels, chIsUncategorised, dbCategories, user, reload]);
 
   // Register callbacks so the sidebar can set category/subcategory
   useEffect(() => {
@@ -142,15 +209,19 @@ export default function SubscriptionsPage() {
           </div>
 
           {/* Bulk Edit */}
-          <button className="ct-pill-btn" onClick={() => {}}>
+          <button className={`ct-pill-btn${bulkMode ? ' active' : ''}`} onClick={toggleBulkMode}>
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="3" width="12" height="2" rx=".5" /><rect x="1" y="7" width="8" height="2" rx=".5" /><rect x="1" y="11" width="10" height="2" rx=".5" /></svg>
-            Bulk Edit
+            {bulkMode ? `Selected (${selectedChannels.size})` : 'Bulk Edit'}
           </button>
 
           {/* Sort Now */}
-          <button className="ct-pill-btn ct-pill-accent" onClick={() => {}}>
+          <button
+            className="ct-pill-btn ct-pill-accent"
+            onClick={() => setShowSortConfirm(true)}
+            disabled={sorting}
+          >
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M7 1v12M1 7h12" /></svg>
-            Sort now
+            {sorting ? 'Sorting…' : 'Sort now'}
           </button>
 
           {/* Search */}
@@ -212,7 +283,8 @@ export default function SubscriptionsPage() {
                 channel={ch}
                 view={chanView}
                 index={i}
-                onClick={(id) => setEditingId(id)}
+                selected={bulkMode && selectedChannels.has(ch.id)}
+                onClick={(id) => bulkMode ? toggleChannelSelect(id) : setEditingId(id)}
               />
             ))}
           </div>
@@ -232,6 +304,24 @@ export default function SubscriptionsPage() {
           channelId={editingId}
           onClose={() => setEditingId(null)}
         />
+      )}
+
+      {/* Auto-categorise confirmation modal */}
+      {showSortConfirm && (
+        <div className="modal-overlay open" onClick={() => setShowSortConfirm(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Auto-categorise channels</h2>
+            <p className="subtitle">
+              This will automatically assign categories to your {uncatCount} uncategorised channel{uncatCount !== 1 ? 's' : ''} based on their YouTube topic data and keywords. Already-categorised channels won't be changed.
+            </p>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setShowSortConfirm(false)}>Cancel</button>
+              <button className="btn-save" onClick={handleAutoCategorise} disabled={sorting}>
+                {sorting ? 'Sorting…' : 'Auto-Categorise'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );
