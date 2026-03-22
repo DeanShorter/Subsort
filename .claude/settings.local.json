@@ -17,7 +17,14 @@
       "Bash(npx next:*)",
       "Bash(npx next@14 build)",
       "Bash(npm install:*)",
-      "Bash(node -e \"try{require.resolve\\(''chart.js''\\);console.log\\(''installed''\\)}catch\\(e\\){console.log\\(''not installed''\\)}\")"
+      "Bash(node -e \"try{require.resolve\\(''chart.js''\\);console.log\\(''installed''\\)}catch\\(e\\){console.log\\(''not installed''\\)}\")",
+      "Bash(ls \"D:/Subsort/lib/blog\"*)",
+      "Bash(node -e \"const m = require\\(''./jsconfig.json''\\); console.log\\(JSON.stringify\\(m, null, 2\\)\\)\")",
+      "Bash(node -e \"require\\(''resend''\\)\")",
+      "Bash(node -e \"try { require\\(''./app/analytics/page.js''\\) } catch\\(e\\) { console.error\\(e.message\\) }\")",
+      "Bash(grep -v \"^$\")",
+      "Bash(NEXT_PRIVATE_WORKER=1 npx next build)",
+      "Bash(node -e \"console.log\\(require\\(''next/package.json''\\).version\\)\")"
     ]
   }
 }

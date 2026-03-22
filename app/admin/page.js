@@ -156,12 +156,34 @@ function NewsletterView({ stats }) {
 
   const handleSend = async () => {
     if (!subject.trim()) return;
+    if (!editorRef.current?.innerHTML?.trim()) return;
     setSending(true);
-    // Placeholder — wire to an email API (Resend, SendGrid, etc.)
-    await new Promise(r => setTimeout(r, 1500));
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/newsletter/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`,
+        },
+        body: JSON.stringify({
+          subject,
+          previewText: preview,
+          htmlContent: editorRef.current.innerHTML,
+          audience,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setSentMsg(`Error: ${data.error}`);
+      } else {
+        setSentMsg(`Sent to ${data.sent.toLocaleString()} users`);
+      }
+    } catch (e) {
+      setSentMsg('Send failed');
+    }
     setSending(false);
-    setSentMsg(`Sent to ${selectedCount.toLocaleString()} users`);
-    setTimeout(() => setSentMsg(null), 4000);
+    setTimeout(() => setSentMsg(null), 5000);
   };
 
   const execCmd = (cmd, val) => {
