@@ -136,9 +136,8 @@ export default function FeedsPage() {
 
   return (
     <main
-      id="homeMain"
-      className={feedView === 'list' ? 'feed-view-list' : feedView === 'grid' ? 'feed-view-grid' : ''}
-      style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}
+      className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}
+      style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
     >
       <div style={{ padding: '0 2rem' }}>
         <PageHeader title="Your Feed" subtitle="Recent videos from your subscriptions." />
