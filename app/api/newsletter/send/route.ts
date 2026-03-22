@@ -15,18 +15,23 @@ function getSupabaseAdmin() {
 
 export async function POST(request: Request) {
   try {
-    const supabase = getSupabaseAdmin();
-
-    // Auth check — verify caller is admin
+    // Auth check — verify caller is admin using anon client for JWT validation
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    const authClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data: { user }, error: authError } = await authClient.auth.getUser(token);
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const supabase = getSupabaseAdmin();
     const { data: profile } = await supabase
       .from('profiles')
       .select('tier')
