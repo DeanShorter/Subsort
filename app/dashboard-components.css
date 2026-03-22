@@ -3304,3 +3304,11 @@ input[type=range]::-webkit-slider-thumb{
 .nl-stat{background:var(--bg-surface-raised);border-radius:8px;padding:10px 12px;text-align:center}
 .nl-stat-val{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-.5px;line-height:1}
 .nl-stat-lbl{font-size:9px;color:var(--text-muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── API usage day chart ── */
+.api-day-chart{display:flex;gap:6px;align-items:flex-end;height:80px;margin-bottom:4px}
+.api-day-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.api-day-bar-wrap{width:100%;height:60px;display:flex;align-items:flex-end;justify-content:center}
+.api-day-bar{width:100%;border-radius:3px 3px 0 0;background:var(--accent);min-height:2px;transition:height .4s ease}
+.api-day-label{font-size:9px;color:var(--text-muted);font-weight:500}
+.api-day-val{font-size:9px;color:var(--text-muted);font-variant-numeric:tabular-nums}

@@ -311,6 +311,8 @@ export default function AdminPage() {
   const [authChecked, setAuthChecked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [featureData, setFeatureData] = useState([]);
+  const [apiUsage, setApiUsage] = useState({ today: 0, limit: 10000, byEndpoint: [], byDay: [] });
+  const [videoClicks, setVideoClicks] = useState({ feeds: 0, dashboard: 0 });
 
   // Clock
   useEffect(() => {
@@ -342,11 +344,13 @@ export default function AdminPage() {
       setAuthChecked(true);
       if (!admin) return;
 
-      // Fetch stats + events in parallel
-      const [usersRes, channelsRes, eventsRes] = await Promise.all([
+      // Fetch stats + events + API usage in parallel
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+      const [usersRes, channelsRes, eventsRes, apiUsageRes] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: false }),
         supabase.from('channels').select('id', { count: 'exact', head: true }),
         supabase.from('events').select('event, user_id'),
+        supabase.from('api_usage').select('endpoint, units, created_at').gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
       ]);
 
       const users = usersRes.data || [];
@@ -377,6 +381,40 @@ export default function AdminPage() {
         }))
         .sort((a, b) => b.pct - a.pct);
       setFeatureData(features);
+
+      // Video clicks
+      const feedsClicks = events.filter(e => e.event === 'video_click_feeds').length;
+      const dashClicks = events.filter(e => e.event === 'video_click_dashboard').length;
+      setVideoClicks({ feeds: feedsClicks, dashboard: dashClicks });
+
+      // API usage
+      const apiRows = apiUsageRes.data || [];
+      const todayStr = new Date().toISOString().slice(0, 10);
+      let todayUnits = 0;
+      const endpointTotals = {};
+      const dayTotals = {};
+
+      for (const row of apiRows) {
+        const day = row.created_at?.slice(0, 10) || todayStr;
+        const units = row.units || 1;
+        if (day === todayStr) todayUnits += units;
+        endpointTotals[row.endpoint] = (endpointTotals[row.endpoint] || 0) + units;
+        dayTotals[day] = (dayTotals[day] || 0) + units;
+      }
+
+      // Build 7-day array
+      const byDay = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const key = d.toISOString().slice(0, 10);
+        byDay.push({ day: d.toLocaleDateString('en-GB', { weekday: 'short' }), units: dayTotals[key] || 0 });
+      }
+
+      const byEndpoint = Object.entries(endpointTotals)
+        .map(([endpoint, units]) => ({ endpoint, units }))
+        .sort((a, b) => b.units - a.units);
+
+      setApiUsage({ today: todayUnits, limit: 10000, byEndpoint, byDay });
 
       // Recent signups (last 7)
       const recent = [...users]
@@ -534,8 +572,87 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {/* Video clicks */}
+          <div className="db-stat-strip" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+            <div className="db-stat-card">
+              <div className="db-stat-label">Video clicks — Feeds</div>
+              <div className="db-stat-value db-stat-mint">{videoClicks.feeds.toLocaleString()}</div>
+            </div>
+            <div className="db-stat-card">
+              <div className="db-stat-label">Video clicks — Dashboard</div>
+              <div className="db-stat-value" style={{ color: '#378ADD' }}>{videoClicks.dashboard.toLocaleString()}</div>
+            </div>
+            <div className="db-stat-card">
+              <div className="db-stat-label">Total video clicks</div>
+              <div className="db-stat-value">{(videoClicks.feeds + videoClicks.dashboard).toLocaleString()}</div>
+            </div>
+          </div>
+
           {/* Signups chart */}
           <SignupChart />
+
+          {/* API Usage */}
+          <div className="admin-panel" style={{ marginBottom: 24 }}>
+            <div className="admin-panel-header">
+              <span className="admin-panel-title">YouTube API usage</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Daily limit: {apiUsage.limit.toLocaleString()} units</span>
+            </div>
+
+            {/* Today's usage bar */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>Today</span>
+                <span style={{ fontSize: 12, color: apiUsage.today > apiUsage.limit * 0.8 ? '#E85D50' : 'var(--accent)', fontWeight: 600, fontFamily: 'var(--font-display)' }}>
+                  {apiUsage.today.toLocaleString()} / {apiUsage.limit.toLocaleString()}
+                </span>
+              </div>
+              <div className="admin-bar-wrap" style={{ height: 8 }}>
+                <div
+                  className="admin-bar"
+                  style={{
+                    width: `${Math.min(100, (apiUsage.today / apiUsage.limit) * 100)}%`,
+                    background: apiUsage.today > apiUsage.limit * 0.8 ? '#E85D50' : 'var(--accent)',
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* 7-day bar chart */}
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.8px', color: 'var(--text-muted)', marginBottom: 10 }}>Last 7 days</div>
+            <div className="api-day-chart">
+              {apiUsage.byDay.map((d, i) => {
+                const maxDay = Math.max(...apiUsage.byDay.map(x => x.units), 1);
+                return (
+                  <div key={i} className="api-day-col">
+                    <div className="api-day-bar-wrap">
+                      <div className="api-day-bar" style={{ height: `${(d.units / maxDay) * 100}%` }} />
+                    </div>
+                    <span className="api-day-label">{d.day}</span>
+                    <span className="api-day-val">{d.units}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* By endpoint breakdown */}
+            {apiUsage.byEndpoint.length > 0 && (
+              <>
+                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.8px', color: 'var(--text-muted)', marginBottom: 10, marginTop: 16 }}>By endpoint (7 days)</div>
+                {apiUsage.byEndpoint.map(e => (
+                  <div key={e.endpoint} className="admin-feature-row">
+                    <span className="admin-feature-name">{e.endpoint}</span>
+                    <div className="admin-bar-wrap">
+                      <div className="admin-bar" style={{
+                        width: `${(e.units / Math.max(...apiUsage.byEndpoint.map(x => x.units), 1)) * 100}%`,
+                        background: e.endpoint.includes('playlist') ? 'var(--accent)' : e.endpoint.includes('subscription') ? '#378ADD' : '#B07CED',
+                      }} />
+                    </div>
+                    <span className="admin-feature-pct">{e.units.toLocaleString()}</span>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
 
           {/* Two-column: Feature usage + Engagement */}
           <div className="admin-two-col">
