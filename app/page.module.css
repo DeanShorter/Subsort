@@ -22,6 +22,7 @@
   gap: 8px;
   text-decoration: none;
 }
+.navBrand :global(.hnp-wordmark) { color: #1A1A1A; }
 
 .navLinks {
   display: flex;
