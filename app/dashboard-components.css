@@ -3205,3 +3205,49 @@ input[type=range]::-webkit-slider-thumb{
 .subcats-topbar-pill.active { background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary); }
 
 /* ═══ END CHANNELS REDESIGN ═══ */
+
+/* ═══ Admin Page ═══ */
+.admin-badge{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#EF9F27;background:rgba(239,159,39,.1);padding:2px 7px;border-radius:4px}
+.admin-live{display:flex;align-items:center;gap:6px}
+.admin-live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s ease-in-out infinite}
+.admin-live-label{font-size:11px;color:var(--accent);font-weight:500}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.admin-two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.admin-panel{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.125rem 1.25rem}
+.admin-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem}
+.admin-panel-title{font-family:var(--font-display);font-size:.875rem;font-weight:600;letter-spacing:-.02em;margin-bottom:.875rem}
+.admin-panel-header .admin-panel-title{margin-bottom:0}
+.admin-view-all{font-size:.75rem;color:var(--text-muted);cursor:pointer;font-weight:500}
+.admin-view-all:hover{color:var(--text-secondary)}
+
+.admin-tabs{display:flex;gap:4px}
+.admin-tab{font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;cursor:pointer;color:var(--text-muted);background:transparent;border:1px solid var(--border-subtle);transition:all .15s;font-family:var(--font-body)}
+.admin-tab:hover{border-color:rgba(255,255,255,.1);color:var(--text-secondary)}
+.admin-tab.active{background:var(--text-primary);color:var(--bg-primary);border-color:var(--text-primary)}
+
+.admin-feature-row{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-subtle)}
+.admin-feature-row:last-child{border-bottom:none}
+.admin-feature-name{font-size:.75rem;font-weight:500;color:var(--text-secondary);min-width:120px;flex-shrink:0}
+.admin-bar-wrap{flex:1;height:6px;background:var(--bg-surface-raised);border-radius:3px;overflow:hidden}
+.admin-bar{height:100%;border-radius:3px;transition:width .6s ease}
+.admin-feature-pct{font-size:11px;color:var(--text-muted);min-width:36px;text-align:right;font-variant-numeric:tabular-nums}
+
+.admin-eng-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.admin-eng-card{background:var(--bg-surface-raised);border-radius:var(--radius-sm);padding:.75rem .875rem;text-align:center}
+.admin-eng-val{font-family:var(--font-display);font-size:1.125rem;font-weight:700;letter-spacing:-.5px;line-height:1}
+.admin-eng-label{font-size:10px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.admin-sub-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:10px}
+
+.admin-table{width:100%;font-size:.75rem;border-collapse:collapse}
+.admin-table th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);padding:0 0 10px;border-bottom:1px solid var(--border-subtle)}
+.admin-table td{padding:10px 0;border-bottom:1px solid var(--border-subtle);color:var(--text-secondary);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:none}
+.admin-user-cell{display:flex;align-items:center;gap:8px}
+.admin-user-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;flex-shrink:0}
+.admin-user-name{color:var(--text-primary);font-weight:500}
+.admin-user-email{font-size:11px;color:var(--text-muted)}
+.admin-status{font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;display:inline-block}
+.admin-status.active{background:rgba(62,207,160,.12);color:var(--accent)}
+.admin-status.inactive{background:var(--bg-surface-raised);color:var(--text-muted)}
+.admin-status.new{background:rgba(55,138,221,.1);color:#378ADD}

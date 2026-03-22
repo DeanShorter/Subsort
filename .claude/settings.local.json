@@ -16,7 +16,8 @@
       "Bash(node -e \":*)",
       "Bash(npx next:*)",
       "Bash(npx next@14 build)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(node -e \"try{require.resolve\\(''chart.js''\\);console.log\\(''installed''\\)}catch\\(e\\){console.log\\(''not installed''\\)}\")"
     ]
   }
 }
