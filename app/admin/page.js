@@ -18,7 +18,7 @@ const DB_ITEMS = [
 ];
 
 const TOOL_ITEMS = [
-  { id: 'email', label: 'Email users', icon: <><path d="M2 4l6 4 6-4"/><rect x="2" y="3" width="12" height="10" rx="1.5"/></> },
+  { id: 'newsletter', label: 'Newsletter', icon: <><path d="M2 4l6 4 6-4"/><rect x="2" y="3" width="12" height="10" rx="1.5"/></> },
   { id: 'flags', label: 'Feature flags', icon: <path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/> },
 ];
 
@@ -134,6 +134,171 @@ function SignupChart() {
         <canvas ref={canvasRef} />
       </div>
     </div>
+  );
+}
+
+// ── Newsletter view ─────────────────────────────────────
+function NewsletterView({ stats }) {
+  const [subject, setSubject] = useState('');
+  const [preview, setPreview] = useState('');
+  const [audience, setAudience] = useState('all');
+  const [sending, setSending] = useState(false);
+  const [sentMsg, setSentMsg] = useState(null);
+  const editorRef = useRef(null);
+
+  const audienceOptions = [
+    { id: 'all', label: 'All subscribers', count: stats.users },
+    { id: 'free', label: 'Free users only', count: stats.users - stats.pro },
+    { id: 'pro', label: 'Pro subscribers', count: stats.pro },
+  ];
+
+  const selectedCount = audienceOptions.find(a => a.id === audience)?.count || 0;
+
+  const handleSend = async () => {
+    if (!subject.trim()) return;
+    setSending(true);
+    // Placeholder — wire to an email API (Resend, SendGrid, etc.)
+    await new Promise(r => setTimeout(r, 1500));
+    setSending(false);
+    setSentMsg(`Sent to ${selectedCount.toLocaleString()} users`);
+    setTimeout(() => setSentMsg(null), 4000);
+  };
+
+  const execCmd = (cmd, val) => {
+    document.execCommand(cmd, false, val || null);
+    editorRef.current?.focus();
+  };
+
+  return (
+    <>
+      <div className="page-header">
+        <div className="page-header-left">
+          <h1 className="page-title">Compose newsletter</h1>
+        </div>
+      </div>
+
+      <div className="nl-layout">
+        {/* Left: compose */}
+        <div>
+          <div className="admin-panel nl-compose">
+            <div className="nl-compose-header">
+              <div className="admin-panel-title">Email details</div>
+              <div className="nl-field">
+                <label className="nl-label">Subject line</label>
+                <input
+                  className="nl-input"
+                  type="text"
+                  placeholder="What's this email about?"
+                  value={subject}
+                  onChange={e => setSubject(e.target.value)}
+                />
+              </div>
+              <div className="nl-field">
+                <label className="nl-label">Preview text</label>
+                <input
+                  className="nl-input"
+                  type="text"
+                  placeholder="Shows after subject in inbox..."
+                  value={preview}
+                  onChange={e => setPreview(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="nl-toolbar">
+              <button className="nl-toolbar-btn" onClick={() => execCmd('bold')} title="Bold"><strong>B</strong></button>
+              <button className="nl-toolbar-btn" onClick={() => execCmd('italic')} title="Italic"><em>I</em></button>
+              <button className="nl-toolbar-btn" onClick={() => execCmd('underline')} title="Underline"><span style={{ textDecoration: 'underline' }}>U</span></button>
+              <div className="nl-toolbar-sep" />
+              <button className="nl-toolbar-btn" onClick={() => execCmd('formatBlock', 'h2')} title="Heading">
+                <svg viewBox="0 0 16 16"><path d="M3 3v10M13 3v10M3 8h10" /></svg>
+              </button>
+              <button className="nl-toolbar-btn" onClick={() => {
+                const url = prompt('Link URL:');
+                if (url) execCmd('createLink', url);
+              }} title="Link">
+                <svg viewBox="0 0 16 16"><path d="M6.5 9.5a3.5 3.5 0 005 0l1-1a3.5 3.5 0 00-5-5l-.5.5" /><path d="M9.5 6.5a3.5 3.5 0 00-5 0l-1 1a3.5 3.5 0 005 5l.5-.5" /></svg>
+              </button>
+              <button className="nl-toolbar-btn" onClick={() => execCmd('insertUnorderedList')} title="Bullet list">
+                <svg viewBox="0 0 16 16"><path d="M6 4h8M6 8h8M6 12h8" /><circle cx="3" cy="4" r="1" fill="currentColor" stroke="none" /><circle cx="3" cy="8" r="1" fill="currentColor" stroke="none" /><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none" /></svg>
+              </button>
+              <div className="nl-toolbar-sep" />
+              <button className="nl-toolbar-btn" onClick={() => execCmd('insertHorizontalRule')} title="Divider">
+                <svg viewBox="0 0 16 16"><path d="M2 8h12" /></svg>
+              </button>
+            </div>
+
+            <div
+              ref={editorRef}
+              className="nl-editor"
+              contentEditable
+              data-placeholder="Start writing your newsletter..."
+            />
+          </div>
+        </div>
+
+        {/* Right: controls */}
+        <div className="nl-sidebar">
+          {/* Audience */}
+          <div className="admin-panel">
+            <div className="admin-panel-title">Audience</div>
+            {audienceOptions.map(opt => (
+              <div
+                key={opt.id}
+                className={`nl-audience-opt${audience === opt.id ? ' selected' : ''}`}
+                onClick={() => setAudience(opt.id)}
+              >
+                <div className="nl-radio" />
+                <span className="nl-audience-label">{opt.label}</span>
+                <span className="nl-audience-count">{opt.count.toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Send */}
+          <div className="admin-panel">
+            <div className="admin-panel-title">Send</div>
+            <div className="nl-send-stack">
+              <button className="nl-btn nl-btn-primary" onClick={handleSend} disabled={sending || !!sentMsg}>
+                <svg viewBox="0 0 16 16"><path d="M2 8l5 3V5z" /><path d="M7 8h7" /></svg>
+                {sentMsg || (sending ? 'Sending...' : `Send to ${selectedCount.toLocaleString()} users`)}
+              </button>
+              <button className="nl-btn">
+                <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" /><path d="M8 5v3l2 1.5" /></svg>
+                Schedule for later
+              </button>
+              <button className="nl-btn">
+                <svg viewBox="0 0 16 16"><path d="M2 4l6 4 6-4" /><rect x="2" y="3" width="12" height="10" rx="1.5" /></svg>
+                Send test to myself
+              </button>
+            </div>
+          </div>
+
+          {/* Placeholder stats */}
+          <div className="admin-panel">
+            <div className="admin-panel-title">Last email performance</div>
+            <div className="nl-stats-grid">
+              <div className="nl-stat">
+                <div className="nl-stat-val" style={{ color: 'var(--accent)' }}>—</div>
+                <div className="nl-stat-lbl">Open rate</div>
+              </div>
+              <div className="nl-stat">
+                <div className="nl-stat-val" style={{ color: '#378ADD' }}>—</div>
+                <div className="nl-stat-lbl">Click rate</div>
+              </div>
+              <div className="nl-stat">
+                <div className="nl-stat-val">—</div>
+                <div className="nl-stat-lbl">Delivered</div>
+              </div>
+              <div className="nl-stat">
+                <div className="nl-stat-val" style={{ color: '#E85D50' }}>—</div>
+                <div className="nl-stat-lbl">Bounced</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -324,6 +489,11 @@ export default function AdminPage() {
       {/* Main content */}
       <div className="app-content">
         <main className="home-main">
+
+          {activeNav === 'newsletter' ? (
+            <NewsletterView stats={stats} />
+          ) : (
+          <>
           {/* Header */}
           <div className="page-header">
             <div className="page-header-left">
@@ -464,6 +634,8 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
+          </>
+          )}
         </main>
       </div>
     </div>
