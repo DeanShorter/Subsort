@@ -32,11 +32,20 @@ export async function POST(request: Request) {
     }
 
     const supabase = getSupabaseAdmin();
-    const { data: profile } = await supabase
+    // Try matching by id first, then user_id
+    let { data: profile } = await supabase
       .from('profiles')
       .select('tier')
       .eq('id', user.id)
       .single();
+    if (!profile) {
+      const res2 = await supabase
+        .from('profiles')
+        .select('tier')
+        .eq('user_id', user.id)
+        .single();
+      profile = res2.data;
+    }
     if (profile?.tier !== 'admin' && profile?.tier !== 'pro') {
       return NextResponse.json({ error: `Forbidden — tier is "${profile?.tier || 'null'}" for user ${user.id}` }, { status: 403 });
     }
