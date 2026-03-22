@@ -30,7 +30,7 @@ export default function HomePage() {
       {/* HERO */}
       <section className={styles.hero}>
         <div className={styles.heroText}>
-          <h1>Your subscriptions,<br/>freed from chaos.</h1>
+          <h1>Your subscriptions,<br/><span className={styles.heroAccent}>freed</span> from chaos.</h1>
           <p className={styles.heroSub}>
             Freedly sorts your subscriptions into clean, custom feeds automatically — so you only see what matters.
           </p>
