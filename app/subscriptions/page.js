@@ -5,6 +5,7 @@ import { useChannelData } from '../components/ChannelDataContext';
 import { supabase } from '../../lib/supabase';
 import { autoCategoriseAll } from '../../lib/auto-categorise';
 import ChannelCard from '../components/ChannelCard';
+import ChannelTable from '../components/ChannelTable';
 import EditChannelModal from '../components/EditChannelModal';
 import PageHeader from '../components/PageHeader';
 
@@ -27,6 +28,7 @@ export default function SubscriptionsPage() {
   const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState('name');
+  const [sortDir, setSortDir] = useState('asc');
   const [sortIdx, setSortIdx] = useState(0);
   const [chanView, setChanView] = useState('hybrid');
   const [editingId, setEditingId] = useState(null);
@@ -54,18 +56,25 @@ export default function SubscriptionsPage() {
     }
 
     // Sort
+    const dir = sortDir === 'asc' ? 1 : -1;
     result.sort((a, b) => {
+      let cmp = 0;
       switch (sortKey) {
-        case 'name': return (a.name || '').localeCompare(b.name || '');
-        case 'subscribers': return (b.subscriberCount || 0) - (a.subscriberCount || 0);
-        case 'videoCount': return (b.videoCount || 0) - (a.videoCount || 0);
-        case 'subDate': return (b.subscribedAt || '').localeCompare(a.subscribedAt || '');
-        default: return 0;
+        case 'name': cmp = (a.name || '').localeCompare(b.name || ''); break;
+        case 'subscribers': cmp = (a.subscriberCount || 0) - (b.subscriberCount || 0); break;
+        case 'videoCount': cmp = (a.videoCount || 0) - (b.videoCount || 0); break;
+        case 'subDate': cmp = (a.subscribedAt || '').localeCompare(b.subscribedAt || ''); break;
+        case 'category': cmp = (chCats(a)[0] || '').localeCompare(chCats(b)[0] || ''); break;
+        case 'subcategory': cmp = (a.subcategory || '').localeCompare(b.subcategory || ''); break;
+        case 'created': cmp = (a.channelCreatedAt || '').localeCompare(b.channelCreatedAt || ''); break;
+        case 'favourited': cmp = (a.favourited ? 1 : 0) - (b.favourited ? 1 : 0); break;
+        default: cmp = 0;
       }
+      return cmp * dir;
     });
 
     return result;
-  }, [channels, activeCategory, activeSubcategory, search, sortKey, chHasCat, chIsUncategorised]);
+  }, [channels, activeCategory, activeSubcategory, search, sortKey, sortDir, chHasCat, chIsUncategorised, chCats]);
 
   // ── Handlers ───────────────────────────────────────────
   const cycleSort = useCallback(() => {
@@ -73,6 +82,15 @@ export default function SubscriptionsPage() {
     setSortIdx(next);
     setSortKey(SORT_OPTIONS[next].value);
   }, [sortIdx]);
+
+  const handleColumnSort = useCallback((key) => {
+    if (sortKey === key) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir(key === 'name' || key === 'category' || key === 'subcategory' ? 'asc' : 'desc');
+    }
+  }, [sortKey]);
 
   const handleCategoryClick = useCallback((cat) => {
     setActiveCategory(cat);
@@ -268,12 +286,23 @@ export default function SubscriptionsPage() {
         )}
       </div>
 
-      {/* Channel grid */}
+      {/* Channel grid / table */}
       <div className="channels-area" id="channelsArea" style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
         {filtered.length === 0 ? (
           <p style={{ color: 'var(--text-muted)', padding: '2rem', textAlign: 'center' }}>
             {channels.length === 0 ? 'No channels yet. Sync your YouTube subscriptions to get started.' : 'No channels match your filters.'}
           </p>
+        ) : chanView === 'list' ? (
+          <ChannelTable
+            channels={filtered}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSort={handleColumnSort}
+            bulkMode={bulkMode}
+            selectedChannels={selectedChannels}
+            onToggleSelect={toggleChannelSelect}
+            onClickChannel={(id) => setEditingId(id)}
+          />
         ) : (
           <div className={`channel-grid view-${chanView}`}>
             {filtered.map((ch, i) => (
