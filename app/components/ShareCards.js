@@ -86,7 +86,7 @@ export default function ShareCards({ channels, deadChannels, favCount, uncatCoun
           <div className="share-bottom">
             <div className="share-stats">
               <div className="share-stat">
-                <div className="share-stat-num" style={{ color }}>{channels.length}</div>
+                <div className="share-stat-num" style={{ color: colour }}>{channels.length}</div>
                 <div className="share-stat-label">Subscriptions</div>
               </div>
               <div className="share-stat">
