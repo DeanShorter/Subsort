@@ -7,6 +7,7 @@ import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
 import SubscriptionCritic from '../components/SubscriptionCritic';
 import DashboardPersonality from '../components/DashboardPersonality';
+import ShareCards from '../components/ShareCards';
 
 export default function DashboardPage() {
   const { user, accessToken, signIn } = useAuth();
@@ -255,6 +256,14 @@ export default function DashboardPage() {
             uncatCount={uncatCount}
             favCount={favCount}
             streak={streak.count}
+          />
+
+          {/* Feed score cards */}
+          <ShareCards
+            channels={channels}
+            deadChannels={deadChannels}
+            favCount={favCount}
+            uncatCount={uncatCount}
           />
 
           {/* New from favourites */}
