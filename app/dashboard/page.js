@@ -5,6 +5,7 @@ import { useChannelData } from '../components/ChannelDataContext';
 import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
 import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
+import SubscriptionCritic from '../components/SubscriptionCritic';
 
 export default function DashboardPage() {
   const { user, accessToken, signIn } = useAuth();
@@ -238,6 +239,13 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+
+          {/* Subscription critic */}
+          <SubscriptionCritic
+            channels={channels}
+            deadChannels={deadChannels}
+            uncatCount={uncatCount}
+          />
 
           {/* New from favourites */}
           <div className="db-section-hd">

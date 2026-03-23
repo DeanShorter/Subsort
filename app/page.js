@@ -2,6 +2,7 @@ import Link from 'next/link';
 import styles from './page.module.css';
 import SessionRedirect from './components/SessionRedirect';
 import HeroBg from './components/HeroBg';
+import StepPreview from './components/StepPreview';
 
 const avatarColors = ['#E85D50','#378ADD','#3ECFA0','#EF9F27','#B07CED'];
 const barWidths    = [[75,50],[85,40],[60,65],[70,35],[55,45]];
@@ -137,6 +138,9 @@ export default function HomePage() {
       </section>
       </HeroBg>
 
+      {/* STEP PREVIEW */}
+      <StepPreview />
+
       {/* FEATURES */}
       <section className={styles.features} id="features">
         <div className={styles.featuresHeader}>
@@ -178,6 +182,60 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* PLANS */}
+      <section className={styles.plans} id="pricing">
+        <div className={styles.plansHeader}>
+          <h2>Start free. Go Pro when you&apos;re ready.</h2>
+          <p>Everything you need to organise your subscriptions, with more power if you want it.</p>
+        </div>
+        <div className={styles.plansGrid}>
+          <div className={styles.planCard}>
+            <div className={styles.planName}>Free</div>
+            <div className={styles.planDesc}>For getting started</div>
+            <div className={styles.planPrice}>£0 <span className={styles.planPeriod}>/ forever</span></div>
+            <ul className={styles.planFeatures}>
+              <li>
+                <div className={styles.featIcon}><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="2" y="2" width="5" height="5" rx="1.5"/><rect x="9" y="2" width="5" height="5" rx="1.5"/><rect x="2" y="9" width="5" height="5" rx="1.5"/><rect x="9" y="9" width="5" height="5" rx="1.5"/></svg></div>
+                <div><div className={styles.featTitle}>Sort manually</div><div className={styles.featDesc}>Create your own categories and organise your subs</div></div>
+              </li>
+              <li>
+                <div className={styles.featIcon}><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 12l3-4 3 2 4-6 2 2"/><rect x="2" y="2" width="12" height="12" rx="1.5"/></svg></div>
+                <div><div className={styles.featTitle}>Check feed health</div><div className={styles.featDesc}>See what&apos;s cluttering your feed</div></div>
+              </li>
+              <li>
+                <div className={styles.featIcon}><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 4h10M3 8h6M3 12h8"/></svg></div>
+                <div><div className={styles.featTitle}>Basic feeds</div><div className={styles.featDesc}>Browse subscriptions by category</div></div>
+              </li>
+            </ul>
+            <a href="/signin" className={`${styles.planBtn} ${styles.planBtnGhost}`}>Get started free</a>
+          </div>
+          <div className={`${styles.planCard} ${styles.planCardFeatured}`}>
+            <div className={styles.planName}>Pro</div>
+            <div className={styles.planDesc}>For serious viewers</div>
+            <div className={styles.planPrice}>£4.99 <span className={styles.planPeriod}>/ month</span></div>
+            <ul className={styles.planFeatures}>
+              <li>
+                <div className={styles.featIcon}><svg viewBox="0 0 16 16" fill="none" stroke="#38E9B1" strokeWidth="1.5" strokeLinecap="round"><path d="M6 2L3 8h4l-1 6 7-8H9l1-4z"/></svg></div>
+                <div><div className={styles.featTitle}>Auto cleanup</div><div className={styles.featDesc}>Instantly remove inactive and unengaged channels</div></div>
+              </li>
+              <li>
+                <div className={styles.featIcon}><svg viewBox="0 0 16 16" fill="none" stroke="#38E9B1" strokeWidth="1.5" strokeLinecap="round"><rect x="2" y="2" width="5" height="5" rx="1.5"/><rect x="9" y="2" width="5" height="5" rx="1.5"/><rect x="2" y="9" width="5" height="5" rx="1.5"/><rect x="9" y="9" width="5" height="5" rx="1.5"/></svg></div>
+                <div><div className={styles.featTitle}>Smart categorisation</div><div className={styles.featDesc}>Auto-sort your subscriptions with one click</div></div>
+              </li>
+              <li>
+                <div className={styles.featIcon}><svg viewBox="0 0 16 16" fill="none" stroke="#38E9B1" strokeWidth="1.5" strokeLinecap="round"><circle cx="8" cy="8" r="6"/><path d="M10.5 5.5l-1 3.5-3.5 1 1-3.5z"/></svg></div>
+                <div><div className={styles.featTitle}>Discover</div><div className={styles.featDesc}>Find new channels based on what you watch</div></div>
+              </li>
+              <li>
+                <div className={styles.featIcon}><svg viewBox="0 0 16 16" fill="none" stroke="#38E9B1" strokeWidth="1.5" strokeLinecap="round"><path d="M2 12l3-4 3 2 4-6 2 2"/><rect x="2" y="2" width="12" height="12" rx="1.5"/></svg></div>
+                <div><div className={styles.featTitle}>Watch analytics</div><div className={styles.featDesc}>Upload Takeout data for deep viewing insights</div></div>
+              </li>
+            </ul>
+            <a href="/signin" className={`${styles.planBtn} ${styles.planBtnMint}`}>Upgrade to Pro</a>
+          </div>
+        </div>
+      </section>
+
       {/* STORY */}
       <section className={styles.story} id="how-it-works">
         <div className={styles.storyInner}>
@@ -204,6 +262,20 @@ export default function HomePage() {
               <div className={styles.storyNum}>3</div>
               <div className={styles.storyLabel}>Feed views: list,<br/>grid, hybrid</div>
             </div>
+          </div>
+          <div className={styles.scoreCard}>
+            <div className={styles.scoreRing}>
+              <svg viewBox="0 0 72 72">
+                <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5"/>
+                <circle cx="36" cy="36" r="30" fill="none" stroke="#EF9F27" strokeWidth="5" strokeLinecap="round" strokeDasharray="188.4" strokeDashoffset="60" transform="rotate(-90 36 36)"/>
+              </svg>
+              <span className={styles.scoreVal} style={{color:'#EF9F27'}}>68%</span>
+            </div>
+            <div className={styles.scoreInfo}>
+              <div className={styles.scoreTitle}><span className={styles.scoreStar}>★</span> Subscrub score: 68%</div>
+              <div className={styles.scoreDesc}>You&apos;re following 42 channels you rarely watch. Connect your watch history to get a personalised cleanup plan and improve your score.</div>
+            </div>
+            <a href="/signin" className={styles.scoreBtn}>Connect watch history</a>
           </div>
         </div>
       </section>

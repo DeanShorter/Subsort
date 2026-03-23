@@ -32,6 +32,7 @@
 }
 
 .navLinks a {
+  font-family: 'Outfit', sans-serif;
   font-size: 14px;
   color: #5A5A5A;
   font-weight: 500;
@@ -358,6 +359,306 @@
   background: rgba(0,0,0,0.08);
 }
 
+/* ── Step Preview ─────────────────────────────────── */
+.stepPreview {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 32px 60px;
+}
+.stepWrap {
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.stepTabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.stepTab {
+  flex: 1;
+  padding: 12px 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #5E5D58;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+}
+.stepTabActive {
+  color: #38E9B1;
+  border-bottom-color: #38E9B1;
+}
+.stepTab:not(.stepTabActive):hover { color: #9A9890; }
+.stepPanels {
+  background: #1A1A18;
+}
+.stepPanel {
+  padding: 20px;
+}
+.catLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #5E5D58;
+  margin-bottom: 10px;
+}
+.catPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.catPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #9A9890;
+  background: transparent;
+}
+.catPillActive {
+  border-color: rgba(62,207,160,0.25);
+  background: rgba(62,207,160,0.12);
+  color: #38E9B1;
+}
+.catCheck { font-size: 13px; line-height: 1; }
+.sortRows { display: flex; flex-direction: column; gap: 4px; }
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.sortRow:hover { background: #222220; }
+.sortDot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.sortLabel { flex: 1; color: #9A9890; font-weight: 500; }
+.sortCount { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 13px; color: #E8E6E0; }
+.cleanTitle {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #5E5D58;
+  margin-bottom: 10px;
+}
+.cleanCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+  transition: border-color .15s;
+}
+.cleanCard:hover { border-color: rgba(255,255,255,0.1); }
+.cleanIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cleanIcon svg { width: 16px; height: 16px; }
+.cleanInfo { flex: 1; }
+.cleanNum { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+.cleanSub { font-size: 12px; font-weight: 500; color: #5E5D58; }
+.cleanDesc { font-size: 11px; color: #5E5D58; }
+.healthCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #222220;
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-top: 8px;
+}
+.healthRing {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+.healthRing svg { position: absolute; inset: 0; }
+.healthVal {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+.healthLabel { font-size: 12px; font-weight: 500; color: #E8E6E0; }
+.healthSub { font-size: 11px; color: #5E5D58; }
+
+/* ── Plans ─────────────────────────────────────────── */
+.plans {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 60px 32px 80px;
+}
+.plansHeader {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.plansHeader h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+  color: #E8E6E0;
+}
+.plansHeader p { font-size: 15px; color: #9A9890; }
+.plansGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.planCard {
+  background: #1A1A18;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 28px 24px;
+  transition: border-color .2s;
+}
+.planCard:hover { border-color: rgba(255,255,255,0.1); }
+.planCardFeatured {
+  border-color: rgba(62,207,160,0.25);
+  position: relative;
+}
+.planCardFeatured::before {
+  content: 'Recommended';
+  position: absolute;
+  top: -10px;
+  left: 24px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #38E9B1;
+  background: var(--page-bg, #0E0E0D);
+  padding: 0 8px;
+}
+.planName { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+.planDesc { font-size: 12px; color: #5E5D58; margin-bottom: 20px; }
+.planPrice { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px; color: #E8E6E0; }
+.planPeriod { font-size: 14px; font-weight: 500; color: #5E5D58; letter-spacing: 0; }
+.planFeatures { list-style: none; margin-bottom: 24px; }
+.planFeatures li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 13px;
+  color: #9A9890;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.planFeatures li:last-child { border-bottom: none; }
+.featIcon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.featIcon svg { width: 14px; height: 14px; }
+.featTitle { font-weight: 500; color: #E8E6E0; }
+.featDesc { font-size: 11px; color: #5E5D58; margin-top: 2px; }
+.planBtn {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+  text-decoration: none;
+}
+.planBtnGhost { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: #9A9890; }
+.planBtnGhost:hover { border-color: rgba(255,255,255,0.1); color: #E8E6E0; }
+.planBtnMint { background: #38E9B1; border: 1px solid #38E9B1; color: #111; }
+.planBtnMint:hover { background: #34B88D; border-color: #34B88D; }
+
+/* ── Score card (inside story) ─────────────────────── */
+.scoreCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  grid-column: 1 / -1;
+  margin-top: 8px;
+}
+.scoreRing {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scoreRing svg { position: absolute; inset: 0; }
+.scoreVal {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  position: relative;
+  z-index: 1;
+}
+.scoreInfo { flex: 1; }
+.scoreTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  margin-bottom: 4px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.scoreStar { color: #EF9F27; }
+.scoreDesc { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+.scoreBtn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  background: rgba(62,207,160,0.12);
+  border: 1px solid rgba(62,207,160,0.25);
+  color: #38E9B1;
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.scoreBtn:hover { background: #38E9B1; color: #111; border-color: #38E9B1; }
+
 /* ── Features */
 .features {
   max-width: 1140px;
@@ -469,6 +770,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 48px;
   align-items: center;
+  grid-template-rows: auto auto;
 }
 
 .storyText h2 {

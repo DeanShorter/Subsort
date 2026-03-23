@@ -130,7 +130,6 @@ function wrapInTemplate(content, previewText, email) {
     .wrapper { max-width: 560px; margin: 0 auto; padding: 40px 20px; }
     .header { margin-bottom: 24px; }
     .logo-text { font-size: 22px; font-weight: 700; color: #1A1A18; text-decoration: none; }
-    .logo-mint { color: #2EB88A; }
     .content { background: #FFFFFF; border-radius: 12px; padding: 32px; border: 1px solid rgba(0,0,0,0.07); }
     .content h2 { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
     .content p { font-size: 15px; line-height: 1.7; color: #4A4A45; margin: 0 0 14px; }
@@ -145,7 +144,7 @@ function wrapInTemplate(content, previewText, email) {
   <span style="display:none;max-height:0;overflow:hidden;">${previewText}</span>
   <div class="wrapper">
     <div class="header">
-      <a href="https://getsubscrub.com" class="logo-text">sub<span class="logo-mint">scrub</span></a>
+      <a href="https://getsubscrub.com" style="font-size:22px;font-weight:700;color:#1A1A18;text-decoration:none;">sub<span style="color:#2EB88A;">scrub</span></a>
     </div>
     <div class="content">
       ${content}
