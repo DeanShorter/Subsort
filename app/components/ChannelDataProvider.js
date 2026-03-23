@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ChannelDataContext } from './ChannelDataContext';
+import { trackEvent } from '../../lib/track';
 
 const TILE_COLOURS = [
   '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
@@ -44,6 +45,7 @@ export function ChannelDataProvider({ children, user }) {
     // Persist to DB
     try {
       await supabase.from('channels').update({ favourited: newVal }).eq('id', channelId);
+      trackEvent(newVal ? 'favourite_add' : 'favourite_remove');
     } catch (e) {
       console.error('[ChannelData] Toggle favourite failed:', e);
       ch.favourited = !newVal;

@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
+import { supabase } from '../../lib/supabase';
 import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
 import RefreshButton from '../components/RefreshButton';
@@ -93,29 +94,73 @@ export default function FeedsPage() {
     return () => { delete window.__subsortCat; delete window.__subsortSub; };
   }, [handleCategoryClick]);
 
-  // ── Fetch videos once, cache in context ──────────────────
+  // ── Load videos: try DB cache first, then YouTube API ────
   useEffect(() => {
-    if (!accessToken || !channels.length || feedVideosLoaded) return;
+    if (!channels.length || feedVideosLoaded) return;
 
     let cancelled = false;
     setLoadingVideos(true);
 
-    fetchRecentVideos(channels, accessToken).then(vids => {
-      if (!cancelled) {
-        setFeedVideos(vids);
-        setLoadingVideos(false);
-      }
-    }).catch((err) => {
-      if (!cancelled) {
-        if (err?.reason === 'quotaExceeded') {
-          setQuotaExceeded(true);
-        } else if (err?.status === 403) {
-          setTokenExpired(true);
-        }
-        setLoadingVideos(false);
-      }
-    });
+    // Try loading from cached_videos table (populated by RSS refresh)
+    async function loadVideos() {
+      try {
+        const channelIds = channels.map(c => c.channelId).filter(Boolean);
+        if (!channelIds.length) { setLoadingVideos(false); return; }
 
+        // Fetch cached videos from Supabase (last 30 days)
+        const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const { data: cached } = await supabase
+          .from('cached_videos')
+          .select('*')
+          .in('channel_id', channelIds)
+          .gte('published_at', since)
+          .order('published_at', { ascending: false })
+          .limit(2000);
+
+        if (!cancelled && cached && cached.length > 0) {
+          const channelMap = {};
+          channels.forEach(ch => { channelMap[ch.channelId] = ch; });
+
+          const vids = cached.map(row => ({
+            id: row.video_id,
+            title: row.title || '',
+            channel: channelMap[row.channel_id]?.name || '',
+            channelId: row.channel_id,
+            thumbnail: row.thumbnail || `https://i.ytimg.com/vi/${row.video_id}/mqdefault.jpg`,
+            publishedAt: row.published_at,
+            description: '',
+            type: row.video_type || 'video',
+          }));
+
+          setFeedVideos(vids);
+          setLoadingVideos(false);
+          return;
+        }
+      } catch (e) {
+        console.error('[Feeds] Cache load error:', e);
+      }
+
+      // Fallback to YouTube API if no cached videos
+      if (!cancelled && accessToken) {
+        try {
+          const vids = await fetchRecentVideos(channels, accessToken);
+          if (!cancelled) {
+            setFeedVideos(vids);
+            setLoadingVideos(false);
+          }
+        } catch (err) {
+          if (!cancelled) {
+            if (err?.reason === 'quotaExceeded') setQuotaExceeded(true);
+            else if (err?.status === 403) setTokenExpired(true);
+            setLoadingVideos(false);
+          }
+        }
+      } else if (!cancelled) {
+        setLoadingVideos(false);
+      }
+    }
+
+    loadVideos();
     return () => { cancelled = true; };
   }, [accessToken, channels, feedVideosLoaded, setFeedVideos]);
 
