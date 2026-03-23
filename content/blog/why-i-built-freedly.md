@@ -1,5 +1,5 @@
 ---
-title: "Why I Built Freedly"
+title: "Why I Built Subscrub"
 date: "2026-03-22"
 excerpt: "I've been a heavy YouTube viewer for years. Over time, my subscription count crept past 400 — and the subscription page became useless. So I started building."
 category: "Behind the scenes"
@@ -34,10 +34,10 @@ Each feature I added made me use YouTube's actual subscription page less. At som
 
 I built this for myself, but the problem isn't unique to me. Anyone who's been on YouTube for a few years has a bloated subscription list and no good way to manage it. I've talked to enough people about it to know the reaction is always the same — "yeah, that's exactly my problem."
 
-Freedly is free to use. You connect your Google account, it pulls your subscriptions, sorts them into category feeds, and that's it. No manual setup, no tagging, no algorithm trying to decide what you should watch. Just your channels, organised the way they should've been from the start.
+Subscrub is free to use. You connect your Google account, it pulls your subscriptions, sorts them into category feeds, and that's it. No manual setup, no tagging, no algorithm trying to decide what you should watch. Just your channels, organised the way they should've been from the start.
 
 I'm still building. There are features I want to add, things I want to improve, and plenty of rough edges to smooth out. But it's at a point where it works and it's genuinely useful, so it felt right to share it.
 
 If you're someone with a messy subscription list who's been wishing YouTube would just sort itself out — that's exactly why I built this.
 
-[Try Freedly for free →](https://usefreedly.com)
+[Try Subscrub for free →](https://usefreedly.com)

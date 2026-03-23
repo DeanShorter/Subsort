@@ -45,7 +45,7 @@ export default function BlogContent({ posts }) {
           <BlogGrid posts={posts} />
         ) : (
           <div className={styles.empty}>
-            <p>Articles coming soon. We're working on guides to help you get the most out of Freedly.</p>
+            <p>Articles coming soon. We're working on guides to help you get the most out of Subscrub.</p>
           </div>
         )}
       </div>

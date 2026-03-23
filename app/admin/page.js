@@ -556,7 +556,7 @@ export default function AdminPage() {
           <div className="hnp-section">
             <Link href="/dashboard" className="home-nav-item" style={{ textDecoration: 'none' }}>
               <svg viewBox="0 0 16 16"><path d="M6 14V8h4v6"/><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/></svg>
-              <span className="home-nav-item-label">Back to Freedly</span>
+              <span className="home-nav-item-label">Back to Subscrub</span>
             </Link>
           </div>
         </div>

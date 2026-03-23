@@ -173,7 +173,7 @@ export default function DiscoverPage() {
       {/* Popular */}
       <div className="disc-section">
         <div className="disc-section-hd">
-          <span className="disc-section-title">Popular with Freedly users</span>
+          <span className="disc-section-title">Popular with Subscrub users</span>
           <span className="disc-section-sub">Your most-watched categories</span>
         </div>
         <div className="disc-popular-grid">

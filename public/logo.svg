@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 317 94" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-2081.980921,-2480.314961)">
-        <g transform="matrix(2.061524,0,0,2.061524,-2209.65112,-2258.52707)">
-            <text x="2080.751px" y="2335.533px" style="font-family:'Lato-Bold', 'Lato', sans-serif;font-weight:700;font-size:50px;fill:rgb(56,233,177);">fr<tspan x="2116.601px " y="2335.533px ">e</tspan>e</text>
-            <g transform="matrix(50,0,0,50,2235.575941,2335.532632)">
-            </g>
-            <text x="2170.001px" y="2335.533px" style="font-family:'Lato-Regular', 'Lato', sans-serif;font-size:50px;fill:white;">dly</text>
-        </g>
-    </g>
+<svg width="100%" height="100%" viewBox="0 0 400 94" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;">
+    <text x="0" y="72" style="font-family:'Lato-Bold','Lato',sans-serif;font-weight:700;font-size:103px;fill:rgb(56,233,177);">sub</text>
+    <text x="178" y="72" style="font-family:'Lato-Regular','Lato',sans-serif;font-size:103px;fill:white;">scrub</text>
 </svg>

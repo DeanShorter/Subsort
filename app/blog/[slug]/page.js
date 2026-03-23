@@ -21,7 +21,7 @@ export async function generateMetadata({ params }) {
       description: post.excerpt || post.title,
       type: 'article',
       publishedTime: post.date,
-      authors: ['Freedly'],
+      authors: ['Subscrub'],
     },
   };
 }
@@ -37,8 +37,8 @@ export default async function BlogPost({ params }) {
     headline: post.title,
     datePublished: post.date,
     dateModified: post.date,
-    author: { '@type': 'Organization', name: 'Freedly' },
-    publisher: { '@type': 'Organization', name: 'Freedly' },
+    author: { '@type': 'Organization', name: 'Subscrub' },
+    publisher: { '@type': 'Organization', name: 'Subscrub' },
     description: post.excerpt || post.title,
   };
 
@@ -73,8 +73,8 @@ export default async function BlogPost({ params }) {
         <footer className={styles.footer}>
           <div className={styles.cta}>
             <h3>Ready to organise your YouTube?</h3>
-            <p>Freedly is free, runs in your browser, and doesn't store your data on any server.</p>
-            <Link href="/dashboard" className={styles.ctaBtn}>Launch Freedly</Link>
+            <p>Subscrub is free, runs in your browser, and doesn't store your data on any server.</p>
+            <Link href="/dashboard" className={styles.ctaBtn}>Launch Subscrub</Link>
           </div>
         </footer>
       </article>

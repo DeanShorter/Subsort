@@ -31,7 +31,7 @@ export default function SettingsPage() {
       {/* Theme */}
       <section style={{ marginBottom: '2rem' }}>
         <h3 className="settings-section-title">Theme</h3>
-        <p style={{ fontSize: '.8125rem', color: 'var(--text-secondary)', marginBottom: '.75rem' }}>Choose how Freedly looks to you.</p>
+        <p style={{ fontSize: '.8125rem', color: 'var(--text-secondary)', marginBottom: '.75rem' }}>Choose how Subscrub looks to you.</p>
         <div style={{ display: 'flex', gap: '.75rem' }}>
           <button
             onClick={() => setTheme('dark')}

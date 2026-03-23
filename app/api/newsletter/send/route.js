@@ -84,7 +84,7 @@ export async function POST(request) {
 
       await resend.batch.send(
         batch.map(email => ({
-          from: 'Freedly <hello@usefreedly.com>',
+          from: 'Subscrub <hello@usefreedly.com>',
           replyTo: 'deanage95@gmail.com',
           to: email,
           subject,
@@ -123,7 +123,7 @@ function wrapInTemplate(content, previewText, email) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Freedly</title>
+  <title>Subscrub</title>
   <!--[if !mso]><!-->
   <style>
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F8F7F4; color: #1A1A18; }
@@ -145,14 +145,14 @@ function wrapInTemplate(content, previewText, email) {
   <span style="display:none;max-height:0;overflow:hidden;">${previewText}</span>
   <div class="wrapper">
     <div class="header">
-      <a href="https://usefreedly.com" class="logo-text"><span class="logo-mint">free</span>dly</a>
+      <a href="https://usefreedly.com" class="logo-text"><span class="logo-mint">sub</span>scrub</a>
     </div>
     <div class="content">
       ${content}
     </div>
     <div class="footer">
-      <p>You're receiving this because you signed up for Freedly.</p>
-      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://usefreedly.com">Visit Freedly</a></p>
+      <p>You're receiving this because you signed up for Subscrub.</p>
+      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://usefreedly.com">Visit Subscrub</a></p>
     </div>
   </div>
 </body>

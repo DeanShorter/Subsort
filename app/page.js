@@ -13,9 +13,9 @@ export default function HomePage() {
       {/* NAV */}
       <nav className={styles.nav}>
         <a href="/" className={`home-nav-brand ${styles.navBrand}`}>
-          <img src="/icon.svg" alt="Freedly" className="home-nav-brand-icon" />
+          <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-icon" />
           <span className="home-nav-brand-wordmark">
-            <span>free</span><span className="hnp-wordmark">dly</span>
+            <span>sub</span><span className="hnp-wordmark">scrub</span>
           </span>
         </a>
         <ul className={styles.navLinks}>
@@ -32,7 +32,7 @@ export default function HomePage() {
         <div className={styles.heroText}>
           <h1>Your subscriptions,<br/><span className={styles.heroAccent}>freed</span> from chaos.</h1>
           <p className={styles.heroSub}>
-            Freedly sorts your subscriptions into clean, custom feeds automatically — so you only see what matters.
+            Subscrub sorts your subscriptions into clean, custom feeds automatically — so you only see what matters.
           </p>
           <div className={styles.heroButtons}>
             <a href="/signin" className={styles.btnPrimary}>
@@ -59,7 +59,7 @@ export default function HomePage() {
         <div className={styles.heroVisual}>
           <div className={styles.productFrame}>
             <div className={styles.productTopbar}>
-              <span className={styles.productLogo}><span>free</span>dly</span>
+              <span className={styles.productLogo}><span>sub</span>scrub</span>
               <div className={styles.productTabs}>
                 <span className={styles.tabActive}>Subscriptions</span>
                 <span>Feeds</span>
@@ -138,7 +138,7 @@ export default function HomePage() {
       <section className={styles.features} id="features">
         <div className={styles.featuresHeader}>
           <h2>Everything in its place.</h2>
-          <p>Connect your Google account and Freedly does the rest. Your subscriptions, sorted into feeds that actually make sense.</p>
+          <p>Connect your Google account and Subscrub does the rest. Your subscriptions, sorted into feeds that actually make sense.</p>
         </div>
         <div className={styles.featuresGrid}>
           <div className={styles.featureCard}>
@@ -169,7 +169,7 @@ export default function HomePage() {
               </svg>
             </div>
             <h3>Spot the dead weight</h3>
-            <p>Freedly flags channels you haven't watched in months and inactive uploaders cluttering your feed. Clean house without losing anything good.</p>
+            <p>Subscrub flags channels you haven't watched in months and inactive uploaders cluttering your feed. Clean house without losing anything good.</p>
             <div className={styles.featureStat}><span className={styles.statNum}>146</span> inactive channels found</div>
           </div>
         </div>
@@ -181,7 +181,7 @@ export default function HomePage() {
           <div className={styles.storyText}>
             <h2>I had 400+ subscriptions and no idea what half of them were.</h2>
             <p>YouTube's subscription page is a wall of noise. Videos from channels I forgot I subscribed to, buried between ones I actually care about. I wanted something that just... organised it for me.</p>
-            <p>So I built Freedly. Connect your account, and it sorts everything into clean feeds automatically. No manual setup, no tagging — it just works.</p>
+            <p>So I built Subscrub. Connect your account, and it sorts everything into clean feeds automatically. No manual setup, no tagging — it just works.</p>
             <div className={styles.signature}>— The person building this</div>
           </div>
           <div className={styles.storyStats}>
@@ -219,7 +219,7 @@ export default function HomePage() {
 
       {/* FOOTER */}
       <footer className={styles.footer}>
-        <span>© 2026 Freedly</span>
+        <span>© 2026 Subscrub</span>
         <div className={styles.footerLinks}>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>

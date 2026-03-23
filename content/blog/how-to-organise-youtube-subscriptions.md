@@ -18,7 +18,7 @@ This means your feed is dominated by the channels that post the most frequently,
 
 ## Step 1: Audit Your Subscriptions
 
-The first step is understanding what you're actually subscribed to. Tools like Freedly can pull in your full subscription list via the YouTube API and give you a bird's-eye view.
+The first step is understanding what you're actually subscribed to. Tools like Subscrub can pull in your full subscription list via the YouTube API and give you a bird's-eye view.
 
 Look for:
 - **Dead channels**: Channels that haven't posted in 6+ months
