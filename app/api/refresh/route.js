@@ -118,7 +118,10 @@ export async function POST(request) {
       }
     }
 
+    console.log(`[RSS] Dedup: ${existingVideoIds.size} already cached, ${newVideos.length} new to insert`);
+
     if (newVideos.length > 0) {
+      let insertErrors = 0;
       for (let i = 0; i < newVideos.length; i += 500) {
         const batch = newVideos.slice(i, i + 500);
         const { error: insertError } = await supabase
@@ -127,8 +130,10 @@ export async function POST(request) {
 
         if (insertError) {
           console.error('[RSS] Insert error:', insertError);
+          insertErrors++;
         }
       }
+      if (insertErrors) console.error(`[RSS] ${insertErrors} batch insert(s) failed`);
     }
 
     // Log the refresh event
@@ -140,6 +145,8 @@ export async function POST(request) {
     return NextResponse.json({
       message: 'Refresh complete',
       channelsChecked: channelIds.length,
+      totalFromRSS: totalRssVideos,
+      alreadyCached: existingVideoIds.size,
       newVideos: newVideos.length,
     });
 
