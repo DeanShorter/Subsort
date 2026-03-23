@@ -47,43 +47,20 @@ export async function POST(request) {
 
     const channelIds = channels.map(c => c.channel_id).filter(Boolean);
 
-    console.log(`[RSS] User ${user.id}: ${channels.length} channels in DB, ${channelIds.length} with channel_id`);
-
     if (channelIds.length === 0) {
-      return NextResponse.json({
-        message: 'No channel IDs found — channels may not have channel_id populated',
-        channelsInDb: channels.length,
-        channelIds: channels.slice(0, 5).map(c => ({ id: c.channel_id })),
-        newVideos: 0,
-      });
+      return NextResponse.json({ message: 'No channel IDs found', newVideos: 0 });
     }
 
     // Fetch RSS feeds in batches
     const rssResults = await fetchMultipleChannelRSS(channelIds, 20, 500);
 
-    // Count total videos found across all feeds
-    let totalRssVideos = 0;
-    let feedsWithVideos = 0;
-    for (const [, videos] of rssResults) {
-      totalRssVideos += videos.length;
-      if (videos.length > 0) feedsWithVideos++;
-    }
-
-    console.log(`[RSS] Fetched ${rssResults.size} feeds, ${feedsWithVideos} had videos, ${totalRssVideos} total videos`);
-
-    // Get existing video IDs to avoid duplicates
+    // Get all video IDs from RSS results
     const allVideoIds = Array.from(rssResults.values())
       .flat()
       .map(v => v.videoId);
 
     if (allVideoIds.length === 0) {
-      return NextResponse.json({
-        message: 'RSS feeds returned no videos',
-        channelsChecked: channelIds.length,
-        feedsWithVideos,
-        sampleChannelIds: channelIds.slice(0, 3),
-        newVideos: 0,
-      });
+      return NextResponse.json({ message: 'No videos found in RSS feeds', channelsChecked: channelIds.length, newVideos: 0 });
     }
 
     // Batch the dedup check — Supabase .in() has limits on large arrays
@@ -118,22 +95,13 @@ export async function POST(request) {
       }
     }
 
-    console.log(`[RSS] Dedup: ${existingVideoIds.size} already cached, ${newVideos.length} new to insert`);
-
     if (newVideos.length > 0) {
-      let insertErrors = 0;
       for (let i = 0; i < newVideos.length; i += 500) {
         const batch = newVideos.slice(i, i + 500);
-        const { error: insertError } = await supabase
+        await supabase
           .from('cached_videos')
           .upsert(batch, { onConflict: 'video_id' });
-
-        if (insertError) {
-          console.error('[RSS] Insert error:', insertError);
-          insertErrors++;
-        }
       }
-      if (insertErrors) console.error(`[RSS] ${insertErrors} batch insert(s) failed`);
     }
 
     // Log the refresh event
@@ -145,8 +113,6 @@ export async function POST(request) {
     return NextResponse.json({
       message: 'Refresh complete',
       channelsChecked: channelIds.length,
-      totalFromRSS: totalRssVideos,
-      alreadyCached: existingVideoIds.size,
       newVideos: newVideos.length,
     });
 

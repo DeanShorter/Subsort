@@ -29,7 +29,6 @@ export function useRSSRefresh() {
       });
 
       const data = await response.json();
-      console.log('[RSS] Response:', data);
 
       if (response.ok) {
         setResult({
@@ -37,7 +36,7 @@ export function useRSSRefresh() {
           newVideos: data.newVideos || 0,
         });
       } else {
-        console.error('[RSS] Refresh failed:', data);
+        console.error('[RSS] Refresh failed:', data.error);
       }
     } catch (error) {
       console.error('[RSS] Refresh error:', error);
