@@ -81,7 +81,7 @@ export async function POST(request) {
 </html>`;
 
     await resend.emails.send({
-      from: 'Subscrub <hello@usefreedly.com>',
+      from: 'Subscrub <hello@getsubscrub.com>',
       replyTo: 'deanage95@gmail.com',
       to,
       subject: `[TEST] ${subject || 'No subject'}`,

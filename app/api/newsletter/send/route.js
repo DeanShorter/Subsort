@@ -84,7 +84,7 @@ export async function POST(request) {
 
       await resend.batch.send(
         batch.map(email => ({
-          from: 'Subscrub <hello@usefreedly.com>',
+          from: 'Subscrub <hello@getsubscrub.com>',
           replyTo: 'deanage95@gmail.com',
           to: email,
           subject,
