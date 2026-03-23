@@ -52,7 +52,7 @@ export default function FeedsPage() {
 
   // ── Push video counts to sidebar ───────────────────────
   useEffect(() => {
-    if (!allVideos.length || !channels.length) return;
+    if (!channels.length) return;
     const channelMap = {};
     channels.forEach(ch => { channelMap[ch.channelId] = ch; });
 
