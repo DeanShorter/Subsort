@@ -7,7 +7,7 @@ export default function PrivacyPage() {
     <LegalPage>
       <h1>Privacy policy</h1>
       <p><strong>Last updated:</strong> March 2026</p>
-      <p>Subscrub (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) operates the website usefreedly.com. This policy explains what data we collect, why we collect it, how we use it, and your rights regarding that data.</p>
+      <p>Subscrub (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) operates the website getsubscrub.com. This policy explains what data we collect, why we collect it, how we use it, and your rights regarding that data.</p>
 
       <h2>What we collect</h2>
       <p><strong>Account information.</strong> When you sign up, we receive your name, email address, and profile picture from your Google account via Google OAuth. We do not receive or store your Google password.</p>
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
         <li><strong>Object</strong> to processing — you can object to us processing your data for certain purposes</li>
         <li><strong>Unsubscribe</strong> from our newsletter at any time using the link in any email we send</li>
       </ul>
-      <p>To exercise any of these rights, contact us at hello@usefreedly.com.</p>
+      <p>To exercise any of these rights, contact us at hello@getsubscrub.com.</p>
 
       <h2>Cookies</h2>
       <p>Subscrub uses essential cookies required for the service to function (authentication session cookies). We do not use tracking cookies or third-party advertising cookies.</p>
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
       <p>We may update this policy from time to time. If we make significant changes, we will notify you by email or through a notice on the website. Continued use of Subscrub after changes constitutes acceptance of the updated policy.</p>
 
       <h2>Contact</h2>
-      <p>If you have questions about this privacy policy or your data, contact us at hello@usefreedly.com.</p>
+      <p>If you have questions about this privacy policy or your data, contact us at hello@getsubscrub.com.</p>
     </LegalPage>
   );
 }

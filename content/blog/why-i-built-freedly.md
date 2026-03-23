@@ -40,4 +40,4 @@ I'm still building. There are features I want to add, things I want to improve, 
 
 If you're someone with a messy subscription list who's been wishing YouTube would just sort itself out — that's exactly why I built this.
 
-[Try Subscrub for free →](https://usefreedly.com)
+[Try Subscrub for free →](https://getsubscrub.com)

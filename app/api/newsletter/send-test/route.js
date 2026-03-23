@@ -40,7 +40,7 @@ export async function POST(request) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const unsubscribeUrl = `https://usefreedly.com/unsubscribe?email=${encodeURIComponent(to)}`;
+    const unsubscribeUrl = `https://getsubscrub.com/unsubscribe?email=${encodeURIComponent(to)}`;
     const html = `
 <!DOCTYPE html>
 <html>
@@ -67,14 +67,14 @@ export async function POST(request) {
   <span style="display:none;max-height:0;overflow:hidden;">${previewText || ''}</span>
   <div class="wrapper">
     <div class="header">
-      <a href="https://usefreedly.com" class="logo-text">sub<span class="logo-mint">scrub</span></a>
+      <a href="https://getsubscrub.com" class="logo-text">sub<span class="logo-mint">scrub</span></a>
     </div>
     <div class="content">
       ${htmlContent || ''}
     </div>
     <div class="footer">
       <p>You're receiving this because you signed up for Subscrub.</p>
-      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://usefreedly.com">Visit Subscrub</a></p>
+      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://getsubscrub.com">Visit Subscrub</a></p>
     </div>
   </div>
 </body>
@@ -87,7 +87,7 @@ export async function POST(request) {
       subject: `[TEST] ${subject || 'No subject'}`,
       html,
       headers: {
-        'List-Unsubscribe': `<https://usefreedly.com/unsubscribe?email=${encodeURIComponent(to)}>`,
+        'List-Unsubscribe': `<https://getsubscrub.com/unsubscribe?email=${encodeURIComponent(to)}>`,
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
       },
     });

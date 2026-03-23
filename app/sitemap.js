@@ -1,6 +1,6 @@
 import { getAllSlugs } from '@/lib/blog';
 
-const BASE_URL = 'https://usefreedly.com';
+const BASE_URL = 'https://getsubscrub.com';
 
 export default function sitemap() {
   const blogSlugs = getAllSlugs();

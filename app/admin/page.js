@@ -525,7 +525,7 @@ export default function AdminPage() {
         <div className="hnp-header">
           <Link href="/dashboard" className="home-nav-brand" style={{ textDecoration: 'none' }}>
             <span className="home-nav-brand-wordmark">
-              <span>free</span><span className="hnp-wordmark">dly</span>
+              <span className="hnp-wordmark">sub</span><span>scrub</span>
             </span>
           </Link>
           <span className="tier-badge admin">Admin</span>

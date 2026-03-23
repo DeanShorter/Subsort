@@ -90,7 +90,7 @@ export async function POST(request) {
           subject,
           html: wrapInTemplate(htmlContent, previewText, email),
           headers: {
-            'List-Unsubscribe': `<https://usefreedly.com/unsubscribe?email=${encodeURIComponent(email)}>`,
+            'List-Unsubscribe': `<https://getsubscrub.com/unsubscribe?email=${encodeURIComponent(email)}>`,
             'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
           },
         }))
@@ -115,7 +115,7 @@ export async function POST(request) {
 }
 
 function wrapInTemplate(content, previewText, email) {
-  const unsubscribeUrl = `https://usefreedly.com/unsubscribe?email=${encodeURIComponent(email)}`;
+  const unsubscribeUrl = `https://getsubscrub.com/unsubscribe?email=${encodeURIComponent(email)}`;
 
   return `
 <!DOCTYPE html>
@@ -145,14 +145,14 @@ function wrapInTemplate(content, previewText, email) {
   <span style="display:none;max-height:0;overflow:hidden;">${previewText}</span>
   <div class="wrapper">
     <div class="header">
-      <a href="https://usefreedly.com" class="logo-text">sub<span class="logo-mint">scrub</span></a>
+      <a href="https://getsubscrub.com" class="logo-text">sub<span class="logo-mint">scrub</span></a>
     </div>
     <div class="content">
       ${content}
     </div>
     <div class="footer">
       <p>You're receiving this because you signed up for Subscrub.</p>
-      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://usefreedly.com">Visit Subscrub</a></p>
+      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://getsubscrub.com">Visit Subscrub</a></p>
     </div>
   </div>
 </body>

@@ -7,7 +7,7 @@ export default function TermsPage() {
     <LegalPage>
       <h1>Terms of service</h1>
       <p><strong>Last updated:</strong> March 2026</p>
-      <p>These terms govern your use of Subscrub (&ldquo;the service&rdquo;), operated through the website usefreedly.com. By creating an account or using the service, you agree to these terms.</p>
+      <p>These terms govern your use of Subscrub (&ldquo;the service&rdquo;), operated through the website getsubscrub.com. By creating an account or using the service, you agree to these terms.</p>
 
       <h2>The service</h2>
       <p>Subscrub is a tool that helps you organise and browse your YouTube subscriptions. We access your YouTube data through the YouTube Data API with your explicit permission. Subscrub is not affiliated with, endorsed by, or connected to YouTube or Google.</p>
@@ -79,7 +79,7 @@ export default function TermsPage() {
       <p>We may update these terms from time to time. If we make material changes, we will notify you by email or through a notice on the website at least 14 days before the changes take effect. Continued use of the service after changes take effect constitutes acceptance of the updated terms.</p>
 
       <h2>Contact</h2>
-      <p>If you have questions about these terms, contact us at hello@usefreedly.com.</p>
+      <p>If you have questions about these terms, contact us at hello@getsubscrub.com.</p>
     </LegalPage>
   );
 }

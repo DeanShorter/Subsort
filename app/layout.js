@@ -16,7 +16,7 @@ export const metadata = {
   openGraph: {
     title: 'Subscrub — Organise & Discover the Best YouTube Channels',
     description: 'Automatically categorise your YouTube subscriptions, discover quality creators, and keep your feed clean.',
-    url: 'https://usefreedly.com',
+    url: 'https://getsubscrub.com',
     siteName: 'Subscrub',
     type: 'website',
   },
