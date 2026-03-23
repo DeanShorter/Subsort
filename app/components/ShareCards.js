@@ -15,6 +15,14 @@ function ScoreRing({ size, pct, colour }) {
   );
 }
 
+function getRoast(pct, total, active, inactive) {
+  if (pct >= 90) return { verdict: 'Suspiciously clean.', roast: `I'm subscribed to ${total} channels. All active, all watched. This is unnatural.` };
+  if (pct >= 75) return { verdict: 'Looking sharp.', roast: `I'm subscribed to ${total} channels. ${active} are pulling their weight. The rest are on thin ice.` };
+  if (pct >= 60) return { verdict: 'Eh, needs work.', roast: `I'm subscribed to ${total} channels. I actually watch ${active} of them. The other ${inactive} are just paying emotional rent.` };
+  if (pct >= 40) return { verdict: 'Getting messy.', roast: `${total} channels. I watch ${active} of them. The rest are just haunting my feed.` };
+  return { verdict: 'Complete dumpster fire.', roast: `${total} channels and I barely watch any of them. This is a cry for help.` };
+}
+
 function getScoreColour(pct) {
   if (pct >= 80) return 'var(--accent)';
   if (pct >= 60) return '#EF9F27';
@@ -48,6 +56,78 @@ function BadgeIcon({ icon, colour }) {
   }
 }
 
+function CompareCard({ channels, deadChannels, score, colour }) {
+  const baseline = useMemo(() => {
+    const KEY = 'subscrub_first_score';
+    try {
+      const stored = JSON.parse(localStorage.getItem(KEY));
+      if (stored) return stored;
+    } catch (e) {}
+    // First visit — store current as baseline
+    const data = { subs: channels.length, score };
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+    return null; // No comparison on first visit
+  }, [channels.length, score]);
+
+  if (!baseline || baseline.subs === channels.length) return null;
+
+  const beforePct = 100;
+  const afterPct = Math.round((channels.length / baseline.subs) * 100);
+  const diff = Math.abs(channels.length - baseline.subs);
+  const beforeColour = baseline.score < 60 ? '#E85D50' : baseline.score < 80 ? '#EF9F27' : 'var(--accent)';
+
+  return (
+    <div className="compare-card">
+      <div className="compare-header">
+        <span className="compare-title">Since you started</span>
+        <span className="compare-logo"><span>sub</span>scrub</span>
+      </div>
+      <div className="compare-bars">
+        <div className="compare-row">
+          <span className="compare-label" style={{ color: 'var(--text-muted)' }}>Before</span>
+          <div className="compare-bar-wrap">
+            <div className="compare-bar" style={{ width: `${beforePct}%`, background: `linear-gradient(90deg,${beforeColour},#EF9F27)` }}>
+              <span className="compare-bar-num">{baseline.subs}</span>
+              <span className="compare-bar-label" style={{ color: 'rgba(0,0,0,0.4)' }}>subscriptions</span>
+            </div>
+          </div>
+        </div>
+        <div className="compare-row">
+          <span className="compare-label" style={{ color: 'var(--accent)' }}>Now</span>
+          <div className="compare-bar-wrap">
+            <div className="compare-bar" style={{ width: `${Math.min(afterPct, 100)}%`, background: 'var(--accent)' }}>
+              <span className="compare-bar-num">{channels.length}</span>
+              <span className="compare-bar-label" style={{ color: 'rgba(0,0,0,0.4)' }}>subscriptions</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="compare-bars" style={{ marginBottom: 12 }}>
+        <div className="compare-row">
+          <span className="compare-label" style={{ color: 'var(--text-muted)' }}>Score</span>
+          <div className="compare-bar-wrap" style={{ height: 16 }}>
+            <div className="compare-bar" style={{ width: `${baseline.score}%`, background: beforeColour, height: '100%' }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 10, fontWeight: 700, color: '#111' }}>{baseline.score}%</span>
+            </div>
+          </div>
+          <div style={{ fontSize: 14, color: 'var(--text-muted)', minWidth: 20, textAlign: 'center' }}>→</div>
+          <div className="compare-bar-wrap" style={{ height: 16 }}>
+            <div className="compare-bar" style={{ width: `${score}%`, background: colour, height: '100%' }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 10, fontWeight: 700, color: '#111' }}>{score}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="compare-verdict">
+        {channels.length < baseline.subs
+          ? <>Scrubbed <strong>{diff} channels</strong>. Feed health went from <strong style={{ color: beforeColour }}>{baseline.score}%</strong> to <strong style={{ color: colour }}>{score}%</strong>.</>
+          : <>Added <strong>{diff} channels</strong> since you started. Score: <strong style={{ color: colour }}>{score}%</strong>.</>
+        }
+      </div>
+    </div>
+  );
+}
+
 export default function ShareCards({ channels, deadChannels, favCount, uncatCount }) {
   const score = useMemo(() => {
     if (!channels.length) return 0;
@@ -58,6 +138,7 @@ export default function ShareCards({ channels, deadChannels, favCount, uncatCoun
   const colour = getScoreColour(score);
   const verdict = getVerdict(score);
   const badge = getBadge(channels, deadChannels, favCount);
+  const roast = getRoast(score, channels.length, channels.length - deadChannels.length, deadChannels.length);
   const activeCount = channels.length - deadChannels.length;
 
   if (!channels.length) return null;
@@ -106,6 +187,26 @@ export default function ShareCards({ channels, deadChannels, favCount, uncatCoun
           </div>
         </div>
 
+        {/* Square card (Instagram) */}
+        <div className="share-square">
+          <div className="sq-ring">
+            <ScoreRing size={100} pct={score} colour={colour} />
+            <span className="sq-ring-val" style={{ color: colour }}>{score}<span className="sq-ring-pct">%</span></span>
+          </div>
+          <div className="sq-verdict">{roast.verdict}</div>
+          <p className="sq-roast">{roast.roast}</p>
+          <div className="sq-pills">
+            <span className="sq-pill"><span className="num" style={{ color: '#E85D50' }}>{deadChannels.length}</span> inactive</span>
+            <span className="sq-pill"><span className="num" style={{ color: '#EF9F27' }}>{uncatCount}</span> uncategorised</span>
+            <span className="sq-pill"><span className="num" style={{ color: 'var(--accent)' }}>{favCount}</span> favourites</span>
+          </div>
+          <div className="sq-footer">
+            <span className="sq-logo"><span>sub</span>scrub</span>
+            <span className="sq-dot" />
+            <span className="sq-url">getsubscrub.com</span>
+          </div>
+        </div>
+
         {/* Badge card */}
         <div className="badge-share">
           <div className="badge-share-icon" style={{ background: `${badge.colour}18` }}>
@@ -121,6 +222,9 @@ export default function ShareCards({ channels, deadChannels, favCount, uncatCoun
             <div className="url">getsubscrub.com</div>
           </div>
         </div>
+
+        {/* Before/After comparison card */}
+        <CompareCard channels={channels} deadChannels={deadChannels} score={score} colour={colour} />
       </div>
     </div>
   );
