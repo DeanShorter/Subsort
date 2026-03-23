@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
-import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
+import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
 import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
@@ -94,34 +94,40 @@ export default function FeedsPage() {
     return () => { delete window.__subsortCat; delete window.__subsortSub; };
   }, [handleCategoryClick]);
 
-  // ── Load videos: try DB cache first, then YouTube API ────
+  // ── Load videos from DB cache only (populated by RSS refresh) ────
   useEffect(() => {
     if (!channels.length || feedVideosLoaded) return;
 
     let cancelled = false;
     setLoadingVideos(true);
 
-    // Try loading from cached_videos table (populated by RSS refresh)
-    async function loadVideos() {
+    async function loadFromCache() {
       try {
         const channelIds = channels.map(c => c.channelId).filter(Boolean);
         if (!channelIds.length) { setLoadingVideos(false); return; }
 
-        // Fetch cached videos from Supabase (last 30 days)
+        // Batch the query — Supabase .in() has limits on large arrays
+        const BATCH = 300;
+        const allCached = [];
         const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-        const { data: cached } = await supabase
-          .from('cached_videos')
-          .select('*')
-          .in('channel_id', channelIds)
-          .gte('published_at', since)
-          .order('published_at', { ascending: false })
-          .limit(2000);
 
-        if (!cancelled && cached && cached.length > 0) {
+        for (let i = 0; i < channelIds.length; i += BATCH) {
+          const batch = channelIds.slice(i, i + BATCH);
+          const { data } = await supabase
+            .from('cached_videos')
+            .select('*')
+            .in('channel_id', batch)
+            .gte('published_at', since)
+            .order('published_at', { ascending: false })
+            .limit(2000);
+          if (data) allCached.push(...data);
+        }
+
+        if (!cancelled) {
           const channelMap = {};
           channels.forEach(ch => { channelMap[ch.channelId] = ch; });
 
-          const vids = cached.map(row => ({
+          const vids = allCached.map(row => ({
             id: row.video_id,
             title: row.title || '',
             channel: channelMap[row.channel_id]?.name || '',
@@ -134,35 +140,16 @@ export default function FeedsPage() {
 
           setFeedVideos(vids);
           setLoadingVideos(false);
-          return;
         }
       } catch (e) {
         console.error('[Feeds] Cache load error:', e);
-      }
-
-      // Fallback to YouTube API if no cached videos
-      if (!cancelled && accessToken) {
-        try {
-          const vids = await fetchRecentVideos(channels, accessToken);
-          if (!cancelled) {
-            setFeedVideos(vids);
-            setLoadingVideos(false);
-          }
-        } catch (err) {
-          if (!cancelled) {
-            if (err?.reason === 'quotaExceeded') setQuotaExceeded(true);
-            else if (err?.status === 403) setTokenExpired(true);
-            setLoadingVideos(false);
-          }
-        }
-      } else if (!cancelled) {
-        setLoadingVideos(false);
+        if (!cancelled) setLoadingVideos(false);
       }
     }
 
-    loadVideos();
+    loadFromCache();
     return () => { cancelled = true; };
-  }, [accessToken, channels, feedVideosLoaded, setFeedVideos]);
+  }, [channels, feedVideosLoaded, setFeedVideos]);
 
   // ── Filter by category + sort (instant, no API call) ───
   const filtered = useMemo(() => {

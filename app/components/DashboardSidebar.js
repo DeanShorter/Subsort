@@ -1,9 +1,10 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from './AuthContext';
 import { useChannelData } from './ChannelDataContext';
+import { supabase } from '../../lib/supabase';
 import { syncYouTubeSubscriptions } from '../../lib/sync';
 import { showToast } from './Toast';
 import { trackEvent } from '../../lib/track';
@@ -65,6 +66,50 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
   const [syncing, setSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
+  const autoSyncDone = useRef(false);
+
+  // Auto-sync on login: sync subscriptions (API), then RSS refresh (videos)
+  useEffect(() => {
+    if (!accessToken || !user || autoSyncDone.current || syncing) return;
+    autoSyncDone.current = true;
+
+    // Only auto-sync if last sync was more than 30 mins ago
+    const lastSync = parseInt(localStorage.getItem('subsort_sync_ts') || '0');
+    if (lastSync && Date.now() - lastSync < 30 * 60 * 1000) return;
+
+    (async () => {
+      setSyncing(true);
+      setSyncProgress({ label: 'Syncing subscriptions…', detail: '', pct: 0 });
+
+      try {
+        const result = await syncYouTubeSubscriptions(
+          accessToken, user.id, channels,
+          (label, detail, pct) => setSyncProgress({ label, detail, pct })
+        );
+        await reload();
+        localStorage.setItem('subsort_sync_ts', String(Date.now()));
+
+        // Auto-trigger RSS refresh for videos
+        setSyncProgress({ label: 'Refreshing video feeds…', detail: '', pct: 80 });
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          const rssRes = await fetch('/api/refresh', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${session.access_token}` },
+          });
+          const rssData = await rssRes.json();
+          showToast(`Synced ${result.newCount} new channels. ${rssData.newVideos || 0} new videos.`);
+        }
+
+        setSyncProgress({ label: 'Done!', detail: '', pct: 100 });
+        setTimeout(() => { setSyncProgress(null); setSyncing(false); }, 1500);
+      } catch (e) {
+        console.error('[AutoSync] Failed:', e);
+        setSyncProgress(null);
+        setSyncing(false);
+      }
+    })();
+  }, [accessToken, user]);
 
   const handleSync = useCallback(async () => {
     if (!accessToken || !user || syncing) return;
@@ -89,8 +134,8 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
         accessToken, user.id, channels,
         (label, detail, pct) => setSyncProgress({ label, detail, pct })
       );
-      // Reload data from DB to pick up new channels
       await reload();
+      localStorage.setItem('subsort_sync_ts', String(Date.now()));
       setSyncProgress({ label: 'Done!', detail: '', pct: 100 });
       showToast(`Synced! ${result.newCount} new channels, ${result.channels.length} total`);
       setTimeout(() => { setSyncProgress(null); setSyncing(false); }, 1500);
