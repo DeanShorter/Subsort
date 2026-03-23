@@ -80,7 +80,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
     (async () => {
       setSyncing(true);
 
-      // Step 1: Try subscription sync via YouTube API (needs valid token)
+      // Step 1: Sync subscriptions via YouTube API (requires valid token)
       let subResult = null;
       if (accessToken) {
         console.log('[AutoSync] Step 1: Syncing subscriptions via YouTube API…');
@@ -93,10 +93,19 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
           await reload();
           console.log(`[AutoSync] Subscriptions synced: ${subResult.newCount} new, ${subResult.channels.length} total`);
         } catch (e) {
-          console.warn('[AutoSync] Subscription sync skipped:', e.message);
+          if (e.message === 'SESSION_EXPIRED') {
+            console.warn('[AutoSync] YouTube token expired — prompting re-auth');
+            setSyncProgress(null);
+            setSyncing(false);
+            showToast('YouTube session expired — please sign in again to sync.', 5000);
+            signIn();
+            return;
+          }
+          console.warn('[AutoSync] Subscription sync failed:', e.message);
         }
       } else {
-        console.log('[AutoSync] Step 1: Skipped — no YouTube token available');
+        // No token at all — user needs to sign in with Google
+        console.log('[AutoSync] No YouTube token — skipping to RSS for existing channels');
       }
 
       // Step 2: Always trigger RSS refresh for videos
