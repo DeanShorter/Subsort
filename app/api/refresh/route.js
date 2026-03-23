@@ -86,14 +86,17 @@ export async function POST(request) {
       });
     }
 
-    const { data: existingVideos } = await supabase
-      .from('cached_videos')
-      .select('video_id')
-      .in('video_id', allVideoIds);
-
-    const existingVideoIds = new Set(
-      (existingVideos || []).map(v => v.video_id)
-    );
+    // Batch the dedup check — Supabase .in() has limits on large arrays
+    const existingVideoIds = new Set();
+    const BATCH = 300;
+    for (let i = 0; i < allVideoIds.length; i += BATCH) {
+      const batch = allVideoIds.slice(i, i + BATCH);
+      const { data: existing } = await supabase
+        .from('cached_videos')
+        .select('video_id')
+        .in('video_id', batch);
+      if (existing) existing.forEach(v => existingVideoIds.add(v.video_id));
+    }
 
     // Insert only new videos
     const newVideos = [];
