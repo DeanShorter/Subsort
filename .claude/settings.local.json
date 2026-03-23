@@ -24,7 +24,8 @@
       "Bash(node -e \"try { require\\(''./app/analytics/page.js''\\) } catch\\(e\\) { console.error\\(e.message\\) }\")",
       "Bash(grep -v \"^$\")",
       "Bash(NEXT_PRIVATE_WORKER=1 npx next build)",
-      "Bash(node -e \"console.log\\(require\\(''next/package.json''\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\(''next/package.json''\\).version\\)\")",
+      "Bash(git config:*)"
     ]
   }
 }
