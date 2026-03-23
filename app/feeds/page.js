@@ -5,6 +5,7 @@ import { useChannelData } from '../components/ChannelDataContext';
 import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
 import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
+import RefreshButton from '../components/RefreshButton';
 
 const SORT_OPTIONS = [
   { value: 'date', label: 'Latest' },
@@ -241,6 +242,9 @@ export default function FeedsPage() {
               onChange={e => setSearch(e.target.value)}
             />
           </div>
+
+          {/* RSS Refresh */}
+          <RefreshButton />
         </div>
       </div>
 
