@@ -25,7 +25,8 @@
       "Bash(grep -v \"^$\")",
       "Bash(NEXT_PRIVATE_WORKER=1 npx next build)",
       "Bash(node -e \"console.log\\(require\\(''next/package.json''\\).version\\)\")",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

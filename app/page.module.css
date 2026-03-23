@@ -82,13 +82,6 @@
 .bar { height: 3px; border-radius: 2px; }
 .fiCard { border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
 
-:global {
-  @keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
-  @keyframes floatB { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-12px) rotate(4deg)} }
-  @keyframes floatC { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-10px) rotate(-3deg)} }
-  @keyframes driftRight { 0%{transform:translateX(0) translateY(0)} 50%{transform:translateX(10px) translateY(-8px)} 100%{transform:translateX(0) translateY(0)} }
-  @keyframes driftLeft { 0%{transform:translateX(0) translateY(0)} 50%{transform:translateX(-10px) translateY(-10px)} 100%{transform:translateX(0) translateY(0)} }
-}
 
 .hero {
   position: relative;
