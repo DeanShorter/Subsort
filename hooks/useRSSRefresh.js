@@ -29,14 +29,15 @@ export function useRSSRefresh() {
       });
 
       const data = await response.json();
+      console.log('[RSS] Response:', data);
 
       if (response.ok) {
         setResult({
-          channelsChecked: data.channelsChecked,
-          newVideos: data.newVideos,
+          channelsChecked: data.channelsChecked || 0,
+          newVideos: data.newVideos || 0,
         });
       } else {
-        console.error('[RSS] Refresh failed:', data.error);
+        console.error('[RSS] Refresh failed:', data);
       }
     } catch (error) {
       console.error('[RSS] Refresh error:', error);

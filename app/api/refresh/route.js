@@ -47,8 +47,29 @@ export async function POST(request) {
 
     const channelIds = channels.map(c => c.channel_id).filter(Boolean);
 
+    console.log(`[RSS] User ${user.id}: ${channels.length} channels in DB, ${channelIds.length} with channel_id`);
+
+    if (channelIds.length === 0) {
+      return NextResponse.json({
+        message: 'No channel IDs found — channels may not have channel_id populated',
+        channelsInDb: channels.length,
+        channelIds: channels.slice(0, 5).map(c => ({ id: c.channel_id })),
+        newVideos: 0,
+      });
+    }
+
     // Fetch RSS feeds in batches
     const rssResults = await fetchMultipleChannelRSS(channelIds, 20, 500);
+
+    // Count total videos found across all feeds
+    let totalRssVideos = 0;
+    let feedsWithVideos = 0;
+    for (const [, videos] of rssResults) {
+      totalRssVideos += videos.length;
+      if (videos.length > 0) feedsWithVideos++;
+    }
+
+    console.log(`[RSS] Fetched ${rssResults.size} feeds, ${feedsWithVideos} had videos, ${totalRssVideos} total videos`);
 
     // Get existing video IDs to avoid duplicates
     const allVideoIds = Array.from(rssResults.values())
@@ -57,8 +78,10 @@ export async function POST(request) {
 
     if (allVideoIds.length === 0) {
       return NextResponse.json({
-        message: 'Refresh complete',
+        message: 'RSS feeds returned no videos',
         channelsChecked: channelIds.length,
+        feedsWithVideos,
+        sampleChannelIds: channelIds.slice(0, 3),
         newVideos: 0,
       });
     }
