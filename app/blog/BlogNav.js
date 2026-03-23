@@ -13,7 +13,7 @@ export default function BlogNav({ styles }) {
       <Link href="/" className={`home-nav-brand ${styles.navBrand}`}>
         <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-icon" />
         <span className="home-nav-brand-wordmark">
-          <span>sub</span><span className="hnp-wordmark">scrub</span>
+          <span className="hnp-wordmark">sub</span><span>scrub</span>
         </span>
       </Link>
       <div className={styles.navLinks}>

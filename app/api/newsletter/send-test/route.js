@@ -67,7 +67,7 @@ export async function POST(request) {
   <span style="display:none;max-height:0;overflow:hidden;">${previewText || ''}</span>
   <div class="wrapper">
     <div class="header">
-      <a href="https://usefreedly.com" class="logo-text"><span class="logo-mint">sub</span>scrub</a>
+      <a href="https://usefreedly.com" class="logo-text">sub<span class="logo-mint">scrub</span></a>
     </div>
     <div class="content">
       ${htmlContent || ''}

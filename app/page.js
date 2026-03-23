@@ -15,7 +15,7 @@ export default function HomePage() {
         <a href="/" className={`home-nav-brand ${styles.navBrand}`}>
           <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-icon" />
           <span className="home-nav-brand-wordmark">
-            <span>sub</span><span className="hnp-wordmark">scrub</span>
+            <span className="hnp-wordmark">sub</span><span>scrub</span>
           </span>
         </a>
         <ul className={styles.navLinks}>
@@ -30,7 +30,7 @@ export default function HomePage() {
       {/* HERO */}
       <section className={styles.hero}>
         <div className={styles.heroText}>
-          <h1>Your subscriptions,<br/><span className={styles.heroAccent}>freed</span> from chaos.</h1>
+          <h1>Your subscriptions,<br/><span className={styles.heroAccent}>scrubbed</span> of chaos.</h1>
           <p className={styles.heroSub}>
             Subscrub sorts your subscriptions into clean, custom feeds automatically — so you only see what matters.
           </p>
@@ -59,7 +59,7 @@ export default function HomePage() {
         <div className={styles.heroVisual}>
           <div className={styles.productFrame}>
             <div className={styles.productTopbar}>
-              <span className={styles.productLogo}><span>sub</span>scrub</span>
+              <span className={styles.productLogo}>sub<span>scrub</span></span>
               <div className={styles.productTabs}>
                 <span className={styles.tabActive}>Subscriptions</span>
                 <span>Feeds</span>

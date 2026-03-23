@@ -45,7 +45,7 @@ function DashboardInner({ children }) {
             <Link href="/dashboard" className="mobile-topbar-brand" style={{ textDecoration: 'none' }}>
               <img src="/icon.svg" alt="Subscrub" style={{ width: 24, height: 24 }} />
               <span className="home-nav-brand-wordmark" style={{ marginLeft: 6 }}>
-                <span>sub</span><span className="hnp-wordmark">scrub</span>
+                <span className="hnp-wordmark">sub</span><span>scrub</span>
               </span>
             </Link>
           </div>
