@@ -6,6 +6,7 @@ import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
 import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
 import SubscriptionCritic from '../components/SubscriptionCritic';
+import DashboardPersonality from '../components/DashboardPersonality';
 
 export default function DashboardPage() {
   const { user, accessToken, signIn } = useAuth();
@@ -245,6 +246,15 @@ export default function DashboardPage() {
             channels={channels}
             deadChannels={deadChannels}
             uncatCount={uncatCount}
+          />
+
+          {/* Personality elements */}
+          <DashboardPersonality
+            channels={channels}
+            deadChannels={deadChannels}
+            uncatCount={uncatCount}
+            favCount={favCount}
+            streak={streak.count}
           />
 
           {/* New from favourites */}

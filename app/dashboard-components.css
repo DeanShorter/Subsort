@@ -3426,3 +3426,93 @@ input[type=range]::-webkit-slider-thumb{
 .api-day-bar{width:100%;border-radius:3px 3px 0 0;background:var(--accent);min-height:2px;transition:height .4s ease}
 .api-day-label{font-size:9px;color:var(--text-muted);font-weight:500}
 .api-day-val{font-size:9px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD PERSONALITY
+   ═══════════════════════════════════════════════════════════════ */
+
+.personality-section-hd{display:flex;align-items:center;justify-content:space-between;padding:.25rem 0 .625rem;margin-top:1.75rem}
+
+/* ── Roast card ── */
+.roast-card{display:flex;align-items:center;gap:1.25rem;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem 1.5rem;margin-bottom:.25rem}
+.roast-ring-wrap{position:relative;flex-shrink:0;width:56px;height:56px}
+.roast-ring-svg{width:56px;height:56px}
+.roast-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.9375rem;font-weight:700;letter-spacing:-.02em}
+.roast-body{flex:1;min-width:0}
+.roast-verdict{font-size:.875rem;font-weight:500;color:var(--text-primary);margin-bottom:.625rem;line-height:1.4}
+.roast-pills{display:flex;flex-wrap:wrap;gap:.375rem;margin-bottom:.75rem}
+.roast-pill{font-size:.6875rem;font-weight:600;padding:.25rem .625rem;border-radius:var(--radius-full);letter-spacing:.01em}
+.roast-pill-red{background:rgba(232,93,80,.12);color:#E85D50}
+.roast-pill-amber{background:rgba(239,159,39,.12);color:#EF9F27}
+.roast-pill-mint{background:rgba(56,233,177,.12);color:#38E9B1}
+.roast-cta{background:none;border:1px solid var(--border-subtle);color:var(--text-secondary);font:.8125rem/1 var(--font-body);padding:.4375rem .875rem;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s var(--transition)}
+.roast-cta:hover{color:var(--text-primary);border-color:#555;background:var(--bg-surface-raised)}
+
+/* ── Achievement badges ── */
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;margin-bottom:.25rem}
+@media(max-width:640px){.badge-grid{grid-template-columns:repeat(2,1fr)}}
+.badge-card{position:relative;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:.875rem 1rem;display:flex;flex-direction:column;gap:.25rem;overflow:hidden;transition:border-color .2s}
+.badge-card:not(.badge-locked):hover{border-color:#555}
+.badge-locked{opacity:.45}
+.badge-icon{font-size:1.375rem;line-height:1;margin-bottom:.125rem}
+.badge-title{font-size:.8125rem;font-weight:600;color:var(--text-primary)}
+.badge-desc{font-size:.6875rem;color:var(--text-muted);line-height:1.35}
+.badge-lock-overlay{position:absolute;top:.5rem;right:.5rem;font-size:.75rem;opacity:.5}
+
+/* ── Feed health thermometer ── */
+.thermo-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem 1.5rem;margin-bottom:.25rem}
+.thermo-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem}
+.thermo-label{font-size:.8125rem;font-weight:500;color:var(--text-secondary)}
+.thermo-verdict{font-size:.8125rem;font-weight:600}
+.thermo-track{width:100%;height:8px;background:rgba(255,255,255,.06);border-radius:var(--radius-full);overflow:hidden;margin-bottom:.5rem}
+.thermo-fill{height:100%;border-radius:var(--radius-full);transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.thermo-scale{display:flex;justify-content:space-between;font-size:.625rem;color:var(--text-muted);letter-spacing:.02em;margin-bottom:1rem}
+.thermo-rows{display:flex;flex-direction:column;gap:.5rem}
+.thermo-row{display:flex;align-items:center;gap:.625rem}
+.thermo-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.thermo-row-label{flex:1;font-size:.8125rem;color:var(--text-secondary)}
+.thermo-row-val{font-size:.8125rem;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-primary)}
+
+/* ── Empty state card ── */
+.empty-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:2rem 1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-bottom:.25rem}
+.empty-icon{font-size:2rem;line-height:1;margin-bottom:.25rem}
+.empty-title{font-size:.9375rem;font-weight:600;color:var(--text-primary)}
+.empty-desc{font-size:.8125rem;color:var(--text-muted);max-width:280px;line-height:1.5}
+.empty-cta{margin-top:.5rem;background:none;border:1px solid var(--border-subtle);color:var(--text-secondary);font:.8125rem/1 var(--font-body);padding:.4375rem .875rem;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s var(--transition)}
+.empty-cta:hover{color:var(--text-primary);border-color:#555;background:var(--bg-surface-raised)}
+
+/* ── Weekly nudge ── */
+.nudge-card{display:flex;align-items:flex-start;gap:.875rem;background:rgba(239,159,39,.06);border:1px solid rgba(239,159,39,.2);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:.25rem}
+.nudge-icon{font-size:1.25rem;line-height:1;flex-shrink:0;margin-top:.125rem}
+.nudge-body{flex:1;min-width:0}
+.nudge-title{font-size:.8125rem;font-weight:600;color:#EF9F27;margin-bottom:.25rem}
+.nudge-text{font-size:.8125rem;color:var(--text-secondary);line-height:1.45}
+.nudge-dismiss{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.875rem;padding:.125rem;line-height:1;flex-shrink:0;margin-top:.125rem;transition:color .15s}
+.nudge-dismiss:hover{color:var(--text-primary)}
+
+/* ── Re-subscribe shame card ── */
+.resub-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:.25rem}
+.resub-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.625rem}
+.resub-title{font-size:.8125rem;font-weight:600;color:var(--text-primary)}
+.resub-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.875rem;padding:.125rem;line-height:1;transition:color .15s}
+.resub-close:hover{color:var(--text-primary)}
+.resub-ch{font-size:.9375rem;font-weight:600;color:var(--text-primary);margin-bottom:.25rem}
+.resub-desc{font-size:.8125rem;color:var(--text-muted);margin-bottom:.875rem;line-height:1.4}
+.resub-actions{display:flex;gap:.5rem}
+.resub-btn-keep{flex:1;background:none;border:1px solid var(--border-subtle);color:var(--text-secondary);font:.8125rem/1 var(--font-body);padding:.4375rem .875rem;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s var(--transition)}
+.resub-btn-keep:hover{color:var(--text-primary);border-color:#555;background:var(--bg-surface-raised)}
+.resub-btn-drop{flex:1;background:rgba(232,93,80,.1);border:1px solid rgba(232,93,80,.25);color:#E85D50;font:.8125rem/1 var(--font-body);padding:.4375rem .875rem;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s var(--transition)}
+.resub-btn-drop:hover{background:rgba(232,93,80,.18);border-color:rgba(232,93,80,.4)}
+
+/* ── Unsubscribe confirmation modal ── */
+.unsub-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem}
+.unsub-modal{background:var(--bg-surface-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:2rem 1.75rem;max-width:380px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.4)}
+.unsub-modal-icon{font-size:2.5rem;margin-bottom:.75rem}
+.unsub-modal-title{font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--text-primary);margin-bottom:.5rem;letter-spacing:-.02em}
+.unsub-modal-desc{font-size:.875rem;color:var(--text-muted);line-height:1.5;margin-bottom:1.5rem}
+.unsub-modal-desc strong{color:var(--text-secondary)}
+.unsub-modal-actions{display:flex;flex-direction:column;gap:.5rem}
+.unsub-btn-cancel{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font:.875rem/1 var(--font-body);padding:.625rem 1rem;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s var(--transition)}
+.unsub-btn-cancel:hover{color:var(--text-primary);border-color:#555;background:var(--bg-surface-raised)}
+.unsub-btn-confirm{display:block;background:rgba(232,93,80,.12);border:1px solid rgba(232,93,80,.3);color:#E85D50;font:.875rem/1 var(--font-body);font-weight:600;padding:.625rem 1rem;border-radius:var(--radius-sm);cursor:pointer;text-decoration:none;transition:all .2s var(--transition)}
+.unsub-btn-confirm:hover{background:rgba(232,93,80,.2);border-color:rgba(232,93,80,.5)}

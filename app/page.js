@@ -33,7 +33,7 @@ export default function HomePage() {
       <HeroBg>
       <section className={styles.hero}>
         <div className={styles.heroText}>
-          <h1>Your subscriptions,<br/><span className={styles.heroAccent}>scrubbed</span> of chaos.</h1>
+          <h1>Your YouTube subscription page is a mess and you know it. <span className={styles.heroAccent}>Subscrub</span> fixes that.</h1>
           <p className={styles.heroSub}>
             Subscrub sorts your subscriptions into clean, custom feeds automatically — so you only see what matters.
           </p>
