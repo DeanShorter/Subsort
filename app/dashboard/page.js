@@ -2,7 +2,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
-import { fetchRecentVideos, timeAgo } from '../../lib/youtube';
+import { timeAgo } from '../../lib/youtube';
+import { supabase } from '../../lib/supabase';
 import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
 import SubscriptionCritic from '../components/SubscriptionCritic';
@@ -155,15 +156,50 @@ export default function DashboardPage() {
     }));
   }, [channels, chCats, categoryColours]);
 
-  // ── Fav videos ─────────────────────────────────────────
+  // ── Fav videos from DB cache (no API call) ─────────────
+  const [favRefreshKey, setFavRefreshKey] = useState(0);
+
+  // Re-fetch when RSS refresh completes
   useEffect(() => {
-    if (!accessToken || !channels.length) return;
-    const favChannels = channels.filter(c => c.favourited).slice(0, 12);
+    const handler = () => {
+      console.log('[Dashboard] RSS refresh detected — reloading fav videos');
+      setFavRefreshKey(k => k + 1);
+    };
+    window.addEventListener('subscrub:rss-refreshed', handler);
+    return () => window.removeEventListener('subscrub:rss-refreshed', handler);
+  }, []);
+
+  useEffect(() => {
+    if (!channels.length) return;
+    const favChannels = channels.filter(c => c.favourited);
     if (!favChannels.length) return;
-    fetchRecentVideos(favChannels, accessToken)
-      .then(vids => setFavVideos(vids.slice(0, 5)))
+
+    const favIds = favChannels.map(c => c.channelId).filter(Boolean);
+    if (!favIds.length) return;
+
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    supabase
+      .from('cached_videos')
+      .select('*')
+      .in('channel_id', favIds.slice(0, 300))
+      .gte('published_at', since)
+      .order('published_at', { ascending: false })
+      .limit(5)
+      .then(({ data }) => {
+        if (!data) return;
+        const channelMap = {};
+        channels.forEach(ch => { channelMap[ch.channelId] = ch; });
+        setFavVideos(data.map(row => ({
+          id: row.video_id,
+          title: row.title || '',
+          channel: channelMap[row.channel_id]?.name || '',
+          channelId: row.channel_id,
+          thumbnail: row.thumbnail || `https://i.ytimg.com/vi/${row.video_id}/mqdefault.jpg`,
+          publishedAt: row.published_at,
+        })));
+      })
       .catch(() => {});
-  }, [accessToken, channels]);
+  }, [channels, favRefreshKey]);
 
   // ── Greeting subtitle ──────────────────────────────────
   const subtitle = !channels.length

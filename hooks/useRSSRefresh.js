@@ -14,13 +14,15 @@ export function useRSSRefresh() {
     setResult(null);
 
     try {
+      console.log('[RSS] Manual refresh triggered');
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
-        console.error('[RSS] No session token available');
+        console.warn('[RSS] No session token available');
         setLoading(false);
         return;
       }
 
+      console.log('[RSS] Fetching feeds…');
       const response = await fetch('/api/refresh', {
         method: 'POST',
         headers: {
@@ -31,10 +33,12 @@ export function useRSSRefresh() {
       const data = await response.json();
 
       if (response.ok) {
+        console.log(`[RSS] Complete: ${data.channelsChecked || 0} channels checked, ${data.newVideos || 0} new videos`);
         setResult({
           channelsChecked: data.channelsChecked || 0,
           newVideos: data.newVideos || 0,
         });
+        window.dispatchEvent(new Event('subscrub:rss-refreshed'));
       } else {
         console.error('[RSS] Refresh failed:', data.error);
       }
