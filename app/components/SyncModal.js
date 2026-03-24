@@ -69,7 +69,8 @@ export default function SyncModal({
   const [roastVisible, setRoastVisible] = useState(false);
   const [ctaVisible, setCtaVisible] = useState(false);
   const [roastData, setRoastData] = useState(null);
-  const prevStep = useRef(-1);
+  const actionQueue = useRef([]);
+  const processingQueue = useRef(false);
 
   // Reveal all steps on mount
   useEffect(() => {
@@ -81,7 +82,7 @@ export default function SyncModal({
     setRoastVisible(false);
     setCtaVisible(false);
     setRoastData(null);
-    prevStep.current = -1;
+    actionQueue.current = [];
 
     let i = 0;
     const id = setInterval(() => {
@@ -92,15 +93,12 @@ export default function SyncModal({
     return () => clearInterval(id);
   }, [visible]);
 
-  // React to sync state changes
-  useEffect(() => {
-    if (!syncState) return;
-
-    const { action, step, detail, pct: p, favCount, categories, channels, deadChannels, done } = syncState;
+  // Queue-based state processing to handle rapid events
+  const processAction = useCallback((state) => {
+    const { action, step, detail, pct: p, favCount, categories, channels, deadChannels, done } = state;
 
     if (p != null) setPct(p);
 
-    // Explicit actions: 'activate' starts a step, 'complete' finishes it
     if (action === 'activate' && step != null) {
       setActiveStep(step);
       const subtitles = [
@@ -116,7 +114,7 @@ export default function SyncModal({
 
     if (action === 'complete' && step != null) {
       setCompletedSteps(prev => new Map([...prev, [step, detail || '✓']]));
-      if (activeStep === step) setActiveStep(-1);
+      setActiveStep(prev => prev === step ? -1 : prev);
     }
 
     if (done) {
@@ -139,7 +137,27 @@ export default function SyncModal({
         setTimeout(() => setCtaVisible(true), 500);
       }
     }
-  }, [syncState, userName]);
+  }, [userName]);
+
+  // Process queued actions with a small delay between each to allow React to paint
+  useEffect(() => {
+    if (!syncState) return;
+    actionQueue.current.push(syncState);
+
+    if (!processingQueue.current) {
+      processingQueue.current = true;
+      const drain = () => {
+        const next = actionQueue.current.shift();
+        if (next) {
+          processAction(next);
+          setTimeout(drain, 50); // 50ms gap lets React paint between actions
+        } else {
+          processingQueue.current = false;
+        }
+      };
+      drain();
+    }
+  }, [syncState, processAction]);
 
   if (!visible) return null;
 
