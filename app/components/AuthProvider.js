@@ -96,10 +96,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signIn = useCallback(async () => {
+    const redirectTo = window.location.origin + '/dashboard';
+    console.log('[Auth] Sign in redirectTo:', redirectTo);
+    console.log('[Auth] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/dashboard',
+        redirectTo,
         scopes: 'https://www.googleapis.com/auth/youtube.readonly',
       },
     });
