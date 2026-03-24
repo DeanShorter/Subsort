@@ -972,13 +972,13 @@ input[type=range]::-webkit-slider-thumb{
 /* ── Shared page header ── */
 .page-header-wrap{padding-top:.5rem}
 .page-header-wrap .ct-controls-row{border-bottom:none;padding-top:4px}
-.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding-bottom:.375rem;max-height:120px;overflow:hidden;transition:max-height .25s ease,padding .25s ease,opacity .2s ease}
+.page-header{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding-bottom:.375rem;max-height:120px;overflow:hidden;transition:max-height .25s ease,padding .25s ease,opacity .2s ease}
 .page-header-hidden{max-height:0!important;padding:0!important;margin:0!important;opacity:0;pointer-events:none;border:none!important}
 .page-header-wrap.sticky-bar.scrolled{padding-top:0;border-color:var(--border-subtle);box-shadow:0 1px 4px rgba(0,0,0,.15)}
 .page-header-wrap.sticky-bar.scrolled .ct-controls-row{padding-top:6px}
-.page-header-left{flex:1;min-width:0}
-.page-header-count{font-size:.8125rem;color:var(--text-muted);font-weight:500;margin-top:.25rem}
-.page-header-subtitle{font-size:.8125rem;color:var(--text-muted);margin-top:.25rem}
+.page-header-left{display:flex;align-items:baseline;gap:.75rem;flex:1;min-width:0}
+.page-header-count{font-size:.8125rem;color:var(--text-muted);font-weight:500}
+.page-header-subtitle{font-size:.8125rem;color:var(--text-muted)}
 .page-header-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
 .an-subtitle{font-size:.875rem;color:var(--text-secondary)}
 /* Tab strip */
@@ -1790,8 +1790,8 @@ input[type=range]::-webkit-slider-thumb{
 .feed-search-input:focus{outline:none;border-color:var(--accent)}
 .feed-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.375rem .625rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body);cursor:pointer}
 /* Sticky bar — pins controls to top of scroll container */
-.sticky-bar,.feed-sticky-bar{position:sticky;top:0;z-index:50;background:#111110;margin:0 -2rem;padding:0 2rem;border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
-.sticky-bar::before{content:'';position:absolute;top:-20px;left:0;right:0;height:20px;background:#111110}
+.sticky-bar,.feed-sticky-bar{position:sticky;top:0;z-index:50;background:var(--bg-card);margin:0 -2rem;padding:0 2rem;border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
+.sticky-bar::before{content:'';position:absolute;top:-20px;left:0;right:0;height:20px;background:var(--bg-card)}
 #homeMain.feed-scrolled .feed-sticky-bar,#homeMain.feed-scrolled .sticky-bar{border-color:var(--border-subtle);box-shadow:var(--shadow-md)}
 /* Remove top padding from the feeds container so sticky bar sits flush at top:0 with no gap */
 #homeMain{padding-top:0}
@@ -1932,6 +1932,7 @@ input[type=range]::-webkit-slider-thumb{
 /* Earlier this week rows */
 .feed-earlier-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--border-subtle);cursor:pointer;transition:all .15s;margin-bottom:6px}
 .feed-earlier-row:hover{border-color:rgba(255,255,255,.1);background:var(--bg-surface)}
+.feed-earlier-row.active{border-color:rgba(56,233,177,.25);background:rgba(62,207,160,.04)}
 .feed-earlier-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .feed-earlier-name{font-size:13px;font-weight:500;color:var(--text-secondary);flex:1}
 .feed-earlier-count{font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums}

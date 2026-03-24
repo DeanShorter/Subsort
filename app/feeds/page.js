@@ -25,8 +25,8 @@ export default function FeedsPage() {
   const [tokenExpired, setTokenExpired] = useState(false);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
   const [openCats, setOpenCats] = useState(new Set());
+  const [openEarlier, setOpenEarlier] = useState(new Set());
   const [breakDismissed, setBreakDismissed] = useState(false);
-  const [activeCatChip, setActiveCatChip] = useState('all');
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -62,7 +62,7 @@ export default function FeedsPage() {
   // ── Sidebar callbacks ──────────────────────────────
   useEffect(() => {
     trackEvent('view_feeds');
-    window.__subsortCat = (cat) => { setActiveCategory(cat); setActiveSubcategory(null); setActiveCatChip(cat); };
+    window.__subsortCat = (cat) => { setActiveCategory(cat); setActiveSubcategory(null); };
     window.__subsortSub = (cat, sub) => { setActiveCategory(cat); setActiveSubcategory(prev => prev === sub ? null : sub); };
     return () => { delete window.__subsortCat; delete window.__subsortSub; };
   }, []);
@@ -114,28 +114,17 @@ export default function FeedsPage() {
   const applyFilters = useCallback((videos) => {
     let result = [...videos];
 
-    // Category chip filter
-    if (activeCatChip !== 'all' && activeCatChip !== '__favs__') {
-      const catIds = new Set(channels.filter(c => chHasCat(c, activeCatChip)).map(c => c.channelId));
-      result = result.filter(v => catIds.has(v.channelId));
-    } else if (activeCatChip === '__favs__') {
+    // Category filter (single source — activeCategory)
+    if (activeCategory === '__favs__') {
       const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
       result = result.filter(v => favIds.has(v.channelId));
-    }
-
-    // Sidebar category
-    if (activeCategory !== 'all' && activeCategory !== activeCatChip) {
-      if (activeCategory === '__favs__') {
-        const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
-        result = result.filter(v => favIds.has(v.channelId));
-      } else {
-        const catIds = new Set(channels.filter(c => {
-          if (!chHasCat(c, activeCategory)) return false;
-          if (activeSubcategory && c.subcategory !== activeSubcategory) return false;
-          return true;
-        }).map(c => c.channelId));
-        result = result.filter(v => catIds.has(v.channelId));
-      }
+    } else if (activeCategory !== 'all') {
+      const catIds = new Set(channels.filter(c => {
+        if (!chHasCat(c, activeCategory)) return false;
+        if (activeSubcategory && c.subcategory !== activeSubcategory) return false;
+        return true;
+      }).map(c => c.channelId));
+      result = result.filter(v => catIds.has(v.channelId));
     }
 
     // Type filter
@@ -149,7 +138,7 @@ export default function FeedsPage() {
     }
 
     return result;
-  }, [channels, activeCategory, activeSubcategory, activeCatChip, chHasCat, typeFilter, search]);
+  }, [channels, activeCategory, activeSubcategory, chHasCat, typeFilter, search]);
 
   // ── Favourites section videos ──────────────────────
   const favVideos = useMemo(() => {
@@ -198,6 +187,13 @@ export default function FeedsPage() {
     });
     return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
   }, [earlierVideos, channelMap]);
+
+  // ── Default open all today groups ───────────────────
+  useEffect(() => {
+    if (todayByCat.length > 0 && openCats.size === 0) {
+      setOpenCats(new Set(todayByCat.map(([cat]) => `today-${cat}`)));
+    }
+  }, [todayByCat]);
 
   // ── Toggle category group ──────────────────────────
   const toggleCatGroup = (cat) => {
@@ -299,9 +295,14 @@ export default function FeedsPage() {
         <button className={`feed-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
         <button className={`feed-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
         <span className="feed-chip-sep">|</span>
-        <button className={`feed-chip${activeCatChip === 'all' ? ' active' : ''}`} onClick={() => setActiveCatChip('all')}>All Categories</button>
+        <button className={`feed-chip${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); window.__subsortCat?.('all'); }}>All Categories</button>
         {categories.map(cat => (
-          <button key={cat} className={`feed-chip${activeCatChip === cat ? ' active' : ''}`} onClick={() => setActiveCatChip(activeCatChip === cat ? 'all' : cat)}>
+          <button key={cat} className={`feed-chip${activeCategory === cat ? ' active' : ''}`} onClick={() => {
+            const next = activeCategory === cat ? 'all' : cat;
+            setActiveCategory(next);
+            setActiveSubcategory(null);
+            window.__subsortCat?.(next);
+          }}>
             {cat}
           </button>
         ))}
@@ -324,6 +325,7 @@ export default function FeedsPage() {
                   <span className="feed-section-title">New from your favourites</span>
                   <span className="feed-section-count">{favVideos.length} new</span>
                 </div>
+                <button className="feed-section-link" onClick={() => { setActiveCategory('__favs__'); window.__subsortCat?.('__favs__'); }}>See all favourites</button>
               </div>
               <div className="feed-scroll-row">
                 {favVideos.map(v => renderVideoCard(v, true))}
@@ -412,14 +414,35 @@ export default function FeedsPage() {
                 </div>
               </div>
 
-              {earlierByCat.map(([cat, videos]) => (
-                <div key={cat} className="feed-earlier-row" onClick={() => { setActiveCatChip(cat); toggleCatGroup(`earlier-${cat}`); }}>
-                  <div className="feed-earlier-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
-                  <span className="feed-earlier-name">{cat}</span>
-                  <span className="feed-earlier-count">{videos.length} videos</span>
-                  <span className="feed-earlier-arrow">→</span>
-                </div>
-              ))}
+              {earlierByCat.map(([cat, videos]) => {
+                const isEarlierOpen = openEarlier.has(cat);
+                return (
+                  <div key={cat}>
+                    <div className={`feed-earlier-row${isEarlierOpen ? ' active' : ''}`} onClick={() => {
+                      setOpenEarlier(prev => {
+                        const next = new Set(prev);
+                        next.has(cat) ? next.delete(cat) : next.add(cat);
+                        return next;
+                      });
+                    }}>
+                      <div className="feed-earlier-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
+                      <span className="feed-earlier-name">{cat}</span>
+                      <span className="feed-earlier-count">{videos.length} videos</span>
+                      <span className="feed-earlier-arrow">{isEarlierOpen ? '↓' : '→'}</span>
+                    </div>
+                    {isEarlierOpen && (
+                      <div style={{ paddingLeft: '1rem', marginBottom: '12px' }}>
+                        {videos.slice(0, 8).map(renderVideoRow)}
+                        {videos.length > 8 && (
+                          <div style={{ padding: '4px 12px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                            + {videos.length - 8} more
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </>
