@@ -294,8 +294,8 @@ export default function FeedsPage() {
   };
 
   const getGroupLimit = (key, defaultLimit) => groupLimits[key] || defaultLimit;
-  const showMore = (key, step = 10) => {
-    setGroupLimits(prev => ({ ...prev, [key]: (prev[key] || 0) + step }));
+  const showMore = (key, defaultLimit, step = 10) => {
+    setGroupLimits(prev => ({ ...prev, [key]: (prev[key] || defaultLimit) + step }));
   };
 
   // ── Render helpers ─────────────────────────────────
@@ -467,7 +467,7 @@ export default function FeedsPage() {
                       )}
                       {videos.slice(0, getGroupLimit(`today-${cat}`, 5)).map(renderVideoRow)}
                       {videos.length > getGroupLimit(`today-${cat}`, 5) && (
-                        <button className="feed-loadmore" onClick={() => showMore(`today-${cat}`, 10)}>
+                        <button className="feed-loadmore" onClick={() => showMore(`today-${cat}`, 5, 10)}>
                           <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
                           Show more
                         </button>
@@ -531,7 +531,7 @@ export default function FeedsPage() {
                       <div style={{ paddingLeft: '1rem', marginBottom: '12px' }}>
                         {videos.slice(0, getGroupLimit(`earlier-${cat}`, 10)).map(renderVideoRow)}
                         {videos.length > getGroupLimit(`earlier-${cat}`, 10) && (
-                          <button className="feed-loadmore" onClick={() => showMore(`earlier-${cat}`, 10)}>
+                          <button className="feed-loadmore" onClick={() => showMore(`earlier-${cat}`, 10, 10)}>
                             <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
                             Show more
                           </button>
