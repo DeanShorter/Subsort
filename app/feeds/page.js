@@ -48,6 +48,7 @@ export default function FeedsPage() {
   const [quotaExceeded, setQuotaExceeded] = useState(false);
   const [openCats, setOpenCats] = useState(new Set());
   const [openEarlier, setOpenEarlier] = useState(new Set());
+  const [earlierSubFilter, setEarlierSubFilter] = useState({}); // { catName: subName | null }
   const [breakDismissed, setBreakDismissed] = useState(false);
   const [groupLimits, setGroupLimits] = useState({});
 
@@ -534,6 +535,15 @@ export default function FeedsPage() {
 
               {earlierByCat.map(([cat, videos]) => {
                 const isEarlierOpen = openEarlier.has(cat);
+                const catCol = categoryColours[cat] || 'var(--accent)';
+                const catSubs = subcategories[cat] || [];
+                const activeSub = earlierSubFilter[cat] || null;
+
+                // Filter by subcategory if selected
+                const filteredVideos = activeSub
+                  ? videos.filter(v => channelMap[v.channelId]?.subcategory === activeSub)
+                  : videos;
+
                 return (
                   <div key={cat}>
                     <div className={`feed-earlier-row${isEarlierOpen ? ' active' : ''}`} onClick={() => {
@@ -543,21 +553,46 @@ export default function FeedsPage() {
                         return next;
                       });
                     }}>
-                      <div className="feed-earlier-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
+                      <div className="feed-earlier-dot" style={{ background: catCol }} />
                       <span className="feed-earlier-name">{cat}</span>
                       <span className="feed-earlier-count">{videos.length} videos</span>
                       <span className="feed-earlier-arrow">{isEarlierOpen ? '↓' : '→'}</span>
                     </div>
                     {isEarlierOpen && (
                       <div className="feed-earlier-content">
+                        {/* Subcategory scroller */}
+                        {catSubs.length > 0 && (
+                          <div className="feed-earlier-subs">
+                            <button
+                              className={`feed-earlier-sub-btn${!activeSub ? ' active' : ''}`}
+                              onClick={e => { e.stopPropagation(); setEarlierSubFilter(prev => ({ ...prev, [cat]: null })); }}
+                            >
+                              All <span className="feed-earlier-sub-count">{videos.length}</span>
+                            </button>
+                            {catSubs.map(sub => {
+                              const subCount = videos.filter(v => channelMap[v.channelId]?.subcategory === sub).length;
+                              return (
+                                <button
+                                  key={sub}
+                                  className={`feed-earlier-sub-btn${activeSub === sub ? ' active' : ''}`}
+                                  onClick={e => { e.stopPropagation(); setEarlierSubFilter(prev => ({ ...prev, [cat]: activeSub === sub ? null : sub })); }}
+                                >
+                                  <span className="hnp-cat-slash" style={{ color: catCol }}>/</span>
+                                  {sub} <span className="feed-earlier-sub-count">{subCount}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
                         {feedView === 'grid' ? (
                           <ScrollRow>
-                            {videos.map(v => renderVideoCard(v))}
+                            {filteredVideos.map(v => renderVideoCard(v))}
                           </ScrollRow>
                         ) : (
                           <>
-                            {videos.slice(0, getGroupLimit(`earlier-${cat}`, 10)).map(renderVideoRow)}
-                            {videos.length > getGroupLimit(`earlier-${cat}`, 10) && (
+                            {filteredVideos.slice(0, getGroupLimit(`earlier-${cat}`, 10)).map(renderVideoRow)}
+                            {filteredVideos.length > getGroupLimit(`earlier-${cat}`, 10) && (
                               <button className="feed-loadmore" onClick={() => showMore(`earlier-${cat}`, 10, 10)}>
                                 <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
                                 Show more
