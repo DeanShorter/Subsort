@@ -1847,7 +1847,7 @@ input[type=range]::-webkit-slider-thumb{
 #homeMain.feed-view-list .feed-video-row,.feed-view-list .feed-video-row{align-items:center;padding:.625rem 0}
 #homeMain.feed-view-list .feed-video-row:hover,.feed-view-list .feed-video-row:hover{padding:.625rem .75rem}
 /* Grid mode: YouTube-style cards */
-#homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+#homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
 /* Feed grid responsive — see consolidated @media at end of file */
 #homeMain.feed-view-grid .feed-video-row,.feed-view-grid .feed-video-row{flex-direction:column;padding:0;border-bottom:none;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);overflow:hidden;gap:0}
 #homeMain.feed-view-grid .feed-video-row:hover,.feed-view-grid .feed-video-row:hover{background:var(--bg-card);padding:0;margin:0;border-color:var(--color-gray-600);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
@@ -3502,8 +3502,8 @@ input[type=range]::-webkit-slider-thumb{
   /* Channel grids: 3→2 cols */
   #channelGrid{grid-template-columns:repeat(2,1fr)!important}
   #channelGrid.view-grid{grid-template-columns:repeat(3,1fr)!important}
-  /* Feed grid: auto-fill handles this, just reduce min width */
-  #homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  /* Feed grid: 5→3 cols */
+  #homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{grid-template-columns:repeat(3,1fr)}
   /* Sidebar: hide on narrow screens */
   .home-sidebar{display:none}
 }
@@ -3532,8 +3532,8 @@ input[type=range]::-webkit-slider-thumb{
   .db-stat-strip{grid-template-columns:repeat(2,1fr)}
   .db-health-stats{margin-left:0;gap:1rem}
   .db-fav-feed-grid{grid-template-columns:1fr}
-  /* Feed grid: narrower min on tablet */
-  #homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  /* Feed grid: 3→2 cols */
+  #homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{grid-template-columns:repeat(2,1fr)}
   .channel-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
   #channelGrid.view-grid{grid-template-columns:repeat(2,1fr)!important}
   /* Analytics */
