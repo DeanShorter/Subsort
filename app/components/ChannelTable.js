@@ -153,16 +153,22 @@ export default function ChannelTable({
                 {/* Category */}
                 <td>
                   {cats.length > 0 ? cats.map(c => (
-                    <span
-                      key={c}
-                      className="ch-badge"
-                      style={{ background: `${categoryColours[c] || 'var(--accent)'}22`, color: categoryColours[c] || 'var(--accent)' }}
-                    >{c}</span>
-                  )) : <span style={{ color: 'var(--text-muted)' }}>—</span>}
+                    <span key={c} className="ch-table-cat">
+                      <span className="hnp-cat-dot" style={{ background: categoryColours[c] || 'var(--accent)' }} />
+                      {c}
+                    </span>
+                  )) : <span className="ch-table-muted">—</span>}
                 </td>
 
                 {/* Subcategory */}
-                <td>{ch.subcategory || <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
+                <td>
+                  {ch.subcategory ? (
+                    <span className="ch-table-subcat">
+                      <span className="hnp-cat-slash" style={{ color: categoryColours[cats[0]] || 'var(--accent)' }}>/</span>
+                      {ch.subcategory}
+                    </span>
+                  ) : <span className="ch-table-muted">—</span>}
+                </td>
 
                 {/* Subscribers */}
                 <td>{ch.subscriberCount ? formatCount(ch.subscriberCount) : '—'}</td>

@@ -50,7 +50,7 @@ export default function EditChannelModal({ channelId, onClose }) {
     { v: fmtDate(ch?.channelCreatedAt), l: 'Created' },
   ];
 
-  // Available subcategories from selected categories
+  // Available subcategories from selected categories + current channel's subcategory
   const availableSubs = useMemo(() => {
     const all = [];
     for (const cat of selectedCats) {
@@ -58,8 +58,10 @@ export default function EditChannelModal({ channelId, onClose }) {
         if (!all.includes(sub)) all.push(sub);
       }
     }
+    // Include channel's current subcategory even if not in context yet
+    if (ch?.subcategory && !all.includes(ch.subcategory)) all.push(ch.subcategory);
     return all;
-  }, [selectedCats, subcategories]);
+  }, [selectedCats, subcategories, ch]);
 
   const keywords = (ch?.keywords || '').split(',').map(k => k.trim()).filter(Boolean);
 

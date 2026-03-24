@@ -465,7 +465,6 @@ export default function FeedsPage() {
                           <button className="feed-subchip active">All<span className="feed-subchip-count">{videos.length}</span></button>
                           {catSubs.map(sub => {
                             const count = videos.filter(v => channelMap[v.channelId]?.subcategory === sub).length;
-                            if (!count) return null;
                             return <button key={sub} className="feed-subchip">{sub}<span className="feed-subchip-count">{count}</span></button>;
                           })}
                         </div>
