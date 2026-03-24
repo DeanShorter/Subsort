@@ -4,7 +4,7 @@ import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
-import PageHeader from '../components/PageHeader';
+// PageHeader not used — dashboard has custom db-header-bar
 import { trackEvent } from '../../lib/track';
 import SubscriptionCritic from '../components/SubscriptionCritic';
 import DashboardPersonality from '../components/DashboardPersonality';
@@ -221,16 +221,19 @@ export default function DashboardPage() {
 
   return (
     <main className="home-main">
-      <PageHeader title="Dashboard" right={<span className="db-clock">Last refresh: {lastRefresh}</span>} />
+      <div className="db-header-bar">
+        <div className="db-greeting">
+          <h1>Good <span>{greetingTime}</span>, <span>{greetingName}</span>.</h1>
+          <p>{subtitle}</p>
+        </div>
+        <div className="ph-right">
+          <span className="db-clock">Last refresh: {lastRefresh}</span>
+        </div>
+      </div>
 
       <div className="main-content">
       <div className="dash-layout">
       <div className="dash-left">
-      {/* Greeting */}
-      <div className="db-greeting">
-        <h1>Good <span>{greetingTime}</span>, <span>{greetingName}</span>.</h1>
-        <p>{subtitle}</p>
-      </div>
 
       {!user && (
         <div className="home-feed-empty">

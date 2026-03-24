@@ -66,6 +66,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
   const [syncing, setSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [catsCollapsed, setCatsCollapsed] = useState(false);
   const autoSyncDone = useRef(false);
 
   // Helper to dispatch sync modal state
@@ -270,8 +271,8 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
   // Reset category selection and feed counts when navigating
   useEffect(() => {
     if (!showCategories) { setActiveCat('all'); setActiveSub(null); }
-    // Clear feed counts when leaving feeds page
-    if (pathname !== '/feeds') setFeedCounts(null);
+    // Clear feed counts and uncollapse cats when leaving feeds page
+    if (pathname !== '/feeds') { setFeedCounts(null); setCatsCollapsed(false); }
   }, [showCategories, pathname]);
 
   // Listen for feeds page to push video counts
@@ -286,7 +287,8 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
       const el = document.getElementById('sidebarCatsSection');
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-    return () => { delete window.__subsortScrollToCats; };
+    window.__subsortCollapseCats = (hide) => setCatsCollapsed(hide);
+    return () => { delete window.__subsortScrollToCats; delete window.__subsortCollapseCats; };
   }, []);
 
   // Expose full sync trigger for settings page — runs the modal flow
@@ -428,7 +430,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
               <span className="home-nav-item-label">All Categories</span>
               <span className="hnp-count">{feedCounts ? feedCounts.all : channels.length}</span>
             </button>
-            {categories.map(cat => {
+            {!catsCollapsed && categories.map(cat => {
               const subs = subcategories[cat] || [];
               const isOpen = openCats.has(cat);
               const toggleOpen = (e) => {

@@ -98,17 +98,20 @@ export default function EditChannelModal({ channelId, onClose }) {
 
         // Find existing subcategory matching name AND one of the selected categories
         let subRow = dbSubcategories.find(s => s.name === selectedSub && parentCatIds.includes(s.category_id));
+        console.log('[EditChannel] Subcat lookup:', { selectedSub, parentCatIds, found: !!subRow, dbSubCount: dbSubcategories.length });
 
         if (!subRow) {
           // Create subcategory under each selected category that doesn't have it yet
           for (const parentCat of parentCatIds.map(id => dbCategories.find(c => c.id === id)).filter(Boolean)) {
             const exists = dbSubcategories.find(s => s.name === selectedSub && s.category_id === parentCat.id);
+            console.log('[EditChannel] Creating subcat:', { name: selectedSub, catName: parentCat.name, catId: parentCat.id, alreadyExists: !!exists });
             if (!exists) {
               const { data: newSub, error: subErr } = await supabase.from('subcategories')
                 .insert({ name: selectedSub, category_id: parentCat.id, sort_order: 999, user_id: user.id })
                 .select()
                 .single();
               if (subErr) console.error('[EditChannel] Create subcategory failed:', subErr);
+              else console.log('[EditChannel] Created subcat:', newSub);
               if (newSub && !subcategoryId) subcategoryId = newSub.id;
             }
           }

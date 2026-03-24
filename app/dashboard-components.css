@@ -1438,7 +1438,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ── Primary nav rail ── */
 .home-nav-primary{
-  width:220px;flex-shrink:0;
+  width:230px;flex-shrink:0;
   background:var(--bg-card);
   border-right:1px solid var(--border-subtle);
   display:flex;flex-direction:column;
@@ -1539,7 +1539,7 @@ input[type=range]::-webkit-slider-thumb{
   font-family:var(--font-body);font-size:11px;font-weight:400;
   color:var(--text-muted);background:var(--surface-active);
   padding:1px 7px;border-radius:10px;
-  font-variant-numeric:tabular-nums;flex-shrink:0;
+  font-variant-numeric:tabular-nums;flex-shrink:0;margin-left:auto;
 }
 .home-nav-item.active .hnp-count{color:var(--accent-text);background:rgba(62,207,160,.12)}
 .home-nav-primary.collapsed .hnp-count{display:none}
@@ -1992,14 +1992,19 @@ input[type=range]::-webkit-slider-thumb{
 .feed-earlier-row:hover{border-color:rgba(255,255,255,.1);background:var(--bg-surface)}
 .feed-earlier-content{padding-left:1rem;margin-bottom:12px}
 /* Feed view modes for new layout */
-.feed-view-grid .feed-catgroup.open .feed-catgroup-content{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.feed-view-grid .feed-vrow{flex-direction:column;padding:0;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);overflow:hidden;gap:0}
+/* Grid view: cat group content becomes horizontal scroll */
+.feed-view-grid .feed-catgroup.open .feed-catgroup-content{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;flex-wrap:nowrap}
+.feed-view-grid .feed-catgroup.open .feed-catgroup-content::-webkit-scrollbar{display:none}
+.feed-view-grid .feed-vrow{flex-direction:column;padding:0;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);overflow:hidden;gap:0;flex-shrink:0;width:220px}
 .feed-view-grid .feed-vrow:hover{background:var(--bg-card);border-color:rgba(255,255,255,.1);transform:translateY(-2px)}
 .feed-view-grid .feed-vrow-thumb{width:100%;height:0;padding-bottom:56.25%;position:relative;border-radius:0}
 .feed-view-grid .feed-vrow-thumb img{position:absolute;inset:0;width:100%;height:100%}
 .feed-view-grid .feed-vrow-info{padding:.75rem}
-.feed-view-grid .feed-subchip-row{grid-column:1/-1;padding-left:0}
-.feed-view-grid .feed-loadmore{grid-column:1/-1}
+.feed-view-grid .feed-subchip-row{width:100%;flex-shrink:0;padding-left:0}
+.feed-view-grid .feed-loadmore{display:none}
+.feed-view-grid .feed-catgroup-content{position:relative}
+.feed-view-grid .feed-scroll-btn{opacity:0;pointer-events:none}
+.feed-view-grid .feed-catgroup:hover .feed-scroll-btn{opacity:1;pointer-events:auto}
 .feed-view-list .feed-vrow-thumb{width:120px}
 
 .feed-empty-msg{color:var(--text-muted);padding:1rem 0}
@@ -2166,7 +2171,8 @@ input[type=range]::-webkit-slider-thumb{
 .db-fav-feed-ctas{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.25rem;margin-top:.625rem}
 
 /* ─── Dashboard v2 ─── */
-.db-greeting{margin-bottom:1.5rem}
+.db-header-bar{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+.db-greeting{flex:1;min-width:0}
 .db-greeting h1{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.04em;margin-bottom:.375rem;color:var(--text-primary)}
 .db-greeting h1 span{color:var(--accent)}
 .db-greeting p{font-size:.875rem;color:var(--text-muted)}
@@ -2794,7 +2800,7 @@ input[type=range]::-webkit-slider-thumb{
    ═══════════════════════════════════════════ */
 
 /* Slim sidebar */
-.home-nav-primary{width:220px!important}
+.home-nav-primary{width:230px!important}
 .home-nav-primary.collapsed{width:48px!important}
 /* Nav mobile — see consolidated @media at end of file */
 
@@ -3901,7 +3907,7 @@ input[type=range]::-webkit-slider-thumb{
   .ph-search{width:100%;min-width:0}
   .ph-search-wrap{flex:1;min-width:0}
   .ph-title{font-size:1rem}
-  .ph-subtitle{font-size:.6875rem}
+  .ph-subtitle{display:none}
   .ph-filters{padding:0 16px 10px;padding-top:8px}
   /* Sticky bar + controls */
   /* sticky-bar removed */

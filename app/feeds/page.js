@@ -85,8 +85,18 @@ export default function FeedsPage() {
   // ── Sidebar callbacks ──────────────────────────────
   useEffect(() => {
     trackEvent('view_feeds');
-    window.__subsortCat = (cat) => { setActiveCategory(cat); setActiveSubcategory(null); setCatSource(cat === 'all' ? null : 'sidebar'); };
-    window.__subsortSub = (cat, sub) => { setActiveCategory(cat); setActiveSubcategory(prev => prev === sub ? null : sub); setCatSource('sidebar'); };
+    window.__subsortCat = (cat) => {
+      setActiveCategory(cat);
+      setActiveSubcategory(null);
+      setCatSource(cat === 'all' ? null : 'sidebar');
+      // When sidebar selects, uncollapse sidebar cats
+      window.__subsortCollapseCats?.(false);
+    };
+    window.__subsortSub = (cat, sub) => {
+      setActiveCategory(cat);
+      setActiveSubcategory(prev => prev === sub ? null : sub);
+      setCatSource('sidebar');
+    };
     window.__subsortCatSource = () => catSource;
     return () => { delete window.__subsortCat; delete window.__subsortSub; delete window.__subsortCatSource; };
   }, [catSource]);
@@ -386,26 +396,25 @@ export default function FeedsPage() {
           <button className={`ph-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
           <button className={`ph-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
           <button className={`ph-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
-          {catSource !== 'sidebar' && <>
-            <span className="ph-sep" />
-            {categories.map(cat => (
-              <button key={cat} className={`home-nav-item${activeCategory === cat ? ' active' : ''}`} onClick={() => {
-                const next = activeCategory === cat ? 'all' : cat;
-                setActiveCategory(next);
-                setActiveSubcategory(null);
-                setCatSource(next === 'all' ? null : 'header');
-                window.__subsortCat?.(next);
-              }}>
-                <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
-                <span className="home-nav-item-label">{cat}</span>
-              </button>
-            ))}
-          </>}
-          {catSource === 'sidebar' && activeCategory !== 'all' && (
-            <button className="ph-chip" onClick={() => { setActiveCategory('all'); setCatSource(null); window.__subsortCat?.('all'); }}>
-              Clear filter
+          <span className="ph-sep" />
+          {categories.map(cat => (
+            <button key={cat} className={`home-nav-item${activeCategory === cat ? ' active' : ''}`} onClick={() => {
+              const next = activeCategory === cat ? 'all' : cat;
+              setActiveCategory(next);
+              setActiveSubcategory(null);
+              setCatSource(next === 'all' ? null : 'header');
+              window.__subsortCat?.(next);
+              // Collapse sidebar categories when header selects
+              if (next !== 'all') {
+                window.__subsortCollapseCats?.(true);
+              } else {
+                window.__subsortCollapseCats?.(false);
+              }
+            }}>
+              <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
+              <span className="home-nav-item-label">{cat}</span>
             </button>
-          )}
+          ))}
         </>}
       />
 
@@ -469,12 +478,20 @@ export default function FeedsPage() {
                           })}
                         </div>
                       )}
-                      {videos.slice(0, getGroupLimit(`today-${cat}`, 5)).map(renderVideoRow)}
-                      {videos.length > getGroupLimit(`today-${cat}`, 5) && (
-                        <button className="feed-loadmore" onClick={() => showMore(`today-${cat}`, 5, 10)}>
-                          <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
-                          Show more
-                        </button>
+                      {feedView === 'grid' ? (
+                        <ScrollRow>
+                          {videos.map(v => renderVideoCard(v))}
+                        </ScrollRow>
+                      ) : (
+                        <>
+                          {videos.slice(0, getGroupLimit(`today-${cat}`, 5)).map(renderVideoRow)}
+                          {videos.length > getGroupLimit(`today-${cat}`, 5) && (
+                            <button className="feed-loadmore" onClick={() => showMore(`today-${cat}`, 5, 10)}>
+                              <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
+                              Show more
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -533,12 +550,20 @@ export default function FeedsPage() {
                     </div>
                     {isEarlierOpen && (
                       <div className="feed-earlier-content">
-                        {videos.slice(0, getGroupLimit(`earlier-${cat}`, 10)).map(renderVideoRow)}
-                        {videos.length > getGroupLimit(`earlier-${cat}`, 10) && (
-                          <button className="feed-loadmore" onClick={() => showMore(`earlier-${cat}`, 10, 10)}>
-                            <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
-                            Show more
-                          </button>
+                        {feedView === 'grid' ? (
+                          <ScrollRow>
+                            {videos.map(v => renderVideoCard(v))}
+                          </ScrollRow>
+                        ) : (
+                          <>
+                            {videos.slice(0, getGroupLimit(`earlier-${cat}`, 10)).map(renderVideoRow)}
+                            {videos.length > getGroupLimit(`earlier-${cat}`, 10) && (
+                              <button className="feed-loadmore" onClick={() => showMore(`earlier-${cat}`, 10, 10)}>
+                                <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
+                                Show more
+                              </button>
+                            )}
+                          </>
                         )}
                       </div>
                     )}
