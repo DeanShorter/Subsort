@@ -33,7 +33,7 @@ export default function SettingsPage() {
               <div className="settings-row-desc">{user?.email || 'Not signed in'}</div>
             </div>
             {user && (
-              <button className="settings-row-action" onClick={signOut}>Sign out</button>
+              <button className="settings-btn settings-btn-danger" onClick={signOut}>Sign out</button>
             )}
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <button
-              className="settings-row-action"
+              className="settings-btn settings-btn-accent"
               onClick={() => window.__subsortTriggerSync?.()}
               disabled={syncUsage.used >= syncUsage.max && userTier !== 'admin'}
             >
@@ -111,8 +111,7 @@ export default function SettingsPage() {
                 Get 5 daily syncs, priority feed refresh, and early access to new features.
               </div>
               <button
-                className="settings-row-action"
-                style={{ background: 'var(--accent)', color: '#111', border: 'none', fontWeight: 600 }}
+                className="settings-btn settings-btn-accent"
                 onClick={() => window.location.href = '/pricing'}
               >
                 Upgrade →

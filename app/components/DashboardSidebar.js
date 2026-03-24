@@ -73,14 +73,20 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
     window.dispatchEvent(new CustomEvent('subscrub:sync-state', { detail: state }));
   }, []);
 
-  // Auto-sync on login: sync subscriptions (API), then RSS refresh (videos)
+  // Auto-sync on login: full modal if 24h+ since last sync, silent RSS otherwise
   useEffect(() => {
     if (!user || autoSyncDone.current || syncing) return;
     autoSyncDone.current = true;
 
-    // Only auto-sync if last sync was more than 30 mins ago
+    const FULL_SYNC_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
     const lastSync = parseInt(localStorage.getItem('subsort_sync_ts') || '0');
-    if (lastSync && Date.now() - lastSync < 30 * 60 * 1000) return;
+    const elapsed = Date.now() - lastSync;
+
+    // Less than 24h — skip full sync entirely (feeds page handles silent RSS refresh)
+    if (lastSync && elapsed < FULL_SYNC_INTERVAL) {
+      console.log('[AutoSync] Last sync was', Math.round(elapsed / 60000), 'min ago — skipping full sync');
+      return;
+    }
 
     (async () => {
       setSyncing(true);
@@ -196,9 +202,10 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
         categories,
       });
 
-      // Fire RSS refresh event and save timestamp
+      // Fire RSS refresh event and save timestamps
       window.dispatchEvent(new Event('subscrub:rss-refreshed'));
       localStorage.setItem('subsort_sync_ts', String(Date.now()));
+      localStorage.setItem('subsort_rss_ts', String(Date.now()));
       console.log('[AutoSync] Complete');
 
       setSyncProgress({ label: 'Done!', detail: '', pct: 100 });
@@ -282,11 +289,90 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
     return () => { delete window.__subsortScrollToCats; };
   }, []);
 
-  // Expose sync trigger for settings page
+  // Expose full sync trigger for settings page — runs the modal flow
+  const triggerFullSync = useCallback(async () => {
+    if (!user || syncing) return;
+
+    // Check daily limits
+    const maxSyncs = userTier === 'admin' ? Infinity : userTier === 'pro' ? 5 : 1;
+    const today = new Date().toDateString();
+    const syncLog = JSON.parse(localStorage.getItem('subsort_sync_log') || '{}');
+    const todaySyncs = syncLog.date === today ? (syncLog.count || 0) : 0;
+    if (todaySyncs >= maxSyncs) {
+      showToast(userTier === 'free' ? 'Free tier: 1 sync per day. Upgrade to Pro.' : `All ${maxSyncs} syncs used today.`, 5000);
+      return;
+    }
+
+    // Clear timestamp so auto-sync logic runs with modal
+    localStorage.removeItem('subsort_sync_ts');
+    autoSyncDone.current = false;
+
+    // Directly invoke the same auto-sync flow
+    setSyncing(true);
+    window.dispatchEvent(new Event('subscrub:sync-modal-show'));
+
+    const emitSync = (d) => window.dispatchEvent(new CustomEvent('subscrub:sync-state', { detail: d }));
+
+    emitSync({ action: 'activate', step: 0, pct: 8 });
+    await new Promise(r => setTimeout(r, 800));
+    emitSync({ action: 'complete', step: 0, detail: '✓', pct: 15 });
+
+    // Step 1: Sync subscriptions
+    emitSync({ action: 'activate', step: 1, pct: 22 });
+    let subResult = null;
+    try {
+      subResult = await syncYouTubeSubscriptions(accessToken, user.id, channels, () => {});
+      emitSync({ action: 'complete', step: 1, detail: `${subResult.newCount} new`, pct: 35 });
+    } catch (e) {
+      emitSync({ action: 'complete', step: 1, detail: 'skipped', pct: 35 });
+    }
+
+    // Step 2: RSS refresh
+    emitSync({ action: 'activate', step: 2, pct: 42 });
+    let rssData = null;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        const rssRes = await fetch('/api/refresh', { method: 'POST', headers: { 'Authorization': `Bearer ${session.access_token}` } });
+        rssData = await rssRes.json();
+      }
+    } catch (e) {}
+    emitSync({ action: 'complete', step: 2, detail: `${rssData?.newVideos || 0} new`, pct: 58 });
+
+    // Step 3: Preparing feeds
+    emitSync({ action: 'activate', step: 3, pct: 65 });
+    await new Promise(r => setTimeout(r, 600));
+    emitSync({ action: 'complete', step: 3, detail: `${rssData?.channelsChecked || channels.length} checked`, pct: 75 });
+
+    // Step 4: Scrutinising
+    emitSync({ action: 'activate', step: 4, pct: 82 });
+    await new Promise(r => setTimeout(r, 1000));
+    emitSync({ action: 'complete', step: 4, detail: '✓', pct: 90 });
+
+    // Step 5: Judging
+    emitSync({ action: 'activate', step: 5, pct: 95 });
+    await new Promise(r => setTimeout(r, 2000));
+    const score = channels.length ? Math.round(((channels.length - (channels.filter(c => !c.videoCount || c.subscriberCount < 500).length)) / channels.length) * 100) : 50;
+    emitSync({ action: 'complete', step: 5, detail: `${score}%`, pct: 100 });
+
+    emitSync({ pct: 100, done: true, channels, deadChannels: [], favCount: channels.filter(c => c.favourited).length, categories });
+
+    // Save timestamps and daily count
+    const logAfter = JSON.parse(localStorage.getItem('subsort_sync_log') || '{}');
+    const countAfter = logAfter.date === today ? (logAfter.count || 0) + 1 : 1;
+    localStorage.setItem('subsort_sync_log', JSON.stringify({ date: today, count: countAfter }));
+    localStorage.setItem('subsort_sync_ts', String(Date.now()));
+    localStorage.setItem('subsort_rss_ts', String(Date.now()));
+
+    window.dispatchEvent(new Event('subscrub:rss-refreshed'));
+    await reload();
+    setSyncing(false);
+  }, [user, syncing, userTier, accessToken, channels, categories, reload]);
+
   useEffect(() => {
-    window.__subsortTriggerSync = handleSync;
+    window.__subsortTriggerSync = triggerFullSync;
     return () => { delete window.__subsortTriggerSync; };
-  }, [handleSync]);
+  }, [triggerFullSync]);
 
   // Close mobile nav on route change
   useEffect(() => {
@@ -395,6 +481,14 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
 
         {/* Settings section */}
         <div className="hnp-section">
+          {userTier === 'admin' && (
+            <NavItem
+              href="/admin"
+              label="Admin Portal"
+              svg={<><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></>}
+              isActive={isActive('/admin')}
+            />
+          )}
           {SETTINGS_ITEMS.map(item => (
             <NavItem key={item.href} {...item} isActive={isActive(item.href)} />
           ))}

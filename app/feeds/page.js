@@ -48,7 +48,7 @@ export default function FeedsPage() {
   const [openCats, setOpenCats] = useState(new Set());
   const [openEarlier, setOpenEarlier] = useState(new Set());
   const [breakDismissed, setBreakDismissed] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState(new Set());
+  const [groupLimits, setGroupLimits] = useState({});
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -131,6 +131,72 @@ export default function FeedsPage() {
     loadFromCache();
     return () => { cancelled = true; };
   }, [channels, feedVideosLoaded, setFeedVideos, channelMap]);
+
+  // ── Silent background RSS refresh (every 1 hour) ──
+  useEffect(() => {
+    if (!user || !channels.length) return;
+
+    const REFRESH_INTERVAL = 60 * 60 * 1000; // 1 hour
+    const lastRefresh = parseInt(localStorage.getItem('subsort_rss_ts') || '0');
+    const elapsed = Date.now() - lastRefresh;
+
+    if (elapsed < REFRESH_INTERVAL) return;
+
+    let cancelled = false;
+
+    async function silentRefresh() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token || cancelled) return;
+
+        console.log('[Feeds] Silent background RSS refresh…');
+        const res = await fetch('/api/refresh', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${session.access_token}` },
+        });
+        const data = await res.json();
+
+        if (!cancelled && res.ok) {
+          localStorage.setItem('subsort_rss_ts', String(Date.now()));
+          if (data.newVideos > 0) {
+            console.log(`[Feeds] Background refresh found ${data.newVideos} new videos — reloading cache`);
+            // Reload from DB cache to pick up new videos
+            const channelIds = channels.map(c => c.channelId).filter(Boolean);
+            const BATCH = 300;
+            const allCached = [];
+            const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+            for (let i = 0; i < channelIds.length; i += BATCH) {
+              const batch = channelIds.slice(i, i + BATCH);
+              const { data: rows } = await supabase.from('cached_videos').select('*').in('channel_id', batch).gte('published_at', since).order('published_at', { ascending: false }).limit(2000);
+              if (rows) allCached.push(...rows);
+            }
+
+            if (!cancelled) {
+              const vids = allCached.map(row => ({
+                id: row.video_id,
+                title: row.title || '',
+                channel: channelMap[row.channel_id]?.name || '',
+                channelId: row.channel_id,
+                thumbnail: row.thumbnail || `https://i.ytimg.com/vi/${row.video_id}/mqdefault.jpg`,
+                publishedAt: row.published_at,
+                description: '',
+                type: row.video_type || 'video',
+              }));
+              setFeedVideos(vids);
+            }
+          } else {
+            console.log('[Feeds] Background refresh — all up to date');
+          }
+        }
+      } catch (e) {
+        console.error('[Feeds] Silent refresh error:', e);
+      }
+    }
+
+    silentRefresh();
+    return () => { cancelled = true; };
+  }, [user, channels, channelMap, setFeedVideos]);
 
   // ── Filter pipeline ─────────────────────────────────
   const applyFilters = useCallback((videos) => {
@@ -225,6 +291,11 @@ export default function FeedsPage() {
       next.has(cat) ? next.delete(cat) : next.add(cat);
       return next;
     });
+  };
+
+  const getGroupLimit = (key, defaultLimit) => groupLimits[key] || defaultLimit;
+  const showMore = (key, step = 10) => {
+    setGroupLimits(prev => ({ ...prev, [key]: (prev[key] || 0) + step }));
   };
 
   // ── Render helpers ─────────────────────────────────
@@ -391,11 +462,11 @@ export default function FeedsPage() {
                           })}
                         </div>
                       )}
-                      {(expandedGroups.has(`today-${cat}`) ? videos : videos.slice(0, 5)).map(renderVideoRow)}
-                      {videos.length > 5 && !expandedGroups.has(`today-${cat}`) && (
-                        <button className="feed-loadmore" onClick={() => setExpandedGroups(prev => { const n = new Set(prev); n.add(`today-${cat}`); return n; })}>
+                      {videos.slice(0, getGroupLimit(`today-${cat}`, 5)).map(renderVideoRow)}
+                      {videos.length > getGroupLimit(`today-${cat}`, 5) && (
+                        <button className="feed-loadmore" onClick={() => showMore(`today-${cat}`, 10)}>
                           <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
-                          Show {videos.length - 5} more
+                          Show more
                         </button>
                       )}
                     </div>
@@ -455,11 +526,11 @@ export default function FeedsPage() {
                     </div>
                     {isEarlierOpen && (
                       <div style={{ paddingLeft: '1rem', marginBottom: '12px' }}>
-                        {(expandedGroups.has(`earlier-${cat}`) ? videos : videos.slice(0, 8)).map(renderVideoRow)}
-                        {videos.length > 8 && !expandedGroups.has(`earlier-${cat}`) && (
-                          <button className="feed-loadmore" onClick={() => setExpandedGroups(prev => { const n = new Set(prev); n.add(`earlier-${cat}`); return n; })}>
+                        {videos.slice(0, getGroupLimit(`earlier-${cat}`, 8)).map(renderVideoRow)}
+                        {videos.length > getGroupLimit(`earlier-${cat}`, 8) && (
+                          <button className="feed-loadmore" onClick={() => showMore(`earlier-${cat}`, 10)}>
                             <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
-                            Show {videos.length - 8} more
+                            Show more
                           </button>
                         )}
                       </div>
