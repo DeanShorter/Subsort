@@ -8,18 +8,18 @@ import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
 import RefreshButton from '../components/RefreshButton';
 
-function ScrollRow({ children }) {
+function ScrollRow({ children, className = 'feed-scroll-row', scrollAmount = 460 }) {
   const ref = useRef(null);
   const scroll = (dir) => {
     if (!ref.current) return;
-    ref.current.scrollBy({ left: dir * 460, behavior: 'smooth' });
+    ref.current.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
   };
   return (
     <div className="feed-scroll-wrap">
       <button className="feed-scroll-btn feed-scroll-btn-left" onClick={() => scroll(-1)}>
         <svg viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" /></svg>
       </button>
-      <div className="feed-scroll-row" ref={ref}>
+      <div className={className} ref={ref}>
         {children}
       </div>
       <button className="feed-scroll-btn feed-scroll-btn-right" onClick={() => scroll(1)}>
@@ -366,7 +366,7 @@ export default function FeedsPage() {
         title="Feeds"
         subtitle="Videos uploaded by your subscriptions"
         footer={
-          <div className="feed-chip-row">
+          <ScrollRow className="feed-chip-row" scrollAmount={200}>
             <button className={`feed-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
             <button className={`feed-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
             <button className={`feed-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
@@ -382,7 +382,7 @@ export default function FeedsPage() {
                 {cat}
               </button>
             ))}
-          </div>
+          </ScrollRow>
         }
       >
         {/* View toggles */}
