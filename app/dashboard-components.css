@@ -3458,8 +3458,8 @@ input[type=range]::-webkit-slider-thumb{
 /* ═══ Admin Page ═══ */
 .tier-badge{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;padding:2px 7px;border-radius:4px;margin-right:10px}
 .tier-badge.free{color:var(--text-muted);background:var(--bg-surface-raised)}
-.tier-badge.pro{color:#EF9F27;background:rgba(239,159,39,.1)}
-.tier-badge.admin{color:#E85D50;background:rgba(232,93,80,.1)}
+.tier-badge.pro{color:var(--accent);background:var(--accent-soft)}
+.tier-badge.admin{color:#EF9F27;background:rgba(239,159,39,.1)}
 .admin-live{display:flex;align-items:center;gap:6px}
 .admin-live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s ease-in-out infinite}
 .admin-live-label{font-size:11px;color:var(--accent);font-weight:500}
