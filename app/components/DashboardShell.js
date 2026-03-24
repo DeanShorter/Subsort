@@ -1,11 +1,12 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { AuthProvider } from './AuthProvider';
 import { useAuth } from './AuthContext';
 import { ChannelDataProvider } from './ChannelDataProvider';
 import DashboardSidebar from './DashboardSidebar';
+import SyncModal from './SyncModal';
 import Toast from './Toast';
 
 const DASHBOARD_ROUTES = [
@@ -28,12 +29,38 @@ function DashboardInner({ children }) {
   const pathname = usePathname();
   const showSidebar = user || ALWAYS_SIDEBAR.some(r => pathname === r || pathname.startsWith(r + '/'));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [syncModalVisible, setSyncModalVisible] = useState(false);
+  const [syncState, setSyncState] = useState(null);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
+
+  const userName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
+
+  // Listen for sync modal events from the sidebar
+  useEffect(() => {
+    const handleShow = () => setSyncModalVisible(true);
+    const handleHide = () => setSyncModalVisible(false);
+    const handleState = (e) => setSyncState(e.detail);
+
+    window.addEventListener('subscrub:sync-modal-show', handleShow);
+    window.addEventListener('subscrub:sync-modal-hide', handleHide);
+    window.addEventListener('subscrub:sync-state', handleState);
+    return () => {
+      window.removeEventListener('subscrub:sync-modal-show', handleShow);
+      window.removeEventListener('subscrub:sync-modal-hide', handleHide);
+      window.removeEventListener('subscrub:sync-state', handleState);
+    };
+  }, []);
 
   return (
     <ChannelDataProvider user={user}>
       <div className="app-shell">
+        <SyncModal
+          visible={syncModalVisible}
+          onClose={() => setSyncModalVisible(false)}
+          userName={userName}
+          syncState={syncState}
+        />
         {/* Mobile topbar — only visible at ≤640px */}
         {showSidebar && (
           <div className="mobile-topbar">
