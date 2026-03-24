@@ -16,15 +16,13 @@ export default function BlogContent({ posts }) {
           title="Blog"
           subtitle="Tips, guides, and insights on organising your YouTube subscriptions and discovering quality creators."
         />
-        <div style={{ padding: '1rem 0' }}>
-          {posts.length > 0 ? (
-            <BlogGrid posts={posts} />
-          ) : (
-            <div className={styles.empty}>
-              <p>Articles coming soon.</p>
-            </div>
-          )}
-        </div>
+        {posts.length > 0 ? (
+          <BlogGrid posts={posts} />
+        ) : (
+          <div className={styles.empty}>
+            <p>Articles coming soon.</p>
+          </div>
+        )}
       </main>
     );
   }

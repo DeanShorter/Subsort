@@ -212,7 +212,7 @@ export default function DashboardPage() {
 
   return (
     <main className="home-main">
-      <PageHeader title="Dashboard" right={<span className="db-clock">{clock}</span>} />
+      <PageHeader title="Dashboard" right={<span className="db-clock">{clock}</span>} sticky={false} />
 
       {/* Greeting */}
       <div className="db-greeting">

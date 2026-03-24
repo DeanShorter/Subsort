@@ -215,70 +215,52 @@ export default function FeedsPage() {
 
   return (
     <main className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
-      {/* Controls */}
-      <div className="sticky-bar">
-        <PageHeader title="Feeds" subtitle={`Videos uploaded by your subscriptions ${timeRange === 'today' ? 'today' : timeRange === 'week' ? 'within the last 7 days' : 'within the last 30 days'}`} />
-        <div className="ct-controls-row">
-          {/* Type filter toggle */}
-          <div className="pill-toggle">
-            <button className={`pill-toggle-btn${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
-            <button className={`pill-toggle-btn${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
-            <button className={`pill-toggle-btn${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
-          </div>
-
-          {/* Time range toggle */}
-          <div className="pill-toggle">
-            <button className={`pill-toggle-btn${timeRange === 'today' ? ' active' : ''}`} onClick={() => setTimeRange('today')}>Today</button>
-            <button className={`pill-toggle-btn${timeRange === 'week' ? ' active' : ''}`} onClick={() => setTimeRange('week')}>This Week</button>
-            <button className={`pill-toggle-btn${timeRange === 'month' ? ' active' : ''}`} onClick={() => setTimeRange('month')}>This Month</button>
-          </div>
-
-          {/* Sort */}
-          <button className="ct-pill-btn" onClick={cycleSort}>
-            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-            Sort: <span>{SORT_OPTIONS[sortIdx].label}</span>
-          </button>
-
-          {/* View toggle */}
-          <div className="view-toggles">
-            <button
-              className={`view-toggle-btn${feedView === 'list' ? ' active' : ''}`}
-              title="List"
-              onClick={() => setFeedView('list')}
-            >
-              <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
-            </button>
-            <button
-              className={`view-toggle-btn${feedView === 'hybrid' ? ' active' : ''}`}
-              title="Hybrid"
-              onClick={() => setFeedView('hybrid')}
-            >
-              <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
-            </button>
-            <button
-              className={`view-toggle-btn${feedView === 'grid' ? ' active' : ''}`}
-              title="Grid"
-              onClick={() => setFeedView('grid')}
-            >
-              <svg viewBox="0 0 14 14"><rect x="1" y="1" width="3" height="12" rx="1" /><path d="M6 3h7M6 7h7M6 11h7" /></svg>
-            </button>
-          </div>
-
-          {/* Search */}
-          <div className="feed-search-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-            <input
-              className="feed-search-input"
-              placeholder="Search videos…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-
-          {/* RSS Refresh */}
-          <RefreshButton />
+      <PageHeader
+        title="Feeds"
+        subtitle={`Videos uploaded by your subscriptions ${timeRange === 'today' ? 'today' : timeRange === 'week' ? 'within the last 7 days' : 'within the last 30 days'}`}
+      >
+        {/* Type filter toggle */}
+        <div className="pill-toggle">
+          <button className={`pill-toggle-btn${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
+          <button className={`pill-toggle-btn${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
+          <button className={`pill-toggle-btn${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
         </div>
-      </div>
+
+        {/* Time range toggle */}
+        <div className="pill-toggle">
+          <button className={`pill-toggle-btn${timeRange === 'today' ? ' active' : ''}`} onClick={() => setTimeRange('today')}>Today</button>
+          <button className={`pill-toggle-btn${timeRange === 'week' ? ' active' : ''}`} onClick={() => setTimeRange('week')}>This Week</button>
+          <button className={`pill-toggle-btn${timeRange === 'month' ? ' active' : ''}`} onClick={() => setTimeRange('month')}>This Month</button>
+        </div>
+
+        {/* Sort */}
+        <button className="ct-pill-btn" onClick={cycleSort}>
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
+          Sort: <span>{SORT_OPTIONS[sortIdx].label}</span>
+        </button>
+
+        {/* View toggle */}
+        <div className="view-toggles">
+          <button className={`view-toggle-btn${feedView === 'list' ? ' active' : ''}`} title="List" onClick={() => setFeedView('list')}>
+            <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
+          </button>
+          <button className={`view-toggle-btn${feedView === 'hybrid' ? ' active' : ''}`} title="Hybrid" onClick={() => setFeedView('hybrid')}>
+            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
+          </button>
+          <button className={`view-toggle-btn${feedView === 'grid' ? ' active' : ''}`} title="Grid" onClick={() => setFeedView('grid')}>
+            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="3" height="12" rx="1" /><path d="M6 3h7M6 7h7M6 11h7" /></svg>
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="feed-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          <input className="feed-search-input" placeholder="Search videos…" value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+
+        {/* RSS Refresh */}
+        <RefreshButton />
+      </PageHeader>
 
       {/* Video list */}
       <div className="home-section">

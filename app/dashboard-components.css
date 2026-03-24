@@ -588,18 +588,7 @@ body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-
   font-size:.6875rem;color:var(--text-muted);margin-top:1rem;
 }
 
-/* Landing responsive */
-@media(max-width:900px){
-  .landing-content{flex-direction:column;gap:2.5rem;padding:2rem 1.5rem}
-  .landing-right{flex:none;width:100%;max-width:400px}
-  .landing-title{font-size:2rem}
-  .landing-features{grid-template-columns:1fr}
-}
-@media(max-width:600px){
-  .landing-content{padding:1.5rem 1rem}
-  .landing-title{font-size:1.625rem}
-  .landing-cta-card{padding:2rem 1.5rem}
-}
+/* Landing responsive — see consolidated @media at end of file */
 .import-heading{font-family:var(--font-display);font-size:2rem;font-weight:700;margin-bottom:.625rem;letter-spacing:-.02em;color:var(--color-black)}
 .import-heading em{font-style:italic;color:var(--accent)}
 .import-subtitle{color:var(--text-secondary);font-size:.9375rem;line-height:1.6;margin-bottom:2.25rem}
@@ -981,6 +970,8 @@ input[type=range]::-webkit-slider-thumb{
 .page-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;letter-spacing:-0.3px;color:#E8E6E0}
 .page-title em{color:var(--accent);font-style:normal}
 /* ── Shared page header ── */
+.page-header-wrap{padding-top:.5rem}
+.page-header-wrap .ct-controls-row{border-bottom:none;padding-top:4px}
 .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding-bottom:0}
 .page-header-left{flex:1;min-width:0}
 .page-header-count{font-size:.8125rem;color:var(--text-muted);font-weight:500;margin-top:.25rem}
@@ -1251,10 +1242,7 @@ input[type=range]::-webkit-slider-thumb{
 }
 .pricing-faq-q{font-size:.875rem;font-weight:600;color:var(--text-primary);margin-bottom:.375rem}
 .pricing-faq-a{font-size:.8125rem;color:var(--text-secondary);line-height:1.6}
-@media(max-width:768px){
-  .pricing-grid{grid-template-columns:1fr}
-  .pricing-hero h2{font-size:1.75rem}
-}
+/* Pricing responsive — see consolidated @media at end of file */
 
 /* ─── Blog Page ─── */
 .blog-page{display:none;overflow-y:auto;flex:1;min-height:0}
@@ -1342,8 +1330,7 @@ input[type=range]::-webkit-slider-thumb{
 }
 .blog-article-cta p{font-size:.875rem;color:var(--text-secondary);margin-bottom:1.25rem}
 
-@media (max-width: 900px) { .blog-grid{grid-template-columns:repeat(2,1fr)} }
-@media (max-width: 600px) { .blog-grid{grid-template-columns:1fr} }
+/* Blog responsive — see consolidated @media at end of file */
 
 /* ─── Settings Page ─── */
 .settings-page{display:none;padding:2.5rem;max-width:700px;margin:0 auto}
@@ -1431,7 +1418,7 @@ input[type=range]::-webkit-slider-thumb{
 .home-nav-brand-wordmark .hnp-wordmark{color:var(--text-primary, #fff)}
 @media(prefers-color-scheme:light){.home-nav-brand-wordmark .hnp-wordmark{color:var(--text-primary, #1A1A1A)}}
 .home-nav-brand-icon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:none}
-@media(max-width:768px){.home-nav-primary .home-nav-brand-icon{display:block}.home-nav-primary .home-nav-brand-wordmark{display:none}}
+/* Nav brand responsive — see consolidated @media at end of file */
 .home-nav-primary.collapsed .home-nav-brand-wordmark{opacity:0;width:0;overflow:hidden}
 
 /* Collapse toggle */
@@ -1857,7 +1844,7 @@ input[type=range]::-webkit-slider-thumb{
 #homeMain.feed-view-list .feed-video-row:hover,.feed-view-list .feed-video-row:hover{padding:.625rem .75rem}
 /* Grid mode: YouTube-style cards */
 #homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-@media(max-width:1300px){#homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{grid-template-columns:repeat(2,1fr)}}
+/* Feed grid responsive — see consolidated @media at end of file */
 #homeMain.feed-view-grid .feed-video-row,.feed-view-grid .feed-video-row{flex-direction:column;padding:0;border-bottom:none;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);overflow:hidden;gap:0}
 #homeMain.feed-view-grid .feed-video-row:hover,.feed-view-grid .feed-video-row:hover{background:var(--bg-card);padding:0;margin:0;border-color:var(--color-gray-600);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
 #homeMain.feed-view-grid .feed-video-thumb,.feed-view-grid .feed-video-thumb{width:100%;height:0;padding-bottom:56.25%;position:relative;border-radius:0;flex-shrink:0}
@@ -2216,109 +2203,7 @@ input[type=range]::-webkit-slider-thumb{
 .mobile-nav-close:hover{color:var(--color-white)}
 .mobile-nav-close svg{width:16px;height:16px}
 
-/* Responsive */
-@media(max-width:1024px){
-  .home-sidebar{display:none}
-}
-@media(max-width:768px){
-  .db-body-grid{grid-template-columns:1fr}
-  .db-health-stats{margin-left:0;gap:1rem}
-  .home-nav-secondary{display:none}
-  .home-main{padding:1rem}
-  /* Stat strips: 2 cols on tablet */
-  .db-stat-strip{grid-template-columns:repeat(2,1fr)}
-  /* Bottom grid: stack */
-  .db-bottom-grid{grid-template-columns:1fr}
-  /* Page header: tighter */
-  .page-header{padding:.75rem 1rem}
-  .page-title{font-size:1.125rem}
-  /* Sticky bar: tighter */
-  .sticky-bar{padding:0 1rem}
-  /* Controls row: wrap */
-  .ct-controls-row{flex-wrap:wrap;gap:6px}
-  /* Feed grid: 1 col */
-  .db-fav-feed-grid{grid-template-columns:1fr}
-}
-@media(max-width:640px){
-  /* Show topbar, push app content below it */
-  .mobile-topbar{display:flex}
-  .app-shell{padding-top:52px}
-  /* Nav becomes a 75% drawer — hidden off-screen via left, slides in on .mobile-open */
-  .home-nav-primary,
-  .home-nav-primary.collapsed,
-  .home-nav-primary.nav-hover{
-    position:fixed!important;
-    left:-100vw!important;
-    top:0!important;bottom:0!important;
-    width:75vw!important;max-width:300px!important;
-    z-index:250!important;
-    overflow-y:auto!important;overflow-x:hidden!important;
-    padding:1.25rem .75rem!important;
-    align-items:stretch!important;
-    transition:left .25s ease!important;
-    box-shadow:none!important;
-  }
-  .home-nav-primary.mobile-open{
-    left:0!important;
-    box-shadow:4px 0 32px rgba(0,0,0,.5)!important;
-  }
-  /* Full labels always visible in drawer */
-  .home-nav-primary .home-nav-brand-text,
-  .home-nav-primary .home-nav-item-label,
-  .home-nav-primary .home-nav-section-label{display:block!important}
-  .home-nav-primary .home-nav-brand{
-    justify-content:flex-start!important;padding:0 .5rem 1rem!important;
-    align-items:center!important;
-  }
-  /* Larger touch targets and font */
-  .home-nav-primary .home-nav-item{
-    width:100%!important;height:48px!important;
-    justify-content:flex-start!important;padding:0 1rem!important;
-  }
-  .home-nav-primary .home-nav-item .home-nav-item-label{font-size:.9375rem!important}
-  .home-nav-primary .home-nav-item svg{width:20px!important;height:20px!important;opacity:1!important}
-  .home-nav-primary .home-nav-item.active::before{left:0!important}
-  .home-nav-primary .home-nav-divider{width:calc(100% - 1.5rem)!important;margin:.625rem .75rem!important}
-  /* Show close button, hide nav controls */
-  .mobile-nav-close{display:grid!important}
-  .sidebar-ctrl-wrap{display:none!important}
-  /* Channels: remove viewport-constrained layout, allow natural scroll */
-  .main-layout{overflow:visible!important;flex:none!important;padding:1rem!important}
-  .channels-area{overflow:visible!important;flex:none!important;min-height:unset!important}
-  #channelGrid{overflow:visible!important;flex:none!important;padding:.75rem 0 2rem!important}
-  .chan-view-toggle{display:none!important}
-  /* Chan header: tighten on mobile */
-  .chan-header{padding:1rem 1rem .375rem!important}
-  .chan-hdr-controls{flex-wrap:wrap}
-  .chan-topbar{padding:.625rem 1rem!important}
-  .chan-cat-row{padding:.625rem 1rem!important}
-  .chan-bulk-row{margin-left:0}
-  /* Stat strip: single col on small mobile */
-  .db-stat-strip{grid-template-columns:1fr!important}
-  /* Table: horizontal scroll */
-  .ch-table{font-size:.6875rem}
-  .ch-table th,.ch-table td{padding:6px 4px}
-  .ch-table-av{width:22px;height:22px;font-size:.5rem}
-  .ch-table-label{font-size:.6875rem}
-  .ch-badge{font-size:.5625rem;padding:1px 5px}
-  /* Page header */
-  .page-header{padding:.625rem 1rem}
-  .page-title{font-size:1rem}
-  .page-header-subtitle{font-size:.6875rem}
-  /* Home main */
-  .home-main{padding:.75rem!important}
-  /* Sticky bar */
-  .sticky-bar{padding:0 .75rem}
-  .ct-controls-row{padding:8px 0!important}
-  /* Toggle groups: smaller */
-  .pill-toggle{font-size:.6875rem}
-  .pill-toggle-btn{padding:3px 8px}
-  /* Discover: single col */
-  .disc-trend-grid,.disc-popular-grid{grid-template-columns:1fr!important}
-  .disc-ch-card{width:160px}
-  /* Feed sections */
-  .home-section{grid-template-columns:1fr!important}
-}
+/* Responsive — see consolidated @media at end of file */
 
 /* ─── Ad Placements ─── */
 .promo-slot{
@@ -2604,40 +2489,7 @@ input[type=range]::-webkit-slider-thumb{
    RESPONSIVE & UTILITIES
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-/* ─── Responsive ─── */
-@media(max-width:900px){
-  .topnav{padding:.75rem 1.25rem;gap:1rem}
-  .topnav-links{display:none}
-  .nav-search{display:none}
-  .categories-section{padding:1.25rem 1.25rem 0}
-  .main-layout{padding:1.25rem;flex-direction:column}
-  .sidebar{position:static;flex:none}
-  .channel-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
-  .mp-how-grid,.mp-pricing-grid{grid-template-columns:1fr}
-  .analytics-score-card{flex-direction:column;text-align:center}
-  .an-grid{grid-template-columns:1fr}
-  .an-sticky{position:static}
-  .an-inner{padding:1.25rem}
-  .analytics-page,.marketplace-page{padding:1.5rem 1.25rem}
-  .analytics-premium-card{padding:1.75rem 1.25rem}
-  .analytics-premium-loaded-header{flex-direction:column;gap:.75rem;align-items:flex-start}
-}
-@media(max-width:600px){
-  .topnav{padding:.625rem 1rem}
-  .categories-section{padding:1rem 1rem 0}
-  .main-layout{padding:1rem}
-  .channel-grid{grid-template-columns:1fr}
-  .onboarding-actions{flex-direction:column;align-items:stretch}
-  .detail-panel{margin:1rem;border-radius:var(--radius-lg)}
-  .detail-header{padding:0 1.25rem;gap:1rem;flex-wrap:wrap}
-  .detail-header-actions{width:100%;justify-content:flex-start}
-  .detail-body{padding:1.25rem}
-  .detail-info-grid{grid-template-columns:1fr}
-  .detail-actions{flex-direction:column}
-  .discover-card{flex-direction:column}
-  .discover-card-left{flex:0 0 120px;width:100%}
-  .analytics-page,.marketplace-page{padding:1rem}
-}
+/* Legacy responsive — see consolidated @media at end of file */
 
 /* ─── Animations ─── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -2650,12 +2502,7 @@ input[type=range]::-webkit-slider-thumb{
 /* Slim sidebar */
 .home-nav-primary{width:220px!important}
 .home-nav-primary.collapsed{width:48px!important}
-@media(max-width:640px){
-  .home-nav-primary,.home-nav-primary.collapsed,.home-nav-primary.nav-hover{
-    width:75vw!important;max-width:300px!important;left:-100vw!important;
-  }
-  .home-nav-primary.mobile-open{left:0!important}
-}
+/* Nav mobile — see consolidated @media at end of file */
 
 /* Hide old chrome */
 #promoBanner{display:none!important}
@@ -2731,8 +2578,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* 3-col grid (hybrid default) */
 #channelGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:.875rem!important;padding:1.25rem 1.5rem 2rem!important;align-content:start}
-@media(max-width:1200px){#channelGrid{grid-template-columns:repeat(2,1fr)!important}}
-@media(max-width:700px){#channelGrid{grid-template-columns:1fr!important}}
+/* Channel grid responsive — see consolidated @media at end of file */
 
 /* View toggle: list */
 #channelGrid.view-list{grid-template-columns:1fr!important;gap:0!important;padding:0!important}
@@ -2753,8 +2599,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* View toggle: grid (YouTube-style) */
 #channelGrid.view-grid{grid-template-columns:repeat(4,1fr)!important}
-@media(max-width:1400px){#channelGrid.view-grid{grid-template-columns:repeat(3,1fr)!important}}
-@media(max-width:900px){#channelGrid.view-grid{grid-template-columns:repeat(2,1fr)!important}}
+/* Channel grid view responsive — see consolidated @media at end of file */
 
 /* View toggle button group */
 .chan-view-toggle{display:flex;align-items:center;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0}
@@ -3378,7 +3223,7 @@ input[type=range]::-webkit-slider-thumb{
 .compare-verdict{font-size:12px;color:var(--text-secondary);text-align:center;position:relative;z-index:1;padding-top:12px;border-top:1px solid var(--border-subtle)}
 .compare-verdict strong{color:var(--text-primary);font-weight:500}
 
-@media(max-width:640px){.share-cards-grid{grid-template-columns:1fr}.share-card{padding:16px 20px}.share-ring{width:56px;height:56px}.share-ring-val{font-size:18px}.share-verdict-title{font-size:13px}.share-stat-num{font-size:14px}.share-square{max-width:100%}}
+/* Share cards responsive — see consolidated @media at end of file */
 
 /* Pill toggle group (text-based, like view-toggles but for labels) */
 .pill-toggle{display:flex;border:1px solid var(--border-subtle);border-radius:8px;overflow:hidden}
@@ -3572,7 +3417,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ── Achievement badges ── */
 .badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;margin-bottom:.25rem}
-@media(max-width:640px){.badge-grid{grid-template-columns:repeat(2,1fr)}}
+/* Badge grid responsive — see consolidated @media at end of file */
 .badge-card{position:relative;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:.875rem 1rem;display:flex;flex-direction:column;gap:.25rem;overflow:hidden;transition:border-color .2s}
 .badge-card:not(.badge-locked):hover{border-color:#555}
 .badge-locked{opacity:.45}
@@ -3638,3 +3483,218 @@ input[type=range]::-webkit-slider-thumb{
 .unsub-btn-cancel:hover{color:var(--text-primary);border-color:#555;background:var(--bg-surface-raised)}
 .unsub-btn-confirm{display:block;background:rgba(232,93,80,.12);border:1px solid rgba(232,93,80,.3);color:#E85D50;font:.875rem/1 var(--font-body);font-weight:600;padding:.625rem 1rem;border-radius:var(--radius-sm);cursor:pointer;text-decoration:none;transition:all .2s var(--transition)}
 .unsub-btn-confirm:hover{background:rgba(232,93,80,.2);border-color:rgba(232,93,80,.5)}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONSOLIDATED RESPONSIVE BREAKPOINTS
+   Standard breakpoints: 1200px / 900px / 640px / 480px
+   All responsive styles live here — do not scatter @media elsewhere
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1200px: Narrow desktop / large tablet ── */
+@media(max-width:1200px){
+  /* Channel grids: 3→2 cols */
+  #channelGrid{grid-template-columns:repeat(2,1fr)!important}
+  #channelGrid.view-grid{grid-template-columns:repeat(3,1fr)!important}
+  /* Feed grid: 3→2 cols */
+  #homeMain.feed-view-grid .home-section,.feed-view-grid .home-section{grid-template-columns:repeat(2,1fr)}
+  /* Sidebar: hide on narrow screens */
+  .home-sidebar{display:none}
+}
+
+/* ── 900px: Tablet ── */
+@media(max-width:900px){
+  /* Nav */
+  .topnav{padding:.75rem 1.25rem;gap:1rem}
+  .topnav-links,.nav-search{display:none}
+  .home-nav-primary .home-nav-brand-icon{display:block}
+  .home-nav-primary .home-nav-brand-wordmark{display:none}
+  /* Layout */
+  .main-layout{padding:1.25rem;flex-direction:column}
+  .home-main{padding:1rem}
+  .home-nav-secondary{display:none}
+  .sidebar{position:static;flex:none}
+  /* Page header */
+  .page-header-wrap{padding-top:.25rem}
+  .page-header{padding:.75rem 0}
+  .page-title{font-size:1.125rem}
+  .sticky-bar{padding:0 1rem}
+  /* Controls: wrap */
+  .ct-controls-row{flex-wrap:wrap;gap:6px}
+  /* Grids */
+  .db-body-grid,.db-bottom-grid{grid-template-columns:1fr}
+  .db-stat-strip{grid-template-columns:repeat(2,1fr)}
+  .db-health-stats{margin-left:0;gap:1rem}
+  .db-fav-feed-grid{grid-template-columns:1fr}
+  .channel-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  #channelGrid.view-grid{grid-template-columns:repeat(2,1fr)!important}
+  /* Analytics */
+  .analytics-score-card{flex-direction:column;text-align:center}
+  .an-grid{grid-template-columns:1fr}
+  .an-sticky{position:static}
+  .an-inner{padding:1.25rem}
+  .analytics-page,.marketplace-page{padding:1.5rem 1.25rem}
+  .analytics-premium-card{padding:1.75rem 1.25rem}
+  .analytics-premium-loaded-header{flex-direction:column;gap:.75rem;align-items:flex-start}
+  /* Pricing */
+  .pricing-grid{grid-template-columns:1fr}
+  .pricing-hero h2{font-size:1.75rem}
+  .mp-how-grid,.mp-pricing-grid{grid-template-columns:1fr}
+  /* Blog */
+  .blog-grid{grid-template-columns:repeat(2,1fr)}
+  /* Landing */
+  .landing-content{flex-direction:column;gap:2.5rem;padding:2rem 1.5rem}
+  .landing-right{flex:none;width:100%;max-width:400px}
+  .landing-title{font-size:2rem}
+  .landing-features{grid-template-columns:1fr}
+  /* Categories */
+  .categories-section{padding:1.25rem 1.25rem 0}
+  /* Subscriptions: table scroll */
+  .ch-table{display:block;overflow-x:auto}
+  /* List view: stack stats */
+  .ch-list-row{flex-wrap:wrap;gap:.5rem}
+  .ch-list-row .ch-name{max-width:none;flex:1 1 100%}
+}
+
+/* ── 640px: Mobile ── */
+@media(max-width:640px){
+  /* Mobile topbar + drawer nav */
+  .mobile-topbar{display:flex}
+  .app-shell{padding-top:52px}
+  .home-nav-primary,
+  .home-nav-primary.collapsed,
+  .home-nav-primary.nav-hover{
+    position:fixed!important;left:-100vw!important;
+    top:0!important;bottom:0!important;
+    width:75vw!important;max-width:300px!important;
+    z-index:250!important;
+    overflow-y:auto!important;overflow-x:hidden!important;
+    padding:1.25rem .75rem!important;
+    align-items:stretch!important;
+    transition:left .25s ease!important;
+    box-shadow:none!important;
+  }
+  .home-nav-primary.mobile-open{
+    left:0!important;
+    box-shadow:4px 0 32px rgba(0,0,0,.5)!important;
+  }
+  .home-nav-primary .home-nav-brand-text,
+  .home-nav-primary .home-nav-item-label,
+  .home-nav-primary .home-nav-section-label{display:block!important}
+  .home-nav-primary .home-nav-brand{
+    justify-content:flex-start!important;padding:0 .5rem 1rem!important;
+    align-items:center!important;
+  }
+  .home-nav-primary .home-nav-item{
+    width:100%!important;height:48px!important;
+    justify-content:flex-start!important;padding:0 1rem!important;
+  }
+  .home-nav-primary .home-nav-item .home-nav-item-label{font-size:.9375rem!important}
+  .home-nav-primary .home-nav-item svg{width:20px!important;height:20px!important;opacity:1!important}
+  .home-nav-primary .home-nav-item.active::before{left:0!important}
+  .home-nav-primary .home-nav-divider{width:calc(100% - 1.5rem)!important;margin:.625rem .75rem!important}
+  .mobile-nav-close{display:grid!important}
+  .sidebar-ctrl-wrap{display:none!important}
+  /* Layout */
+  .home-main{padding:.75rem!important}
+  /* Page header */
+  .page-header{padding:.5rem 0}
+  .page-title{font-size:1rem}
+  .page-header-subtitle{font-size:.6875rem}
+  .page-header-wrap{padding-top:.25rem}
+  /* Sticky bar + controls */
+  .sticky-bar{padding:0 .75rem;margin:0 -.75rem}
+  .ct-controls-row{padding:6px 0!important;gap:4px!important}
+  .ct-pill-btn{font-size:11px;padding:4px 8px}
+  .pill-toggle{font-size:.6875rem}
+  .pill-toggle-btn{padding:3px 8px}
+  .view-toggles{display:none}
+  /* Stat strip */
+  .db-stat-strip{grid-template-columns:1fr!important}
+  /* Channel grid */
+  #channelGrid{grid-template-columns:1fr!important;overflow:visible!important;flex:none!important;padding:.75rem 0 2rem!important}
+  .main-layout{overflow:visible!important;flex:none!important;padding:.75rem!important}
+  .channels-area{overflow:visible!important;flex:none!important;min-height:unset!important}
+  .chan-view-toggle{display:none!important}
+  .chan-header{padding:.75rem .75rem .375rem!important}
+  .chan-hdr-controls{flex-wrap:wrap}
+  .chan-topbar{padding:.5rem .75rem!important}
+  .chan-cat-row{padding:.5rem .75rem!important}
+  .chan-bulk-row{margin-left:0}
+  /* Subscriptions: category row + uncat row */
+  .ct-cat-row{flex-wrap:wrap;gap:.375rem;padding:.5rem 0}
+  .ct-subcat-pills{flex-wrap:wrap;gap:.25rem}
+  .chan-uncat-row{flex-wrap:wrap;gap:.375rem}
+  /* Subscriptions: table */
+  .ch-table{font-size:.6875rem}
+  .ch-table th,.ch-table td{padding:6px 4px}
+  .ch-table-av{width:22px;height:22px;font-size:.5rem}
+  .ch-table-label{font-size:.6875rem}
+  .ch-badge{font-size:.5625rem;padding:1px 5px}
+  .ch-table-resizer{display:none}
+  /* Subscriptions: list view */
+  .ch-list-row{padding:.5rem .75rem}
+  .ch-list-row .ch-name{font-size:.75rem;min-width:80px;max-width:140px}
+  .ch-list-stat{font-size:.6875rem;min-width:48px}
+  .ch-list-row .ch-badges{display:none}
+  /* Feed */
+  .home-section{grid-template-columns:1fr!important}
+  .feed-search-wrap{min-width:0;width:100%}
+  .feed-video-body{padding:.5rem .75rem}
+  .feed-video-title{font-size:.8125rem}
+  /* Discover */
+  .disc-trend-grid,.disc-popular-grid{grid-template-columns:1fr!important}
+  .disc-ch-card{width:160px}
+  .disc-ch-scroll{gap:.5rem}
+  /* Share cards */
+  .share-cards-grid{grid-template-columns:1fr}
+  .share-card{padding:16px 20px}
+  .share-ring{width:56px;height:56px}
+  .share-ring-val{font-size:18px}
+  .share-verdict-title{font-size:13px}
+  .share-stat-num{font-size:14px}
+  .share-square{max-width:100%}
+  .badge-grid{grid-template-columns:repeat(2,1fr)}
+  /* Blog */
+  .blog-grid{grid-template-columns:1fr}
+  /* Landing */
+  .landing-content{padding:1.5rem 1rem}
+  .landing-title{font-size:1.625rem}
+  .landing-cta-card{padding:2rem 1.5rem}
+  /* Analytics + marketplace */
+  .analytics-page,.marketplace-page{padding:1rem}
+  /* Detail panel */
+  .detail-panel{margin:.75rem;border-radius:var(--radius-lg)}
+  .detail-header{padding:0 1rem;gap:.75rem;flex-wrap:wrap}
+  .detail-header-actions{width:100%;justify-content:flex-start}
+  .detail-body{padding:1rem}
+  .detail-info-grid{grid-template-columns:1fr}
+  .detail-actions{flex-direction:column}
+  /* Onboarding */
+  .onboarding-actions{flex-direction:column;align-items:stretch}
+  /* Discover cards */
+  .discover-card{flex-direction:column}
+  .discover-card-left{flex:0 0 120px;width:100%}
+}
+
+/* ── 480px: Small mobile ── */
+@media(max-width:480px){
+  /* Even tighter spacing */
+  .home-main{padding:.5rem!important}
+  .page-title{font-size:.9375rem}
+  /* Stack pill toggles */
+  .ct-controls-row{flex-direction:column;align-items:stretch}
+  .pill-toggle{width:100%;justify-content:center}
+  .ct-pill-btn{width:100%;justify-content:center}
+  /* Feed search full width */
+  .feed-search-wrap{max-width:none!important}
+  /* Subscriptions: compact list */
+  .ch-list-row .ch-name{max-width:120px}
+  .ch-list-stat{display:none}
+  /* Stat cards */
+  .db-stat-card{padding:.75rem}
+  .db-stat-value{font-size:1.25rem}
+  /* Share cards: extra compact */
+  .share-card{aspect-ratio:auto;padding:14px 16px}
+  .share-stats{gap:8px}
+  .share-stat-label{font-size:8px}
+}

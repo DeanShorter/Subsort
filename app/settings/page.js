@@ -10,7 +10,7 @@ export default function SettingsPage() {
 
   return (
     <main style={{ padding: '2.5rem', maxWidth: 700, margin: '0 auto', overflowY: 'auto', flex: 1 }}>
-      <PageHeader title="Settings" subtitle="Manage your account, preferences, and connected services" />
+      <PageHeader title="Settings" subtitle="Manage your account, preferences, and connected services" sticky={false} />
 
       {/* Account */}
       <section style={{ marginBottom: '2rem' }}>
