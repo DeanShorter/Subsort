@@ -399,19 +399,6 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
             <NavItem key={item.href} {...item} isActive={isActive(item.href)} />
           ))}
 
-          {/* Sync */}
-          {user && (
-            <button className={`home-nav-item${syncing ? ' active' : ''}`} onClick={handleSync} disabled={syncing}>
-              <svg viewBox="0 0 16 16" className={syncing ? 'spin' : ''}>
-                <path d="M13.5 2.5v4h-4M2.5 13.5v-4h4" />
-                <path d="M2.5 7.5a5.5 5.5 0 019.4-2.5M13.5 8.5a5.5 5.5 0 01-9.4 2.5" />
-              </svg>
-              <span className="home-nav-item-label">
-                {syncProgress ? syncProgress.label : 'Sync'}
-              </span>
-            </button>
-          )}
-
           {/* Auth */}
           {user ? (
             <button className="home-nav-item" onClick={signOut}>
