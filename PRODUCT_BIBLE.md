@@ -69,6 +69,52 @@ Examples:
 - "347 channels. That's not a subscription list, that's a census."
 - "You've been subscribed for 3 years and watched 2 videos. That's commitment to something, just not their content."
 
+### Emoji usage
+Native system emojis only — no emoji library needed. Emojis appear in personality content (roast cards, badges, empty states, thermometer labels, notifications). Never in structural UI elements (nav items, table headers, button labels, page titles).
+
+Render at 32px for empty state hero icons, 16-18px inline with text in cards and badges.
+
+**Feed health thermometer:**
+- 🔥 Dumpster fire (0-30%)
+- 😬 Needs an intervention (30-50%)
+- 😐 Getting there (50-70%)
+- 😎 Looking sharp (70-85%)
+- ✨ Almost perfect (85-95%)
+- 🤨 Suspiciously clean (95-100%)
+
+**Achievement badges:**
+- 🧹 First scrub
+- 👻 Ghost hunter
+- 🚨 Serial subscriber
+- 👑 Category royalty
+- ⭐ Picky viewer
+- 🔒 Streak machine (locked)
+
+**Empty states:**
+- 😴 No new uploads / nothing here
+- ✨ Spotless (all clean after scrub)
+- 🤷 No search results
+- 🧹 All scrubbed (post-cleanup)
+- 😶 No videos this week
+- 🐕 Amygdala scrub / take a breather
+
+**Roast card reactions:**
+- 💀 Devastating stats
+- 😅 Ironic callouts (fitness/gaming)
+- 🫡 High score respect
+
+**Notifications:**
+- 📉 Score dropped
+- 🎉 Score improved
+- 🔔 Weekly nudge
+
+**Tier badges (text, not emoji):**
+- Free: no badge (default state)
+- Pro: mint dim bg, mint text — `rgba(62, 207, 160, 0.12)` / `#3ECFA0`
+- Pro+: amber dim bg, amber text — `rgba(239, 159, 39, 0.1)` / `#EF9F27`
+
+Note: avoid 🫥 (dotted line face) — too new, may not render on older Android. Use 😶 as a safe alternative.
+
 ---
 
 ## 3. Design system

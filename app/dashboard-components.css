@@ -1419,20 +1419,25 @@ input[type=range]::-webkit-slider-thumb{
   flex-shrink:0;
   min-height:50px;
 }
-.home-nav-primary.collapsed .hnp-header{justify-content:center;padding:14px 10px 12px}
-.home-nav-brand{display:flex;align-items:center;gap:8px;flex:1;min-width:0;overflow:hidden}
+.home-nav-primary.collapsed .hnp-header{justify-content:center;padding:14px 6px 12px}
+.hnp-brand-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;overflow:hidden}
+.home-nav-brand{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
 .home-nav-brand-wordmark{
   font-family:var(--font-display);font-size:22px;font-weight:700;
   letter-spacing:-0.5px;
   white-space:nowrap;line-height:1;flex-shrink:0;cursor:pointer;
   transition:opacity .2s;
 }
-.home-nav-brand-wordmark span{color:var(--accent-text)}
-.home-nav-brand-wordmark .hnp-wordmark{color:var(--text-primary, #fff)}
-@media(prefers-color-scheme:light){.home-nav-brand-wordmark .hnp-wordmark{color:var(--text-primary, #1A1A1A)}}
+.home-nav-brand-wordmark span{color:var(--text-primary)}
+.home-nav-brand-wordmark .hnp-wordmark{color:var(--accent)}
 .home-nav-brand-icon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:none}
-/* Nav brand responsive — see consolidated @media at end of file */
+/* Tier badge below logo */
+.hnp-brand-group .tier-badge{align-self:flex-start;margin-right:0}
+/* Collapsed nav */
 .home-nav-primary.collapsed .home-nav-brand-wordmark{opacity:0;width:0;overflow:hidden}
+.home-nav-primary.collapsed .home-nav-brand-icon{display:block}
+.home-nav-primary.collapsed .hnp-brand-group{align-items:center}
+.home-nav-primary.collapsed .hnp-brand-group .tier-badge{font-size:7px;padding:1px 5px;align-self:center}
 
 /* Collapse toggle */
 .hnp-collapse-btn{
@@ -1463,7 +1468,7 @@ input[type=range]::-webkit-slider-thumb{
   text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);
   padding:8px 8px 6px;white-space:nowrap;display:block;
 }
-.home-nav-primary.collapsed .home-nav-section-label{display:none}
+.home-nav-primary.collapsed .home-nav-section-label,.home-nav-primary.collapsed .hnp-section-label{display:none}
 
 /* Nav items */
 .home-nav-item{
@@ -1767,7 +1772,6 @@ input[type=range]::-webkit-slider-thumb{
 .home-main{
   flex:1;min-width:0;overflow-y:auto;
   padding:1.75rem 2rem;
-  background:var(--bg-card);
 }
 .home-main-header{margin-bottom:1.75rem}
 .home-main-header h1{

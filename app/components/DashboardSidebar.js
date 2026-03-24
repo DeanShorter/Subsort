@@ -384,13 +384,15 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
     <nav className={`home-nav-primary${collapsed ? ' collapsed' : ''}${mobileOpen ? ' mobile-open' : ''}`}>
       {/* Header */}
       <div className="hnp-header">
-        <Link href="/dashboard" className="home-nav-brand" style={{ textDecoration: 'none' }}>
-          <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-icon" />
-          <span className="home-nav-brand-wordmark">
-            <span className="hnp-wordmark">sub</span><span>scrub</span>
-          </span>
-        </Link>
-        {user && <span className={`tier-badge ${userTier}`}>{userTier}</span>}
+        <div className="hnp-brand-group">
+          <Link href="/dashboard" className="home-nav-brand" style={{ textDecoration: 'none' }}>
+            <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-icon" />
+            <span className="home-nav-brand-wordmark">
+              <span className="hnp-wordmark">sub</span><span>scrub</span>
+            </span>
+          </Link>
+          {user && <span className={`tier-badge ${userTier}`}>{userTier}</span>}
+        </div>
         <button className="hnp-collapse-btn" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand' : 'Collapse'}>
           <svg viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" /></svg>
         </button>
@@ -415,7 +417,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
         {/* Categories section — only on subscriptions & feeds */}
         {showCategories && categories.length > 0 && (
           <div className="hnp-section" id="sidebarCatsSection">
-            <div className="hnp-section-label">CATEGORIES</div>
+            <div className="hnp-section-label">FILTER BY CATEGORY</div>
             <button className={`home-nav-item${activeCat === 'all' ? ' active' : ''}`} onClick={() => { setActiveCat('all'); setActiveSub(null); window.__subsortCat?.('all'); }}>
               <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
               <span className="home-nav-item-label">All Categories</span>

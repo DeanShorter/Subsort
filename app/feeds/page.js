@@ -361,7 +361,7 @@ export default function FeedsPage() {
   }
 
   return (
-    <main id="homeMain" className="home-main">
+    <main className="home-main">
       <PageHeader
         title="Feeds"
         subtitle="Videos uploaded by your subscriptions"
