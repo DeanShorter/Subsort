@@ -3273,8 +3273,8 @@ input[type=range]::-webkit-slider-thumb{
 .sync-checklist{display:flex;flex-direction:column;gap:4px;margin-bottom:28px}
 .sync-check-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;transition:all .3s ease;opacity:0;transform:translateY(8px)}
 .sync-check-item.revealed{opacity:.3;transform:translateY(0)}
-.sync-check-item.active{opacity:1;background:var(--bg-card);border:1px solid var(--border-subtle)}
-.sync-check-item.done{opacity:1;background:transparent;border:1px solid transparent}
+.sync-check-item.active{opacity:1!important;transform:translateY(0)!important;background:var(--bg-card);border:1px solid var(--border-subtle)}
+.sync-check-item.done{opacity:1!important;transform:translateY(0)!important;background:transparent;border:1px solid transparent}
 .sync-check-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
 .sync-check-icon.pending{border:1.5px solid var(--bg-surface-raised)}
 .sync-check-icon.spinning{border:1.5px solid var(--accent);border-top-color:transparent;animation:spin .6s linear infinite}
