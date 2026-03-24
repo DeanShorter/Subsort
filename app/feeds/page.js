@@ -569,19 +569,19 @@ export default function FeedsPage() {
                             >
                               All <span className="feed-earlier-sub-count">{videos.length}</span>
                             </button>
-                            {catSubs.map(sub => {
-                              const subCount = videos.filter(v => channelMap[v.channelId]?.subcategory === sub).length;
-                              return (
+                            {catSubs
+                              .map(sub => ({ sub, count: videos.filter(v => channelMap[v.channelId]?.subcategory === sub).length }))
+                              .sort((a, b) => b.count - a.count)
+                              .map(({ sub, count }) => (
                                 <button
                                   key={sub}
                                   className={`feed-earlier-sub-btn${activeSub === sub ? ' active' : ''}`}
                                   onClick={e => { e.stopPropagation(); setEarlierSubFilter(prev => ({ ...prev, [cat]: activeSub === sub ? null : sub })); }}
                                 >
                                   <span className="hnp-cat-slash" style={{ color: catCol }}>/</span>
-                                  {sub} <span className="feed-earlier-sub-count">{subCount}</span>
+                                  {sub} <span className="feed-earlier-sub-count">{count}</span>
                                 </button>
-                              );
-                            })}
+                              ))}
                           </div>
                         )}
 

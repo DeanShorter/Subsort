@@ -2013,7 +2013,7 @@ input[type=range]::-webkit-slider-thumb{
 .feed-earlier-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .feed-earlier-name{font-size:13px;font-weight:500;color:var(--text-secondary);flex:1}
 /* Subcategory scroller inside earlier rows */
-.feed-earlier-subs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 0 10px;margin-bottom:4px}
+.feed-earlier-subs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 0;margin:0}
 .feed-earlier-subs::-webkit-scrollbar{display:none}
 .feed-earlier-sub-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:500;font-family:var(--font-body);color:var(--text-muted);background:transparent;border:1px solid var(--border-subtle);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .feed-earlier-sub-btn:hover{border-color:var(--border-hover);color:var(--text-secondary);background:var(--bg-surface)}
