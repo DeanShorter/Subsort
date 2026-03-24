@@ -263,29 +263,28 @@ export default function FeedsPage() {
       </PageHeader>
 
       {/* Video list */}
-      <div className="home-section">
-        {quotaExceeded ? (
-          <div style={{ padding: '2rem 0', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '.5rem' }}>YouTube API quota exceeded for today.</p>
-            <p style={{ color: 'var(--text-muted)', fontSize: '.8125rem' }}>Quota resets at midnight Pacific Time. Cached videos will show if available.</p>
-          </div>
-        ) : tokenExpired ? (
-          <div style={{ padding: '2rem 0', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '.75rem' }}>Your YouTube session has expired.</p>
-            <button className="ct-pill-btn ct-pill-accent" onClick={signIn}>
-              Reconnect YouTube
-            </button>
-          </div>
-        ) : loadingVideos ? (
-          <div className="home-feed-loading"><span className="spinner" /> Fetching latest videos…</div>
-        ) : !accessToken ? (
-          <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>Connect YouTube to see recent videos.</p>
-        ) : filtered.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>
-            {allVideos.length === 0 ? 'No videos in the last 14 days.' : 'No videos match your filters.'}
-          </p>
-        ) : (
-          <div className="home-section">
+      {quotaExceeded ? (
+        <div style={{ padding: '2rem 0', textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '.5rem' }}>YouTube API quota exceeded for today.</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '.8125rem' }}>Quota resets at midnight Pacific Time. Cached videos will show if available.</p>
+        </div>
+      ) : tokenExpired ? (
+        <div style={{ padding: '2rem 0', textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '.75rem' }}>Your YouTube session has expired.</p>
+          <button className="ct-pill-btn ct-pill-accent" onClick={signIn}>
+            Reconnect YouTube
+          </button>
+        </div>
+      ) : loadingVideos ? (
+        <div className="home-feed-loading"><span className="spinner" /> Fetching latest videos…</div>
+      ) : !accessToken ? (
+        <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>Connect YouTube to see recent videos.</p>
+      ) : filtered.length === 0 ? (
+        <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>
+          {allVideos.length === 0 ? 'No videos in the last 14 days.' : 'No videos match your filters.'}
+        </p>
+      ) : (
+        <div className="home-section">
             {filtered.map(v => {
               const ch = channels.find(c => c.channelId === v.channelId || c.name === v.channel);
               const cats = ch ? chCats(ch) : [];
@@ -340,7 +339,6 @@ export default function FeedsPage() {
             })}
           </div>
         )}
-      </div>
     </main>
   );
 }
