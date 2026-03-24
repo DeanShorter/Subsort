@@ -329,7 +329,15 @@ export default function FeedsPage() {
         <div className="feed-vcard-info">
           <div className="feed-vcard-title">{v.title}</div>
           <div className="feed-vcard-channel">{v.channel}{v.publishedAt ? ` · ${timeAgo(v.publishedAt)}` : ''}</div>
-          {catLabel && <span className="feed-vcard-tag" style={catCol ? { background: `${catCol}22`, color: catCol } : {}}>{catLabel}</span>}
+          <div className="feed-vcard-tags">
+            {catLabel && <span className="feed-vcard-tag" style={catCol ? { background: `${catCol}22`, color: catCol } : {}}>{catLabel}</span>}
+            {ch?.subcategory && (
+              <span className="feed-vcard-subcat">
+                <span className="hnp-cat-slash" style={{ color: catCol || 'var(--accent)' }}>/</span>
+                {ch.subcategory}
+              </span>
+            )}
+          </div>
         </div>
       </a>
     );
