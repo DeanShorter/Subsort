@@ -88,7 +88,7 @@ export async function POST(request) {
             thumbnail: video.thumbnail,
             published_at: video.publishedAt,
             playlist_type: 'uploads',
-            video_type: video.isShort ? 'short' : 'video',
+            video_type: video.videoType || (video.isShort ? 'short' : 'video'),
             fetched_at: new Date().toISOString(),
           });
         }

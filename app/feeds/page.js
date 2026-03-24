@@ -171,8 +171,10 @@ export default function FeedsPage() {
     }
 
     // Type filter
-    if (typeFilter === 'shorts') result = result.filter(v => v.type === 'short');
-    else if (typeFilter === 'videos') result = result.filter(v => v.type !== 'short');
+    if (typeFilter === 'videos') result = result.filter(v => v.type === 'video');
+    else if (typeFilter === 'shorts') result = result.filter(v => v.type === 'short');
+    else if (typeFilter === 'suspected_video') result = result.filter(v => v.type === 'suspected_video');
+    else if (typeFilter === 'suspected_short') result = result.filter(v => v.type === 'suspected_short');
 
     // Search
     if (search) {
@@ -223,6 +225,8 @@ export default function FeedsPage() {
           <div className="pill-toggle">
             <button className={`pill-toggle-btn${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
             <button className={`pill-toggle-btn${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
+            <button className={`pill-toggle-btn${typeFilter === 'suspected_video' ? ' active' : ''}`} onClick={() => setTypeFilter('suspected_video')}>Suspected Videos</button>
+            <button className={`pill-toggle-btn${typeFilter === 'suspected_short' ? ' active' : ''}`} onClick={() => setTypeFilter('suspected_short')}>Suspected Shorts</button>
             <button className={`pill-toggle-btn${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
           </div>
 
@@ -330,6 +334,8 @@ export default function FeedsPage() {
                       </div>
                     )}
                     {v.type === 'short' && <span className="feed-shorts-badge">SHORT</span>}
+                    {v.type === 'suspected_short' && <span className="feed-shorts-badge" style={{ opacity: 0.6 }}>SHORT?</span>}
+                    {v.type === 'suspected_video' && <span className="feed-shorts-badge" style={{ background: 'var(--text-muted)', opacity: 0.5 }}>VIDEO?</span>}
                   </div>
                   <div className="feed-video-body">
                     <div className="feed-video-title">{v.title}</div>
