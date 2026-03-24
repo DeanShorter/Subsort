@@ -6,7 +6,7 @@ import BlogGrid from './BlogGrid';
 import PageHeader from '../components/PageHeader';
 import styles from './blog.module.css';
 
-const CATEGORIES = ['All', 'Guides', 'Insights', 'Tips', 'Behind the scenes'];
+const CATEGORIES = ['All', 'Product', 'Guide', 'Data', 'Update', 'Tutorial', 'Opinion', 'News'];
 
 export default function BlogContent({ posts }) {
   const { user } = useAuth();

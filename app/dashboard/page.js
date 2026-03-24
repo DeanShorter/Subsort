@@ -18,13 +18,21 @@ export default function DashboardPage() {
   } = useChannelData();
 
   const [favVideos, setFavVideos] = useState([]);
-  const [clock, setClock] = useState('');
+  const [lastRefresh, setLastRefresh] = useState('');
 
-  // ── Clock ──────────────────────────────────────────────
+  // ── Last refresh time ─────────────────────────────────
   useEffect(() => {
-    const update = () => setClock(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+    const update = () => {
+      const ts = parseInt(localStorage.getItem('subsort_rss_ts') || localStorage.getItem('subsort_sync_ts') || '0');
+      if (!ts) { setLastRefresh('Never'); return; }
+      const diff = Date.now() - ts;
+      if (diff < 60000) setLastRefresh('Just now');
+      else if (diff < 3600000) setLastRefresh(`${Math.floor(diff / 60000)}m ago`);
+      else if (diff < 86400000) setLastRefresh(`${Math.floor(diff / 3600000)}h ago`);
+      else setLastRefresh(new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }));
+    };
     update();
-    const id = setInterval(update, 30000);
+    const id = setInterval(update, 60000);
     return () => clearInterval(id);
   }, []);
 
@@ -212,7 +220,7 @@ export default function DashboardPage() {
 
   return (
     <main className="home-main">
-      <PageHeader title="Dashboard" right={<span className="db-clock">{clock}</span>} />
+      <PageHeader title="Dashboard" right={<span className="db-clock">Last refresh: {lastRefresh}</span>} />
 
       <div className="main-content">
       {/* Greeting */}

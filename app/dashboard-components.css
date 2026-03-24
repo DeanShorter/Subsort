@@ -1991,7 +1991,7 @@ input[type=range]::-webkit-slider-thumb{
 .feed-earlier-row:hover{border-color:rgba(255,255,255,.1);background:var(--bg-surface)}
 .feed-earlier-content{padding-left:1rem;margin-bottom:12px}
 /* Feed view modes for new layout */
-.feed-view-grid .feed-catgroup-content{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.feed-view-grid .feed-catgroup.open .feed-catgroup-content{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 .feed-view-grid .feed-vrow{flex-direction:column;padding:0;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);overflow:hidden;gap:0}
 .feed-view-grid .feed-vrow:hover{background:var(--bg-card);border-color:rgba(255,255,255,.1);transform:translateY(-2px)}
 .feed-view-grid .feed-vrow-thumb{width:100%;height:0;padding-bottom:56.25%;position:relative;border-radius:0}

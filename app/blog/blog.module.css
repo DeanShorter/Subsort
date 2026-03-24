@@ -36,16 +36,16 @@
 }
 .card:hover { border-color: #333; transform: translateY(-2px); }
 
-.cardImage {
-  height: 160px; background-size: cover; background-position: center;
-  background-color: var(--bg-surface);
+.cardBanner {
+  height: 6px; width: 100%;
 }
 
 .cardBody { padding: 1.25rem; }
 
 .cardTag {
-  font-size: .625rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .08em; color: var(--accent); margin-bottom: .5rem; display: inline-block;
+  font-size: .625rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .06em; margin-bottom: .625rem; display: inline-block;
+  padding: 3px 10px; border-radius: 4px;
 }
 
 .cardTitle {

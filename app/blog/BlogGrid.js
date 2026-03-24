@@ -3,7 +3,17 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import styles from './blog.module.css';
 
-const CATEGORIES = ['All', 'Guides', 'Insights', 'Tips', 'Behind the scenes'];
+const CATEGORIES = ['All', 'Product', 'Guide', 'Data', 'Update', 'Tutorial', 'Opinion', 'News'];
+
+const CAT_COLOURS = {
+  'Product':  { gradient: 'linear-gradient(135deg, #1D9E75, #3ECFA0)', bg: 'rgba(62,207,160,0.1)',  text: '#1D9E75' },
+  'Guide':    { gradient: 'linear-gradient(135deg, #185FA5, #85B7EB)', bg: 'rgba(55,138,221,0.1)',  text: '#185FA5' },
+  'Data':     { gradient: 'linear-gradient(135deg, #BA7517, #FAC775)', bg: 'rgba(239,159,39,0.1)',  text: '#854F0B' },
+  'Update':   { gradient: 'linear-gradient(135deg, #534AB7, #CECBF6)', bg: 'rgba(176,124,237,0.1)', text: '#534AB7' },
+  'Tutorial': { gradient: 'linear-gradient(135deg, #993C1D, #F0997B)', bg: 'rgba(216,90,48,0.1)',   text: '#993C1D' },
+  'Opinion':  { gradient: 'linear-gradient(135deg, #993556, #ED93B1)', bg: 'rgba(212,83,126,0.1)',  text: '#993556' },
+  'News':     { gradient: 'linear-gradient(135deg, #A32D2D, #F09595)', bg: 'rgba(226,75,74,0.1)',   text: '#A32D2D' },
+};
 
 export default function BlogGrid({ posts, search: externalSearch, activeFilter: externalFilter, showToolbar = false }) {
   const [localSearch, setLocalSearch] = useState('');
@@ -61,22 +71,27 @@ export default function BlogGrid({ posts, search: externalSearch, activeFilter: 
 
       {filtered.length > 0 ? (
         <div className={styles.grid}>
-          {filtered.map(post => (
-            <Link href={`/blog/${post.slug}`} key={post.slug} className={styles.card}>
-              {post.image && (
-                <div className={styles.cardImage} style={{ backgroundImage: `url(${post.image})` }} />
-              )}
-              <div className={styles.cardBody}>
-                {post.category && <span className={styles.cardTag}>{post.category}</span>}
-                <h2 className={styles.cardTitle}>{post.title}</h2>
-                <p className={styles.cardExcerpt}>{post.excerpt}</p>
-                <div className={styles.cardMeta}>
-                  <span>{post.date}</span>
-                  <span>{post.readTime || '5 min read'}</span>
+          {filtered.map(post => {
+            const colours = CAT_COLOURS[post.category] || CAT_COLOURS['Tips'];
+            return (
+              <Link href={`/blog/${post.slug}`} key={post.slug} className={styles.card}>
+                <div className={styles.cardBanner} style={{ background: colours.gradient }} />
+                <div className={styles.cardBody}>
+                  {post.category && (
+                    <span className={styles.cardTag} style={{ background: colours.bg, color: colours.text }}>
+                      {post.category}
+                    </span>
+                  )}
+                  <h2 className={styles.cardTitle}>{post.title}</h2>
+                  <p className={styles.cardExcerpt}>{post.excerpt}</p>
+                  <div className={styles.cardMeta}>
+                    <span>{post.date}</span>
+                    <span>{post.readTime || '5 min read'}</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       ) : (
         <div className={styles.noResults}>
