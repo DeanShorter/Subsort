@@ -39,6 +39,7 @@ export default function FeedsPage() {
 
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const [catSource, setCatSource] = useState(null); // 'header' or 'sidebar' — tracks who selected the category
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
   const [feedView, setFeedView] = useState('grid');
@@ -84,10 +85,11 @@ export default function FeedsPage() {
   // ── Sidebar callbacks ──────────────────────────────
   useEffect(() => {
     trackEvent('view_feeds');
-    window.__subsortCat = (cat) => { setActiveCategory(cat); setActiveSubcategory(null); };
-    window.__subsortSub = (cat, sub) => { setActiveCategory(cat); setActiveSubcategory(prev => prev === sub ? null : sub); };
-    return () => { delete window.__subsortCat; delete window.__subsortSub; };
-  }, []);
+    window.__subsortCat = (cat) => { setActiveCategory(cat); setActiveSubcategory(null); setCatSource(cat === 'all' ? null : 'sidebar'); };
+    window.__subsortSub = (cat, sub) => { setActiveCategory(cat); setActiveSubcategory(prev => prev === sub ? null : sub); setCatSource('sidebar'); };
+    window.__subsortCatSource = () => catSource;
+    return () => { delete window.__subsortCat; delete window.__subsortSub; delete window.__subsortCatSource; };
+  }, [catSource]);
 
   // ── Load videos from DB cache ──────────────────────
   useEffect(() => {
@@ -384,18 +386,26 @@ export default function FeedsPage() {
           <button className={`ph-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
           <button className={`ph-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
           <button className={`ph-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
-          <span className="ph-sep" />
-          <button className={`ph-chip${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); window.__subsortCat?.('all'); }}>All Categories</button>
-          {categories.map(cat => (
-            <button key={cat} className={`ph-chip${activeCategory === cat ? ' active' : ''}`} onClick={() => {
-              const next = activeCategory === cat ? 'all' : cat;
-              setActiveCategory(next);
-              setActiveSubcategory(null);
-              window.__subsortCat?.(next);
-            }}>
-              {cat}
+          {catSource !== 'sidebar' && <>
+            <span className="ph-sep" />
+            {categories.map(cat => (
+              <button key={cat} className={`home-nav-item${activeCategory === cat ? ' active' : ''}`} onClick={() => {
+                const next = activeCategory === cat ? 'all' : cat;
+                setActiveCategory(next);
+                setActiveSubcategory(null);
+                setCatSource(next === 'all' ? null : 'header');
+                window.__subsortCat?.(next);
+              }}>
+                <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
+                <span className="home-nav-item-label">{cat}</span>
+              </button>
+            ))}
+          </>}
+          {catSource === 'sidebar' && activeCategory !== 'all' && (
+            <button className="ph-chip" onClick={() => { setActiveCategory('all'); setCatSource(null); window.__subsortCat?.('all'); }}>
+              Clear filter
             </button>
-          ))}
+          )}
         </>}
       />
 

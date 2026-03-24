@@ -968,7 +968,7 @@ input[type=range]::-webkit-slider-thumb{
 .an-inner{padding:1.75rem 2rem 3rem;flex:1}
 .an-header{margin-bottom:1rem}
 /* ─── UNIVERSAL PAGE HEADER ─── */
-.page-header{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;overflow:hidden}
+.page-header{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;overflow:hidden;position:sticky;top:0;z-index:50}
 
 /* Row 1: Title bar */
 .ph-title-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;min-height:52px}
@@ -1007,7 +1007,14 @@ input[type=range]::-webkit-slider-thumb{
 .ph-chip{padding:5px 13px;border-radius:100px;font-size:11px;font-weight:500;font-family:var(--font-body);color:var(--text-muted);background:transparent;border:1px solid var(--border-subtle);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .ph-chip:hover{border-color:var(--border-hover);color:var(--text-secondary);background:var(--bg-surface)}
 .ph-chip.active{background:var(--text-primary);color:var(--bg-primary);border-color:var(--text-primary)}
-.ph-sep{width:1px;height:16px;background:var(--border-subtle);flex-shrink:0}
+.ph-sep{width:1px;height:20px;background:var(--border-subtle);flex-shrink:0;margin:0 8px}
+
+/* Horizontal nav items inside ph-filters */
+.ph-filters .home-nav-item{height:34px;padding:0 10px;border-radius:8px;gap:8px;flex-shrink:0;white-space:nowrap}
+.ph-filters .home-nav-item svg{width:14px;height:14px}
+.ph-filters .home-nav-item .home-nav-item-label{font-size:12px}
+.ph-filters .home-nav-item .hnp-cat-dot{width:7px;height:7px}
+.ph-filters .home-nav-item .hnp-count{font-size:10px;padding:1px 6px}
 
 /* Sticky behaviour removed */
 .an-subtitle{font-size:.875rem;color:var(--text-secondary)}
