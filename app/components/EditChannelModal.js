@@ -27,6 +27,8 @@ export default function EditChannelModal({ channelId, onClose }) {
     setSelectedCats([...(ch.categories || [])]);
     setSelectedSub(ch.subcategory || '');
     setNotes(ch.notes || '');
+    setShowCatEdit(false);
+    setShowSubEdit(false);
   }, [ch]);
 
   // Derived
@@ -216,16 +218,27 @@ export default function EditChannelModal({ channelId, onClose }) {
             </button>
           </div>
 
-          {showSubEdit && availableSubs.length > 0 && (
+          {showSubEdit && (
             <div className="ecm-subcat-edit-panel" style={{ display: 'block' }}>
-              <select
-                className="sort-select"
-                value={selectedSub}
-                onChange={e => setSelectedSub(e.target.value)}
-              >
-                <option value="">None</option>
-                {availableSubs.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
+              {availableSubs.length > 0 ? (
+                <select
+                  className="sort-select"
+                  value={selectedSub}
+                  onChange={e => setSelectedSub(e.target.value)}
+                >
+                  <option value="">None</option>
+                  {availableSubs.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              ) : (
+                <input
+                  className="sort-select"
+                  type="text"
+                  placeholder="Type a subcategory…"
+                  value={selectedSub}
+                  onChange={e => setSelectedSub(e.target.value)}
+                  style={{ width: '100%' }}
+                />
+              )}
             </div>
           )}
         </div>
