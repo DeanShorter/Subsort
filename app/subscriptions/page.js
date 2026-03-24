@@ -30,7 +30,7 @@ export default function SubscriptionsPage() {
   const [sortKey, setSortKey] = useState('name');
   const [sortDir, setSortDir] = useState('asc');
   const [sortIdx, setSortIdx] = useState(0);
-  const [chanView, setChanView] = useState('hybrid');
+  const [chanView, setChanView] = useState('list');
   const [editingId, setEditingId] = useState(null);
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedChannels, setSelectedChannels] = useState(new Set());

@@ -9,7 +9,7 @@ export default function EditChannelModal({ channelId, onClose }) {
   const { user } = useAuth();
   const {
     channels, categories, subcategories, categoryColours,
-    dbCategories, dbSubcategories, chCats, formatCount, reload,
+    dbCategories, dbSubcategories, chCats, formatCount, reload, toggleFavourite,
   } = useChannelData();
 
   const ch = channels.find(c => c.id === channelId);
@@ -149,9 +149,9 @@ export default function EditChannelModal({ channelId, onClose }) {
               <div className="ecm-handle">{handle}</div>
             </div>
             <div className="ecm-action-btns">
-              <button className={`ecm-btn${ch.favourited ? ' fav-on' : ''}`}>
+              <button className={`ecm-btn${ch.favourited ? ' fav-on' : ''}`} onClick={() => { toggleFavourite(ch.id); trackEvent('favourite'); }}>
                 <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg>
-                Favourite
+                {ch.favourited ? 'Favourited' : 'Favourite'}
               </button>
               <a className="ecm-btn ecm-yt" href={ytUrl} target="_blank" rel="noopener noreferrer">
                 <svg viewBox="0 0 16 16"><path d="M14.4 4.6s-.2-1.2-.7-1.7c-.6-.7-1.4-.7-1.7-.7C9.6 2 8 2 8 2s-1.6 0-4 .2c-.3 0-1.1 0-1.7.7-.5.5-.7 1.7-.7 1.7S1.4 6 1.4 7.4v1.2c0 1.4.2 2.8.2 2.8s.2 1.2.7 1.7c.6.7 1.5.7 1.9.7 1.4.1 5.8.2 5.8.2s1.6 0 4-.2c.3 0 1.1 0 1.7-.7.5-.5.7-1.7.7-1.7s.2-1.4.2-2.8V7.4c0-1.4-.2-2.8-.2-2.8zM6.4 10.2V5.8L10.4 8l-4 2.2z" /></svg>
