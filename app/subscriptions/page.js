@@ -199,7 +199,7 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <main className="home-main" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <main className="home-main">
       <PageHeader
         title="Subscriptions"
         count={`${channels.length} subscription${channels.length !== 1 ? 's' : ''}`}
@@ -278,7 +278,7 @@ export default function SubscriptionsPage() {
       )}
 
       {/* Channel grid / table */}
-      <div className="channels-area" id="channelsArea" style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
+      <div className="channels-area" id="channelsArea">
         {filtered.length === 0 ? (
           <p style={{ color: 'var(--text-muted)', padding: '2rem', textAlign: 'center' }}>
             {channels.length === 0 ? 'No channels yet. Sync your YouTube subscriptions to get started.' : 'No channels match your filters.'}
