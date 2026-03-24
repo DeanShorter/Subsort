@@ -86,10 +86,10 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
       setSyncing(true);
       window.dispatchEvent(new Event('subscrub:sync-modal-show'));
 
-      // Step 0: Connecting
+      // Step 0: Connecting — tick once auth is confirmed
       emitSync({ step: 0, pct: 8 });
+      console.log('[AutoSync] Step 0: Connecting…');
       await new Promise(r => setTimeout(r, 800));
-      emitSync({ step: 0, prevDetail: '', pct: 15 });
 
       // Step 1: Sync subscriptions via YouTube API
       let subResult = null;
@@ -104,7 +104,6 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
           );
           await reload();
           console.log(`[AutoSync] Subscriptions synced: ${subResult.newCount} new, ${subResult.channels.length} total`);
-          emitSync({ step: 1, prevDetail: `${subResult.channels.length} found`, pct: 35 });
         } catch (e) {
           if (e.message === 'SESSION_EXPIRED') {
             console.warn('[AutoSync] YouTube token expired — prompting re-auth');
@@ -116,15 +115,15 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
             return;
           }
           console.warn('[AutoSync] Subscription sync failed:', e.message);
-          emitSync({ step: 1, prevDetail: 'skipped', pct: 35 });
         }
       } else {
         console.log('[AutoSync] No YouTube token — skipping to RSS');
-        emitSync({ step: 1, prevDetail: 'skipped', pct: 35 });
       }
 
+      const subDetail = subResult ? `${subResult.channels.length} found` : 'skipped';
+
       // Step 2: RSS refresh for videos
-      emitSync({ step: 2, prevDetail: subResult ? `${subResult.channels.length} found` : 'skipped', pct: 42 });
+      emitSync({ step: 2, prevDetail: subDetail, pct: 42 });
       console.log('[AutoSync] Step 2: Refreshing video feeds via RSS…');
 
       let rssData = null;
@@ -142,28 +141,40 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
         console.error('[AutoSync] RSS refresh failed:', rssErr);
       }
 
-      emitSync({ step: 2, prevDetail: `${rssData?.newVideos || 0} videos`, pct: 58 });
+      const newVideoCount = rssData?.newVideos || 0;
 
-      // Step 3: Preparing feeds
-      emitSync({ step: 3, prevDetail: `${rssData?.newVideos || 0} videos`, pct: 65 });
+      // Step 3: Preparing feeds — show total videos available
+      emitSync({ step: 3, prevDetail: `${newVideoCount} new`, pct: 65 });
+      console.log('[AutoSync] Step 3: Preparing feeds…');
       await new Promise(r => setTimeout(r, 800));
 
+      // Count total cached videos for this user's channels
       const updatedChannels = channels.length ? channels : [];
-      const catCount = [...new Set(updatedChannels.flatMap(c => c.categories || []))].length;
-      emitSync({ step: 3, prevDetail: `${catCount} feeds`, pct: 75 });
+      let totalFeedVideos = newVideoCount;
+      try {
+        const chIds = updatedChannels.map(c => c.channelId).filter(Boolean);
+        if (chIds.length) {
+          const { count } = await supabase
+            .from('cached_videos')
+            .select('*', { count: 'exact', head: true })
+            .in('channel_id', chIds.slice(0, 300));
+          totalFeedVideos = count || newVideoCount;
+        }
+      } catch (e) {}
 
-      // Step 4: Analysing
-      emitSync({ step: 4, prevDetail: `${catCount} feeds`, pct: 82 });
-      await new Promise(r => setTimeout(r, 800));
+      // Step 4: Scrutinising the mess — tick after 1 second
+      emitSync({ step: 4, prevDetail: `${totalFeedVideos} videos`, pct: 82 });
+      console.log('[AutoSync] Step 4: Scrutinising…');
+      await new Promise(r => setTimeout(r, 1000));
 
       const deadChannels = updatedChannels.filter(ch =>
         ch.videoCount === 0 || (ch.subscriberCount < 100 && ch.videoCount < 5) || (ch.subscriberCount > 0 && ch.subscriberCount < 500)
       );
-      emitSync({ step: 4, prevDetail: `${deadChannels.length} issues`, pct: 90 });
 
-      // Step 5: Generating verdict
+      // Step 5: Judging [name] — tick after 3 seconds
       emitSync({ step: 5, prevDetail: `${deadChannels.length} issues`, pct: 95 });
-      await new Promise(r => setTimeout(r, 1000));
+      console.log('[AutoSync] Step 5: Judging…');
+      await new Promise(r => setTimeout(r, 3000));
 
       const favCount = updatedChannels.filter(c => c.favourited).length;
       const categories = [...new Set(updatedChannels.flatMap(c => c.categories || []))];

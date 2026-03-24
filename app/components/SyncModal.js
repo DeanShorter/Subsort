@@ -12,8 +12,8 @@ const STEPS = [
   { label: 'Checking subscriptions' },
   { label: 'Searching for recent uploads' },
   { label: 'Preparing your feeds' },
-  { label: 'Analysing your library' },
-  { label: 'Generating your verdict' },
+  { label: 'Scrutinising the mess' },
+  { label: null }, // dynamic — set to "Judging {name}..."
 ];
 
 function getGreeting(name) {
@@ -190,7 +190,7 @@ export default function SyncModal({
             return (
               <div key={i} className={cls}>
                 <div className={iconCls}>{isDone ? CHECKMARK : null}</div>
-                <span className="sync-check-label">{s.label}</span>
+                <span className="sync-check-label">{s.label || `Judging ${userName || 'you'}...`}</span>
                 <span className="sync-check-detail">{detailText}</span>
               </div>
             );
