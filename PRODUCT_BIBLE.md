@@ -2,7 +2,7 @@
 
 Last updated: March 2026
 
-This document is the single source of truth for the subscrub product. It covers everything from brand identity to technical architecture, marketing strategy to feature specs. To be stored in repo and updated it as things evolve.
+This document is the single source of truth for the subscrub product. It covers everything from brand identity to technical architecture, marketing strategy to feature specs. Keep it in your repo and update it as things evolve.
 
 ---
 
@@ -144,7 +144,7 @@ All hand-drawn inline SVGs at 16x16 viewBox, 1.5px stroke, round caps/joins, str
 - Feature branches off dev for specific features
 - Never commit directly to main
 
-### Database tables (12 tables)
+### Database tables (13 tables)
 - `profiles` — user accounts, tier, google token, sync timestamps, newsletter opt-in
 - `channels` — user's subscribed channels with metadata, notes, favourited status
 - `categories` — user-created categories with colour and sort order
@@ -152,8 +152,9 @@ All hand-drawn inline SVGs at 16x16 viewBox, 1.5px stroke, round caps/joins, str
 - `channel_categories` — junction table linking channels to categories
 - `channel_recategorisations` — logs every user correction for consensus building
 - `cached_videos` — video cache with title, thumbnail, published date, duration, view count, type
+- `video_clicks` — logs every video click with user, video, channel, category, timestamp (powers free tier insights)
 - `feed_cache` — cached feed data with expiry
-- `watch_history` — uploaded Takeout watch history
+- `watch_history` — uploaded Takeout watch history (Pro tier, via Takeout upload)
 - `events` — activity logging
 - `api_usage` — YouTube API quota tracking
 - `newsletter_sends` — newsletter send history
@@ -243,6 +244,49 @@ Dashboard notification: "Your feed got messier this week. 6 new dead channels cr
 
 ### Subscrub alert
 Notification card for inactive users: "You've been a sub-slacker lately. Your feed's getting cluttered again — time for a quick scrub."
+
+### Video click tracking (free tier intelligence)
+
+**Concept:** Every time a free user clicks a video in subscrub, we log it. Over time this builds a lightweight watch history without needing Takeout data or extra permissions. The data accumulates naturally as they use the product.
+
+**Data captured per click:** user_id, video_id, channel_id, category_id, timestamp.
+
+**Table:**
+```sql
+CREATE TABLE public.video_clicks (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id),
+  video_id text NOT NULL,
+  channel_id text NOT NULL,
+  category_id uuid REFERENCES public.categories(id),
+  clicked_at timestamptz NOT NULL,
+  created_at timestamptz DEFAULT now()
+);
+```
+
+**What it enables for free users (after ~50+ clicks over a couple of weeks):**
+
+- Subscription critic score improves — factors in "channels you never click on" alongside inactive channels
+- Category insights — "You spend 68% of your time in Tech and Gaming. Your 22 Music channels are basically decorative."
+- Smarter roasts — "You scroll past VoxCraft every single time. At this point you're just keeping them around for emotional support."
+- Better Discover recommendations — based on what they actually click, not just what they're subscribed to
+
+**Free-to-Pro conversion strategy:**
+
+The free tier gets increasingly smart over time as click data accumulates. Show the headline insight for free, tease the depth for Pro:
+
+- Free: "You've clicked on videos from 34 of your 347 channels this month."
+- Pro upsell: "Want to see which 313 you're ignoring? Upgrade to Pro for the full breakdown."
+
+- Free roast: "You clicked on 0 News videos this month despite being subscribed to 34 News channels."
+- Pro roast adds: "And looking at your full YouTube watch history, you haven't watched a News video since October 2024. Just saying."
+
+**Upsell touchpoints:**
+- Dashboard card after enough click data: "Based on your activity in subscrub, you've clicked on 12 Entertainment videos this week but 0 from your 34 News channels. Full watch analytics can tell you exactly where your time goes."
+- Discover page: show 2 personalised recommendations based on clicks, blur the rest with a Pro badge
+- Subscription critic: show the click-enhanced score, teaser for the full Takeout-powered breakdown
+
+**Key principle:** The free tier should feel increasingly smart over time. The user thinks "this app really knows me" — then the Pro upsell is "imagine what it could tell you with your full watch history." They're already sold on the concept because the free version proved it works.
 
 ---
 
@@ -374,6 +418,7 @@ Both need a proper legal review before handling real user data at scale.
 - Build the subscription critic / feed health scoring
 - Create at least the "First scrub" and "Ghost hunter" badges
 - Add cheeky empty states throughout the app
+- Implement video click tracking (video_clicks table + logging on every video card click)
 - Record 30-60 second demo video for landing page
 - Update blog post and all references from Freedly to subscrub
 - Get legal review of privacy policy and terms
@@ -383,6 +428,8 @@ Both need a proper legal review before handling real user data at scale.
 - Implement video metadata backfill via YouTube API
 - Build shareable score cards (server-side image generation)
 - Implement full achievement badges system
+- Build click-powered free tier insights (category distribution, never-clicked channels, smart roasts)
+- Build Pro upsell touchpoints based on click data (blurred recommendations, teaser breakdowns)
 - Build Discover page features
 - Build admin dashboard with real Supabase queries
 - Implement category correction consensus algorithm
