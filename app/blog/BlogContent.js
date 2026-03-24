@@ -34,11 +34,13 @@ export default function BlogContent({ posts }) {
             ))}
           </>}
         />
+        <div className="main-content">
         {posts.length > 0 ? (
           <BlogGrid posts={posts} search={search} activeFilter={activeFilter} />
         ) : (
           <div className={styles.empty}><p>Articles coming soon.</p></div>
         )}
+        </div>
       </main>
     );
   }

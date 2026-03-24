@@ -23,6 +23,7 @@ export default function SettingsPage() {
     <main className="home-main settings-main">
       <PageHeader title="Settings" subtitle="Manage your account, preferences, and connected services" />
 
+      <div className="main-content">
       {/* Account */}
       <section className="settings-section">
         <h3 className="settings-section-title">Account</h3>
@@ -100,6 +101,7 @@ export default function SettingsPage() {
           )}
         </div>
       </section>
+      </div>
     </main>
   );
 }

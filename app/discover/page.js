@@ -99,6 +99,7 @@ export default function DiscoverPage() {
         }
       />
 
+      <div className="main-content">
       {/* ── Popular in top category ── */}
       <div className="feed-section">
         <div className="feed-section-header">
@@ -228,6 +229,7 @@ export default function DiscoverPage() {
           <PlaceholderCard title="Short watch, big impact" channel="Quick Hits" tag="Explore" gradient={PH_GRADIENTS[3]} />
           <PlaceholderCard title="This channel just started blowing up" channel="Rising Star" tag="Explore" gradient={PH_GRADIENTS[1]} isNew />
         </div>
+      </div>
       </div>
     </main>
   );

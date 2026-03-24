@@ -236,6 +236,7 @@ export default function SubscriptionsPage() {
         </>}
       />
 
+      <div className="main-content">
       {/* Category + subcategory row */}
       {activeCategory !== 'all' && activeCategory !== '__favs__' && activeCategory !== '__uncat__' && (
         <div className="ct-cat-row">
@@ -334,6 +335,7 @@ export default function SubscriptionsPage() {
           </div>
         </div>
       )}
+      </div>
     </main>
   );
 }

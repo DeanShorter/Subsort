@@ -134,6 +134,7 @@ export default function AnalyticsPage() {
     <main className="home-main">
       <PageHeader title="Analytics" />
 
+      <div className="main-content">
       {/* Feed Health Score */}
       <div className="analytics-card" style={{ marginBottom: '1.5rem' }}>
         <h3 className="analytics-card-title">Feed Health</h3>
@@ -235,6 +236,7 @@ export default function AnalyticsPage() {
             </div>
           );
         })}
+      </div>
       </div>
     </main>
   );

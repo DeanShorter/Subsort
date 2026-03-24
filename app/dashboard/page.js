@@ -214,6 +214,7 @@ export default function DashboardPage() {
     <main className="home-main">
       <PageHeader title="Dashboard" right={<span className="db-clock">{clock}</span>} />
 
+      <div className="main-content">
       {/* Greeting */}
       <div className="db-greeting">
         <h1>Good <span>{greetingTime}</span>, <span>{greetingName}</span>.</h1>
@@ -390,6 +391,7 @@ export default function DashboardPage() {
           </div>
         </>
       )}
+      </div>
     </main>
   );
 }

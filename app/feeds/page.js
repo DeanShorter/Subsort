@@ -399,6 +399,7 @@ export default function FeedsPage() {
         </>}
       />
 
+      <div className="main-content">
       {loadingVideos ? (
         <div className="home-feed-loading"><span className="spinner" /> Fetching latest videos…</div>
       ) : feedVideos.length === 0 ? (
@@ -539,6 +540,7 @@ export default function FeedsPage() {
           )}
         </>
       )}
+      </div>
     </main>
   );
 }
