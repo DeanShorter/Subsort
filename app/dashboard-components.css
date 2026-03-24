@@ -1826,7 +1826,7 @@ input[type=range]::-webkit-slider-thumb{
 .feed-video-footer{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .feed-cat-badge{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:var(--radius-pill);font-size:.6875rem;font-weight:500;white-space:nowrap}
 .feed-subcat-badge{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:var(--radius-pill);font-size:.6875rem;font-weight:500;white-space:nowrap;background:rgba(148,163,184,.12);color:var(--text-muted)}
-.feed-shorts-badge{position:absolute;bottom:4px;left:4px;background:var(--color-yt-red);border-radius:3px;padding:0 4px;font-size:10px;font-weight:700;color:var(--color-white);line-height:16px;letter-spacing:.02em}
+.feed-shorts-badge{position:absolute;bottom:4px;left:4px;background:var(--color-yt-red);border-radius:3px;padding:0 4px;font-size:10px;font-weight:700;color:var(--color-white);line-height:16px;letter-spacing:.02em;height:16px;display:inline-flex;align-items:center;z-index:2}
 .feed-video-desc{font-size:.6875rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px}
 .feed-video-menu{flex-shrink:0;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:.25rem;opacity:0;transition:opacity .1s}
 .feed-video-row:hover .feed-video-menu{opacity:1}
@@ -1872,8 +1872,20 @@ input[type=range]::-webkit-slider-thumb{
 .feed-section-link:hover{color:var(--text-secondary)}
 
 /* Horizontal scroll row */
-.feed-scroll-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.feed-scroll-wrap{position:relative}
+.feed-scroll-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;scroll-behavior:smooth}
 .feed-scroll-row::-webkit-scrollbar{display:none}
+.feed-scroll-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:32px;height:32px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-subtle);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:0;pointer-events:none}
+.feed-scroll-wrap:hover .feed-scroll-btn{opacity:1;pointer-events:auto}
+.feed-scroll-btn:hover{background:var(--bg-surface);color:var(--text-primary);border-color:rgba(255,255,255,.1)}
+.feed-scroll-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.feed-scroll-btn-left{left:-12px}
+.feed-scroll-btn-right{right:-12px}
+
+/* Load more button for cat groups */
+.feed-loadmore{display:flex;align-items:center;gap:6px;padding:6px 14px;margin:4px 0 0 12px;border-radius:8px;border:1px solid var(--border-subtle);background:transparent;color:var(--text-muted);font-size:12px;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:all .15s}
+.feed-loadmore:hover{border-color:rgba(255,255,255,.1);color:var(--text-secondary);background:var(--bg-surface)}
+.feed-loadmore svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
 /* Video card (scroll & grid) */
 .feed-vcard{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s;flex-shrink:0;text-decoration:none;display:block}

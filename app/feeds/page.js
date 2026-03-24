@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
@@ -7,6 +7,27 @@ import { supabase } from '../../lib/supabase';
 import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
 import RefreshButton from '../components/RefreshButton';
+
+function ScrollRow({ children }) {
+  const ref = useRef(null);
+  const scroll = (dir) => {
+    if (!ref.current) return;
+    ref.current.scrollBy({ left: dir * 460, behavior: 'smooth' });
+  };
+  return (
+    <div className="feed-scroll-wrap">
+      <button className="feed-scroll-btn feed-scroll-btn-left" onClick={() => scroll(-1)}>
+        <svg viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" /></svg>
+      </button>
+      <div className="feed-scroll-row" ref={ref}>
+        {children}
+      </div>
+      <button className="feed-scroll-btn feed-scroll-btn-right" onClick={() => scroll(1)}>
+        <svg viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" /></svg>
+      </button>
+    </div>
+  );
+}
 
 export default function FeedsPage() {
   const { user, accessToken, signIn } = useAuth();
@@ -27,6 +48,7 @@ export default function FeedsPage() {
   const [openCats, setOpenCats] = useState(new Set());
   const [openEarlier, setOpenEarlier] = useState(new Set());
   const [breakDismissed, setBreakDismissed] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState(new Set());
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -327,9 +349,9 @@ export default function FeedsPage() {
                   <span className="feed-section-count">{favVideos.length} new</span>
                 </div>
               </div>
-              <div className="feed-scroll-row">
+              <ScrollRow>
                 {favVideos.map(v => renderVideoCard(v, true))}
-              </div>
+              </ScrollRow>
             </div>
           )}
 
@@ -369,11 +391,12 @@ export default function FeedsPage() {
                           })}
                         </div>
                       )}
-                      {videos.slice(0, 5).map(renderVideoRow)}
-                      {videos.length > 5 && (
-                        <div style={{ padding: '4px 12px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                          + {videos.length - 5} more
-                        </div>
+                      {(expandedGroups.has(`today-${cat}`) ? videos : videos.slice(0, 5)).map(renderVideoRow)}
+                      {videos.length > 5 && !expandedGroups.has(`today-${cat}`) && (
+                        <button className="feed-loadmore" onClick={() => setExpandedGroups(prev => { const n = new Set(prev); n.add(`today-${cat}`); return n; })}>
+                          <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
+                          Show {videos.length - 5} more
+                        </button>
                       )}
                     </div>
                   </div>
@@ -432,11 +455,12 @@ export default function FeedsPage() {
                     </div>
                     {isEarlierOpen && (
                       <div style={{ paddingLeft: '1rem', marginBottom: '12px' }}>
-                        {videos.slice(0, 8).map(renderVideoRow)}
-                        {videos.length > 8 && (
-                          <div style={{ padding: '4px 12px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                            + {videos.length - 8} more
-                          </div>
+                        {(expandedGroups.has(`earlier-${cat}`) ? videos : videos.slice(0, 8)).map(renderVideoRow)}
+                        {videos.length > 8 && !expandedGroups.has(`earlier-${cat}`) && (
+                          <button className="feed-loadmore" onClick={() => setExpandedGroups(prev => { const n = new Set(prev); n.add(`earlier-${cat}`); return n; })}>
+                            <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
+                            Show {videos.length - 8} more
+                          </button>
                         )}
                       </div>
                     )}
