@@ -26,7 +26,9 @@
       "Bash(NEXT_PRIVATE_WORKER=1 npx next build)",
       "Bash(node -e \"console.log\\(require\\(''next/package.json''\\).version\\)\")",
       "Bash(git config:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(grep -c \"''Outfit''\" \"D:/Subsort/app/dashboard-components.css\")",
+      "Bash(grep -c \"''DM Sans''\" \"D:/Subsort/app/dashboard-components.css\")"
     ]
   }
 }

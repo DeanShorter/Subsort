@@ -32,7 +32,7 @@
 }
 
 .navLinks a {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-size: 14px;
   color: #5A5A5A;
   font-weight: 500;
@@ -197,7 +197,7 @@
 }
 
 .productLogo {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 14px;
   color: #fff;
@@ -377,12 +377,12 @@
 .stepTab {
   flex: 1;
   padding: 12px 16px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #5E5D58;
+  color: var(--text-muted);
   cursor: pointer;
   transition: all .15s;
   text-align: center;
@@ -394,9 +394,9 @@
   color: #38E9B1;
   border-bottom-color: #38E9B1;
 }
-.stepTab:not(.stepTabActive):hover { color: #9A9890; }
+.stepTab:not(.stepTabActive):hover { color: var(--text-secondary); }
 .stepPanels {
-  background: #1A1A18;
+  background: var(--bg-card);
 }
 .stepPanel {
   padding: 20px;
@@ -406,7 +406,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #5E5D58;
+  color: var(--text-muted);
   margin-bottom: 10px;
 }
 .catPills {
@@ -424,7 +424,7 @@
   font-size: 11px;
   font-weight: 500;
   border: 1px solid rgba(255,255,255,0.06);
-  color: #9A9890;
+  color: var(--text-secondary);
   background: transparent;
 }
 .catPillActive {
@@ -444,14 +444,14 @@
 }
 .sortRow:hover { background: #222220; }
 .sortDot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.sortLabel { flex: 1; color: #9A9890; font-weight: 500; }
-.sortCount { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 13px; color: #E8E6E0; }
+.sortLabel { flex: 1; color: var(--text-secondary); font-weight: 500; }
+.sortCount { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--text-primary); }
 .cleanTitle {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #5E5D58;
+  color: var(--text-muted);
   margin-bottom: 10px;
 }
 .cleanCard {
@@ -476,9 +476,9 @@
 }
 .cleanIcon svg { width: 16px; height: 16px; }
 .cleanInfo { flex: 1; }
-.cleanNum { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
-.cleanSub { font-size: 12px; font-weight: 500; color: #5E5D58; }
-.cleanDesc { font-size: 11px; color: #5E5D58; }
+.cleanNum { font-family: var(--font-display); font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+.cleanSub { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.cleanDesc { font-size: 11px; color: var(--text-muted); }
 .healthCard {
   display: flex;
   align-items: center;
@@ -501,15 +501,15 @@
 }
 .healthRing svg { position: absolute; inset: 0; }
 .healthVal {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.5px;
   position: relative;
   z-index: 1;
 }
-.healthLabel { font-size: 12px; font-weight: 500; color: #E8E6E0; }
-.healthSub { font-size: 11px; color: #5E5D58; }
+.healthLabel { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+.healthSub { font-size: 11px; color: var(--text-muted); }
 
 /* ── Plans ─────────────────────────────────────────── */
 .plans {
@@ -522,21 +522,21 @@
   margin-bottom: 40px;
 }
 .plansHeader h2 {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -1px;
   margin-bottom: 8px;
-  color: #E8E6E0;
+  color: var(--text-primary);
 }
-.plansHeader p { font-size: 15px; color: #9A9890; }
+.plansHeader p { font-size: 15px; color: var(--text-secondary); }
 .plansGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 .planCard {
-  background: #1A1A18;
+  background: var(--bg-card);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 14px;
   padding: 28px 24px;
@@ -560,10 +560,10 @@
   background: var(--page-bg, #0E0E0D);
   padding: 0 8px;
 }
-.planName { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
-.planDesc { font-size: 12px; color: #5E5D58; margin-bottom: 20px; }
-.planPrice { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px; color: #E8E6E0; }
-.planPeriod { font-size: 14px; font-weight: 500; color: #5E5D58; letter-spacing: 0; }
+.planName { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+.planDesc { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+.planPrice { font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px; color: var(--text-primary); }
+.planPeriod { font-size: 14px; font-weight: 500; color: var(--text-muted); letter-spacing: 0; }
 .planFeatures { list-style: none; margin-bottom: 24px; }
 .planFeatures li {
   display: flex;
@@ -571,20 +571,20 @@
   gap: 10px;
   padding: 8px 0;
   font-size: 13px;
-  color: #9A9890;
+  color: var(--text-secondary);
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 .planFeatures li:last-child { border-bottom: none; }
 .featIcon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
 .featIcon svg { width: 14px; height: 14px; }
-.featTitle { font-weight: 500; color: #E8E6E0; }
-.featDesc { font-size: 11px; color: #5E5D58; margin-top: 2px; }
+.featTitle { font-weight: 500; color: var(--text-primary); }
+.featDesc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .planBtn {
   display: block;
   width: 100%;
   padding: 12px 0;
   border-radius: 10px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -592,8 +592,8 @@
   text-align: center;
   text-decoration: none;
 }
-.planBtnGhost { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: #9A9890; }
-.planBtnGhost:hover { border-color: rgba(255,255,255,0.1); color: #E8E6E0; }
+.planBtnGhost { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: var(--text-secondary); }
+.planBtnGhost:hover { border-color: rgba(255,255,255,0.1); color: var(--text-primary); }
 .planBtnMint { background: #38E9B1; border: 1px solid #38E9B1; color: #111; }
 .planBtnMint:hover { background: #34B88D; border-color: #34B88D; }
 
@@ -620,7 +620,7 @@
 }
 .scoreRing svg { position: absolute; inset: 0; }
 .scoreVal {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -1px;
@@ -629,7 +629,7 @@
 }
 .scoreInfo { flex: 1; }
 .scoreTitle {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.3px;
@@ -644,7 +644,7 @@
 .scoreBtn {
   padding: 10px 18px;
   border-radius: 10px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;

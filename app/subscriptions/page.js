@@ -239,7 +239,7 @@ export default function SubscriptionsPage() {
           {sorting ? 'Sorting…' : 'Sort now'}
         </button>
 
-        <div className="feed-search-wrap" style={{ maxWidth: 220 }}>
+        <div className="feed-search-wrap feed-search-narrow">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
           <input className="feed-search-input" placeholder="Search channels…" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
@@ -247,7 +247,7 @@ export default function SubscriptionsPage() {
 
       {/* Category + subcategory row */}
       {activeCategory !== 'all' && activeCategory !== '__favs__' && activeCategory !== '__uncat__' && (
-        <div className="ct-cat-row" style={{ display: 'flex' }}>
+        <div className="ct-cat-row">
           <span className="ct-cat-dot" style={{ background: categoryColours[activeCategory] || 'var(--accent)' }} />
           <span className="chan-topbar-title">{activeCategory}</span>
           <span className="chan-topbar-badge">{filtered.length}</span>
@@ -269,7 +269,7 @@ export default function SubscriptionsPage() {
 
       {/* Uncat info */}
       {uncatCount > 0 && (
-        <div className="chan-uncat-row" style={{ display: 'flex' }}>
+        <div className="chan-uncat-row">
           <div className="chan-uncat-text">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
             <span>{uncatCount} uncategorised channel{uncatCount !== 1 ? 's' : ''}</span>
@@ -280,7 +280,7 @@ export default function SubscriptionsPage() {
       {/* Channel grid / table */}
       <div className="channels-area" id="channelsArea">
         {filtered.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)', padding: '2rem', textAlign: 'center' }}>
+          <p className="subs-empty-msg">
             {channels.length === 0 ? 'No channels yet. Sync your YouTube subscriptions to get started.' : 'No channels match your filters.'}
           </p>
         ) : chanView === 'list' ? (
@@ -312,7 +312,7 @@ export default function SubscriptionsPage() {
 
         {/* Results count */}
         {search || activeCategory !== 'all' ? (
-          <div style={{ padding: '.5rem 0', fontSize: '.75rem', color: 'var(--text-muted)' }}>
+          <div className="subs-page-info">
             Showing {filtered.length} of {channels.length} channels
           </div>
         ) : null}

@@ -4,6 +4,26 @@ import { supabase } from '../../lib/supabase';
 import { ChannelDataContext } from './ChannelDataContext';
 import { trackEvent } from '../../lib/track';
 
+// Fixed colours for default auto-sort categories — not user-editable
+const DEFAULT_CAT_COLOURS = {
+  'News & Politics': '#EF9F27',
+  'Music': '#3ECFA0',
+  'Technology': '#378ADD',
+  'Science & Education': '#5DCAA5',
+  'Entertainment': '#E85D50',
+  'Sports': '#E8875C',
+  'Lifestyle': '#D4537E',
+  'Film & TV': '#E85D50',
+  'Hobbies & DIY': '#85B7EB',
+  'Health & Fitness': '#97C459',
+  'Food & Cooking': '#E6A065',
+  'Pets & Animals': '#7DC88B',
+  'Travel': '#6BC5B8',
+  'Religion & Spirituality': '#B07CED',
+  'Gaming': '#B07CED',
+};
+
+// Fallback palette for custom categories
 const TILE_COLOURS = [
   '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
   '#6aadcf','#7b8fd4','#a67dc8','#d47ba8','#c2957a',
@@ -78,12 +98,13 @@ export function ChannelDataProvider({ children, user }) {
   const buildColourMap = useCallback((cats, dbCats, existing) => {
     const map = { ...existing };
     let idx = 0;
-    // First load DB colours
-    dbCats.forEach(c => { if (c.colour) map[c.name] = c.colour; });
-    // Fill in missing with TILE_COLOURS rotation
+    // 1. Default category colours (fixed, not user-editable)
+    Object.entries(DEFAULT_CAT_COLOURS).forEach(([name, col]) => { map[name] = col; });
+    // 2. DB colours for custom categories (user-editable)
+    dbCats.forEach(c => { if (c.colour && !DEFAULT_CAT_COLOURS[c.name]) map[c.name] = c.colour; });
+    // 3. Fill remaining custom categories with fallback palette
     cats.forEach(c => {
-      if (!map[c]) map[c] = TILE_COLOURS[idx % TILE_COLOURS.length];
-      idx++;
+      if (!map[c]) { map[c] = TILE_COLOURS[idx % TILE_COLOURS.length]; idx++; }
     });
     return map;
   }, []);

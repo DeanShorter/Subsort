@@ -334,7 +334,7 @@ export default function FeedsPage() {
         onClick={() => trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video')}>
         <div className="feed-vrow-thumb">
           <img src={v.thumbnail} alt="" loading="lazy" />
-          {v.type === 'short' && <span className="feed-shorts-badge" style={{ position: 'absolute', top: 4, left: 4 }}>SHORT</span>}
+          {v.type === 'short' && <span className="feed-shorts-badge">SHORT</span>}
         </div>
         <div className="feed-vrow-info">
           <div className="feed-vrow-title">{v.title}</div>
@@ -408,7 +408,7 @@ export default function FeedsPage() {
       {loadingVideos ? (
         <div className="home-feed-loading"><span className="spinner" /> Fetching latest videos…</div>
       ) : feedVideos.length === 0 ? (
-        <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>No videos yet. Click "Refresh feed" to pull videos via RSS.</p>
+        <p className="feed-empty-msg">No videos yet. Click &quot;Refresh feed&quot; to pull videos via RSS.</p>
       ) : (
         <>
           {/* ── New from favourites ── */}
@@ -483,7 +483,7 @@ export default function FeedsPage() {
           {!breakDismissed && todayVideos.length > 3 && (
             <div className="feed-break-card">
               <div className="feed-break-top">
-                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <div className="feed-break-top-inner">
                   <div className="feed-break-icon">
                     <svg viewBox="0 0 16 16" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M8 14c3.3 0 6-2.2 6-5s-2.7-5-6-5-6 2.2-6 5c0 1.2.5 2.3 1.3 3.2L2 14l3.2-1c.9.4 1.8.6 2.8.6z" />
@@ -528,7 +528,7 @@ export default function FeedsPage() {
                       <span className="feed-earlier-arrow">{isEarlierOpen ? '↓' : '→'}</span>
                     </div>
                     {isEarlierOpen && (
-                      <div style={{ paddingLeft: '1rem', marginBottom: '12px' }}>
+                      <div className="feed-earlier-content">
                         {videos.slice(0, getGroupLimit(`earlier-${cat}`, 10)).map(renderVideoRow)}
                         {videos.length > getGroupLimit(`earlier-${cat}`, 10) && (
                           <button className="feed-loadmore" onClick={() => showMore(`earlier-${cat}`, 10, 10)}>

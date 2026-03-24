@@ -18,8 +18,8 @@ function PlaceholderCard({ title, channel, tag, tagCol, gradient, isNew }) {
   return (
     <div className="feed-vcard scroll-card">
       <div className="feed-vcard-thumb">
-        <div style={{ width: '100%', height: '100%', background: `linear-gradient(135deg,${g1},${g2})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '11px', color: 'rgba(255,255,255,0.5)', textAlign: 'center', padding: '8px' }}>{channel}</span>
+        <div className="feed-ph-thumb" style={{ background: `linear-gradient(135deg,${g1},${g2})` }}>
+          <span className="feed-ph-label">{channel}</span>
         </div>
         {isNew && <span className="feed-vcard-new">New</span>}
       </div>
@@ -37,7 +37,7 @@ function PlaceholderRow({ title, channel, tag, tagCol, gradient }) {
   return (
     <div className="feed-vrow">
       <div className="feed-vrow-thumb">
-        <div style={{ width: '100%', height: '100%', background: `linear-gradient(135deg,${g1},${g2})` }} />
+        <div className="feed-ph-thumb" style={{ background: `linear-gradient(135deg,${g1},${g2})` }} />
       </div>
       <div className="feed-vrow-info">
         <div className="feed-vrow-title">{title}</div>
@@ -155,7 +155,7 @@ export default function DiscoverPage() {
       {!breakDismissed && (
         <div className="feed-break-card">
           <div className="feed-break-top">
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+            <div className="feed-break-top-inner">
               <div className="feed-break-icon">
                 <svg viewBox="0 0 16 16" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M8 14c3.3 0 6-2.2 6-5s-2.7-5-6-5-6 2.2-6 5c0 1.2.5 2.3 1.3 3.2L2 14l3.2-1c.9.4 1.8.6 2.8.6z" />
@@ -173,8 +173,8 @@ export default function DiscoverPage() {
           <div className="feed-break-videos">
             <div className="feed-break-vid">
               <div className="feed-break-vid-thumb">
-                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#3a6f3a,#2a5f2a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '18px' }}>🌿</span>
+                <div className="feed-ph-thumb feed-ph-emoji" style={{ background: 'linear-gradient(135deg,#3a6f3a,#2a5f2a)' }}>
+                  <span>🌿</span>
                 </div>
               </div>
               <div className="feed-break-vid-info">
@@ -184,8 +184,8 @@ export default function DiscoverPage() {
             </div>
             <div className="feed-break-vid">
               <div className="feed-break-vid-thumb">
-                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#6f5a2a,#5f4a1a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '18px' }}>🐕</span>
+                <div className="feed-ph-thumb feed-ph-emoji" style={{ background: 'linear-gradient(135deg,#6f5a2a,#5f4a1a)' }}>
+                  <span>🐕</span>
                 </div>
               </div>
               <div className="feed-break-vid-info">
@@ -195,8 +195,8 @@ export default function DiscoverPage() {
             </div>
             <div className="feed-break-vid">
               <div className="feed-break-vid-thumb">
-                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#4a4a6f,#3a3a5f)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '18px' }}>🎨</span>
+                <div className="feed-ph-thumb feed-ph-emoji" style={{ background: 'linear-gradient(135deg,#4a4a6f,#3a3a5f)' }}>
+                  <span>🎨</span>
                 </div>
               </div>
               <div className="feed-break-vid-info">

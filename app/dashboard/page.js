@@ -269,7 +269,7 @@ export default function DashboardPage() {
             </div>
             <div className="db-stat-card">
               <div className="db-stat-label">Login Streak</div>
-              <div className="db-stat-value">{streak.count}<span style={{ fontSize: '.75rem', fontWeight: 500, color: 'var(--text-muted)', marginLeft: 2 }}>days</span></div>
+              <div className="db-stat-value">{streak.count}<span className="db-stat-unit">days</span></div>
               <div className="streak-row">
                 {streak.dots.map((dot, i) => (
                   <div key={i} className={`streak-dot${dot.isActive ? (dot.isToday ? ' today' : ' active') : ''}`} />
@@ -328,7 +328,7 @@ export default function DashboardPage() {
                 </a>
               );
             }) : (
-              <p style={{ color: 'var(--text-muted)', fontSize: '.8125rem', padding: '.5rem 0' }}>
+              <p className="db-empty-msg">
                 {favCount ? 'Connect YouTube to see recent uploads.' : 'Mark channels as favourites to see new videos here.'}
               </p>
             )}
@@ -352,7 +352,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 )) : (
-                  <p style={{ color: 'var(--text-muted)', fontSize: '.8125rem', padding: '.5rem 0' }}>No categories yet.</p>
+                  <p className="db-empty-msg">No categories yet.</p>
                 )}
               </div>
             </div>
@@ -383,7 +383,7 @@ export default function DashboardPage() {
                     })}
                   </>
                 ) : (
-                  <p style={{ color: 'var(--accent)', fontSize: '.8125rem', padding: '.375rem 0' }}>Everything looks good!</p>
+                  <p className="db-success-msg">Everything looks good!</p>
                 )}
               </div>
             </div>

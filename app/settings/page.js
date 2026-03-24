@@ -20,11 +20,11 @@ export default function SettingsPage() {
   }, [userTier]);
 
   return (
-    <main style={{ padding: '2.5rem', maxWidth: 700, margin: '0 auto', overflowY: 'auto', flex: 1 }}>
+    <main className="settings-main">
       <PageHeader title="Settings" subtitle="Manage your account, preferences, and connected services" sticky={false} />
 
       {/* Account */}
-      <section style={{ marginBottom: '2rem' }}>
+      <section className="settings-section">
         <h3 className="settings-section-title">Account</h3>
         <div className="settings-card">
           <div className="settings-row">
@@ -40,31 +40,19 @@ export default function SettingsPage() {
       </section>
 
       {/* Theme */}
-      <section style={{ marginBottom: '2rem' }}>
+      <section className="settings-section">
         <h3 className="settings-section-title">Theme</h3>
-        <p style={{ fontSize: '.8125rem', color: 'var(--text-secondary)', marginBottom: '.75rem' }}>Choose how Subscrub looks to you.</p>
-        <div style={{ display: 'flex', gap: '.75rem' }}>
+        <p className="settings-desc">Choose how Subscrub looks to you.</p>
+        <div className="settings-theme-row">
           <button
+            className={`settings-theme-btn${activeTheme === 'dark' ? ' active' : ''}`}
             onClick={() => setTheme('dark')}
-            style={{
-              flex: 1, padding: '1rem', borderRadius: 'var(--radius-md)',
-              border: `2px solid ${activeTheme === 'dark' ? 'var(--accent)' : 'var(--border-subtle)'}`,
-              background: activeTheme === 'dark' ? 'var(--accent-soft)' : 'var(--bg-card)',
-              cursor: 'pointer', textAlign: 'center', fontFamily: 'var(--font-body)',
-              color: 'var(--text-primary)', fontSize: '.875rem', fontWeight: 600,
-            }}
           >
             Dark {activeTheme === 'dark' && '✓'}
           </button>
           <button
+            className={`settings-theme-btn${activeTheme === 'light' ? ' active' : ''}`}
             onClick={() => setTheme('light')}
-            style={{
-              flex: 1, padding: '1rem', borderRadius: 'var(--radius-md)',
-              border: `2px solid ${activeTheme === 'light' ? 'var(--accent)' : 'var(--border-subtle)'}`,
-              background: activeTheme === 'light' ? 'var(--accent-soft)' : 'var(--bg-card)',
-              cursor: 'pointer', textAlign: 'center', fontFamily: 'var(--font-body)',
-              color: 'var(--text-primary)', fontSize: '.875rem', fontWeight: 600,
-            }}
           >
             Light {activeTheme === 'light' && '✓'}
           </button>
@@ -72,7 +60,7 @@ export default function SettingsPage() {
       </section>
 
       {/* Sync & Usage */}
-      <section style={{ marginBottom: '2rem' }}>
+      <section className="settings-section">
         <h3 className="settings-section-title">Sync</h3>
         <div className="settings-card">
           <div className="settings-row">
@@ -81,7 +69,7 @@ export default function SettingsPage() {
               <div className="settings-row-desc">
                 {syncUsage.used} / {userTier === 'admin' ? '∞' : syncUsage.max} used today
                 {userTier === 'free' && syncUsage.used >= syncUsage.max && (
-                  <span style={{ color: 'var(--color-error)', marginLeft: '.5rem' }}>Limit reached</span>
+                  <span className="settings-limit-tag">Limit reached</span>
                 )}
               </div>
             </div>
@@ -96,24 +84,16 @@ export default function SettingsPage() {
           <div className="settings-row">
             <div className="settings-row-info">
               <div className="settings-row-label">Current plan</div>
-              <div className="settings-row-desc" style={{ textTransform: 'capitalize' }}>{userTier || 'free'}</div>
+              <div className="settings-row-desc settings-tier-label">{userTier || 'free'}</div>
             </div>
           </div>
           {userTier === 'free' && (
-            <div style={{
-              marginTop: '.75rem', padding: '.875rem 1rem', borderRadius: 'var(--radius-md)',
-              background: 'var(--accent-soft)', border: '1px solid rgba(56,233,177,.2)',
-            }}>
-              <div style={{ fontSize: '.8125rem', fontWeight: 600, color: 'var(--accent)', marginBottom: '.25rem' }}>
-                Upgrade to Pro
-              </div>
-              <div style={{ fontSize: '.75rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '.625rem' }}>
+            <div className="settings-upsell">
+              <div className="settings-upsell-title">Upgrade to Pro</div>
+              <div className="settings-upsell-desc">
                 Get 5 daily syncs, priority feed refresh, and early access to new features.
               </div>
-              <button
-                className="settings-btn settings-btn-accent"
-                onClick={() => window.location.href = '/pricing'}
-              >
+              <button className="settings-btn settings-btn-accent" onClick={() => { window.location.href = '/pricing'; }}>
                 Upgrade →
               </button>
             </div>
