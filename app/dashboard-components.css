@@ -2172,6 +2172,23 @@ input[type=range]::-webkit-slider-thumb{
 .db-empty-msg{color:var(--text-muted);font-size:.8125rem;padding:.5rem 0}
 .db-success-msg{color:var(--accent);font-size:.8125rem;padding:.375rem 0}
 .feed-search-narrow{max-width:220px}
+/* ─── Punch Card Chart ─── */
+.pc-wrap{padding:0}
+.pc-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px}
+.pc-tabs{display:flex;gap:3px;background:var(--bg-surface);border-radius:8px;padding:3px}
+.pc-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;font-family:var(--font-body);transition:all .15s}
+.pc-tab:hover{color:var(--text-secondary)}
+.pc-tab.active{background:var(--bg-card);color:var(--text-primary);box-shadow:0 0 0 .5px var(--border-subtle)}
+.pc-legend{display:flex;flex-wrap:wrap;gap:12px;padding:0 20px 12px;font-size:12px;color:var(--text-secondary)}
+.pc-legend-item{display:flex;align-items:center;gap:4px;cursor:pointer;transition:opacity .15s}
+.pc-legend-item.dim{opacity:.25}
+.pc-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.pc-canvas{position:relative;width:100%;padding:0 12px}
+.pc-summary{display:flex;gap:12px;padding:12px 20px 16px}
+.pc-stat{flex:1;background:var(--bg-surface);border-radius:8px;padding:10px 12px}
+.pc-stat-val{font-family:var(--font-display);font-size:20px;font-weight:500;letter-spacing:-.5px}
+.pc-stat-label{font-size:11px;color:var(--text-muted);margin-top:2px}
+
 .subs-empty-msg{color:var(--text-muted);padding:2rem;text-align:center}
 .subs-page-info{padding:.5rem 0;font-size:.75rem;color:var(--text-muted)}
 

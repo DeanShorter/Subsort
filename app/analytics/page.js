@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import PageHeader from '../components/PageHeader';
+import PunchCardChart from '../components/PunchCardChart';
 
 export default function AnalyticsPage() {
   const { user, signIn } = useAuth();
@@ -171,7 +172,10 @@ export default function AnalyticsPage() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+      {/* Viewing Activity Punch Card */}
+      <PunchCardChart />
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
         {/* Category breakdown */}
         <div className="analytics-card">
           <h3 className="analytics-card-title">Category Breakdown</h3>

@@ -5,9 +5,13 @@ import styles from './blog.module.css';
 
 const CATEGORIES = ['All', 'Guides', 'Insights', 'Tips', 'Behind the scenes'];
 
-export default function BlogGrid({ posts }) {
-  const [search, setSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
+export default function BlogGrid({ posts, search: externalSearch, activeFilter: externalFilter, showToolbar = false }) {
+  const [localSearch, setLocalSearch] = useState('');
+  const [localFilter, setLocalFilter] = useState('All');
+
+  // Use external state when provided (authenticated view), local state for standalone
+  const search = externalSearch !== undefined ? externalSearch : localSearch;
+  const activeFilter = externalFilter !== undefined ? externalFilter : localFilter;
 
   const filtered = useMemo(() => {
     let result = posts;
@@ -26,31 +30,34 @@ export default function BlogGrid({ posts }) {
 
   return (
     <>
-      <div className={styles.toolbar}>
-        <div className={styles.searchWrap}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-          </svg>
-          <input
-            className={styles.searchInput}
-            type="text"
-            placeholder="Search articles…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
+      {/* Only show toolbar for unauthenticated view — authenticated uses PageHeader */}
+      {showToolbar && (
+        <div className={styles.toolbar}>
+          <div className={styles.searchWrap}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              className={styles.searchInput}
+              type="text"
+              placeholder="Search articles…"
+              value={localSearch}
+              onChange={e => setLocalSearch(e.target.value)}
+            />
+          </div>
+          <div className={styles.filterChips}>
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                className={`${styles.chip}${localFilter === cat ? ` ${styles.chipActive}` : ''}`}
+                onClick={() => setLocalFilter(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className={styles.filterChips}>
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              className={`${styles.chip}${activeFilter === cat ? ` ${styles.chipActive}` : ''}`}
-              onClick={() => setActiveFilter(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
       {filtered.length > 0 ? (
         <div className={styles.grid}>

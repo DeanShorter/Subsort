@@ -29,7 +29,8 @@
       "Bash(npm run:*)",
       "Bash(grep -c \"''Outfit''\" \"D:/Subsort/app/dashboard-components.css\")",
       "Bash(grep -c \"''DM Sans''\" \"D:/Subsort/app/dashboard-components.css\")",
-      "Bash(grep -v \"import\\\\|from\\\\|//\")"
+      "Bash(grep -v \"import\\\\|from\\\\|//\")",
+      "Bash(node -e \"try{require.resolve\\(''chart.js''\\);console.log\\(''yes''\\)}catch\\(e\\){console.log\\(''no''\\)}\")"
     ]
   }
 }
