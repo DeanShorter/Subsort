@@ -21,7 +21,7 @@ export default function FeedsPage() {
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
   const [feedView, setFeedView] = useState('grid');
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('videos');
   const [tokenExpired, setTokenExpired] = useState(false);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
   const [openCats, setOpenCats] = useState(new Set());
@@ -140,14 +140,15 @@ export default function FeedsPage() {
     return result;
   }, [channels, activeCategory, activeSubcategory, chHasCat, typeFilter, search]);
 
-  // ── Favourites section videos ──────────────────────
+  // ── Favourites section videos (respects type filter) ──
   const favVideos = useMemo(() => {
     const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
-    return feedVideos
-      .filter(v => favIds.has(v.channelId) && v.publishedAt && new Date(v.publishedAt) >= weekCutoff)
-      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
-      .slice(0, 12);
-  }, [feedVideos, channels, weekCutoff]);
+    let result = feedVideos
+      .filter(v => favIds.has(v.channelId) && v.publishedAt && new Date(v.publishedAt) >= weekCutoff);
+    if (typeFilter === 'videos') result = result.filter(v => v.type !== 'short');
+    else if (typeFilter === 'shorts') result = result.filter(v => v.type === 'short');
+    return result.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  }, [feedVideos, channels, weekCutoff, typeFilter]);
 
   // ── Today's videos grouped by category ─────────────
   const todayVideos = useMemo(() => {
@@ -325,7 +326,6 @@ export default function FeedsPage() {
                   <span className="feed-section-title">New from your favourites</span>
                   <span className="feed-section-count">{favVideos.length} new</span>
                 </div>
-                <button className="feed-section-link" onClick={() => { setActiveCategory('__favs__'); window.__subsortCat?.('__favs__'); }}>See all favourites</button>
               </div>
               <div className="feed-scroll-row">
                 {favVideos.map(v => renderVideoCard(v, true))}
