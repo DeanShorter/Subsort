@@ -88,16 +88,16 @@ export default function EditChannelModal({ channelId, onClose }) {
       // Save to Supabase — resolve subcategory ID
       let subcategoryId = null;
       if (selectedSub) {
-        // Check if subcategory exists
         let subRow = dbSubcategories.find(s => s.name === selectedSub);
         if (!subRow) {
-          // Find the parent category ID for this subcategory
+          // Create new subcategory under the first selected category
           const parentCat = dbCategories.find(c => selectedCats.includes(c.name));
           if (parentCat) {
-            const { data: newSub } = await supabase.from('subcategories')
+            const { data: newSub, error: subErr } = await supabase.from('subcategories')
               .insert({ name: selectedSub, category_id: parentCat.id, sort_order: 999 })
               .select()
               .single();
+            if (subErr) console.error('[EditChannel] Create subcategory failed:', subErr);
             if (newSub) subcategoryId = newSub.id;
           }
         } else {
@@ -105,9 +105,10 @@ export default function EditChannelModal({ channelId, onClose }) {
         }
       }
 
-      await supabase.from('channels')
+      const { error: updateErr } = await supabase.from('channels')
         .update({ notes, subcategory_id: subcategoryId })
         .eq('id', ch.id);
+      if (updateErr) console.error('[EditChannel] Channel update failed:', updateErr);
 
       // Update channel_categories
       await supabase.from('channel_categories').delete().eq('channel_id', ch.id);
@@ -222,27 +223,38 @@ export default function EditChannelModal({ channelId, onClose }) {
             <div className="ecm-field-tags">
               {selectedSub && <span className="ecm-tag ecm-tag-sub">{selectedSub}</span>}
             </div>
-            {selectedSub ? (
-              <>
-                <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>Add</button>
-                <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>Edit</button>
-              </>
-            ) : (
-              <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>Add</button>
-            )}
+            <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>
+              {showSubEdit ? 'Done' : selectedSub ? 'Edit' : 'Add'}
+            </button>
           </div>
 
           {showSubEdit && (
             <div className="ecm-subcat-edit-panel" style={{ display: 'block' }}>
               {availableSubs.length > 0 ? (
-                <select
-                  className="sort-select"
-                  value={selectedSub}
-                  onChange={e => setSelectedSub(e.target.value)}
-                >
-                  <option value="">None</option>
-                  {availableSubs.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <>
+                  <select
+                    className="sort-select"
+                    value={selectedSub}
+                    onChange={e => setSelectedSub(e.target.value)}
+                  >
+                    <option value="">None</option>
+                    {availableSubs.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <div style={{ marginTop: '.5rem' }}>
+                    <input
+                      className="sort-select"
+                      type="text"
+                      placeholder="Or type a new subcategory…"
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' && e.target.value.trim()) {
+                          setSelectedSub(e.target.value.trim());
+                          e.target.value = '';
+                        }
+                      }}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </>
               ) : (
                 <input
                   className="sort-select"
