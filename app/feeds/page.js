@@ -317,7 +317,7 @@ export default function FeedsPage() {
                   href={`https://youtube.com/watch?v=${v.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => trackEvent('video_click_feeds')}
+                  onClick={() => trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video')}
                   style={{ textDecoration: 'none' }}
                   data-type={v.type || 'video'}
                 >

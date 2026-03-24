@@ -81,6 +81,11 @@ export async function POST(request) {
     for (const [channelId, videos] of rssResults) {
       for (const video of videos) {
         if (!existingVideoIds.has(video.videoId)) {
+          // Detect shorts from title keywords
+          const titleLower = (video.title || '').toLowerCase();
+          const isShort = titleLower.includes('#shorts') || titleLower.includes('#short')
+            || titleLower.endsWith('| shorts') || titleLower.endsWith('- shorts');
+
           newVideos.push({
             channel_id: channelId,
             video_id: video.videoId,
@@ -88,7 +93,7 @@ export async function POST(request) {
             thumbnail: video.thumbnail,
             published_at: video.publishedAt,
             playlist_type: 'uploads',
-            video_type: 'video',
+            video_type: isShort ? 'short' : 'video',
             fetched_at: new Date().toISOString(),
           });
         }
