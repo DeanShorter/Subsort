@@ -109,7 +109,7 @@ All hand-drawn inline SVGs at 16x16 viewBox, 1.5px stroke, round caps/joins, str
 - `/dashboard` — Home: greeting, stats cards, favourites feed, category breakdown
 - `/subscriptions` — All channels with sidebar category filtering and topbar subcategory chips
 - `/feeds` — Category-based video feeds
-- `/discover` — Recommendations, trending, popular with similar users, rising channels
+- `/discover` — Personalised channel recommendations in categorised sections (see Discover page spec in section 6)
 - `/settings` — Account, preferences, connected services
 - `/privacy` — Privacy policy
 - `/terms` — Terms of service
@@ -288,6 +288,44 @@ The free tier gets increasingly smart over time as click data accumulates. Show 
 
 **Key principle:** The free tier should feel increasingly smart over time. The user thinks "this app really knows me" — then the Pro upsell is "imagine what it could tell you with your full watch history." They're already sold on the concept because the free version proved it works.
 
+### Discover page
+
+Free tier feature. Personalised channel recommendations served from the `discover_channels` table (populated via admin-controlled enrichment using YouTube API). All sections exclude channels the user is already subscribed to.
+
+**Launch sections (work immediately with enrichment data):**
+
+1. **Popular in [top category]** — high subscriber-count channels matching the user's most-subscribed category. No personalisation needed beyond knowing their category distribution.
+
+2. **Popular in [second category]** — same logic, second largest category. Showing two category sections immediately gives the page substance.
+
+3. **Based on your favourites** — channels with matching topics/keywords to the user's favourited channels. Favourites are a stronger signal than subscriptions, so these recommendations feel more relevant even without watch data.
+
+4. **Try something new** — cross-category recommendation. "Other users obsessed with Tech also have channels in the Education category." Powered by analysing category overlap across users. Needs 20-30+ users to show meaningful patterns. Pushes people outside their bubble.
+
+5. **Amygdala Scrub** — mood-based counterbalance section. Detects when a user's feed is heavy on intense categories (News, Politics, True Crime) and offers wholesome alternatives: cooking, nature, animals, art, comedy, lo-fi music. Only shows when applicable to that user's feed.
+
+   Copy examples:
+   - "Your feed is 40% News and Politics. Your cortisol levels called — they'd like a word. Here are some channels that might help."
+   - "It's January. Everyone's doom-scrolling. Here's your antidote."
+   - "Feeling drained from the terrible news in the world? Check out some of these wholesome channels to scrub your amygdala clean."
+
+   Channels tagged as "wholesome" or "feel-good" during enrichment. Softer card treatment to distinguish from regular recommendations.
+
+**Post-launch sections (need accumulated data):**
+
+6. **Based on what you watch** — powered by click tracking data. After a few weeks of usage, this becomes the most accurate section. Show 2-3 results for free, blur the rest with a Pro badge as an upsell teaser.
+
+7. **Users who watch [channel] also subscribe to...** — collaborative filtering. Needs 50+ users with overlapping subscriptions for statistically meaningful results. Starts obvious ("MKBHD → Linus Tech Tips") but gets interesting as user base grows and niche patterns emerge.
+
+**Deferred sections (not worth building yet):**
+
+- "Trending this week" — generic, YouTube already does this. Only worth adding if category-specific.
+- "Rising creators" — requires tracking subscriber count changes over time through refresh cycles. Build once historical data exists.
+
+**Data source:** `discover_channels` table, populated via admin-controlled enrichment (manual YouTube API calls from the admin page). Each channel has a `category` field for section filtering and is indexed by subscriber count for sorting. Minimum 1,000 subscribers threshold.
+
+**Pro integration:** The free Discover page shows all launch sections fully. Pro adds the click-powered "Based on what you watch" section and the collaborative filtering section. The distinction is personalisation depth, not access.
+
 ---
 
 ## 7. Marketing strategy
@@ -419,6 +457,10 @@ Both need a proper legal review before handling real user data at scale.
 - Create at least the "First scrub" and "Ghost hunter" badges
 - Add cheeky empty states throughout the app
 - Implement video click tracking (video_clicks table + logging on every video card click)
+- Build admin enrichment panel (manual fill gaps, discover channels, refresh stale)
+- Seed discover_channels table via admin enrichment (all 8 categories)
+- Build Discover page with launch sections: "Popular in [category]" x2, "Based on your favourites"
+- Create discover_channels table in both production and test databases
 - Record 30-60 second demo video for landing page
 - Update blog post and all references from Freedly to subscrub
 - Get legal review of privacy policy and terms
@@ -430,7 +472,10 @@ Both need a proper legal review before handling real user data at scale.
 - Implement full achievement badges system
 - Build click-powered free tier insights (category distribution, never-clicked channels, smart roasts)
 - Build Pro upsell touchpoints based on click data (blurred recommendations, teaser breakdowns)
-- Build Discover page features
+- Discover page: add "Try something new" cross-category section (needs 20-30+ users)
+- Discover page: add "Amygdala Scrub" wholesome channel section (tag channels during enrichment)
+- Discover page: add "Based on what you watch" Pro section (needs click data accumulation)
+- Discover page: add collaborative filtering "Users who watch X also subscribe to..." (needs 50+ users)
 - Build admin dashboard with real Supabase queries
 - Implement category correction consensus algorithm
 - Set up Google AdSense for free tier (or affiliate partnerships)
@@ -466,6 +511,7 @@ All mockups are HTML files that can be opened in a browser:
 ### Code files
 - `rss-refresh.ts` — RSS fetcher, refresh API route, client hook, refresh button component
 - `cron-and-backfill.ts` — cron job route, metadata backfill route, vercel.json config
+- `channel-enrichment.ts` — YouTube API utilities, enrichment cron job, discover_channels schema, Discover API route
 - `test-schema.sql` — complete test database schema
 
 ### Style files

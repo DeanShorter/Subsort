@@ -214,7 +214,7 @@ export default function FeedsPage() {
   }
 
   return (
-    <main className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
+    <main id="homeMain" className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
       <PageHeader
         title="Feeds"
         subtitle={`Videos uploaded by your subscriptions ${timeRange === 'today' ? 'today' : timeRange === 'week' ? 'within the last 7 days' : 'within the last 30 days'}`}
