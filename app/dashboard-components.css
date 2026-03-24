@@ -1788,8 +1788,9 @@ input[type=range]::-webkit-slider-thumb{
 .feed-search-input{width:100%;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.4rem .625rem .4rem 2rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body)}
 .feed-search-input:focus{outline:none;border-color:var(--accent)}
 .feed-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.375rem .625rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body);cursor:pointer}
-/* Feed sticky bar */
-.sticky-bar,.feed-sticky-bar{position:sticky;top:0;z-index:50;background:var(--bg-primary);margin:0 -2rem;padding:0 2rem;border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
+/* Sticky bar — pins controls to top of scroll container */
+.sticky-bar,.feed-sticky-bar{position:sticky;top:0;z-index:50;background:#111110;margin:0 -2rem;padding:0 2rem;border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
+.sticky-bar::before{content:'';position:absolute;top:-20px;left:0;right:0;height:20px;background:#111110}
 #homeMain.feed-scrolled .feed-sticky-bar,#homeMain.feed-scrolled .sticky-bar{border-color:var(--border-subtle);box-shadow:var(--shadow-md)}
 /* Remove top padding from the feeds container so sticky bar sits flush at top:0 with no gap */
 #homeMain{padding-top:0}
