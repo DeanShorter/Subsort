@@ -94,7 +94,7 @@ export default function EditChannelModal({ channelId, onClose }) {
           const parentCat = dbCategories.find(c => selectedCats.includes(c.name));
           if (parentCat) {
             const { data: newSub, error: subErr } = await supabase.from('subcategories')
-              .insert({ name: selectedSub, category_id: parentCat.id, sort_order: 999 })
+              .insert({ name: selectedSub, category_id: parentCat.id, sort_order: 999, user_id: user.id })
               .select()
               .single();
             if (subErr) console.error('[EditChannel] Create subcategory failed:', subErr);
