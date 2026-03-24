@@ -361,7 +361,7 @@ export default function FeedsPage() {
   }
 
   return (
-    <main className="home-main">
+    <main className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
       <PageHeader
         title="Feeds"
         subtitle="Videos uploaded by your subscriptions"

@@ -419,7 +419,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
           <div className="hnp-section" id="sidebarCatsSection">
             <div className="hnp-section-label">FILTER BY CATEGORY</div>
             <button className={`home-nav-item${activeCat === 'all' ? ' active' : ''}`} onClick={() => { setActiveCat('all'); setActiveSub(null); window.__subsortCat?.('all'); }}>
-              <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+              <span className="hnp-cat-dot" style={{ background: 'var(--accent)' }} />
               <span className="home-nav-item-label">All Categories</span>
               <span className="hnp-count">{feedCounts ? feedCounts.all : channels.length}</span>
             </button>
