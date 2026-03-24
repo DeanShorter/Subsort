@@ -20,7 +20,7 @@ export default function SettingsPage() {
   }, [userTier]);
 
   return (
-    <main className="settings-main">
+    <main className="home-main settings-main">
       <PageHeader title="Settings" subtitle="Manage your account, preferences, and connected services" sticky={false} />
 
       {/* Account */}

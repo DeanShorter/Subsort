@@ -28,7 +28,8 @@
       "Bash(git config:*)",
       "Bash(npm run:*)",
       "Bash(grep -c \"''Outfit''\" \"D:/Subsort/app/dashboard-components.css\")",
-      "Bash(grep -c \"''DM Sans''\" \"D:/Subsort/app/dashboard-components.css\")"
+      "Bash(grep -c \"''DM Sans''\" \"D:/Subsort/app/dashboard-components.css\")",
+      "Bash(grep -v \"import\\\\|from\\\\|//\")"
     ]
   }
 }

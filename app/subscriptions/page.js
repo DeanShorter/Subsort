@@ -189,7 +189,7 @@ export default function SubscriptionsPage() {
   if (!user) {
     return (
       <main className="home-main">
-        <div className="db-header"><h1 className="page-title">Subscriptions</h1></div>
+        <PageHeader title="Subscriptions" sticky={false} />
         <div className="home-feed-empty">
           <p className="home-feed-empty-text">Sign in to see your subscriptions.</p>
           <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
