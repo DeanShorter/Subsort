@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const CHECKMARK = (
   <svg viewBox="0 0 12 12" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round">
@@ -69,8 +69,6 @@ export default function SyncModal({
   const [roastVisible, setRoastVisible] = useState(false);
   const [ctaVisible, setCtaVisible] = useState(false);
   const [roastData, setRoastData] = useState(null);
-  const actionQueue = useRef([]);
-  const processingQueue = useRef(false);
 
   // Reveal all steps on mount
   useEffect(() => {
@@ -82,7 +80,6 @@ export default function SyncModal({
     setRoastVisible(false);
     setCtaVisible(false);
     setRoastData(null);
-    actionQueue.current = [];
 
     let i = 0;
     const id = setInterval(() => {
@@ -93,9 +90,11 @@ export default function SyncModal({
     return () => clearInterval(id);
   }, [visible]);
 
-  // Queue-based state processing to handle rapid events
-  const processAction = useCallback((state) => {
-    const { action, step, detail, pct: p, favCount, categories, channels, deadChannels, done } = state;
+  // React to sync state changes
+  useEffect(() => {
+    if (!syncState) return;
+
+    const { action, step, detail, pct: p, favCount, categories, channels, deadChannels, done } = syncState;
 
     if (p != null) setPct(p);
 
@@ -112,16 +111,10 @@ export default function SyncModal({
       if (subtitles[step]) setSubtitle(subtitles[step]);
     }
 
-    if (action === 'complete' && step != null) {
-      setCompletedSteps(prev => new Map([...prev, [step, detail || '✓']]));
-      setActiveStep(prev => prev === step ? -1 : prev);
-    }
-
     if (done) {
       setActiveStep(-1);
       setSubtitle('All done. Here\'s the verdict.');
 
-      // Generate roast
       if (channels && deadChannels) {
         const { roast, score } = generateRoast(
           userName || 'there',
@@ -137,27 +130,7 @@ export default function SyncModal({
         setTimeout(() => setCtaVisible(true), 500);
       }
     }
-  }, [userName]);
-
-  // Process queued actions with a small delay between each to allow React to paint
-  useEffect(() => {
-    if (!syncState) return;
-    actionQueue.current.push(syncState);
-
-    if (!processingQueue.current) {
-      processingQueue.current = true;
-      const drain = () => {
-        const next = actionQueue.current.shift();
-        if (next) {
-          processAction(next);
-          setTimeout(drain, 50); // 50ms gap lets React paint between actions
-        } else {
-          processingQueue.current = false;
-        }
-      };
-      drain();
-    }
-  }, [syncState, processAction]);
+  }, [syncState, userName]);
 
   if (!visible) return null;
 
