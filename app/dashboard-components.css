@@ -2392,7 +2392,10 @@ input[type=range]::-webkit-slider-thumb{
 }
 .detail-header-actions .btn-header-yt svg{width:13px;height:13px}
 .detail-header-actions .btn-header-yt:hover{opacity:.88}
-.ch-fav-dot{width:7px;height:7px;border-radius:var(--radius-full);background:#fbbf24;flex-shrink:0;margin-left:auto}
+.ch-fav-star{width:24px;height:24px;background:none;border:none;cursor:pointer;display:grid;place-items:center;color:var(--text-muted);transition:color .15s;padding:0;z-index:2}
+.ch-fav-star:hover{color:#fbbf24}
+.ch-fav-star.starred{color:#fbbf24}
+.ch-fav-star svg{width:14px;height:14px}
 
 .detail-body{padding:0 1.75rem 1.75rem}
 

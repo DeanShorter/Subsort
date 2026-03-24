@@ -2,7 +2,7 @@
 import { useChannelData } from './ChannelDataContext';
 
 export default function ChannelCard({ channel, view = 'hybrid', index = 0, selected = false, onSelect, onClick }) {
-  const { chCats, formatCount, categoryColours } = useChannelData();
+  const { chCats, formatCount, categoryColours, toggleFavourite } = useChannelData();
 
   const ch = channel;
   const cats = chCats(ch);
@@ -86,7 +86,7 @@ export default function ChannelCard({ channel, view = 'hybrid', index = 0, selec
           ) : null}
           <div className="ch-badges">{catBadges}{subcatBadge}</div>
         </div>
-        {ch.favourited && <div className="ch-fav-dot" title="Favourite" style={{ position: 'absolute', top: '.625rem', right: '.625rem' }} />}
+        {ch.favourited && <button className="ch-fav-star starred" title="Favourite" onClick={e => { e.stopPropagation(); toggleFavourite?.(ch.id); }} style={{ position: 'absolute', top: '.5rem', right: '.5rem' }}><svg viewBox="0 0 16 16" fill="currentColor" stroke="currentColor" strokeWidth="1"><polygon points="8 1.5 9.8 5.8 14.5 6.3 11 9.5 11.8 14.2 8 12 4.2 14.2 5 9.5 1.5 6.3 6.2 5.8" /></svg></button>}
         {menuEl}
       </div>
     );
@@ -118,7 +118,7 @@ export default function ChannelCard({ channel, view = 'hybrid', index = 0, selec
         )}
         <div className="ch-badges">{catBadges}{subcatBadge}</div>
       </div>
-      {ch.favourited && <div className="ch-fav-dot" title="Favourite" />}
+      {ch.favourited && <button className="ch-fav-star starred" title="Favourite" onClick={e => { e.stopPropagation(); toggleFavourite?.(ch.id); }} style={{ position: 'absolute', top: '.5rem', right: '.5rem' }}><svg viewBox="0 0 16 16" fill="currentColor" stroke="currentColor" strokeWidth="1"><polygon points="8 1.5 9.8 5.8 14.5 6.3 11 9.5 11.8 14.2 8 12 4.2 14.2 5 9.5 1.5 6.3 6.2 5.8" /></svg></button>}
       {menuEl}
     </div>
   );

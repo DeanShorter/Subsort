@@ -209,15 +209,19 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
   const handleSync = useCallback(async () => {
     if (!accessToken || !user || syncing) return;
 
-    // Throttle: check last sync (30 min cooldown)
-    const lastSync = parseInt(localStorage.getItem('subsort_sync_ts') || '0');
-    if (lastSync && channels.length > 0) {
-      const elapsed = Date.now() - lastSync;
-      if (elapsed < 30 * 60 * 1000) {
-        const mins = Math.round(elapsed / 60000);
-        showToast(`Synced ${mins} minute${mins !== 1 ? 's' : ''} ago — try again later.`, 3000);
-        return;
+    // Tier-based daily sync limits: free=1, pro=5, admin=unlimited
+    const maxSyncs = userTier === 'admin' ? Infinity : userTier === 'pro' ? 5 : 1;
+    const today = new Date().toDateString();
+    const syncLog = JSON.parse(localStorage.getItem('subsort_sync_log') || '{}');
+    const todaySyncs = syncLog.date === today ? (syncLog.count || 0) : 0;
+
+    if (todaySyncs >= maxSyncs) {
+      if (userTier === 'free') {
+        showToast('Free tier: 1 sync per day. Upgrade to Pro for 5 daily syncs.', 5000);
+      } else {
+        showToast(`You've used all ${maxSyncs} syncs for today. Resets at midnight.`, 4000);
       }
+      return;
     }
 
     setSyncing(true);
@@ -230,6 +234,11 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
         (label, detail, pct) => setSyncProgress({ label, detail, pct })
       );
       await reload();
+      // Track daily sync count
+      const syncLogAfter = JSON.parse(localStorage.getItem('subsort_sync_log') || '{}');
+      const todayAfter = new Date().toDateString();
+      const countAfter = syncLogAfter.date === todayAfter ? (syncLogAfter.count || 0) + 1 : 1;
+      localStorage.setItem('subsort_sync_log', JSON.stringify({ date: todayAfter, count: countAfter }));
       localStorage.setItem('subsort_sync_ts', String(Date.now()));
       setSyncProgress({ label: 'Done!', detail: '', pct: 100 });
       showToast(`Synced! ${result.newCount} new channels, ${result.channels.length} total`);
@@ -272,6 +281,12 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
     };
     return () => { delete window.__subsortScrollToCats; };
   }, []);
+
+  // Expose sync trigger for settings page
+  useEffect(() => {
+    window.__subsortTriggerSync = handleSync;
+    return () => { delete window.__subsortTriggerSync; };
+  }, [handleSync]);
 
   // Close mobile nav on route change
   useEffect(() => {
