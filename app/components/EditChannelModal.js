@@ -90,17 +90,32 @@ export default function EditChannelModal({ channelId, onClose }) {
       // Save to Supabase — resolve subcategory ID
       let subcategoryId = null;
       if (selectedSub) {
-        let subRow = dbSubcategories.find(s => s.name === selectedSub);
+        // Find the parent category IDs for the selected categories
+        const parentCatIds = selectedCats
+          .map(name => dbCategories.find(c => c.name === name))
+          .filter(Boolean)
+          .map(c => c.id);
+
+        // Find existing subcategory matching name AND one of the selected categories
+        let subRow = dbSubcategories.find(s => s.name === selectedSub && parentCatIds.includes(s.category_id));
+
         if (!subRow) {
-          // Create new subcategory under the first selected category
-          const parentCat = dbCategories.find(c => selectedCats.includes(c.name));
-          if (parentCat) {
-            const { data: newSub, error: subErr } = await supabase.from('subcategories')
-              .insert({ name: selectedSub, category_id: parentCat.id, sort_order: 999, user_id: user.id })
-              .select()
-              .single();
-            if (subErr) console.error('[EditChannel] Create subcategory failed:', subErr);
-            if (newSub) subcategoryId = newSub.id;
+          // Create subcategory under each selected category that doesn't have it yet
+          for (const parentCat of parentCatIds.map(id => dbCategories.find(c => c.id === id)).filter(Boolean)) {
+            const exists = dbSubcategories.find(s => s.name === selectedSub && s.category_id === parentCat.id);
+            if (!exists) {
+              const { data: newSub, error: subErr } = await supabase.from('subcategories')
+                .insert({ name: selectedSub, category_id: parentCat.id, sort_order: 999, user_id: user.id })
+                .select()
+                .single();
+              if (subErr) console.error('[EditChannel] Create subcategory failed:', subErr);
+              if (newSub && !subcategoryId) subcategoryId = newSub.id;
+            }
+          }
+          // If we didn't create any (all existed), find the first match
+          if (!subcategoryId) {
+            subRow = dbSubcategories.find(s => s.name === selectedSub && parentCatIds.includes(s.category_id));
+            if (subRow) subcategoryId = subRow.id;
           }
         } else {
           subcategoryId = subRow.id;

@@ -8,6 +8,7 @@ import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
 import SubscriptionCritic from '../components/SubscriptionCritic';
 import DashboardPersonality from '../components/DashboardPersonality';
+import CriticCard from '../components/CriticCard';
 import ShareCards from '../components/ShareCards';
 
 export default function DashboardPage() {
@@ -223,6 +224,8 @@ export default function DashboardPage() {
       <PageHeader title="Dashboard" right={<span className="db-clock">Last refresh: {lastRefresh}</span>} />
 
       <div className="main-content">
+      <div className="dash-layout">
+      <div className="dash-left">
       {/* Greeting */}
       <div className="db-greeting">
         <h1>Good <span>{greetingTime}</span>, <span>{greetingName}</span>.</h1>
@@ -399,6 +402,10 @@ export default function DashboardPage() {
           </div>
         </>
       )}
+      </div>
+      {/* Right column: Critic Card */}
+      {user && channels.length > 0 && <CriticCard />}
+      </div>
       </div>
     </main>
   );
