@@ -203,47 +203,38 @@ export default function SubscriptionsPage() {
       <PageHeader
         title="Subscriptions"
         count={`${channels.length} subscription${channels.length !== 1 ? 's' : ''}`}
-      >
-        <button className="ct-pill-btn" onClick={cycleSort}>
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-          Sort: <span>{SORT_OPTIONS[sortIdx].label}</span>
-        </button>
-
-        <button className="ct-pill-btn" onClick={() => window.__subsortScrollToCats?.()}>
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-          Filters
-        </button>
-
-        <div className="view-toggles">
-          {['grid', 'list', 'hybrid'].map(mode => (
-            <button
-              key={mode}
-              className={`view-toggle-btn${chanView === mode ? ' active' : ''}`}
-              title={mode.charAt(0).toUpperCase() + mode.slice(1)}
-              onClick={() => setChanView(mode)}
-            >
-              {mode === 'grid' && <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>}
-              {mode === 'list' && <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>}
-              {mode === 'hybrid' && <svg viewBox="0 0 14 14"><rect x="1" y="1" width="3" height="12" rx="1" /><path d="M6 3h7M6 7h7M6 11h7" /></svg>}
-            </button>
-          ))}
-        </div>
-
-        <button className={`ct-pill-btn${bulkMode ? ' active' : ''}`} onClick={toggleBulkMode}>
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="3" width="12" height="2" rx=".5" /><rect x="1" y="7" width="8" height="2" rx=".5" /><rect x="1" y="11" width="10" height="2" rx=".5" /></svg>
-          {bulkMode ? `Selected (${selectedChannels.size})` : 'Bulk Edit'}
-        </button>
-
-        <button className="ct-pill-btn ct-pill-accent" onClick={() => setShowSortConfirm(true)} disabled={sorting}>
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M7 1v12M1 7h12" /></svg>
-          {sorting ? 'Sorting…' : 'Sort now'}
-        </button>
-
-        <div className="feed-search-wrap feed-search-narrow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-          <input className="feed-search-input" placeholder="Search channels…" value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
-      </PageHeader>
+        right={<>
+          <button className="ph-btn" onClick={cycleSort}>
+            <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
+            Sort: <span>{SORT_OPTIONS[sortIdx].label}</span>
+          </button>
+          <button className="ph-btn" onClick={() => window.__subsortScrollToCats?.()}>
+            <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
+            Filters
+          </button>
+          <div className="ph-view-toggles">
+            {['grid', 'list', 'hybrid'].map(mode => (
+              <button key={mode} className={`ph-view-btn${chanView === mode ? ' active' : ''}`} title={mode.charAt(0).toUpperCase() + mode.slice(1)} onClick={() => setChanView(mode)}>
+                {mode === 'grid' && <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>}
+                {mode === 'list' && <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>}
+                {mode === 'hybrid' && <svg viewBox="0 0 14 14"><rect x="1" y="1" width="3" height="12" rx="1" /><path d="M6 3h7M6 7h7M6 11h7" /></svg>}
+              </button>
+            ))}
+          </div>
+          <button className={`ph-btn${bulkMode ? ' active' : ''}`} onClick={toggleBulkMode}>
+            <svg viewBox="0 0 14 14"><rect x="1" y="3" width="12" height="2" rx=".5" /><rect x="1" y="7" width="8" height="2" rx=".5" /><rect x="1" y="11" width="10" height="2" rx=".5" /></svg>
+            {bulkMode ? `Selected (${selectedChannels.size})` : 'Bulk Edit'}
+          </button>
+          <button className="ph-btn primary" onClick={() => setShowSortConfirm(true)} disabled={sorting}>
+            <svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" /></svg>
+            {sorting ? 'Sorting…' : 'Auto-Sort'}
+          </button>
+          <div className="ph-search-wrap">
+            <svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4.5" /><path d="M9.5 9.5L13 13" /></svg>
+            <input className="ph-search" placeholder="Search channels…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+        </>}
+      />
 
       {/* Category + subcategory row */}
       {activeCategory !== 'all' && activeCategory !== '__favs__' && activeCategory !== '__uncat__' && (

@@ -418,15 +418,15 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
         {showCategories && categories.length > 0 && (
           <div className="hnp-section" id="sidebarCatsSection">
             <div className="hnp-section-label">FILTER BY CATEGORY</div>
-            <button className={`home-nav-item${activeCat === 'all' ? ' active' : ''}`} onClick={() => { setActiveCat('all'); setActiveSub(null); window.__subsortCat?.('all'); }}>
-              <span className="hnp-cat-dot" style={{ background: 'var(--accent)' }} />
-              <span className="home-nav-item-label">All Categories</span>
-              <span className="hnp-count">{feedCounts ? feedCounts.all : channels.length}</span>
-            </button>
             <button className={`home-nav-item hnp-fav-btn${activeCat === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCat('__favs__'); setActiveSub(null); window.__subsortCat?.('__favs__'); }}>
               <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z"/></svg>
               <span className="home-nav-item-label">Favourites</span>
               <span className="hnp-count">{feedCounts ? feedCounts.favs : channels.filter(c => c.favourited).length}</span>
+            </button>
+            <button className={`home-nav-item${activeCat === 'all' ? ' active' : ''}`} onClick={() => { setActiveCat('all'); setActiveSub(null); window.__subsortCat?.('all'); }}>
+              <span className="hnp-cat-dot" style={{ background: 'var(--accent)' }} />
+              <span className="home-nav-item-label">All Categories</span>
+              <span className="hnp-count">{feedCounts ? feedCounts.all : channels.length}</span>
             </button>
             {categories.map(cat => {
               const subs = subcategories[cat] || [];

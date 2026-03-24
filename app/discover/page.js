@@ -88,12 +88,16 @@ export default function DiscoverPage() {
 
   return (
     <main className="home-main">
-      <PageHeader title="Discover" subtitle="Find new channels based on what you watch">
-        <div className="feed-search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-          <input className="feed-search-input" type="text" placeholder="Search…" value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
-      </PageHeader>
+      <PageHeader
+        title="Discover"
+        subtitle="Find new channels based on what you watch"
+        right={
+          <div className="ph-search-wrap">
+            <svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4.5" /><path d="M9.5 9.5L13 13" /></svg>
+            <input className="ph-search" type="text" placeholder="Search…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+        }
+      />
 
       {/* ── Popular in top category ── */}
       <div className="feed-section">

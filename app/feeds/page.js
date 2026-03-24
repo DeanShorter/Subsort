@@ -365,45 +365,39 @@ export default function FeedsPage() {
       <PageHeader
         title="Feeds"
         subtitle="Videos uploaded by your subscriptions"
-        footer={
-          <ScrollRow className="feed-chip-row" scrollAmount={200}>
-            <button className={`feed-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
-            <button className={`feed-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
-            <button className={`feed-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
-            <span className="feed-chip-sep">|</span>
-            <button className={`feed-chip${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); window.__subsortCat?.('all'); }}>All Categories</button>
-            {categories.map(cat => (
-              <button key={cat} className={`feed-chip${activeCategory === cat ? ' active' : ''}`} onClick={() => {
-                const next = activeCategory === cat ? 'all' : cat;
-                setActiveCategory(next);
-                setActiveSubcategory(null);
-                window.__subsortCat?.(next);
-              }}>
-                {cat}
-              </button>
-            ))}
-          </ScrollRow>
-        }
-      >
-        {/* View toggles */}
-        <div className="view-toggles">
-          <button className={`view-toggle-btn${feedView === 'list' ? ' active' : ''}`} title="List" onClick={() => setFeedView('list')}>
-            <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
-          </button>
-          <button className={`view-toggle-btn${feedView === 'grid' ? ' active' : ''}`} title="Grid" onClick={() => setFeedView('grid')}>
-            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
-          </button>
-        </div>
-
-        {/* Search */}
-        <div className="feed-search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-          <input className="feed-search-input" placeholder="Search videos…" value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
-
-        {/* RSS Refresh */}
-        <RefreshButton />
-      </PageHeader>
+        right={<>
+          <div className="ph-view-toggles">
+            <button className={`ph-view-btn${feedView === 'list' ? ' active' : ''}`} title="List" onClick={() => setFeedView('list')}>
+              <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
+            </button>
+            <button className={`ph-view-btn${feedView === 'grid' ? ' active' : ''}`} title="Grid" onClick={() => setFeedView('grid')}>
+              <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
+            </button>
+          </div>
+          <div className="ph-search-wrap">
+            <svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4.5" /><path d="M9.5 9.5L13 13" /></svg>
+            <input className="ph-search" placeholder="Search videos…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+          <RefreshButton />
+        </>}
+        filters={<>
+          <button className={`ph-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
+          <button className={`ph-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
+          <button className={`ph-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
+          <span className="ph-sep" />
+          <button className={`ph-chip${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); window.__subsortCat?.('all'); }}>All Categories</button>
+          {categories.map(cat => (
+            <button key={cat} className={`ph-chip${activeCategory === cat ? ' active' : ''}`} onClick={() => {
+              const next = activeCategory === cat ? 'all' : cat;
+              setActiveCategory(next);
+              setActiveSubcategory(null);
+              window.__subsortCat?.(next);
+            }}>
+              {cat}
+            </button>
+          ))}
+        </>}
+      />
 
       {loadingVideos ? (
         <div className="home-feed-loading"><span className="spinner" /> Fetching latest videos…</div>
