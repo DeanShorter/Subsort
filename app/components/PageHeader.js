@@ -12,13 +12,10 @@
  *   count     — Optional count beside the title
  *   right     — Optional ReactNode for the right side (buttons, search, etc.)
  *   filters   — Optional ReactNode for the filter chips row
- *   sticky    — Whether the header sticks on scroll (default: true when right/filters present)
  */
-export default function PageHeader({ title, subtitle, count, right, filters, sticky }) {
-  const isSticky = sticky !== undefined ? sticky : !!(right || filters);
-
+export default function PageHeader({ title, subtitle, count, right, filters }) {
   return (
-    <div className={`page-header${isSticky ? ' sticky-bar' : ''}`}>
+    <div className="page-header">
       <div className="ph-title-bar">
         <div className="ph-left">
           <h1 className="ph-title">{title}</h1>

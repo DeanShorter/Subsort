@@ -77,7 +77,7 @@ export default function DiscoverPage() {
   if (!user) {
     return (
       <main className="home-main">
-        <PageHeader title="Discover" subtitle="Find new channels based on what you watch" sticky={false} />
+        <PageHeader title="Discover" subtitle="Find new channels based on what you watch" />
         <div className="home-feed-empty">
           <p className="home-feed-empty-text">Sign in to discover new content.</p>
           <button className="btn-accent" onClick={signIn}>Sign in with Google</button>

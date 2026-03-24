@@ -351,7 +351,7 @@ export default function FeedsPage() {
   if (!user) {
     return (
       <main className="home-main">
-        <PageHeader title="Feeds" sticky={false} />
+        <PageHeader title="Feeds" />
         <div className="home-feed-empty">
           <p className="home-feed-empty-text">Sign in to see your feed.</p>
           <button className="btn-accent" onClick={signIn}>Sign in with Google</button>

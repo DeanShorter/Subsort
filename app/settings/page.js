@@ -21,7 +21,7 @@ export default function SettingsPage() {
 
   return (
     <main className="home-main settings-main">
-      <PageHeader title="Settings" subtitle="Manage your account, preferences, and connected services" sticky={false} />
+      <PageHeader title="Settings" subtitle="Manage your account, preferences, and connected services" />
 
       {/* Account */}
       <section className="settings-section">

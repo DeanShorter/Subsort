@@ -1009,9 +1009,7 @@ input[type=range]::-webkit-slider-thumb{
 .ph-chip.active{background:var(--text-primary);color:var(--bg-primary);border-color:var(--text-primary)}
 .ph-sep{width:1px;height:16px;background:var(--border-subtle);flex-shrink:0}
 
-/* Sticky behaviour */
-.page-header.sticky-bar{position:sticky;top:0;z-index:50;margin:0 -2rem;padding:0;border-radius:0;border-left:none;border-right:none;border-top:none}
-.page-header.sticky-bar::before{content:'';position:absolute;top:-20px;left:0;right:0;height:20px;background:var(--bg-primary)}
+/* Sticky behaviour removed */
 .an-subtitle{font-size:.875rem;color:var(--text-secondary)}
 /* Tab strip */
 .an-tabstrip-wrap{border-bottom:1px solid var(--border-subtle);margin-bottom:1.25rem;overflow:hidden}
@@ -1831,9 +1829,7 @@ input[type=range]::-webkit-slider-thumb{
 .feed-search-input:focus{outline:none;border-color:var(--accent)}
 .feed-sort-select{background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:.375rem .625rem;border-radius:var(--radius-sm);font-size:.8125rem;font-family:var(--font-body);cursor:pointer}
 /* Sticky bar — pins controls to top of scroll container */
-.sticky-bar,.feed-sticky-bar{position:sticky;top:0;z-index:50;background:var(--bg-card);margin:0 -2rem;padding:0 2rem;border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
-.sticky-bar::before{content:'';position:absolute;top:-20px;left:0;right:0;height:20px;background:var(--bg-card)}
-#homeMain.feed-scrolled .feed-sticky-bar,#homeMain.feed-scrolled .sticky-bar{border-color:var(--border-subtle);box-shadow:var(--shadow-md)}
+/* Sticky bar removed — page-header handles its own layout */
 /* Remove top padding from the feeds container so sticky bar sits flush at top:0 with no gap */
 #homeMain{padding-top:0}
 /* Collapsible header on scroll — carries the top padding itself */
@@ -3725,7 +3721,7 @@ input[type=range]::-webkit-slider-thumb{
   /* Page header */
   .ph-title{font-size:1.125rem}
   .ph-title-bar{padding:10px 16px}
-  .sticky-bar{padding:0 1rem}
+  /* sticky-bar removed */
   /* Controls: wrap */
   .ct-controls-row{flex-wrap:wrap;gap:6px}
   /* Grids */
@@ -3817,7 +3813,7 @@ input[type=range]::-webkit-slider-thumb{
   .ph-subtitle{font-size:.6875rem}
   .ph-filters{padding:0 16px 10px;padding-top:8px}
   /* Sticky bar + controls */
-  .sticky-bar{padding:0 .75rem;margin:0 -.75rem}
+  /* sticky-bar removed */
   .ct-controls-row{padding:6px 0!important;gap:4px!important}
   .ct-pill-btn{font-size:11px;padding:4px 8px}
   .pill-toggle{font-size:.6875rem}
