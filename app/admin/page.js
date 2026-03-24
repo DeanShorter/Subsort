@@ -193,8 +193,8 @@ function NewsletterView({ stats, accessToken }) {
   return (
     <>
       <div className="page-header">
-        <div className="page-header-left">
-          <h1 className="page-title">Compose newsletter</h1>
+        <div className="page-header__left">
+          <h1 className="page-header__title">Compose newsletter</h1>
         </div>
       </div>
 
@@ -497,7 +497,7 @@ export default function AdminPage() {
     return (
       <main className="home-main" style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
         <div style={{ textAlign: 'center' }}>
-          <h1 className="page-title" style={{ marginBottom: '.5rem' }}>Access denied</h1>
+          <h1 className="page-header__title" style={{ marginBottom: '.5rem' }}>Access denied</h1>
           <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>You don't have permission to view this page.</p>
           <Link href="/dashboard" className="btn-accent" style={{ padding: '.5rem 1.25rem', borderRadius: 'var(--radius-sm)', textDecoration: 'none', display: 'inline-block' }}>
             Back to Dashboard
@@ -572,10 +572,10 @@ export default function AdminPage() {
           <>
           {/* Header */}
           <div className="page-header">
-            <div className="page-header-left">
-              <h1 className="page-title">Admin overview</h1>
+            <div className="page-header__left">
+              <h1 className="page-header__title">Admin overview</h1>
             </div>
-            <div className="page-header-right">
+            <div className="page-header__right">
               <div className="admin-live">
                 <div className="admin-live-dot" />
                 <span className="admin-live-label">Live</span>
