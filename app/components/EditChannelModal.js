@@ -85,20 +85,29 @@ export default function EditChannelModal({ channelId, onClose }) {
       ch.subcategory = selectedSub;
       ch.notes = notes;
 
-      // Save to Supabase
-      await supabase.from('channels')
-        .update({ notes, subcategory_id: null })
-        .eq('id', ch.id);
-
-      // Update subcategory
-      if (selectedSub && dbSubcategories.length) {
-        const subRow = dbSubcategories.find(s => s.name === selectedSub);
-        if (subRow) {
-          await supabase.from('channels')
-            .update({ subcategory_id: subRow.id })
-            .eq('id', ch.id);
+      // Save to Supabase — resolve subcategory ID
+      let subcategoryId = null;
+      if (selectedSub) {
+        // Check if subcategory exists
+        let subRow = dbSubcategories.find(s => s.name === selectedSub);
+        if (!subRow) {
+          // Find the parent category ID for this subcategory
+          const parentCat = dbCategories.find(c => selectedCats.includes(c.name));
+          if (parentCat) {
+            const { data: newSub } = await supabase.from('subcategories')
+              .insert({ name: selectedSub, category_id: parentCat.id, sort_order: 999 })
+              .select()
+              .single();
+            if (newSub) subcategoryId = newSub.id;
+          }
+        } else {
+          subcategoryId = subRow.id;
         }
       }
+
+      await supabase.from('channels')
+        .update({ notes, subcategory_id: subcategoryId })
+        .eq('id', ch.id);
 
       // Update channel_categories
       await supabase.from('channel_categories').delete().eq('channel_id', ch.id);
@@ -213,9 +222,14 @@ export default function EditChannelModal({ channelId, onClose }) {
             <div className="ecm-field-tags">
               {selectedSub && <span className="ecm-tag ecm-tag-sub">{selectedSub}</span>}
             </div>
-            <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>
-              {selectedSub ? 'Edit' : 'Add'}
-            </button>
+            {selectedSub ? (
+              <>
+                <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>Add</button>
+                <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>Edit</button>
+              </>
+            ) : (
+              <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>Add</button>
+            )}
           </div>
 
           {showSubEdit && (
