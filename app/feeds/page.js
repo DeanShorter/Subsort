@@ -8,11 +8,6 @@ import PageHeader from '../components/PageHeader';
 import { trackEvent } from '../../lib/track';
 import RefreshButton from '../components/RefreshButton';
 
-const SORT_OPTIONS = [
-  { value: 'date', label: 'Latest' },
-  { value: 'channel', label: 'Channel' },
-];
-
 export default function FeedsPage() {
   const { user, accessToken, signIn } = useAuth();
   const {
@@ -25,79 +20,56 @@ export default function FeedsPage() {
   const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
-  const [sortIdx, setSortIdx] = useState(0);
   const [feedView, setFeedView] = useState('grid');
   const [typeFilter, setTypeFilter] = useState('all');
   const [tokenExpired, setTokenExpired] = useState(false);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
-  const [timeRange, setTimeRange] = useState('week'); // 'today', 'week', 'month'
+  const [openCats, setOpenCats] = useState(new Set());
+  const [breakDismissed, setBreakDismissed] = useState(false);
+  const [activeCatChip, setActiveCatChip] = useState('all');
 
-  const sortKey = SORT_OPTIONS[sortIdx].value;
+  // ── Build channel lookup ─────────────────────────────
+  const channelMap = useMemo(() => {
+    const map = {};
+    channels.forEach(ch => { map[ch.channelId] = ch; });
+    return map;
+  }, [channels]);
 
-  // Filter videos by selected time range
-  const allVideos = useMemo(() => {
-    if (!feedVideos.length) return feedVideos;
-    const now = new Date();
-    let cutoff;
-    if (timeRange === 'today') {
-      cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    } else if (timeRange === 'week') {
-      cutoff = new Date(now);
-      cutoff.setDate(cutoff.getDate() - 7);
-    } else {
-      cutoff = new Date(now);
-      cutoff.setDate(cutoff.getDate() - 30);
-    }
-    return feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt) >= cutoff);
-  }, [feedVideos, timeRange]);
+  // ── Time-based video splits ──────────────────────────
+  const now = useMemo(() => new Date(), []);
+  const todayCutoff = useMemo(() => new Date(now.getFullYear(), now.getMonth(), now.getDate()), [now]);
+  const weekCutoff = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 7); return d; }, [now]);
+  const monthCutoff = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
 
-  // ── Push video counts to sidebar ───────────────────────
+  // ── Push video counts to sidebar ───────────────────
   useEffect(() => {
     if (!channels.length) return;
-    const channelMap = {};
-    channels.forEach(ch => { channelMap[ch.channelId] = ch; });
-
     const cats = {};
     const subs = {};
     let favs = 0;
-
-    allVideos.forEach(v => {
+    feedVideos.forEach(v => {
       const ch = channelMap[v.channelId];
       if (!ch) return;
       if (ch.favourited) favs++;
-      const chCatsList = ch.categories || [];
-      chCatsList.forEach(cat => {
+      (ch.categories || []).forEach(cat => {
         cats[cat] = (cats[cat] || 0) + 1;
-        if (ch.subcategory) {
-          const key = `${cat}|${ch.subcategory}`;
-          subs[key] = (subs[key] || 0) + 1;
-        }
+        if (ch.subcategory) subs[`${cat}|${ch.subcategory}`] = (subs[`${cat}|${ch.subcategory}`] || 0) + 1;
       });
     });
+    window.__subsortFeedCounts?.({ all: feedVideos.length, favs, cats, subs });
+  }, [feedVideos, channels, channelMap]);
 
-    window.__subsortFeedCounts?.({ all: allVideos.length, favs, cats, subs });
-  }, [allVideos, channels]);
-
-  // ── Sidebar callbacks ──────────────────────────────────
-  const handleCategoryClick = useCallback((cat) => {
-    setActiveCategory(cat);
-    setActiveSubcategory(null);
-  }, []);
-
+  // ── Sidebar callbacks ──────────────────────────────
   useEffect(() => {
     trackEvent('view_feeds');
-    window.__subsortCat = (cat) => handleCategoryClick(cat);
-    window.__subsortSub = (cat, sub) => {
-      setActiveCategory(cat);
-      setActiveSubcategory(prev => prev === sub ? null : sub);
-    };
+    window.__subsortCat = (cat) => { setActiveCategory(cat); setActiveSubcategory(null); setActiveCatChip(cat); };
+    window.__subsortSub = (cat, sub) => { setActiveCategory(cat); setActiveSubcategory(prev => prev === sub ? null : sub); };
     return () => { delete window.__subsortCat; delete window.__subsortSub; };
-  }, [handleCategoryClick]);
+  }, []);
 
-  // ── Load videos from DB cache only (populated by RSS refresh) ────
+  // ── Load videos from DB cache ──────────────────────
   useEffect(() => {
     if (!channels.length || feedVideosLoaded) return;
-
     let cancelled = false;
     setLoadingVideos(true);
 
@@ -105,28 +77,17 @@ export default function FeedsPage() {
       try {
         const channelIds = channels.map(c => c.channelId).filter(Boolean);
         if (!channelIds.length) { setLoadingVideos(false); return; }
-
-        // Batch the query — Supabase .in() has limits on large arrays
         const BATCH = 300;
         const allCached = [];
         const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
         for (let i = 0; i < channelIds.length; i += BATCH) {
           const batch = channelIds.slice(i, i + BATCH);
-          const { data } = await supabase
-            .from('cached_videos')
-            .select('*')
-            .in('channel_id', batch)
-            .gte('published_at', since)
-            .order('published_at', { ascending: false })
-            .limit(2000);
+          const { data } = await supabase.from('cached_videos').select('*').in('channel_id', batch).gte('published_at', since).order('published_at', { ascending: false }).limit(2000);
           if (data) allCached.push(...data);
         }
 
         if (!cancelled) {
-          const channelMap = {};
-          channels.forEach(ch => { channelMap[ch.channelId] = ch; });
-
           const vids = allCached.map(row => ({
             id: row.video_id,
             title: row.title || '',
@@ -137,7 +98,6 @@ export default function FeedsPage() {
             description: '',
             type: row.video_type || 'video',
           }));
-
           setFeedVideos(vids);
           setLoadingVideos(false);
         }
@@ -146,28 +106,36 @@ export default function FeedsPage() {
         if (!cancelled) setLoadingVideos(false);
       }
     }
-
     loadFromCache();
     return () => { cancelled = true; };
-  }, [channels, feedVideosLoaded, setFeedVideos]);
+  }, [channels, feedVideosLoaded, setFeedVideos, channelMap]);
 
-  // ── Filter by category + sort (instant, no API call) ───
-  const filtered = useMemo(() => {
-    let result = [...allVideos];
+  // ── Filter pipeline ─────────────────────────────────
+  const applyFilters = useCallback((videos) => {
+    let result = [...videos];
 
-    // Category filter
-    if (activeCategory === '__favs__') {
+    // Category chip filter
+    if (activeCatChip !== 'all' && activeCatChip !== '__favs__') {
+      const catIds = new Set(channels.filter(c => chHasCat(c, activeCatChip)).map(c => c.channelId));
+      result = result.filter(v => catIds.has(v.channelId));
+    } else if (activeCatChip === '__favs__') {
       const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
       result = result.filter(v => favIds.has(v.channelId));
-    } else if (activeCategory !== 'all') {
-      const catIds = new Set(
-        channels.filter(c => {
+    }
+
+    // Sidebar category
+    if (activeCategory !== 'all' && activeCategory !== activeCatChip) {
+      if (activeCategory === '__favs__') {
+        const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
+        result = result.filter(v => favIds.has(v.channelId));
+      } else {
+        const catIds = new Set(channels.filter(c => {
           if (!chHasCat(c, activeCategory)) return false;
           if (activeSubcategory && c.subcategory !== activeSubcategory) return false;
           return true;
-        }).map(c => c.channelId)
-      );
-      result = result.filter(v => catIds.has(v.channelId));
+        }).map(c => c.channelId));
+        result = result.filter(v => catIds.has(v.channelId));
+      }
     }
 
     // Type filter
@@ -177,33 +145,122 @@ export default function FeedsPage() {
     // Search
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter(v =>
-        (v.title || '').toLowerCase().includes(q) ||
-        (v.channel || '').toLowerCase().includes(q)
-      );
+      result = result.filter(v => (v.title || '').toLowerCase().includes(q) || (v.channel || '').toLowerCase().includes(q));
     }
-
-    // Sort
-    if (sortKey === 'channel') {
-      result.sort((a, b) => (a.channel || '').localeCompare(b.channel || ''));
-    }
-    // 'date' is default order from API (newest first)
 
     return result;
-  }, [allVideos, channels, activeCategory, activeSubcategory, chHasCat, search, sortKey, typeFilter]);
+  }, [channels, activeCategory, activeSubcategory, activeCatChip, chHasCat, typeFilter, search]);
 
-  // ── Handlers ───────────────────────────────────────────
-  const cycleSort = useCallback(() => {
-    setSortIdx(prev => (prev + 1) % SORT_OPTIONS.length);
-  }, []);
+  // ── Favourites section videos ──────────────────────
+  const favVideos = useMemo(() => {
+    const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
+    return feedVideos
+      .filter(v => favIds.has(v.channelId) && v.publishedAt && new Date(v.publishedAt) >= weekCutoff)
+      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
+      .slice(0, 12);
+  }, [feedVideos, channels, weekCutoff]);
 
-  if (dataLoading) {
-    return <div className="home-feed-loading"><span className="spinner" /> Loading feeds…</div>;
-  }
+  // ── Today's videos grouped by category ─────────────
+  const todayVideos = useMemo(() => {
+    return applyFilters(feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt) >= todayCutoff))
+      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  }, [feedVideos, todayCutoff, applyFilters]);
+
+  const todayByCat = useMemo(() => {
+    const groups = {};
+    todayVideos.forEach(v => {
+      const ch = channelMap[v.channelId];
+      const cats = ch ? (ch.categories || []) : [];
+      const cat = cats[0] || 'Uncategorised';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(v);
+    });
+    return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
+  }, [todayVideos, channelMap]);
+
+  // ── Earlier this week videos grouped by category ───
+  const earlierVideos = useMemo(() => {
+    return applyFilters(feedVideos.filter(v => {
+      if (!v.publishedAt) return false;
+      const d = new Date(v.publishedAt);
+      return d < todayCutoff && d >= weekCutoff;
+    }));
+  }, [feedVideos, todayCutoff, weekCutoff, applyFilters]);
+
+  const earlierByCat = useMemo(() => {
+    const groups = {};
+    earlierVideos.forEach(v => {
+      const ch = channelMap[v.channelId];
+      const cats = ch ? (ch.categories || []) : [];
+      const cat = cats[0] || 'Uncategorised';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(v);
+    });
+    return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
+  }, [earlierVideos, channelMap]);
+
+  // ── Toggle category group ──────────────────────────
+  const toggleCatGroup = (cat) => {
+    setOpenCats(prev => {
+      const next = new Set(prev);
+      next.has(cat) ? next.delete(cat) : next.add(cat);
+      return next;
+    });
+  };
+
+  // ── Render helpers ─────────────────────────────────
+  const renderVideoCard = (v, isNew = false) => {
+    const ch = channelMap[v.channelId];
+    const cats = ch ? (ch.categories || []) : [];
+    const catLabel = cats[0] || '';
+    const catCol = catLabel ? categoryColours[catLabel] : null;
+
+    return (
+      <a key={v.id} className="feed-vcard scroll-card" href={`https://youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer"
+        onClick={() => trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video')}>
+        <div className="feed-vcard-thumb">
+          <img src={v.thumbnail} alt="" loading="lazy" />
+          {isNew && <span className="feed-vcard-new">New</span>}
+          {v.type === 'short' && <span className="feed-shorts-badge">SHORT</span>}
+        </div>
+        <div className="feed-vcard-info">
+          <div className="feed-vcard-title">{v.title}</div>
+          <div className="feed-vcard-channel">{v.channel}{v.publishedAt ? ` · ${timeAgo(v.publishedAt)}` : ''}</div>
+          {catLabel && <span className="feed-vcard-tag" style={catCol ? { background: `${catCol}22`, color: catCol } : {}}>{catLabel}</span>}
+        </div>
+      </a>
+    );
+  };
+
+  const renderVideoRow = (v) => {
+    const ch = channelMap[v.channelId];
+    const cats = ch ? (ch.categories || []) : [];
+    const catLabel = cats[0] || '';
+    const catCol = catLabel ? categoryColours[catLabel] : null;
+    const subLabel = ch?.subcategory || catLabel;
+
+    return (
+      <a key={v.id} className="feed-vrow" href={`https://youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer"
+        onClick={() => trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video')}>
+        <div className="feed-vrow-thumb">
+          <img src={v.thumbnail} alt="" loading="lazy" />
+          {v.type === 'short' && <span className="feed-shorts-badge" style={{ position: 'absolute', top: 4, left: 4 }}>SHORT</span>}
+        </div>
+        <div className="feed-vrow-info">
+          <div className="feed-vrow-title">{v.title}</div>
+          <div className="feed-vrow-channel">{v.channel} · {timeAgo(v.publishedAt)}</div>
+          {subLabel && <span className="feed-vrow-tag" style={catCol ? { background: `${catCol}22`, color: catCol } : {}}>{subLabel}</span>}
+        </div>
+      </a>
+    );
+  };
+
+  // ── Loading / auth states ──────────────────────────
+  if (dataLoading) return <div className="home-feed-loading"><span className="spinner" /> Loading feeds…</div>;
 
   if (!user) {
     return (
-      <main id="homeMain" className="home-main">
+      <main className="home-main">
         <div className="db-header"><h1 className="page-title">Feeds</h1></div>
         <div className="home-feed-empty">
           <p className="home-feed-empty-text">Sign in to see your feed.</p>
@@ -214,41 +271,15 @@ export default function FeedsPage() {
   }
 
   return (
-    <main id="homeMain" className={`home-main${feedView === 'list' ? ' feed-view-list' : feedView === 'grid' ? ' feed-view-grid' : ''}`}>
-      <PageHeader
-        title="Feeds"
-        subtitle={`Videos uploaded by your subscriptions ${timeRange === 'today' ? 'today' : timeRange === 'week' ? 'within the last 7 days' : 'within the last 30 days'}`}
-      >
-        {/* Type filter toggle */}
-        <div className="pill-toggle">
-          <button className={`pill-toggle-btn${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
-          <button className={`pill-toggle-btn${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
-          <button className={`pill-toggle-btn${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
-        </div>
-
-        {/* Time range toggle */}
-        <div className="pill-toggle">
-          <button className={`pill-toggle-btn${timeRange === 'today' ? ' active' : ''}`} onClick={() => setTimeRange('today')}>Today</button>
-          <button className={`pill-toggle-btn${timeRange === 'week' ? ' active' : ''}`} onClick={() => setTimeRange('week')}>This Week</button>
-          <button className={`pill-toggle-btn${timeRange === 'month' ? ' active' : ''}`} onClick={() => setTimeRange('month')}>This Month</button>
-        </div>
-
-        {/* Sort */}
-        <button className="ct-pill-btn" onClick={cycleSort}>
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-          Sort: <span>{SORT_OPTIONS[sortIdx].label}</span>
-        </button>
-
-        {/* View toggle */}
+    <main id="homeMain" className="home-main">
+      <PageHeader title="Feeds" subtitle="Videos uploaded by your subscriptions">
+        {/* View toggles */}
         <div className="view-toggles">
           <button className={`view-toggle-btn${feedView === 'list' ? ' active' : ''}`} title="List" onClick={() => setFeedView('list')}>
             <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
           </button>
-          <button className={`view-toggle-btn${feedView === 'hybrid' ? ' active' : ''}`} title="Hybrid" onClick={() => setFeedView('hybrid')}>
-            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
-          </button>
           <button className={`view-toggle-btn${feedView === 'grid' ? ' active' : ''}`} title="Grid" onClick={() => setFeedView('grid')}>
-            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="3" height="12" rx="1" /><path d="M6 3h7M6 7h7M6 11h7" /></svg>
+            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
           </button>
         </div>
 
@@ -262,83 +293,137 @@ export default function FeedsPage() {
         <RefreshButton />
       </PageHeader>
 
-      {/* Video list */}
-      {quotaExceeded ? (
-        <div style={{ padding: '2rem 0', textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '.5rem' }}>YouTube API quota exceeded for today.</p>
-          <p style={{ color: 'var(--text-muted)', fontSize: '.8125rem' }}>Quota resets at midnight Pacific Time. Cached videos will show if available.</p>
-        </div>
-      ) : tokenExpired ? (
-        <div style={{ padding: '2rem 0', textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '.75rem' }}>Your YouTube session has expired.</p>
-          <button className="ct-pill-btn ct-pill-accent" onClick={signIn}>
-            Reconnect YouTube
+      {/* Filter chips row */}
+      <div className="feed-chip-row">
+        <button className={`feed-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
+        <button className={`feed-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
+        <button className={`feed-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
+        <span className="feed-chip-sep">|</span>
+        <button className={`feed-chip${activeCatChip === 'all' ? ' active' : ''}`} onClick={() => setActiveCatChip('all')}>All Categories</button>
+        {categories.map(cat => (
+          <button key={cat} className={`feed-chip${activeCatChip === cat ? ' active' : ''}`} onClick={() => setActiveCatChip(activeCatChip === cat ? 'all' : cat)}>
+            {cat}
           </button>
-        </div>
-      ) : loadingVideos ? (
-        <div className="home-feed-loading"><span className="spinner" /> Fetching latest videos…</div>
-      ) : !accessToken ? (
-        <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>Connect YouTube to see recent videos.</p>
-      ) : filtered.length === 0 ? (
-        <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>
-          {allVideos.length === 0 ? 'No videos in the last 14 days.' : 'No videos match your filters.'}
-        </p>
-      ) : (
-        <div className="home-section">
-            {filtered.map(v => {
-              const ch = channels.find(c => c.channelId === v.channelId || c.name === v.channel);
-              const cats = ch ? chCats(ch) : [];
-              const catLabel = cats[0] || '';
-              const catCol = catLabel && categoryColours[catLabel];
+        ))}
+      </div>
 
-              return (
-                <a
-                  key={v.id}
-                  className="feed-video-row"
-                  href={`https://youtube.com/watch?v=${v.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video')}
-                  style={{ textDecoration: 'none' }}
-                  data-type={v.type || 'video'}
-                >
-                  <div className="feed-video-thumb">
-                    {v.thumbnail ? (
-                      <img src={v.thumbnail} alt="" loading="lazy" />
-                    ) : (
-                      <div className="feed-video-thumb-ph">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M10 9l5 3-5 3z" /></svg>
-                      </div>
-                    )}
-                    {v.type === 'short' && <span className="feed-shorts-badge">SHORT</span>}
+      {loadingVideos ? (
+        <div className="home-feed-loading"><span className="spinner" /> Fetching latest videos…</div>
+      ) : feedVideos.length === 0 ? (
+        <p style={{ color: 'var(--text-muted)', padding: '1rem 0' }}>No videos yet. Click "Refresh feed" to pull videos via RSS.</p>
+      ) : (
+        <>
+          {/* ── New from favourites ── */}
+          {favVideos.length > 0 && (
+            <div className="feed-section">
+              <div className="feed-section-header">
+                <div className="feed-section-left">
+                  <div className="feed-section-icon">
+                    <svg viewBox="0 0 16 16"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg>
                   </div>
-                  <div className="feed-video-body">
-                    <div className="feed-video-title">{v.title}</div>
-                    <div className="feed-video-meta">
-                      {v.channel}{v.publishedAt ? ` · ${timeAgo(v.publishedAt)}` : ''}
+                  <span className="feed-section-title">New from your favourites</span>
+                  <span className="feed-section-count">{favVideos.length} new</span>
+                </div>
+              </div>
+              <div className="feed-scroll-row">
+                {favVideos.map(v => renderVideoCard(v, true))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Today ── */}
+          {todayByCat.length > 0 && (
+            <div className="feed-section">
+              <div className="feed-section-header">
+                <div className="feed-section-left">
+                  <span className="feed-section-title">Today</span>
+                  <span className="feed-section-count">{todayVideos.length} videos</span>
+                </div>
+              </div>
+
+              {todayByCat.map(([cat, videos]) => {
+                const isOpen = openCats.has(`today-${cat}`);
+                const col = categoryColours[cat] || 'var(--accent)';
+                const catSubs = subcategories[cat] || [];
+
+                return (
+                  <div key={cat} className={`feed-catgroup${isOpen ? ' open' : ''}`}>
+                    <div className="feed-catgroup-header" onClick={() => toggleCatGroup(`today-${cat}`)}>
+                      <div className="feed-catgroup-dot" style={{ background: col }} />
+                      <span className="feed-catgroup-name">{cat}</span>
+                      <span className="feed-catgroup-count">· {videos.length} new</span>
+                      <span className="feed-catgroup-expand">
+                        <svg viewBox="0 0 12 12"><path d="M4 2l4 4-4 4" /></svg>
+                      </span>
                     </div>
-                    <div className="feed-video-footer">
-                      {catLabel && (
-                        <span
-                          className="feed-cat-badge"
-                          style={catCol ? { background: `${catCol}22`, color: catCol } : {}}
-                        >
-                          {catLabel}
-                        </span>
+                    <div className="feed-catgroup-content">
+                      {catSubs.length > 0 && (
+                        <div className="feed-subchip-row">
+                          <button className="feed-subchip active">All<span className="feed-subchip-count">{videos.length}</span></button>
+                          {catSubs.map(sub => {
+                            const count = videos.filter(v => channelMap[v.channelId]?.subcategory === sub).length;
+                            if (!count) return null;
+                            return <button key={sub} className="feed-subchip">{sub}<span className="feed-subchip-count">{count}</span></button>;
+                          })}
+                        </div>
                       )}
-                      {ch?.subcategory && (
-                        <span className="feed-subcat-badge">{ch.subcategory}</span>
+                      {videos.slice(0, 5).map(renderVideoRow)}
+                      {videos.length > 5 && (
+                        <div style={{ padding: '4px 12px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                          + {videos.length - 5} more
+                        </div>
                       )}
                     </div>
-                    {v.description && (
-                      <div className="feed-video-desc">{v.description}</div>
-                    )}
                   </div>
-                </a>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── Amygdala scrub (break card) ── */}
+          {!breakDismissed && todayVideos.length > 3 && (
+            <div className="feed-break-card">
+              <div className="feed-break-top">
+                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <div className="feed-break-icon">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M8 14c3.3 0 6-2.2 6-5s-2.7-5-6-5-6 2.2-6 5c0 1.2.5 2.3 1.3 3.2L2 14l3.2-1c.9.4 1.8.6 2.8.6z" />
+                    </svg>
+                  </div>
+                  <div className="feed-break-text">
+                    <div className="feed-break-title">Amygdala scrub</div>
+                    <div className="feed-break-msg">
+                      You&apos;ve scrolled past <strong>{todayVideos.length} videos</strong> today. Here&apos;s something lighter to balance things out.
+                    </div>
+                  </div>
+                </div>
+                <button className="feed-break-dismiss" onClick={() => setBreakDismissed(true)}>✕</button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Earlier this week ── */}
+          {earlierByCat.length > 0 && (
+            <div className="feed-section">
+              <div className="feed-section-header">
+                <div className="feed-section-left">
+                  <span className="feed-section-title">Earlier this week</span>
+                  <span className="feed-section-count">{earlierVideos.length} videos</span>
+                </div>
+              </div>
+
+              {earlierByCat.map(([cat, videos]) => (
+                <div key={cat} className="feed-earlier-row" onClick={() => { setActiveCatChip(cat); toggleCatGroup(`earlier-${cat}`); }}>
+                  <div className="feed-earlier-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
+                  <span className="feed-earlier-name">{cat}</span>
+                  <span className="feed-earlier-count">{videos.length} videos</span>
+                  <span className="feed-earlier-arrow">→</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </main>
   );
 }

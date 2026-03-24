@@ -19,8 +19,11 @@ This document is the single source of truth for the subscrub product. It covers 
 **Core value prop:** Connect your account, and subscrub sorts everything into clean feeds automatically. No manual setup, no tagging, no algorithm deciding what you should watch.
 
 **Pricing:**
-- Free tier: Manual sorting, feed health check, basic feeds, category browsing
-- Pro tier (£4.99/month): Auto cleanup, smart categorisation, Discover page, watch analytics (Takeout upload), full roast with watch history data
+- Free tier: Manual sorting, feed health check, basic feeds, category browsing, manual subcategories, channel notes, Watch Later bookmarks
+- Pro tier (£4.99/month): Auto cleanup, smart categorisation, auto-generated subcategories, Discover personalisation, watch analytics (Takeout upload), full roast with watch history data, annotated video saves with private collections
+- Pro+ / Creator tier (future, £9.99/month): Public shared collections, community ratings and comments, "course" formatting, curator analytics, featured placement in Discover
+
+Note: Launch with Free and Pro only. Pro+ is a 6-12 month roadmap item that depends on having an active user base. See section 10 for the phased rollout plan.
 
 ---
 
@@ -326,6 +329,59 @@ Free tier feature. Personalised channel recommendations served from the `discove
 
 **Pro integration:** The free Discover page shows all launch sections fully. Pro adds the click-powered "Based on what you watch" section and the collaborative filtering section. The distinction is personalisation depth, not access.
 
+### Channel notes
+
+Free feature. Stays on the channel modal. Reframe the placeholder copy to make purpose obvious: "Why did you subscribe? What's worth watching?" — this turns a generic text box into a contextual prompt that people actually use.
+
+### Video saves and collections
+
+**Phased rollout — three stages:**
+
+**Phase 1 — Watch Later (free, launch):**
+Basic video bookmarking. Click "Save" on any video, it goes to a Watch Later list. No notes, no organisation, just a flat list. Accessible from the sidebar under Quick Access.
+
+**Phase 2 — Annotated saves with private collections (Pro, post-launch):**
+Pro users can add notes to saved videos: "The bit at 14:30 about pricing strategy", "Share with Sarah", "Rewatch this." Pro users can also create named collections to organise saves: "Weekend binge", "Work references", "Music production tutorials." Collections are private by default.
+
+Database additions for Phase 2:
+```sql
+CREATE TABLE public.saved_videos (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id),
+  video_id text NOT NULL,
+  channel_id text,
+  notes text,
+  collection_id uuid REFERENCES public.collections(id) ON DELETE SET NULL,
+  saved_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE public.collections (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id),
+  name text NOT NULL,
+  description text,
+  is_public bool DEFAULT false,
+  sort_order int4 DEFAULT 0,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+```
+
+Pro upsell moment: when a free user clicks "Save" it works. When they try to add a note or create a collection, the Pro prompt appears: "Want to organise your saved videos? Pro lets you annotate, tag, and sort into collections."
+
+**Phase 3 — Shared collections / curated playlists (Pro+ / Creator tier, 6-12 months post-launch):**
+Pro users can toggle a collection to public via a share link. Anyone with the link can view the playlist. Shared collections appear in Discover as user-curated content.
+
+Later additions to Phase 3 (requires active user base):
+- Community ratings on shared collections (thumbs up/down or 5-star)
+- Comments on shared collections
+- "Course" formatting — ordered steps, progress tracking for viewers
+- Curator analytics — views, saves, ratings on your shared collections
+- Featured placement in Discover for highly-rated collections
+- Curator tier (Pro+ at £9.99/month) gates public sharing, ratings, and analytics
+
+**Key principle:** Each phase is independently valuable. Phase 1 works alone. Phase 2 works without Phase 3. Phase 3 only makes sense with an active community. Don't build the next phase until the current one is proven and used.
+
 ---
 
 ## 7. Marketing strategy
@@ -484,6 +540,22 @@ Both need a proper legal review before handling real user data at scale.
 - Re-subscribe shame toasts
 - Competitive score sharing between users
 - Launch on Product Hunt, Reddit, Hacker News
+
+### Phase 2 features (after initial traction, 1-3 months post-launch)
+- Video saves: annotated saves with private collections (Pro feature)
+- Pro upsell on save action (note/collection prompt)
+- saved_videos and collections database tables
+- Collections management UI (create, rename, reorder, delete)
+
+### Phase 3 features (with active community, 6-12 months post-launch)
+- Public shared collections via share link
+- Shared collections appear in Discover as user-curated content
+- Community ratings on shared collections
+- Comments on shared collections
+- "Course" formatting with ordered steps and progress tracking
+- Curator analytics (views, saves, ratings)
+- Featured placement in Discover for top-rated collections
+- Pro+ / Creator tier (£9.99/month) gating public sharing and curator tools
 
 ---
 
