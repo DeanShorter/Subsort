@@ -96,31 +96,30 @@ export default function SyncModal({
   useEffect(() => {
     if (!syncState) return;
 
-    const { step, detail, pct: p, subCount, videoCount, deadCount, favCount, categories, channels, deadChannels, done } = syncState;
+    const { action, step, detail, pct: p, favCount, categories, channels, deadChannels, done } = syncState;
 
     if (p != null) setPct(p);
 
-    if (step != null && step !== prevStep.current) {
-      // Complete previous step
-      if (prevStep.current >= 0) {
-        const prevDetail = syncState.prevDetail || '';
-        setCompletedSteps(prev => new Map([...prev, [prevStep.current, prevDetail]]));
-      }
+    // Explicit actions: 'activate' starts a step, 'complete' finishes it
+    if (action === 'activate' && step != null) {
       setActiveStep(step);
-      prevStep.current = step;
+      const subtitles = [
+        'Connecting to YouTube...',
+        'Pulling your subscriptions from YouTube...',
+        'Checking what your channels have been posting...',
+        'Sorting everything into categories...',
+        'Looking for dead weight...',
+        'Forming opinions...',
+      ];
+      if (subtitles[step]) setSubtitle(subtitles[step]);
     }
 
-    // Update subtitle based on step
-    if (step === 0) setSubtitle('Connecting to YouTube...');
-    if (step === 1) setSubtitle('Pulling your subscriptions from YouTube...');
-    if (step === 2) setSubtitle('Checking what your channels have been posting...');
-    if (step === 3) setSubtitle('Sorting everything into categories...');
-    if (step === 4) setSubtitle('Looking for dead weight...');
-    if (step === 5) setSubtitle('Forming opinions...');
+    if (action === 'complete' && step != null) {
+      setCompletedSteps(prev => new Map([...prev, [step, detail || '✓']]));
+      if (activeStep === step) setActiveStep(-1);
+    }
 
     if (done) {
-      // Complete last step
-      setCompletedSteps(prev => new Map([...prev, [step, detail || '']]));
       setActiveStep(-1);
       setSubtitle('All done. Here\'s the verdict.');
 
