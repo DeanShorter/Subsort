@@ -362,7 +362,29 @@ export default function FeedsPage() {
 
   return (
     <main id="homeMain" className="home-main">
-      <PageHeader title="Feeds" subtitle="Videos uploaded by your subscriptions">
+      <PageHeader
+        title="Feeds"
+        subtitle="Videos uploaded by your subscriptions"
+        footer={
+          <div className="feed-chip-row">
+            <button className={`feed-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
+            <button className={`feed-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
+            <button className={`feed-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
+            <span className="feed-chip-sep">|</span>
+            <button className={`feed-chip${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); window.__subsortCat?.('all'); }}>All Categories</button>
+            {categories.map(cat => (
+              <button key={cat} className={`feed-chip${activeCategory === cat ? ' active' : ''}`} onClick={() => {
+                const next = activeCategory === cat ? 'all' : cat;
+                setActiveCategory(next);
+                setActiveSubcategory(null);
+                window.__subsortCat?.(next);
+              }}>
+                {cat}
+              </button>
+            ))}
+          </div>
+        }
+      >
         {/* View toggles */}
         <div className="view-toggles">
           <button className={`view-toggle-btn${feedView === 'list' ? ' active' : ''}`} title="List" onClick={() => setFeedView('list')}>
@@ -382,25 +404,6 @@ export default function FeedsPage() {
         {/* RSS Refresh */}
         <RefreshButton />
       </PageHeader>
-
-      {/* Filter chips row */}
-      <div className="feed-chip-row">
-        <button className={`feed-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
-        <button className={`feed-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
-        <button className={`feed-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
-        <span className="feed-chip-sep">|</span>
-        <button className={`feed-chip${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); window.__subsortCat?.('all'); }}>All Categories</button>
-        {categories.map(cat => (
-          <button key={cat} className={`feed-chip${activeCategory === cat ? ' active' : ''}`} onClick={() => {
-            const next = activeCategory === cat ? 'all' : cat;
-            setActiveCategory(next);
-            setActiveSubcategory(null);
-            window.__subsortCat?.(next);
-          }}>
-            {cat}
-          </button>
-        ))}
-      </div>
 
       {loadingVideos ? (
         <div className="home-feed-loading"><span className="spinner" /> Fetching latest videos…</div>
@@ -526,8 +529,8 @@ export default function FeedsPage() {
                     </div>
                     {isEarlierOpen && (
                       <div style={{ paddingLeft: '1rem', marginBottom: '12px' }}>
-                        {videos.slice(0, getGroupLimit(`earlier-${cat}`, 8)).map(renderVideoRow)}
-                        {videos.length > getGroupLimit(`earlier-${cat}`, 8) && (
+                        {videos.slice(0, getGroupLimit(`earlier-${cat}`, 10)).map(renderVideoRow)}
+                        {videos.length > getGroupLimit(`earlier-${cat}`, 10) && (
                           <button className="feed-loadmore" onClick={() => showMore(`earlier-${cat}`, 10)}>
                             <svg viewBox="0 0 14 14"><path d="M7 2v10M2 7h10" /></svg>
                             Show more

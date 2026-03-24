@@ -11,14 +11,15 @@ import { useState, useEffect, useRef } from 'react';
  *   count     — Optional count badge next to the title
  *   right     — Optional ReactNode rendered on the right side
  *   children  — Optional controls row (pills, toggles, buttons)
+ *   footer    — Optional content below the controls row (e.g. filter chips), stays inside sticky wrap
  *   sticky    — Whether controls stick on scroll (default: true when children present)
  */
-export default function PageHeader({ title, subtitle, count, right, children, sticky }) {
+export default function PageHeader({ title, subtitle, count, right, children, footer, sticky }) {
   const [scrolled, setScrolled] = useState(false);
   const wrapRef = useRef(null);
 
   // Auto-detect sticky: true when children exist, false otherwise
-  const isSticky = sticky !== undefined ? sticky : !!children;
+  const isSticky = sticky !== undefined ? sticky : !!(children || footer);
 
   useEffect(() => {
     if (!isSticky) return;
@@ -52,6 +53,7 @@ export default function PageHeader({ title, subtitle, count, right, children, st
           {children}
         </div>
       )}
+      {footer}
     </div>
   );
 }
