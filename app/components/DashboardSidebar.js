@@ -463,6 +463,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
                           className={`hnp-sub-item${activeCat === cat && activeSub === sub ? ' active' : ''}`}
                           onClick={() => { setActiveCat(cat); setActiveSub(prev => prev === sub ? null : sub); window.__subsortSub?.(cat, sub); }}
                         >
+                          <span className="hnp-cat-slash" style={{ color: categoryColours[cat] || 'var(--accent)' }}>/</span>
                           <span className="home-nav-item-label">{sub}</span>
                           <span className="hnp-count">
                             {feedCounts ? (feedCounts.subs?.[`${cat}|${sub}`] || 0) : channels.filter(c => chHasCat(c, cat) && c.subcategory === sub).length}
