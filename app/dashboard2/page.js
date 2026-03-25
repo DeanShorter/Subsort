@@ -215,19 +215,24 @@ export default function Home2Page() {
               </div>
             </div>
             <div className="h2-panel">
-              <div className="h2-panel-header"><span className="h2-panel-title">Your top categories</span><Link href="/discover" className="h2-panel-link">Explore →</Link></div>
+              <div className="h2-panel-header"><span className="h2-panel-title">New in Discover</span><Link href="/discover" className="h2-panel-link">Explore →</Link></div>
+              <div style={{ fontSize: '11px', color: 'var(--text-dim)', marginBottom: '10px' }}>3 new channels in your top categories</div>
               <div className="h2-disc-row">
-                {categories.slice(0, 3).map(cat => {
-                  const count = channels.filter(c => chCats(c).includes(cat)).length;
-                  const col = categoryColours[cat] || 'var(--accent)';
-                  return (
-                    <div key={cat} className="h2-disc-card">
-                      <div className="h2-disc-avatar" style={{ background: `${col}18`, color: col }}><span className="hnp-cat-dot" style={{ background: col }} /></div>
-                      <div className="h2-disc-name">{cat}</div>
-                      <div className="h2-disc-subs">{count} channels</div>
-                    </div>
-                  );
-                })}
+                <div className="h2-disc-card">
+                  <div className="h2-disc-avatar" style={{ background: 'rgba(232,135,92,0.15)', color: 'var(--orange)' }}>SS</div>
+                  <div className="h2-disc-name">Sky Sports F1</div>
+                  <div className="h2-disc-subs">2.1M subs</div>
+                </div>
+                <div className="h2-disc-card">
+                  <div className="h2-disc-avatar" style={{ background: 'rgba(62,207,160,0.1)', color: 'var(--accent)' }}>JC</div>
+                  <div className="h2-disc-name">Jacob Collier</div>
+                  <div className="h2-disc-subs">4.8M subs</div>
+                </div>
+                <div className="h2-disc-card">
+                  <div className="h2-disc-avatar" style={{ background: 'rgba(239,159,39,0.08)', color: 'var(--amber)' }}>VX</div>
+                  <div className="h2-disc-name">Vox</div>
+                  <div className="h2-disc-subs">12M subs</div>
+                </div>
               </div>
             </div>
           </div>
