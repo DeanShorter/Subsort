@@ -16,6 +16,7 @@ export default function Feeds2Page() {
   } = useChannelData();
 
   const [activeCategory, setActiveCategory] = useState('all');
+  const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('videos');
@@ -84,7 +85,11 @@ export default function Feeds2Page() {
       const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
       result = result.filter(v => favIds.has(v.channelId));
     } else if (activeCategory !== 'all') {
-      const catIds = new Set(channels.filter(c => chHasCat(c, activeCategory)).map(c => c.channelId));
+      const catIds = new Set(channels.filter(c => {
+        if (!chHasCat(c, activeCategory)) return false;
+        if (activeSubcategory && c.subcategory !== activeSubcategory) return false;
+        return true;
+      }).map(c => c.channelId));
       result = result.filter(v => catIds.has(v.channelId));
     }
 
@@ -99,27 +104,36 @@ export default function Feeds2Page() {
     }
 
     return result.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-  }, [feedVideos, channels, activeCategory, chHasCat, typeFilter, search]);
+  }, [feedVideos, channels, activeCategory, activeSubcategory, chHasCat, typeFilter, search]);
 
   // ── Loading / auth states ────────────────────────────
   if (dataLoading) return <div className="home-feed-loading"><span className="spinner" /> Loading feeds…</div>;
 
+  // Subcategories for the active category
+  const activeSubs = activeCategory !== 'all' && activeCategory !== '__favs__'
+    ? (subcategories[activeCategory] || [])
+    : [];
+
   if (!user) {
     return (
-      <main className="home-main">
+      <>
         <div className="f2-header">
-          <h1 className="f2-title">Feeds</h1>
+          <div className="f2-header-top">
+            <div className="f2-header-left">
+              <h1 className="f2-title">Feeds</h1>
+            </div>
+          </div>
         </div>
         <div className="home-feed-empty">
           <p className="home-feed-empty-text">Sign in to see your feed.</p>
           <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
         </div>
-      </main>
+      </>
     );
   }
 
   return (
-    <main className="home-main f2-main">
+    <>
       {/* Full-width header — flush to app-content edges */}
       <div className="f2-header">
         <div className="f2-header-top">
@@ -134,29 +148,56 @@ export default function Feeds2Page() {
               <button className={`ph-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
             </div>
             <div className="search-wrap">
-              <svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4.5" /><path d="M9.5 9.5L13 13" /></svg>
+              <svg viewBox="0 0 14 14"><path d="M6 1a5 5 0 104 8.5L13 12.5" /><path d="M9.5 9.5L13 13" /></svg>
               <input className="ph-search" type="text" placeholder="Search videos..." value={search} onChange={e => setSearch(e.target.value)} />
             </div>
             <RefreshButton />
           </div>
         </div>
-        <div className="f2-cat-row">
-          <button className={`f2-cat-btn${activeCategory === 'all' ? ' active' : ''}`} onClick={() => setActiveCategory('all')}>
-            All
-          </button>
-          <button className={`f2-cat-btn${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => setActiveCategory('__favs__')}>
-            Favourites
-          </button>
-          {categories.map(cat => (
-            <button
-              key={cat}
-              className={`f2-cat-btn${activeCategory === cat ? ' active' : ''}`}
-              onClick={() => setActiveCategory(prev => prev === cat ? 'all' : cat)}
-            >
-              <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
-              {cat}
+
+        {/* Category + subcategory nav */}
+        <div className="f2-cat-nav">
+          <div className="f2-cat-row">
+            <button className={`f2-cat-btn${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
+              All
             </button>
-          ))}
+            <button className={`f2-cat-btn${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
+              Favourites
+            </button>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                className={`f2-cat-btn${activeCategory === cat ? ' active' : ''}`}
+                onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}
+              >
+                <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
+                {cat}
+              </button>
+            ))}
+          </div>
+          {activeSubs.length > 0 && (
+            <div className="f2-subcat-row">
+              <button
+                className={`f2-subcat-btn${!activeSubcategory ? ' active' : ''}`}
+                onClick={() => setActiveSubcategory(null)}
+              >
+                All
+              </button>
+              {activeSubs.map(sub => {
+                const catCol = categoryColours[activeCategory] || 'var(--accent)';
+                return (
+                  <button
+                    key={sub}
+                    className={`f2-subcat-btn${activeSubcategory === sub ? ' active' : ''}`}
+                    onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}
+                  >
+                    <span className="hnp-cat-slash" style={{ color: catCol }}>/</span>
+                    {sub}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
@@ -196,6 +237,6 @@ export default function Feeds2Page() {
           <div className="f2-empty">No videos match your filters.</div>
         )}
       </div>
-    </main>
+    </>
   );
 }
