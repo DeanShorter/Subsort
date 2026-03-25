@@ -1438,7 +1438,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ── Primary nav rail ── */
 .home-nav-primary{
-  width:230px;flex-shrink:0;
+  width:180px;flex-shrink:0;
   background:var(--bg-card);
   border-right:1px solid var(--border-subtle);
   display:flex;flex-direction:column;
@@ -4040,7 +4040,18 @@ input[type=range]::-webkit-slider-thumb{
   padding:0 24px 12px;overflow-x:auto;scrollbar-width:none;
   border-top:1px solid var(--border);padding-top:10px;
 }
-.f2-cat-nav{border-top:1px solid var(--border)}
+.f2-cat-nav{border-top:1px solid var(--border-subtle)}
+.f2-cat-scroll-wrap{display:flex;align-items:center;position:relative}
+.f2-cat-scroll-btn{
+  width:28px;height:28px;border-radius:6px;border:1px solid var(--border-hover);
+  background:var(--bg-card);color:var(--text-dim);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .15s;z-index:2;
+}
+.f2-cat-scroll-btn:hover{color:var(--text);background:var(--surface-2);border-color:var(--border-white-15)}
+.f2-cat-scroll-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.f2-cat-scroll-left{margin-right:6px}
+.f2-cat-scroll-right{margin-left:6px}
 .f2-cat-row::-webkit-scrollbar{display:none}
 .f2-subcat-row{
   display:flex;align-items:center;gap:6px;

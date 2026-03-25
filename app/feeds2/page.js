@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
@@ -22,6 +22,7 @@ export default function Feeds2Page() {
   const [typeFilter, setTypeFilter] = useState('videos');
   const [playingVideo, setPlayingVideo] = useState(null); // { id, title, channel }
   const [visibleCount, setVisibleCount] = useState(60);
+  const catRowRef = useRef(null);
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -183,7 +184,11 @@ export default function Feeds2Page() {
 
         {/* Category + subcategory nav */}
         <div className="f2-cat-nav">
-          <div className="f2-cat-row">
+          <div className="f2-cat-scroll-wrap">
+            <button className="f2-cat-scroll-btn f2-cat-scroll-left" onClick={() => catRowRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}>
+              <svg viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" /></svg>
+            </button>
+          <div className="f2-cat-row" ref={catRowRef}>
             <button className={`f2-cat-btn${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
               <span className="hnp-cat-dot" style={{ background: 'var(--accent)' }} />
               All
@@ -216,6 +221,10 @@ export default function Feeds2Page() {
                 </button>
               );
             })}
+          </div>
+            <button className="f2-cat-scroll-btn f2-cat-scroll-right" onClick={() => catRowRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}>
+              <svg viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" /></svg>
+            </button>
           </div>
           {activeSubs.length > 0 && (
             <div className="f2-subcat-row">
