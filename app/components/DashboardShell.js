@@ -13,6 +13,7 @@ const DASHBOARD_ROUTES = [
   '/dashboard',
   '/subscriptions',
   '/feeds',
+  '/feeds2',
   '/discover',
   '/analytics',
   '/settings',

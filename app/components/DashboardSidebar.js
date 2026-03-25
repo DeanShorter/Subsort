@@ -10,7 +10,7 @@ import { showToast } from './Toast';
 import { trackEvent } from '../../lib/track';
 
 // Routes that show the categories section in the sidebar
-const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];
+const CAT_ROUTES = ['/subscriptions', '/feeds', '/feeds2', '/discover'];
 
 const PAGE_ITEMS = [
   {
@@ -23,6 +23,10 @@ const PAGE_ITEMS = [
   },
   {
     href: '/feeds', label: 'Feeds',
+    svg: <path d="M3 4h10M3 8h6M3 12h8"/>,
+  },
+  {
+    href: '/feeds2', label: 'Feeds 2',
     svg: <path d="M3 4h10M3 8h6M3 12h8"/>,
   },
   {

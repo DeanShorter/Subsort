@@ -30,7 +30,9 @@
       "Bash(grep -c \"''Outfit''\" \"D:/Subsort/app/dashboard-components.css\")",
       "Bash(grep -c \"''DM Sans''\" \"D:/Subsort/app/dashboard-components.css\")",
       "Bash(grep -v \"import\\\\|from\\\\|//\")",
-      "Bash(node -e \"try{require.resolve\\(''chart.js''\\);console.log\\(''yes''\\)}catch\\(e\\){console.log\\(''no''\\)}\")"
+      "Bash(node -e \"try{require.resolve\\(''chart.js''\\);console.log\\(''yes''\\)}catch\\(e\\){console.log\\(''no''\\)}\")",
+      "Bash(mkdir -p \"D:/Subsort/app/feeds2\")",
+      "Bash(cp \"D:/Subsort/app/feeds/page.js\" \"D:/Subsort/app/feeds2/page.js\")"
     ]
   }
 }
