@@ -10,7 +10,7 @@ import { showToast } from './Toast';
 import { trackEvent } from '../../lib/track';
 
 // Routes that show the categories section in the sidebar
-const CAT_ROUTES = ['/subscriptions', '/feeds', '/feeds2', '/discover'];
+const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];
 
 const PAGE_ITEMS = [
   {

@@ -181,6 +181,9 @@ export default function Feeds2Page() {
               All
             </button>
             <button className={`f2-cat-btn${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" style={{ width: 12, height: 12, color: '#EFD700' }}>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
               Favourites
             </button>
             {categories.map(cat => (
@@ -200,7 +203,7 @@ export default function Feeds2Page() {
                 className={`f2-subcat-btn${!activeSubcategory ? ' active' : ''}`}
                 onClick={() => setActiveSubcategory(null)}
               >
-                All
+                All {activeCategory}
               </button>
               {activeSubs.map(sub => {
                 const catCol = categoryColours[activeCategory] || 'var(--accent)';
