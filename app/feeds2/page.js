@@ -178,24 +178,34 @@ export default function Feeds2Page() {
         <div className="f2-cat-nav">
           <div className="f2-cat-row">
             <button className={`f2-cat-btn${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
+              <span className="hnp-cat-dot" style={{ background: 'var(--accent)' }} />
               All
+              <span className="f2-cat-count">{feedVideos.length}</span>
             </button>
             <button className={`f2-cat-btn${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
               <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" style={{ width: 12, height: 12, color: '#EFD700' }}>
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
               Favourites
+              <span className="f2-cat-count">{channels.filter(c => c.favourited).length}</span>
             </button>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                className={`f2-cat-btn${activeCategory === cat ? ' active' : ''}`}
-                onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}
-              >
-                <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
-                {cat}
-              </button>
-            ))}
+            {categories.map(cat => {
+              const count = feedVideos.filter(v => {
+                const ch = channelMap[v.channelId];
+                return ch && (ch.categories || []).includes(cat);
+              }).length;
+              return (
+                <button
+                  key={cat}
+                  className={`f2-cat-btn${activeCategory === cat ? ' active' : ''}`}
+                  onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}
+                >
+                  <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
+                  {cat}
+                  <span className="f2-cat-count">{count}</span>
+                </button>
+              );
+            })}
           </div>
           {activeSubs.length > 0 && (
             <div className="f2-subcat-row">
@@ -205,19 +215,15 @@ export default function Feeds2Page() {
               >
                 All {activeCategory}
               </button>
-              {activeSubs.map(sub => {
-                const catCol = categoryColours[activeCategory] || 'var(--accent)';
-                return (
-                  <button
-                    key={sub}
-                    className={`f2-subcat-btn${activeSubcategory === sub ? ' active' : ''}`}
-                    onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}
-                  >
-                    <span className="hnp-cat-slash" style={{ color: catCol }}>/</span>
-                    {sub}
-                  </button>
-                );
-              })}
+              {activeSubs.map(sub => (
+                <button
+                  key={sub}
+                  className={`f2-subcat-btn${activeSubcategory === sub ? ' active' : ''}`}
+                  onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}
+                >
+                  {sub}
+                </button>
+              ))}
             </div>
           )}
         </div>

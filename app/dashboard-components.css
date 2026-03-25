@@ -4048,26 +4048,27 @@ input[type=range]::-webkit-slider-thumb{
 }
 .f2-subcat-row::-webkit-scrollbar{display:none}
 .f2-subcat-btn{
-  display:flex;align-items:center;gap:3px;
-  padding:4px 12px;border-radius:100px;
-  font-size:11px;font-weight:500;font-family:var(--font-body);
-  color:var(--text-dim);background:transparent;
-  border:1px solid var(--border);cursor:pointer;
-  transition:all .15s;white-space:nowrap;flex-shrink:0;
-}
-.f2-subcat-btn:hover{border-color:var(--border-hover);color:var(--text-mid);background:var(--surface-2)}
-.f2-subcat-btn.active{background:var(--surface-3);color:var(--text);border-color:var(--border-hover)}
-.f2-cat-btn{
-  display:flex;align-items:center;gap:5px;
-  padding:5px 14px;border-radius:100px;
+  display:flex;align-items:center;gap:4px;
+  padding:6px 14px;border-radius:8px;
   font-size:12px;font-weight:500;font-family:var(--font-body);
   color:var(--text-dim);background:transparent;
   border:1px solid var(--border);cursor:pointer;
   transition:all .15s;white-space:nowrap;flex-shrink:0;
 }
-.f2-cat-btn:hover{border-color:var(--border-hover);color:var(--text-mid);background:var(--surface-2)}
-.f2-cat-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
-.f2-cat-btn.active .hnp-cat-dot{box-shadow:0 0 0 1px var(--bg)}
+.f2-subcat-btn:hover{border-color:var(--border-hover);color:var(--text-mid);background:var(--surface-2)}
+.f2-subcat-btn.active{color:var(--text);border-color:var(--border-hover);background:var(--surface-2)}
+.f2-cat-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:10px;
+  font-size:13px;font-weight:500;font-family:var(--font-body);
+  color:var(--text);background:var(--surface-2);
+  border:1px solid var(--border);cursor:pointer;
+  transition:all .15s;white-space:nowrap;flex-shrink:0;
+}
+.f2-cat-btn .f2-cat-count{font-size:12px;color:var(--text-dim);margin-left:2px;font-variant-numeric:tabular-nums}
+.f2-cat-btn:hover{border-color:var(--border-hover);background:var(--surface-3)}
+.f2-cat-btn.active{border-color:var(--border-hover);background:var(--surface-3)}
+.f2-cat-btn.active .hnp-cat-dot{box-shadow:0 0 0 1px var(--surface-3)}
 
 .f2-grid{
   display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
