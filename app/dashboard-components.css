@@ -4037,10 +4037,13 @@ input[type=range]::-webkit-slider-thumb{
 
 .f2-cat-row{
   display:flex;align-items:center;gap:6px;
-  padding:10px 24px 12px 0;overflow-x:auto;scrollbar-width:none;
-  border-top:1px solid var(--border-subtle);
+  padding:10px 0;overflow-x:auto;scrollbar-width:none;
 }
-.f2-cat-nav{border-top:1px solid var(--border-subtle)}
+.f2-search-wrap{position:relative;flex-shrink:0}
+.f2-search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--text-dim);fill:none;stroke-width:1.5;stroke-linecap:round;pointer-events:none}
+.f2-search{height:32px;width:180px;background:var(--surface-2);border:1px solid var(--border-hover);border-radius:8px;padding:0 10px 0 30px;font-size:12px;font-family:var(--font-body);color:var(--text);outline:none;transition:border-color .15s}
+.f2-search::placeholder{color:var(--text-dim)}
+.f2-search:focus{border-color:var(--border-white-15)}
 .f2-cat-scroll-wrap{display:flex;align-items:center;position:relative}
 .f2-cat-scroll-btn{
   width:28px;height:28px;border-radius:6px;border:1px solid var(--border-hover);
@@ -4087,15 +4090,17 @@ input[type=range]::-webkit-slider-thumb{
   display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
   padding:24px;
 }
+@keyframes f2CardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .f2-card{
-  background:var(--surface);border:1px solid var(--border);
+  background:var(--surface);border:1px solid var(--border-hover);
   border-radius:10px;overflow:hidden;cursor:pointer;
-  transition:all .2s;text-decoration:none;color:inherit;
-  display:block;
+  transition:border-color .2s,transform .2s;text-decoration:none;color:inherit;
+  display:block;opacity:0;animation:f2CardIn .3s ease forwards;
 }
-.f2-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+.f2-card:hover{border-color:var(--border-white-15);transform:translateY(-2px)}
 .f2-card-thumb{aspect-ratio:16/9;position:relative;overflow:hidden;background:var(--surface-2)}
-.f2-card-thumb img{width:100%;height:100%;object-fit:cover}
+.f2-card-thumb img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .25s ease}
+.f2-card-thumb img.loaded{opacity:1}
 .f2-card-info{padding:10px 12px}
 .f2-card-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.35;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .f2-card-channel{font-size:11px;color:var(--text-mid);margin-bottom:4px}

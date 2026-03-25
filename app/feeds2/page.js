@@ -178,6 +178,10 @@ export default function Feeds2Page() {
               <button className={`ph-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
               <button className={`ph-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
             </div>
+            <div className="f2-search-wrap">
+              <svg viewBox="0 0 14 14"><path d="M10 10l3.5 3.5" /><circle cx="6.5" cy="6.5" r="5" fill="none" /></svg>
+              <input className="f2-search" type="text" placeholder="Search videos..." value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
             <RefreshButton />
           </div>
         </div>
@@ -249,7 +253,7 @@ export default function Feeds2Page() {
       </div>
 
       {/* Video grid — 3 columns, full width */}
-      <div className="f2-grid">
+      <div className="f2-grid" key={`${activeCategory}-${activeSubcategory}-${typeFilter}`}>
         {visibleVideos.length > 0 ? visibleVideos.map((v, idx) => {
           const ch = channelMap[v.channelId];
           const cats = ch ? (ch.categories || []) : [];
@@ -257,12 +261,12 @@ export default function Feeds2Page() {
           const catCol = catLabel ? categoryColours[catLabel] : null;
 
           return (
-            <div key={v.id} className="f2-card" onClick={() => {
+            <div key={v.id} className="f2-card" style={{ animationDelay: `${Math.min(idx * 50, 400)}ms` }} onClick={() => {
               trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video');
               setPlayingVideo({ id: v.id, title: v.title, channel: v.channel || '' });
             }}>
               <div className="f2-card-thumb">
-                <img src={v.thumbnail} alt="" loading="lazy" />
+                <img src={v.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.classList.add('loaded')} />
                 {v.type === 'short' && <span className="feed-shorts-badge">SHORT</span>}
               </div>
               <div className="f2-card-info">
