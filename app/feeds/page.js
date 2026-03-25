@@ -151,7 +151,7 @@ export default function FeedsPage() {
   useEffect(() => {
     if (!user || !channels.length) return;
 
-    const REFRESH_INTERVAL = 60 * 60 * 1000; // 1 hour
+    const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
     const lastRefresh = parseInt(localStorage.getItem('subsort_rss_ts') || '0');
     const elapsed = Date.now() - lastRefresh;
 
