@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
@@ -22,7 +22,6 @@ export default function Feeds2Page() {
   const [typeFilter, setTypeFilter] = useState('videos');
   const [playingVideo, setPlayingVideo] = useState(null); // { id, title, channel }
   const [visibleCount, setVisibleCount] = useState(60);
-  const sentinelRef = useRef(null);
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -112,17 +111,20 @@ export default function Feeds2Page() {
   // Reset visible count when filters change
   useEffect(() => { setVisibleCount(60); }, [activeCategory, activeSubcategory, typeFilter, search]);
 
-  // Infinite scroll — load 60 more when sentinel enters viewport
+  // Infinite scroll — load 60 more when user scrolls near bottom
   useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setVisibleCount(prev => prev + 60);
+    const container = document.querySelector('.app-content');
+    if (!container) return;
+    const onScroll = () => {
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 400) {
+        setVisibleCount(prev => {
+          if (prev >= filteredVideos.length) return prev;
+          return prev + 60;
+        });
       }
-    }, { rootMargin: '200px' });
-    observer.observe(el);
-    return () => observer.disconnect();
+    };
+    container.addEventListener('scroll', onScroll, { passive: true });
+    return () => container.removeEventListener('scroll', onScroll);
   }, [filteredVideos.length]);
 
   const visibleVideos = useMemo(() => filteredVideos.slice(0, visibleCount), [filteredVideos, visibleCount]);
@@ -256,11 +258,6 @@ export default function Feeds2Page() {
           <div className="f2-empty">No videos match your filters.</div>
         )}
       </div>
-
-      {/* Infinite scroll sentinel — triggers load when visible */}
-      {visibleCount < filteredVideos.length && (
-        <div ref={sentinelRef} style={{ height: 1 }} />
-      )}
 
       {/* Video player modal */}
       {playingVideo && (
