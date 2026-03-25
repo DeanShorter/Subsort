@@ -151,7 +151,7 @@ export default function Feeds2Page() {
         <div className="f2-header">
           <div className="f2-header-top">
             <div className="f2-header-left">
-              <h1 className="f2-title">Feeds</h1>
+              <h1 className="f2-title">Feed</h1>
             </div>
           </div>
         </div>
@@ -169,8 +169,8 @@ export default function Feeds2Page() {
       <div className="f2-header">
         <div className="f2-header-top">
           <div className="f2-header-left">
-            <h1 className="f2-title">Feeds</h1>
-            <span className="f2-count">{filteredVideos.length} videos</span>
+            <h1 className="f2-title">Feed</h1>
+            <span className="ph-count">{filteredVideos.length} videos</span>
           </div>
           <div className="f2-header-right">
             <div className="f2-type-chips">

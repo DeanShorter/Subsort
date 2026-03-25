@@ -106,15 +106,15 @@ export default function AnalyticsPage() {
   const scoreColour = score >= 70 ? 'var(--color-success)' : score >= 40 ? 'var(--color-warning)' : 'var(--color-error)';
 
   if (loading) {
-    return <div className="home-feed-loading"><span className="spinner" /> Loading analytics…</div>;
+    return <div className="home-feed-loading"><span className="spinner" /> Loading insights…</div>;
   }
 
   if (!user) {
     return (
       <main className="home-main">
-        <PageHeader title="Analytics" />
+        <PageHeader title="Insights" />
         <div className="home-feed-empty">
-          <p className="home-feed-empty-text">Sign in to see your analytics.</p>
+          <p className="home-feed-empty-text">Sign in to see your insights.</p>
           <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
         </div>
       </main>
@@ -124,15 +124,15 @@ export default function AnalyticsPage() {
   if (!channels.length) {
     return (
       <main className="home-main">
-        <PageHeader title="Analytics" />
-        <p className="home-feed-empty-text">Sync your subscriptions to see analytics.</p>
+        <PageHeader title="Insights" />
+        <p className="home-feed-empty-text">Sync your subscriptions to see insights.</p>
       </main>
     );
   }
 
   return (
     <main className="home-main">
-      <PageHeader title="Analytics" />
+      <PageHeader title="Insights" />
 
       <div className="main-content">
       {/* Feed Health Score */}

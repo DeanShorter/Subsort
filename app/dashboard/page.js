@@ -216,7 +216,7 @@ export default function DashboardPage() {
     : `You're tracking ${channels.length} channel${channels.length !== 1 ? 's' : ''} across ${categories.length} categor${categories.length !== 1 ? 'ies' : 'y'}.`;
 
   if (loading) {
-    return <div className="home-feed-loading"><span className="spinner" /> Loading dashboard…</div>;
+    return <div className="home-feed-loading"><span className="spinner" /> Loading home…</div>;
   }
 
   return (

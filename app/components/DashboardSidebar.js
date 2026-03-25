@@ -14,7 +14,7 @@ const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];
 
 const PAGE_ITEMS = [
   {
-    href: '/dashboard', label: 'Dashboard',
+    href: '/dashboard', label: 'Home',
     svg: <><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 14V8h4v6"/></>,
   },
   {
@@ -26,7 +26,7 @@ const PAGE_ITEMS = [
     svg: <path d="M3 4h10M3 8h6M3 12h8"/>,
   },
   {
-    href: '/feeds2', label: 'Feeds 2',
+    href: '/feeds2', label: 'Feed',
     svg: <path d="M3 4h10M3 8h6M3 12h8"/>,
   },
   {
@@ -34,7 +34,7 @@ const PAGE_ITEMS = [
     svg: <><circle cx="8" cy="8" r="6"/><path d="M10.5 5.5l-1 3.5-3.5 1 1-3.5z"/></>,
   },
   {
-    href: '/analytics', label: 'Analytics',
+    href: '/analytics', label: 'Insights',
     svg: <><path d="M2 12l3-4 3 2 4-6 2 2"/><rect x="2" y="2" width="12" height="12" rx="1.5"/></>,
   },
   {
