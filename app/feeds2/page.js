@@ -211,19 +211,24 @@ export default function Feeds2Page() {
             <div className="f2-subcat-row">
               <button
                 className={`f2-subcat-btn${!activeSubcategory ? ' active' : ''}`}
+                style={!activeSubcategory ? { borderColor: categoryColours[activeCategory] || 'var(--accent)' } : undefined}
                 onClick={() => setActiveSubcategory(null)}
               >
                 All {activeCategory}
               </button>
-              {activeSubs.map(sub => (
-                <button
-                  key={sub}
-                  className={`f2-subcat-btn${activeSubcategory === sub ? ' active' : ''}`}
-                  onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}
-                >
-                  {sub}
-                </button>
-              ))}
+              {activeSubs.map(sub => {
+                const catCol = categoryColours[activeCategory] || 'var(--accent)';
+                return (
+                  <button
+                    key={sub}
+                    className={`f2-subcat-btn${activeSubcategory === sub ? ' active' : ''}`}
+                    style={activeSubcategory === sub ? { borderColor: catCol } : undefined}
+                    onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}
+                  >
+                    {sub}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
