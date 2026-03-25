@@ -20,6 +20,7 @@ export default function Feeds2Page() {
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('videos');
+  const [feedView, setFeedView] = useState('grid');
   const [playingVideo, setPlayingVideo] = useState(null); // { id, title, channel }
   const [visibleCount, setVisibleCount] = useState(60);
   const catRowRef = useRef(null);
@@ -178,6 +179,14 @@ export default function Feeds2Page() {
               <button className={`ph-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
               <button className={`ph-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
             </div>
+            <div className="ph-view-toggles">
+              <button className={`ph-view-btn${feedView === 'list' ? ' active' : ''}`} title="List" onClick={() => setFeedView('list')}>
+                <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
+              </button>
+              <button className={`ph-view-btn${feedView === 'grid' ? ' active' : ''}`} title="Grid" onClick={() => setFeedView('grid')}>
+                <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
+              </button>
+            </div>
             <div className="f2-search-wrap">
               <svg viewBox="0 0 14 14"><path d="M10 10l3.5 3.5" /><circle cx="6.5" cy="6.5" r="5" fill="none" /></svg>
               <input className="f2-search" type="text" placeholder="Search videos..." value={search} onChange={e => setSearch(e.target.value)} />
@@ -253,7 +262,7 @@ export default function Feeds2Page() {
       </div>
 
       {/* Video grid — 3 columns, full width */}
-      <div className="f2-grid" key={`${activeCategory}-${activeSubcategory}-${typeFilter}`}>
+      <div className={`f2-grid${feedView === 'list' ? ' f2-grid-list' : ''}`} key={`${activeCategory}-${activeSubcategory}-${typeFilter}`}>
         {visibleVideos.length > 0 ? visibleVideos.map((v, idx) => {
           const ch = channelMap[v.channelId];
           const cats = ch ? (ch.categories || []) : [];

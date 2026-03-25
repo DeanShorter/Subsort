@@ -4075,7 +4075,7 @@ input[type=range]::-webkit-slider-thumb{
   display:flex;align-items:center;gap:6px;
   padding:8px 16px;border-radius:10px;
   font-size:13px;font-weight:500;font-family:var(--font-body);
-  color:var(--text);background:var(--surface-2);
+  color:var(--text-muted);background:var(--surface-2);
   border:1px solid var(--border-hover);cursor:pointer;
   transition:all .15s;white-space:nowrap;flex-shrink:0;
 }
@@ -4107,6 +4107,10 @@ input[type=range]::-webkit-slider-thumb{
 .f2-card-tags{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .f2-card-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px}
 .f2-card-subcat{font-size:10px;color:var(--text-dim);display:flex;align-items:center;gap:1px}
+.f2-grid-list{grid-template-columns:1fr}
+.f2-grid-list .f2-card{display:flex;flex-direction:row}
+.f2-grid-list .f2-card-thumb{width:200px;aspect-ratio:16/9;flex-shrink:0}
+.f2-grid-list .f2-card-info{padding:10px 14px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
 .f2-empty{grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-dim);font-size:.875rem}
 
 /* Video player modal */
