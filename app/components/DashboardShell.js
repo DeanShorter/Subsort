@@ -11,6 +11,7 @@ import Toast from './Toast';
 
 const DASHBOARD_ROUTES = [
   '/dashboard',
+  '/dashboard2',
   '/subscriptions',
   '/feeds',
   '/feeds2',
@@ -22,7 +23,7 @@ const DASHBOARD_ROUTES = [
 
 // Routes that show the sidebar even without auth
 const ALWAYS_SIDEBAR = [
-  '/dashboard', '/subscriptions', '/feeds', '/discover', '/analytics', '/settings',
+  '/dashboard', '/dashboard2', '/subscriptions', '/feeds', '/discover', '/analytics', '/settings',
 ];
 
 function DashboardInner({ children }) {
