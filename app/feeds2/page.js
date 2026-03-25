@@ -20,6 +20,7 @@ export default function Feeds2Page() {
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('videos');
+  const [playingVideo, setPlayingVideo] = useState(null); // { id, title, channel }
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -147,10 +148,6 @@ export default function Feeds2Page() {
               <button className={`ph-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
               <button className={`ph-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
             </div>
-            <div className="search-wrap">
-              <svg viewBox="0 0 14 14"><path d="M6 1a5 5 0 104 8.5L13 12.5" /><path d="M9.5 9.5L13 13" /></svg>
-              <input className="ph-search" type="text" placeholder="Search videos..." value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
             <RefreshButton />
           </div>
         </div>
@@ -210,8 +207,10 @@ export default function Feeds2Page() {
           const catCol = catLabel ? categoryColours[catLabel] : null;
 
           return (
-            <a key={v.id} className="f2-card" href={`https://youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer"
-              onClick={() => trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video')}>
+            <div key={v.id} className="f2-card" onClick={() => {
+              trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video');
+              setPlayingVideo({ id: v.id, title: v.title, channel: v.channel || '' });
+            }}>
               <div className="f2-card-thumb">
                 <img src={v.thumbnail} alt="" loading="lazy" />
                 {v.type === 'short' && <span className="feed-shorts-badge">SHORT</span>}
@@ -231,12 +230,39 @@ export default function Feeds2Page() {
                   </div>
                 )}
               </div>
-            </a>
+            </div>
           );
         }) : (
           <div className="f2-empty">No videos match your filters.</div>
         )}
       </div>
+
+      {/* Video player modal */}
+      {playingVideo && (
+        <div className="f2-player-overlay" onClick={() => setPlayingVideo(null)}>
+          <div className="f2-player-modal" onClick={e => e.stopPropagation()}>
+            <div className="f2-player-header">
+              <div className="f2-player-info">
+                <div className="f2-player-title">{playingVideo.title}</div>
+                <div className="f2-player-channel">{playingVideo.channel}</div>
+              </div>
+              <div className="f2-player-actions">
+                <a className="f2-player-yt" href={`https://youtube.com/watch?v=${playingVideo.id}`} target="_blank" rel="noopener noreferrer">
+                  Open on YouTube
+                </a>
+                <button className="f2-player-close" onClick={() => setPlayingVideo(null)}>✕</button>
+              </div>
+            </div>
+            <div className="f2-player-embed">
+              <iframe
+                src={`https://www.youtube.com/embed/${playingVideo.id}?autoplay=1`}
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
