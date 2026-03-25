@@ -174,10 +174,10 @@ export default function Feeds2Page() {
             <span className="ph-count">{filteredVideos.length} videos</span>
           </div>
           <div className="f2-header-right">
-            <div className="f2-type-chips">
-              <button className={`ph-chip${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
-              <button className={`ph-chip${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
-              <button className={`ph-chip${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
+            <div className="ph-view-toggles">
+              <button className={`ph-view-btn f2-type-btn${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
+              <button className={`ph-view-btn f2-type-btn${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
+              <button className={`ph-view-btn f2-type-btn${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
             </div>
             <div className="ph-view-toggles">
               <button className={`ph-view-btn${feedView === 'list' ? ' active' : ''}`} title="List" onClick={() => setFeedView('list')}>
@@ -187,9 +187,9 @@ export default function Feeds2Page() {
                 <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
               </button>
             </div>
-            <div className="f2-search-wrap">
-              <svg viewBox="0 0 14 14"><path d="M10 10l3.5 3.5" /><circle cx="6.5" cy="6.5" r="5" fill="none" /></svg>
-              <input className="f2-search" type="text" placeholder="Search videos..." value={search} onChange={e => setSearch(e.target.value)} />
+            <div className="search-wrap">
+              <svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4.5" fill="none" /><path d="M9.5 9.5L13 13" /></svg>
+              <input className="ph-search" type="text" placeholder="Search videos..." value={search} onChange={e => setSearch(e.target.value)} />
             </div>
             <RefreshButton />
           </div>
