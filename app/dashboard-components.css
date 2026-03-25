@@ -4018,6 +4018,9 @@ input[type=range]::-webkit-slider-thumb{
 }
 
 /* ─── Feeds 2 (experimental layout) ─── */
+/* When feeds2 is active, app-content needs to scroll since there's no home-main wrapper */
+.app-content:has(.f2-header){overflow-y:auto!important}
+
 .f2-header{
   background:var(--surface);border-bottom:1px solid var(--border);
   padding:0;position:sticky;top:0;z-index:10;

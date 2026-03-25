@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
@@ -21,6 +21,8 @@ export default function Feeds2Page() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('videos');
   const [playingVideo, setPlayingVideo] = useState(null); // { id, title, channel }
+  const [visibleCount, setVisibleCount] = useState(60);
+  const sentinelRef = useRef(null);
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -106,6 +108,24 @@ export default function Feeds2Page() {
 
     return result.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
   }, [feedVideos, channels, activeCategory, activeSubcategory, chHasCat, typeFilter, search]);
+
+  // Reset visible count when filters change
+  useEffect(() => { setVisibleCount(60); }, [activeCategory, activeSubcategory, typeFilter, search]);
+
+  // Infinite scroll — load 60 more when sentinel enters viewport
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setVisibleCount(prev => prev + 60);
+      }
+    }, { rootMargin: '200px' });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [filteredVideos.length]);
+
+  const visibleVideos = useMemo(() => filteredVideos.slice(0, visibleCount), [filteredVideos, visibleCount]);
 
   // ── Loading / auth states ────────────────────────────
   if (dataLoading) return <div className="home-feed-loading"><span className="spinner" /> Loading feeds…</div>;
@@ -200,7 +220,7 @@ export default function Feeds2Page() {
 
       {/* Video grid — 3 columns, full width */}
       <div className="f2-grid">
-        {filteredVideos.length > 0 ? filteredVideos.map(v => {
+        {visibleVideos.length > 0 ? visibleVideos.map((v, idx) => {
           const ch = channelMap[v.channelId];
           const cats = ch ? (ch.categories || []) : [];
           const catLabel = cats[0] || '';
@@ -236,6 +256,11 @@ export default function Feeds2Page() {
           <div className="f2-empty">No videos match your filters.</div>
         )}
       </div>
+
+      {/* Infinite scroll sentinel — triggers load when visible */}
+      {visibleCount < filteredVideos.length && (
+        <div ref={sentinelRef} style={{ height: 1 }} />
+      )}
 
       {/* Video player modal */}
       {playingVideo && (
