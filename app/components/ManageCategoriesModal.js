@@ -4,11 +4,16 @@ import { useAuth } from './AuthContext';
 import { useChannelData } from './ChannelDataContext';
 import { supabase } from '../../lib/supabase';
 
-const COLOUR_OPTIONS = ['#E85D50','#378ADD','#B07CED','#EF9F27','#D4537E','#5DCAA5','#97C459','#E8875C','#85B7EB','#3ECFA0'];
+const COLOUR_OPTIONS = [
+  '#e8837c','#e6a065','#d4c06a','#7dc88b','#6bc5b8',
+  '#6aadcf','#7b8fd4','#a67dc8','#d47ba8','#c2957a',
+  '#8bb8a0','#a0b8d4','#d4a0b8','#b8d4a0','#d4b8a0',
+  '#7caae8','#c87c9a','#9ac87c','#c8a87c','#7cc8c8',
+];
 
 export default function ManageCategoriesModal({ onClose }) {
   const { user } = useAuth();
-  const { dbCategories, dbSubcategories, channels, chHasCat, reload } = useChannelData();
+  const { dbCategories, dbSubcategories, channels, chHasCat, categoryColours, reload } = useChannelData();
 
   const [cats, setCats] = useState([]);
   const [subs, setSubs] = useState([]);
@@ -22,11 +27,11 @@ export default function ManageCategoriesModal({ onClose }) {
   useEffect(() => {
     setCats(dbCategories.map((c, i) => ({
       ...c,
-      colour: c.colour || COLOUR_OPTIONS[i % COLOUR_OPTIONS.length],
+      colour: categoryColours[c.name] || c.colour || COLOUR_OPTIONS[i % COLOUR_OPTIONS.length],
       _deleted: false, _new: false,
     })));
     setSubs(dbSubcategories.map(s => ({ ...s, _deleted: false, _new: false })));
-  }, [dbCategories, dbSubcategories]);
+  }, [dbCategories, dbSubcategories, categoryColours]);
 
   const catCount = (catId) => {
     const cat = cats.find(c => c.id === catId);
