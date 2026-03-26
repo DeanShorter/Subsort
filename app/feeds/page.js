@@ -6,7 +6,7 @@ import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
 import { trackEvent } from '../../lib/track';
 import { useDragScroll } from '../../hooks/useDragScroll';
-import YouTubePlayer from '../components/YouTubePlayer';
+import VideoModal from '../components/VideoModal';
 
 export default function Feeds2Page() {
   const { user, signIn } = useAuth();
@@ -313,32 +313,9 @@ export default function Feeds2Page() {
         )}
       </div>
 
-      {/* Video player modal */}
+      {/* Video modal */}
       {playingVideo && (
-        <div className="f2-player-overlay" onClick={() => setPlayingVideo(null)}>
-          <div className="f2-player-modal" onClick={e => e.stopPropagation()}>
-            <div className="f2-player-header">
-              <div className="f2-player-info">
-                <div className="f2-player-title">{playingVideo.title}</div>
-                <div className="f2-player-channel">{playingVideo.channel}</div>
-              </div>
-              <div className="f2-player-actions">
-                <a className="f2-player-yt" href={`https://youtube.com/watch?v=${playingVideo.id}`} target="_blank" rel="noopener noreferrer">
-                  Open on YouTube
-                </a>
-                <button className="f2-player-close" onClick={() => setPlayingVideo(null)}>✕</button>
-              </div>
-            </div>
-            <div className="f2-player-embed">
-              <YouTubePlayer
-                videoId={playingVideo.id}
-                videoTitle={playingVideo.title}
-                channelName={playingVideo.channel}
-                onClose={() => setPlayingVideo(null)}
-              />
-            </div>
-          </div>
-        </div>
+        <VideoModal video={playingVideo} onClose={() => setPlayingVideo(null)} />
       )}
     </>
   );

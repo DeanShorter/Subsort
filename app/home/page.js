@@ -6,6 +6,7 @@ import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
 import { trackEvent } from '../../lib/track';
 import Link from 'next/link';
+import VideoModal from '../components/VideoModal';
 
 function TypedText({ text, speed = 18 }) {
   const [displayed, setDisplayed] = useState('');
@@ -394,20 +395,9 @@ export default function Home2Page() {
         </div>
       </div>
 
-      {/* Player modal */}
+      {/* Video modal */}
       {playingVideo && (
-        <div className="f2-player-overlay" onClick={() => setPlayingVideo(null)}>
-          <div className="f2-player-modal" onClick={e => e.stopPropagation()}>
-            <div className="f2-player-header">
-              <div className="f2-player-info"><div className="f2-player-title">{playingVideo.title}</div><div className="f2-player-channel">{playingVideo.channel}</div></div>
-              <div className="f2-player-actions">
-                <a className="f2-player-yt" href={`https://youtube.com/watch?v=${playingVideo.id}`} target="_blank" rel="noopener noreferrer">Open on YouTube</a>
-                <button className="f2-player-close" onClick={() => setPlayingVideo(null)}>✕</button>
-              </div>
-            </div>
-            <div className="f2-player-embed"><iframe src={`https://www.youtube.com/embed/${playingVideo.id}?autoplay=1`} allow="autoplay; encrypted-media" allowFullScreen /></div>
-          </div>
-        </div>
+        <VideoModal video={playingVideo} onClose={() => setPlayingVideo(null)} />
       )}
     </>
   );

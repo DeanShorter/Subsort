@@ -34,8 +34,30 @@ export default function Subscriptions2Page() {
   const catTabsRef = useRef(null);
   useDragScroll(catTabsRef);
   const [hiddenCols, setHiddenCols] = useState(new Set());
-  const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'active', 'inactive', 'dead'
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [colWidths, setColWidths] = useState({});
+  const resizingCol = useRef(null);
   const toggleCol = (col) => setHiddenCols(prev => { const next = new Set(prev); next.has(col) ? next.delete(col) : next.add(col); return next; });
+
+  const onResizeStart = useCallback((e, col) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const th = e.target.closest('th');
+    const startX = e.clientX;
+    const startW = th.offsetWidth;
+    resizingCol.current = col;
+    const onMove = (ev) => {
+      const delta = ev.clientX - startX;
+      setColWidths(prev => ({ ...prev, [col]: Math.max(60, startW + delta) }));
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      resizingCol.current = null;
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }, []);
 
   // ── Filter + sort ──────────────────────────────────
   const filtered = useMemo(() => {
@@ -251,32 +273,39 @@ export default function Subscriptions2Page() {
                     </svg>
                   </span>
                 </th>
-                <th className="s2-sortable" onClick={() => handleColumnSort('name')}>
+                <th className="s2-sortable" style={colWidths.name ? { width: colWidths.name } : {}} onClick={() => handleColumnSort('name')}>
                   Name {sortKey === 'name' && (sortDir === 'asc' ? '▲' : '▼')}
+                  <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'name')} />
                 </th>
-                {!hiddenCols.has('category') && <th className="s2-sortable">
+                {!hiddenCols.has('category') && <th className="s2-sortable" style={colWidths.category ? { width: colWidths.category } : {}}>
                   <span onClick={() => handleColumnSort('category')}>Category {sortKey === 'category' && (sortDir === 'asc' ? '▲' : '▼')}</span>
                   <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('category'); }} title="Hide column">✕</button>
+                  <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'category')} />
                 </th>}
-                {!hiddenCols.has('subcategory') && <th className="s2-sortable">
+                {!hiddenCols.has('subcategory') && <th className="s2-sortable" style={colWidths.subcategory ? { width: colWidths.subcategory } : {}}>
                   <span onClick={() => handleColumnSort('subcategory')}>Subcategory {sortKey === 'subcategory' && (sortDir === 'asc' ? '▲' : '▼')}</span>
                   <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('subcategory'); }} title="Hide column">✕</button>
+                  <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'subcategory')} />
                 </th>}
-                {!hiddenCols.has('subscribers') && <th className="s2-sortable">
+                {!hiddenCols.has('subscribers') && <th className="s2-sortable" style={colWidths.subscribers ? { width: colWidths.subscribers } : {}}>
                   <span onClick={() => handleColumnSort('subscribers')}>Subs {sortKey === 'subscribers' && (sortDir === 'asc' ? '▲' : '▼')}</span>
                   <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('subscribers'); }} title="Hide column">✕</button>
+                  <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'subscribers')} />
                 </th>}
-                {!hiddenCols.has('videoCount') && <th className="s2-sortable">
+                {!hiddenCols.has('videoCount') && <th className="s2-sortable" style={colWidths.videoCount ? { width: colWidths.videoCount } : {}}>
                   <span onClick={() => handleColumnSort('videoCount')}>Videos {sortKey === 'videoCount' && (sortDir === 'asc' ? '▲' : '▼')}</span>
                   <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('videoCount'); }} title="Hide column">✕</button>
+                  <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'videoCount')} />
                 </th>}
-                {!hiddenCols.has('subDate') && <th className="s2-sortable">
+                {!hiddenCols.has('subDate') && <th className="s2-sortable" style={colWidths.subDate ? { width: colWidths.subDate } : {}}>
                   <span onClick={() => handleColumnSort('subDate')}>Subscribed {sortKey === 'subDate' && (sortDir === 'asc' ? '▲' : '▼')}</span>
                   <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('subDate'); }} title="Hide column">✕</button>
+                  <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'subDate')} />
                 </th>}
-                {!hiddenCols.has('status') && <th>
+                {!hiddenCols.has('status') && <th style={colWidths.status ? { width: colWidths.status } : {}}>
                   Status
                   <button className="s2-col-toggle" onClick={() => toggleCol('status')} title="Hide column">✕</button>
+                  <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'status')} />
                 </th>}
                 {hiddenCols.size > 0 && <th style={{ width: 30 }}>
                   <button className="s2-col-restore" onClick={() => setHiddenCols(new Set())} title="Show all columns">+</button>
@@ -300,7 +329,7 @@ export default function Subscriptions2Page() {
                     {!hiddenCols.has('subscribers') && <td className="s2-num">{formatCount(ch.subscriberCount)}</td>}
                     {!hiddenCols.has('videoCount') && <td className="s2-num">{ch.videoCount?.toLocaleString() || '—'}</td>}
                     {!hiddenCols.has('subDate') && <td className="s2-num">{fmtDate(ch.subscribedAt)}</td>}
-                    {!hiddenCols.has('status') && <td><span className={`s2-status ${state}`}>{state === 'dead' ? 'Inactive' : state === 'inactive' ? 'Low' : 'Active'}</span></td>}
+                    {!hiddenCols.has('status') && <td><span className={`s2-status ${state}`}>{state === 'dead' ? 'Dead' : state === 'inactive' ? 'Inactive' : 'Active'}</span></td>}
                     {hiddenCols.size > 0 && <td></td>}
                   </tr>
                 );

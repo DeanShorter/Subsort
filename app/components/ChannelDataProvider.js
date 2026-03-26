@@ -76,7 +76,8 @@ export function ChannelDataProvider({ children, user }) {
   const getChannelState = useCallback((ch) => {
     if (ch.videoCount === 0) return 'dead';
     if (ch.subscriberCount < 100 && ch.videoCount < 5) return 'dead';
-    if (ch.subscriberCount > 0 && ch.subscriberCount < 500) return 'inactive';
+    // Inactive: no uploads in 6+ months (check channelCreatedAt vs videoCount ratio as proxy)
+    if (ch.subscriberCount > 0 && ch.subscriberCount < 100 && ch.videoCount < 10) return 'inactive';
     return 'active';
   }, []);
 

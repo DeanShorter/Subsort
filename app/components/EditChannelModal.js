@@ -212,47 +212,31 @@ export default function EditChannelModal({ channelId, onClose }) {
         <div className="ecm-fields">
           <div className="ecm-field-row">
             <span className="ecm-field-label">Category</span>
-            <div className="ecm-field-tags">
-              {selectedCats.map(c => (
-                <span key={c} className="ecm-tag ecm-tag-cat">{c}</span>
+          </div>
+          <div className="ecm-cat-edit-panel" style={{ display: 'block' }}>
+            <div className="cat-checkbox-list">
+              {categories.map(c => (
+                <button
+                  key={c}
+                  type="button"
+                  className={`cat-check-item${selectedCats.includes(c) ? ' checked' : ''}`}
+                  onClick={() => toggleCat(c)}
+                >
+                  <span className={`cat-check-box${selectedCats.includes(c) ? ' on' : ''}`} />
+                  {c}
+                </button>
               ))}
             </div>
-            <button className="ecm-tag-add" onClick={() => setShowCatEdit(!showCatEdit)}>
-              {showCatEdit ? 'Done' : 'Edit'}
-            </button>
           </div>
 
-          {showCatEdit && (
-            <div className="ecm-cat-edit-panel" style={{ display: 'block' }}>
-              <div className="cat-checkbox-list">
-                {categories.map(c => (
-                  <label
-                    key={c}
-                    className={`cat-check-item${selectedCats.includes(c) ? ' checked' : ''}`}
-                    onClick={() => toggleCat(c)}
-                  >
-                    <input type="checkbox" checked={selectedCats.includes(c)} readOnly />
-                    {c}
-                  </label>
-                ))}
+          {selectedCats.length > 0 && (
+            <>
+              <div className="ecm-field-row">
+                <span className="ecm-field-label">Subcategory</span>
+                {selectedSub && <span className="ecm-tag ecm-tag-sub">{selectedSub}</span>}
               </div>
-            </div>
-          )}
-
-          <div className="ecm-field-row">
-            <span className="ecm-field-label">Subcategory</span>
-            <div className="ecm-field-tags">
-              {selectedSub && <span className="ecm-tag ecm-tag-sub">{selectedSub}</span>}
-            </div>
-            <button className="ecm-tag-add" onClick={() => setShowSubEdit(!showSubEdit)}>
-              {showSubEdit ? 'Done' : selectedSub ? 'Edit' : 'Add'}
-            </button>
-          </div>
-
-          {showSubEdit && (
-            <div className="ecm-subcat-edit-panel" style={{ display: 'block' }}>
-              {availableSubs.length > 0 ? (
-                <>
+              <div className="ecm-subcat-edit-panel" style={{ display: 'block' }}>
+                {availableSubs.length > 0 && (
                   <select
                     className="sort-select"
                     value={selectedSub}
@@ -261,32 +245,23 @@ export default function EditChannelModal({ channelId, onClose }) {
                     <option value="">None</option>
                     {availableSubs.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
-                  <div style={{ marginTop: '.5rem' }}>
-                    <input
-                      className="sort-select"
-                      type="text"
-                      placeholder="Or type a new subcategory…"
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' && e.target.value.trim()) {
-                          setSelectedSub(e.target.value.trim());
-                          e.target.value = '';
-                        }
-                      }}
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                </>
-              ) : (
-                <input
-                  className="sort-select"
-                  type="text"
-                  placeholder="Type a subcategory…"
-                  value={selectedSub}
-                  onChange={e => setSelectedSub(e.target.value)}
-                  style={{ width: '100%' }}
-                />
-              )}
-            </div>
+                )}
+                <div style={{ marginTop: availableSubs.length > 0 ? '.5rem' : 0 }}>
+                  <input
+                    className="sort-select"
+                    type="text"
+                    placeholder={availableSubs.length > 0 ? 'Or type a new subcategory…' : 'Type a subcategory…'}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && e.target.value.trim()) {
+                        setSelectedSub(e.target.value.trim());
+                        e.target.value = '';
+                      }
+                    }}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+            </>
           )}
         </div>
 
