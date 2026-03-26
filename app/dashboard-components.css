@@ -3400,7 +3400,7 @@ input[type=range]::-webkit-slider-thumb{
 .ch-table .ch-table-select svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3}
 .ch-table .ch-table-fav,.s2-tbl .ch-table-fav{background:none;border:none;padding:0;cursor:pointer;color:var(--text-muted);display:grid;place-items:center;width:18px;height:18px;transition:color .15s}
 .ch-table .ch-table-fav:hover,.ch-table .ch-table-fav.starred,.s2-tbl .ch-table-fav:hover,.s2-tbl .ch-table-fav.starred{color:var(--color-warning)}
-.ch-table .ch-table-fav svg,.s2-tbl .ch-table-fav svg{width:14px;height:14px}
+.ch-table .ch-table-fav svg,.s2-tbl .ch-table-fav svg{width:16px;height:16px}
 
 /* Channel state badges */
 .ch-state-badge{font-size:.625rem;font-weight:600;padding:2px 7px;border-radius:4px;white-space:nowrap}

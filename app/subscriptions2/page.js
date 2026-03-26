@@ -8,6 +8,7 @@ import EditChannelModal from '../components/EditChannelModal';
 import ManageCategoriesModal from '../components/ManageCategoriesModal';
 import BulkEditModal from '../components/BulkEditModal';
 import { trackEvent } from '../../lib/track';
+import { useDragScroll } from '../../hooks/useDragScroll';
 
 export default function Subscriptions2Page() {
   const { user, signIn } = useAuth();
@@ -32,6 +33,7 @@ export default function Subscriptions2Page() {
   const [showBulkEdit, setShowBulkEdit] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const catTabsRef = useRef(null);
+  useDragScroll(catTabsRef);
   const [hiddenCols, setHiddenCols] = useState(new Set());
   const [filterFavOnly, setFilterFavOnly] = useState(false);
   const [filterUncatOnly, setFilterUncatOnly] = useState(false);

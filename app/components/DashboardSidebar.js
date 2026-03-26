@@ -418,7 +418,6 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
       <div className="hnp-body">
         {/* Pages section */}
         <div className="hnp-section">
-          <div className="hnp-section-label">PAGES</div>
           {PAGE_ITEMS.map(item => (
             <NavItem key={item.href} {...item} isActive={isActive(item.href)} />
           ))}
