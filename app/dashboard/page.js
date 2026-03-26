@@ -315,16 +315,33 @@ export default function Home2Page() {
           </div>
         )}
 
-        {/* ═══ FAVOURITES ═══ */}
-        {favVideos.length > 0 && (
+        {/* ═══ TODAY BAR ═══ */}
+        {todayVideos.length > 0 && (
           <div className="h2-section">
-            <div className="h2-section-header">
-              <div className="section-left">
-                <span className="h2-section-title">⭐ New from your favourites</span>
-                <span className="h2-section-count">{favVideos.length} new</span>
+            <Link href="/feeds2" className="h2-today-bar">
+              <span className="h2-today-icon">📬</span>
+              <div className="h2-today-text">
+                <div className="h2-today-title">{todayVideos.length} new videos today</div>
+                <div className="h2-today-sub">across {todayCatDots.length} categories from {todayChannelCount} channels</div>
               </div>
-              <Link href="/feeds2?cat=__favs__" className="h2-section-link">View all →</Link>
+              <div className="h2-today-cats h2-today-cats-overlap">
+                {todayCatDots.map(cat => (<div key={cat} className="h2-today-dot-overlap" style={{ background: categoryColours[cat] || 'var(--accent)' }} />))}
+              </div>
+              <span className="h2-today-arrow">→</span>
+            </Link>
+          </div>
+        )}
+
+        {/* ═══ FAVOURITES ═══ */}
+        <div className="h2-section">
+          <div className="h2-section-header">
+            <div className="section-left">
+              <span className="h2-section-title">⭐ New from your favourites</span>
+              {favVideos.length > 0 && <span className="h2-section-count">{favVideos.length} new</span>}
             </div>
+            {favVideos.length > 0 && <Link href="/feeds2?cat=__favs__" className="h2-section-link">View all →</Link>}
+          </div>
+          {favVideos.length > 0 ? (
             <div className="h2-fav-grid">
               {favVideos.map((v, i) => {
                 const isNew = v.publishedAt && (Date.now() - new Date(v.publishedAt).getTime()) < 24 * 60 * 60 * 1000;
@@ -344,25 +361,13 @@ export default function Home2Page() {
                 );
               })}
             </div>
-          </div>
-        )}
-
-        {/* ═══ TODAY BAR ═══ */}
-        {todayVideos.length > 0 && (
-          <div className="h2-section">
-            <Link href="/feeds2" className="h2-today-bar">
-              <span className="h2-today-icon">📬</span>
-              <div className="h2-today-text">
-                <div className="h2-today-title">{todayVideos.length} new videos today</div>
-                <div className="h2-today-sub">across {todayCatDots.length} categories from {todayChannelCount} channels</div>
-              </div>
-              <div className="h2-today-cats h2-today-cats-overlap">
-                {todayCatDots.map(cat => (<div key={cat} className="h2-today-dot-overlap" style={{ background: categoryColours[cat] || 'var(--accent)' }} />))}
-              </div>
-              <span className="h2-today-arrow">→</span>
-            </Link>
-          </div>
-        )}
+          ) : (
+            <div className="h2-empty-state">
+              <span className="h2-empty-emoji">😴</span>
+              <span className="h2-empty-text">{favCount === 0 ? 'No favourites yet — star some channels to see their uploads here' : 'No new uploads from your favourites'}</span>
+            </div>
+          )}
+        </div>
 
         {/* ═══ ACTIVITY + DISCOVER ═══ */}
         <div className="h2-section">

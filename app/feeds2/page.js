@@ -243,23 +243,29 @@ export default function Feeds2Page() {
               <svg viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" /></svg>
             </button>
           </div>
-          {activeSubs.length > 0 && (
+          {activeCategory !== 'all' && activeCategory !== '__favs__' && (
             <div className="f2-subcat-row">
-              <button
-                className={`f2-subcat-btn${!activeSubcategory ? ' active' : ''}`}
-                onClick={() => setActiveSubcategory(null)}
-              >
-                All {activeCategory}
-              </button>
-              {activeSubs.map(sub => (
-                <button
-                  key={sub}
-                  className={`f2-subcat-btn${activeSubcategory === sub ? ' active' : ''}`}
-                  onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}
-                >
-                  {sub}
-                </button>
-              ))}
+              {activeSubs.length > 0 ? (
+                <>
+                  <button
+                    className={`f2-subcat-btn${!activeSubcategory ? ' active' : ''}`}
+                    onClick={() => setActiveSubcategory(null)}
+                  >
+                    All {activeCategory}
+                  </button>
+                  {activeSubs.map(sub => (
+                    <button
+                      key={sub}
+                      className={`f2-subcat-btn${activeSubcategory === sub ? ' active' : ''}`}
+                      onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}
+                    >
+                      {sub}
+                    </button>
+                  ))}
+                </>
+              ) : (
+                <span className="f2-subcat-empty">No subcategories yet</span>
+              )}
             </div>
           )}
         </div>

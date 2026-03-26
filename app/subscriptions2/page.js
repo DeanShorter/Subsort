@@ -131,6 +131,17 @@ export default function Subscriptions2Page() {
                 <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
               </button>
             </div>
+            <button className="s2-btn-ghost" onClick={() => {
+              const keys = ['name', 'subscribers', 'videoCount', 'subDate'];
+              const labels = { name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed' };
+              const idx = keys.indexOf(sortKey);
+              const nextIdx = (idx + 1) % keys.length;
+              setSortKey(keys[nextIdx]);
+              setSortDir('asc');
+            }}>
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
+              Sort: {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed' })[sortKey] || 'Name'}
+            </button>
             <button className="s2-btn-ghost" onClick={() => setBulkMode(b => !b)}>
               <svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2" /><path d="M5 7h4" /></svg>
               Bulk Edit
@@ -176,17 +187,23 @@ export default function Subscriptions2Page() {
         </div>
 
         {/* Subcategory tabs */}
-        {activeSubs.length > 0 && (
+        {activeCategory !== 'all' && activeCategory !== '__favs__' && activeCategory !== '__uncat__' && (
           <div className="s2-subcat-tabs">
-            <button className={`s2-subcat-tab${!activeSubcategory ? ' active' : ''}`} onClick={() => setActiveSubcategory(null)}>
-              All {activeCategory}
-            </button>
-            {activeSubs.map(sub => (
-              <button key={sub} className={`s2-subcat-tab${activeSubcategory === sub ? ' active' : ''}`}
-                onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}>
-                {sub}
-              </button>
-            ))}
+            {activeSubs.length > 0 ? (
+              <>
+                <button className={`s2-subcat-tab${!activeSubcategory ? ' active' : ''}`} onClick={() => setActiveSubcategory(null)}>
+                  All {activeCategory}
+                </button>
+                {activeSubs.map(sub => (
+                  <button key={sub} className={`s2-subcat-tab${activeSubcategory === sub ? ' active' : ''}`}
+                    onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}>
+                    {sub}
+                  </button>
+                ))}
+              </>
+            ) : (
+              <span className="s2-subcat-empty">No subcategories yet — add them from the channel modal or Manage categories</span>
+            )}
           </div>
         )}
       </div>
@@ -242,7 +259,7 @@ export default function Subscriptions2Page() {
                 return (
                   <tr key={ch.id} className={isSelected ? 's2-row-selected' : ''} onClick={() => bulkMode ? toggleChannelSelect(ch.id) : setEditingId(ch.id)}>
                     <td><div className={`h2-task-check${isSelected ? ' checked' : ''}`} onClick={e => { e.stopPropagation(); toggleChannelSelect(ch.id); }}>{isSelected && '✓'}</div></td>
-                    <td><span className={`s2-fav${ch.favourited ? ' active' : ''}`} onClick={e => { e.stopPropagation(); toggleFavourite(ch.id); }}>★</span></td>
+                    <td><button className={`ch-table-fav${ch.favourited ? ' starred' : ''}`} onClick={e => { e.stopPropagation(); toggleFavourite(ch.id); }}><svg viewBox="0 0 24 24" fill={ch.favourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg></button></td>
                     <td><div className="s2-ch-name"><div className="s2-ch-avatar" style={{ background: `${col}33` }}>{ch.thumbnail ? <img src={ch.thumbnail} alt="" /> : initials}</div>{ch.name}</div></td>
                     {!hiddenCols.has('category') && <td><div className="s2-ch-cat"><span className="s2-ct-dot" style={{ background: col }} />{cats[0] || '—'}</div></td>}
                     {!hiddenCols.has('subcategory') && <td>{ch.subcategory || <span style={{ color: 'var(--text-dim)' }}>—</span>}</td>}
