@@ -5,6 +5,7 @@ import { useChannelData } from '../components/ChannelDataContext';
 import { supabase } from '../../lib/supabase';
 import { autoCategoriseAll } from '../../lib/auto-categorise';
 import EditChannelModal from '../components/EditChannelModal';
+import ManageCategoriesModal from '../components/ManageCategoriesModal';
 import { trackEvent } from '../../lib/track';
 
 export default function Subscriptions2Page() {
@@ -144,24 +145,26 @@ export default function Subscriptions2Page() {
           </div>
         </div>
 
-        {/* Category tabs */}
-        <div className="s2-cat-tabs">
-          <button className={`s2-cat-tab${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
-            <span className="s2-ct-dot" style={{ background: 'var(--accent)' }} />All<span className="s2-ct-count">{channels.length}</span>
-          </button>
-          <button className={`s2-cat-tab${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
-            <span style={{ fontSize: 10, color: '#EFD700' }}>★</span>Favourites<span className="s2-ct-count">{channels.filter(c => c.favourited).length}</span>
-          </button>
-          {categories.map(cat => (
-            <button key={cat} className={`s2-cat-tab${activeCategory === cat ? ' active' : ''}`}
-              onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}>
-              <span className="s2-ct-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
-              {cat}<span className="s2-ct-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
+        {/* Category tabs + manage button */}
+        <div className="s2-cat-row-wrap">
+          <div className="s2-cat-tabs">
+            <button className={`s2-cat-tab${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
+              <span className="s2-ct-dot" style={{ background: 'var(--accent)' }} />All<span className="s2-ct-count">{channels.length}</span>
             </button>
-          ))}
+            <button className={`s2-cat-tab${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
+              <span style={{ fontSize: 10, color: '#EFD700' }}>★</span>Favourites<span className="s2-ct-count">{channels.filter(c => c.favourited).length}</span>
+            </button>
+            {categories.map(cat => (
+              <button key={cat} className={`s2-cat-tab${activeCategory === cat ? ' active' : ''}`}
+                onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}>
+                <span className="s2-ct-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
+                {cat}<span className="s2-ct-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
+              </button>
+            ))}
+          </div>
           <button className="s2-cat-manage" onClick={() => setShowManageCats(true)}>
             <svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" /></svg>
-            Manage
+            Manage Categories
           </button>
         </div>
 
@@ -304,6 +307,7 @@ export default function Subscriptions2Page() {
 
       {/* Edit channel modal */}
       {editingId && <EditChannelModal channelId={editingId} onClose={() => setEditingId(null)} />}
+      {showManageCats && <ManageCategoriesModal onClose={() => setShowManageCats(false)} />}
 
       {/* Auto-sort confirm */}
       {showSortConfirm && (

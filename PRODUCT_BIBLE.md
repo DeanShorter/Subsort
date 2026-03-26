@@ -33,14 +33,34 @@ Note: Launch with Free and Pro only. Pro+ is a 6-12 month roadmap item that depe
 "subscrub" — "sub" from subscriptions, "scrub" from cleaning up dead weight. One word, all lowercase.
 
 ### Logo
-Wordmark in Outfit 700, 22px, -0.5px letter-spacing. "sub" in mint (#3ECFA0), "scrub" in primary text colour. Same split in both dark and light themes.
+**Wordmark:** Outfit 700, 22px, -0.5px letter-spacing. "sub" in mint (#3ECFA0), "scrub" in primary text colour. Same split in both dark and light themes.
 
 ```html
 <a class="logo"><span>sub</span>scrub</a>
 ```
 
+**Logomark: The Critic's magnifying glass.** A mint-coloured magnifying glass with a face inside the lens. The face has mood variants matching The Critic's escalation system. The magnifying glass represents The Critic's core action — scrutinising your feed.
+
+**Primary mark:** friendly expression with sparkles (top-right variant). Used as the default across the product. Tilted slightly for attitude.
+
+**Mood variants:**
+- Friendly/pleased (sparkles, slight smile) — default state, new users, encouraging mood
+- Annoyed (furrowed brow, frown) — impatient/annoyed mood
+- Sunglasses + judgemental (flat mouth) — high score, "looking sharp" tier
+- Sunglasses + smile — satisfied, used on social media avatar and share cards
+
+**Usage:**
+- Beside the wordmark on the landing page and marketing materials
+- Critic banner on Home page (mood-appropriate variant next to "The Critic" label)
+- Share cards (next to attribution line)
+- Social media avatar (sunglasses version — most distinctive in circle crop)
+- Email newsletter sender avatar
+- Landing page hero ("Meet The Critic" visual)
+
+**The wordmark and logomark are independent.** The wordmark works alone in the sidebar and nav. The logomark works alone as an avatar and icon. Together they form the full brand lock-up for marketing and the landing page.
+
 ### Favicon
-Feed lines concept: three staggered horizontal bars on dark background, top bar in mint. Rounded square container. Works at 16px.
+Simplified version of the logomark: just the magnifying glass lens circle with two dots for eyes, mint stroke/fill on dark background. At 16px the handle and expression detail drops — it reads as a mint circle with personality. Rounded square container.
 
 ### Typography
 - Display / headings: Outfit (weight 700 for logo, 600 for page titles, 500-800 range)
@@ -67,7 +87,7 @@ Cheeky, observational, and warm. Like a friend roasting you gently — always di
 The product's voice is channelled through The Critic — the central character of subscrub.
 
 ### The Critic — character definition
-The Critic is the personality engine of subscrub. It's not a mascot, not a chatbot — it's a voice. Think newspaper columnist, not cartoon character.
+The Critic is the personality engine of subscrub. It's a voice with a face — a magnifying glass character that scrutinises your feed and delivers verdicts. Think newspaper columnist with a visual identity, not a generic mascot.
 
 **What it is:**
 - An entity that analyses your feed and delivers verdicts
@@ -75,20 +95,32 @@ The Critic is the personality engine of subscrub. It's not a mascot, not a chatb
 - Has moods that escalate based on user behaviour (encouraging → giving up)
 - Has opinions, patience, and memory
 - Attributed on everything it says: "— The Critic, based on 326 subscriptions"
+- Visually represented by the magnifying glass logomark with mood-appropriate expressions
 
 **What it isn't:**
-- Not a visual mascot (no character illustration, no face — emoji represents mood)
 - Not a chatbot or AI assistant
 - Not mean — exasperated, dry, occasionally proud, but never cruel
 - Not a separate product — it's the voice layer on top of the tool
+- Not a children's mascot — the character has attitude and editorial weight
 
-**Where it appears:**
-- Home page: critic banner (the signature) + task list (the recommendations)
-- Onboarding sync screen: commentary during analysis
-- Share cards: the verdict and attribution
-- Email newsletters: sender identity ("The Critic via subscrub")
-- Social media: tweets as itself
-- Empty states and notifications: personality copy
+**Visual identity:**
+The magnifying glass logomark IS The Critic. The face inside the lens changes expression to match the mood:
+- Friendly + sparkles → encouraging mood (default, new users)
+- Flat expression → nudging mood
+- Furrowed brow → impatient mood
+- Angry face → annoyed mood
+- Sunglasses + frown → giving up mood (too cool to care anymore)
+- Sunglasses + smile → high score / "looking sharp" reward state
+
+The primary (friendly) variant is used everywhere by default. Mood variants appear contextually on the critic banner, share cards, and emails. The sunglasses version is the social media avatar.
+
+**Where it appears (voice + visual):**
+- Home page: critic banner with mood-appropriate logomark + typed roast + task list
+- Onboarding sync screen: commentary during analysis with the magnifying glass visual
+- Share cards: the verdict, attribution, and logomark
+- Email newsletters: sender identity ("The Critic via subscrub") with avatar
+- Social media: tweets as itself, sunglasses avatar
+- Empty states and notifications: personality copy with small logomark
 - Weekly/monthly summaries: "The Critic's March verdict"
 
 **Where it doesn't appear:**
@@ -743,9 +775,16 @@ Both need a proper legal review before handling real user data at scale.
 - Domain migration from usefreedly.com to getsubscrub.com
 
 ### Before launch
+- Get primary logomark (friendly magnifying glass) cleaned up as production SVG
+- Create simplified favicon from logomark (lens circle + eye dots at 16px)
+- Update landing page hero with "Meet The Critic" and logomark visual
 - Implement sync screen with personalised onboarding
 - Trigger RSS refresh on first login
 - Build the critic banner and action card for Home page (two-card split with mood escalation)
+- Add The Critic logomark to critic banner next to "The Critic" label
+- Implement typing animation on critic roast (first visit per session only)
+- Implement breathing pulse on score ring
+- Build critic task list with checkboxes, progress bar, and reactive quips
 - Implement score history tracking (last_critic_action + score_history on profiles table)
 - Build Home page with favourites grid, today summary bar, activity timeline, Discover teaser
 - Rename pages: Dashboard→Home, Feeds→Feed, Analytics→Insights
@@ -769,6 +808,9 @@ Both need a proper legal review before handling real user data at scale.
 - Get legal review of privacy policy and terms
 
 ### Post-launch
+- Commission full set of logomark mood variants as clean SVGs (friendly, annoyed, impatient, angry, sunglasses variants)
+- Swap emoji in critic banner for mood-appropriate logomark illustrations
+- Set up social media accounts with sunglasses logomark as avatar
 - Implement cron job for automatic RSS refresh
 - Implement video metadata backfill via YouTube API
 - Build shareable score cards (server-side image generation)
