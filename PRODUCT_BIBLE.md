@@ -39,27 +39,44 @@ Note: Launch with Free and Pro only. Pro+ is a 6-12 month roadmap item that depe
 <a class="logo"><span>sub</span>scrub</a>
 ```
 
-**Logomark: The Critic (mantis).** A stylised praying mantis in mint, representing The Critic. The mantis embodies scrutiny, patience, authority, and precision — it watches everything, waits, then acts with surgical accuracy. The natural mantis posture (hands together, head tilted) looks inherently judgemental without needing cartoon expressions.
+**Logomark: The Critic (chameleon).** A stylised chameleon face in mint, representing The Critic. The chameleon's defining trait — colour change — IS the product mechanic. Mint when happy, amber when nudging, red when annoyed, grey when giving up. One SVG, dynamic colour via CSS. No need for multiple illustrations per mood.
 
-**Why the mantis:**
-- Authority: feels like a genuine expert, not a comedian
-- Versatility: mood is conveyed through head angle, arm position, and eye size — works at every scale
-- Professionalism: ages well, works if subscrub grows beyond its initial niche
-- Distinctiveness: no major tech brand uses a mantis
+**Why the chameleon:**
+- Colour change IS the mood system: one illustration, swap the fill colour per mood state
+- Eyes rotate independently: The Critic watches your feed from every angle, sees everything
+- Curled tail: distinctive silhouette at any size, works as a question mark shape for the favicon
+- Tongue: snatching dead channels from your feed. "The Critic caught 52 inactive channels."
+- No major tech brand owns the chameleon — clear space to claim it
+- Natural smirk: the curled detail under the mouth shifts meaning with colour (pleased in mint, grimace in red)
 
-**Mood variants (conveyed through posture, not cartoon expressions):**
-- Encouraging: head upright, relaxed posture, slightly open arms — approachable
-- Nudging: head tilted, one arm raised — "I'm watching"
-- Impatient: head tilted further, arms crossed — classic disapproval
-- Annoyed: leaning forward, intense stare — confrontational
-- Giving up: head turned away, slumped posture — resigned
-- Sunglasses: for high scores and social media avatar — cool, earned respect
+**Chameleon face style:** left variant from AI concepts selected — larger expressive eyes with visible whites, curled spiral under the mouth (natural smirk), pronounced crest/horn on top. Needs two versions:
+- **Detailed version:** for large use (landing page hero, share cards, social media). Full shading, textured, characterful.
+- **Simplified version:** for small use (favicon, sidebar, critic banner, UI elements). Same silhouette but flat fills, reduced detail.
 
-**Primary mark:** the encouraging/neutral posture with a slight head tilt. Used as the default across the product.
+**Colour palette for the chameleon:**
+- Base/default: mint #3ECFA0
+- Shading: teal #1D9E75, dark teal #0F6E56
+- Mood shifts applied as fill colour changes across the entire illustration
+
+**Mood variants (conveyed through colour, not different illustrations):**
+- Encouraging: mint #3ECFA0 — the default, happy state
+- Nudging: amber #EF9F27 — warming up, patience thinning
+- Impatient: deeper amber — The Critic is changing colour
+- Annoyed: red #E85D50 — visibly angry
+- Giving up: grey/desaturated — colour drained, checked out
+- Sunglasses variant: for high scores and social media avatar (needs separate illustration)
+
+**Eye expression variants (optional, post-launch):**
+- Looking straight: judgemental (default)
+- Looking sideways: suspicious
+- Half-closed: unimpressed
+- Wide open: shocked at your subscription count
+
+**Primary mark:** the encouraging/default state in mint with the natural smirk. Used everywhere by default.
 
 **Usage:**
 - Beside the wordmark on the landing page and marketing materials
-- Critic banner on Home page (mood-appropriate variant next to "The Critic" label)
+- Critic banner on Home page (colour-shifted per mood next to "The Critic" label)
 - Share cards (next to attribution line)
 - Social media avatar (sunglasses variant — most distinctive in circle crop)
 - Email newsletter sender avatar
@@ -69,7 +86,7 @@ Note: Launch with Free and Pro only. Pro+ is a 6-12 month roadmap item that depe
 
 ### The Colony (ant army) — future character system
 
-The Critic (mantis) is the face and voice. Behind The Critic is "The Colony" — an army of ants that represent subscrub's background processes and automation. The Critic gives orders, the ants execute.
+The Critic (chameleon) is the face and voice. Behind The Critic is "The Colony" — an army of ants that represent subscrub's background processes and automation. The Critic gives orders, the ants execute. (Note: chameleons eat insects — The Critic could theoretically eat underperforming ants. Dark humour that writes itself.)
 
 **Not needed for launch.** Introduce when cron jobs, bots, and automation features go live. The Colony expands the character world without changing the mascot.
 
@@ -84,16 +101,17 @@ The Critic (mantis) is the face and voice. Behind The Critic is "The Colony" —
 **If bots/automation become a major feature**, referring to them as "ants" is a natural marketing extension. "Deploy the colony" for batch operations. "Your ant army sorted 326 channels in 4 seconds." The infrastructure becomes narrative.
 
 **The hierarchy:**
-- The Critic (mantis) — the character users interact with, the voice, the judge
+- The Critic (chameleon) — the character users interact with, the voice, the judge
 - The Colony (ants) — the workers, invisible until referenced, the automation layer
 - The roasts — can reference any creature for humour ("Your feed looks like something a dung beetle would enjoy")
 
 ### Favicon
-Simplified version of the mantis logomark: the head silhouette with two dots for eyes, mint fill on dark background. At 16px the body detail drops — it reads as a distinctive angular shape with personality. The mantis head shape is more recognisable at small sizes than a generic circle. Rounded square container.
+Simplified chameleon head silhouette with the curled tail forming a question mark shape. Mint fill on dark background. At 16px the crest on top + curled tail at bottom create a distinctive vertical shape that no other app icon looks like. Two dots for eyes. Rounded square container.
 
 ### Previous logomark concepts (explored, not selected)
 - Magnifying glass with face: explored with AI-generated concepts, felt too generic (search/detective associations)
 - Owl: strong symbolism but too close to Duolingo
+- Praying mantis: authority and precision, but required multiple illustrations for mood variants (posture-based). Chameleon solves this with colour swap.
 - Dung beetle: funniest option, great for roast copy, but too niche for a primary logo
 - Ant: lacked personality as a solo character, but evolved into The Colony supporting system
 
@@ -122,7 +140,7 @@ Cheeky, observational, and warm. Like a friend roasting you gently — always di
 The product's voice is channelled through The Critic — the central character of subscrub.
 
 ### The Critic — character definition
-The Critic is the personality engine of subscrub. It's a voice with a face — a praying mantis that watches your feed with unsettling patience and delivers verdicts with dry authority. Think sharp-witted columnist who happens to be an insect.
+The Critic is the personality engine of subscrub. It's a voice with a face — a chameleon that watches your feed with independently rotating eyes and changes colour based on how well you're managing your subscriptions. Think sharp-witted columnist who happens to be a colour-shifting reptile.
 
 **What it is:**
 - An entity that analyses your feed and delivers verdicts
@@ -130,7 +148,7 @@ The Critic is the personality engine of subscrub. It's a voice with a face — a
 - Has moods that escalate based on user behaviour (encouraging → giving up)
 - Has opinions, patience, and memory
 - Attributed on everything it says: "— The Critic, based on 326 subscriptions"
-- Visually represented by the mantis logomark with mood conveyed through posture
+- Visually represented by the chameleon logomark — colour shifts to match mood
 - Commands The Colony (ant army) for background automation (post-launch)
 
 **What it isn't:**
@@ -138,22 +156,21 @@ The Critic is the personality engine of subscrub. It's a voice with a face — a
 - Not mean — exasperated, dry, occasionally proud, but never cruel
 - Not a separate product — it's the voice layer on top of the tool
 - Not a children's mascot — the character has authority and editorial weight
-- Not Duolingo's owl — The Critic is sharp and editorial, not cute and cartoonish
 
 **Visual identity:**
-The mantis logomark IS The Critic. Mood is conveyed through posture, head angle, and eye expression — not cartoon faces:
-- Head upright, relaxed → encouraging mood (default)
-- Head tilted, watching → nudging mood
-- Arms crossed, leaning → impatient mood
-- Leaning forward, intense stare → annoyed mood
-- Head turned away, slumped → giving up mood
-- Sunglasses → high score / social media avatar
+The chameleon logomark IS The Critic. Mood is conveyed through colour — one SVG, dynamic fill:
+- Mint #3ECFA0 → encouraging mood (default)
+- Amber #EF9F27 → nudging mood
+- Deeper amber → impatient mood
+- Red #E85D50 → annoyed mood
+- Grey/desaturated → giving up mood
+- Sunglasses variant → high score / social media avatar
 
-The primary (neutral/encouraging) variant is used everywhere by default. Mood variants appear contextually on the critic banner, share cards, and emails. The sunglasses version is the social media avatar.
+The primary (mint) variant is used everywhere by default. Colour shifts appear contextually on the critic banner, share cards, and emails. The sunglasses version is the social media avatar.
 
 **Where it appears (voice + visual):**
-- Home page: critic banner with mood-appropriate mantis + typed roast + task list
-- Onboarding sync screen: commentary during analysis with the mantis watching
+- Home page: critic banner with colour-shifted chameleon + typed roast + task list
+- Onboarding sync screen: commentary during analysis with the chameleon watching
 - Share cards: the verdict, attribution, and logomark
 - Email newsletters: sender identity ("The Critic via subscrub") with avatar
 - Social media: tweets as itself, sunglasses avatar
@@ -922,9 +939,9 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Domain migration from usefreedly.com to getsubscrub.com
 
 ### Before launch
-- Get primary logomark (mantis, neutral/encouraging posture) designed as production SVG
-- Create simplified favicon from mantis head silhouette (angular shape + eye dots at 16px)
-- Update landing page hero with "Meet The Critic" and mantis visual
+- Get primary logomark (chameleon face, left variant) designed as production SVG — detailed + simplified versions
+- Create simplified favicon from chameleon head silhouette with curled tail (question mark shape, 16px)
+- Update landing page hero with "Meet The Critic" and chameleon visual
 - Implement sync screen with personalised onboarding
 - Trigger RSS refresh on first login
 - Build the critic banner and action card for Home page (two-card split with mood escalation)
@@ -955,9 +972,9 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Get legal review of privacy policy and terms
 
 ### Post-launch
-- Commission full set of mantis mood variants as clean SVGs (encouraging, nudging, impatient, annoyed, giving up, sunglasses)
-- Swap emoji in critic banner for mood-appropriate mantis illustrations
-- Set up social media accounts with sunglasses mantis as avatar
+- Commission full chameleon mood variant SVGs (sunglasses version + eye expression variants)
+- Implement dynamic colour swap on chameleon SVG based on critic mood (CSS fill)
+- Set up social media accounts with chameleon avatar (sunglasses variant)
 - Introduce "The Colony" (ant army) branding when automation features go live
 - Implement cron job for automatic RSS refresh ("The night shift is working")
 - Implement video metadata backfill via YouTube API

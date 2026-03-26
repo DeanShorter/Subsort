@@ -134,31 +134,16 @@ export default function Subscriptions2Page() {
                 <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
               </button>
             </div>
-            <button className="ph-btn" onClick={() => {
-              const keys = ['name', 'subscribers', 'videoCount', 'subDate'];
-              const idx = keys.indexOf(sortKey);
-              const nextIdx = (idx + 1) % keys.length;
-              setSortKey(keys[nextIdx]);
-              setSortDir('asc');
-            }}>
-              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-              Sort: {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed' })[sortKey] || 'Name'}
-            </button>
             <button className={`ph-btn${showFilters ? ' active' : ''}`} onClick={() => setShowFilters(f => !f)}>
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
               Filters
             </button>
-            <button className={`ph-btn${bulkMode ? ' active' : ''}`} onClick={() => {
-              if (bulkMode && selectedChannels.size > 0) {
-                setShowBulkEdit(true);
-              } else {
-                setBulkMode(b => !b);
-                if (bulkMode) setSelectedChannels(new Set());
-              }
-            }}>
-              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="1" width="12" height="12" rx="2" /><path d="M5 7h4" /></svg>
-              {bulkMode && selectedChannels.size > 0 ? `Edit ${selectedChannels.size} selected` : 'Bulk Edit'}
-            </button>
+            {selectedChannels.size > 0 && (
+              <button className="ph-btn active" onClick={() => setShowBulkEdit(true)}>
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="1" width="12" height="12" rx="2" /><path d="M5 7h4" /></svg>
+                Edit {selectedChannels.size} selected
+              </button>
+            )}
             <button className="ph-btn primary" onClick={() => setShowSortConfirm(true)} disabled={sorting}>
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M5 10h4" /></svg>
               {sorting ? 'Sorting...' : 'Auto-sort'}
@@ -230,6 +215,17 @@ export default function Subscriptions2Page() {
           </div>
 
           <div className="s2-filters-section">
+            <div className="s2-filters-label">Sort by</div>
+            {[['name','Name'],['subscribers','Subs'],['videoCount','Videos'],['subDate','Subscribed'],['category','Category'],['favourited','Favourites']].map(([key, label]) => (
+              <button key={key} className={`home-nav-item${sortKey === key ? ' active' : ''}`}
+                onClick={() => { if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc'); else { setSortKey(key); setSortDir('asc'); } }}
+                style={{ width: '100%' }}>
+                <span className="home-nav-item-label">{label} {sortKey === key ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="s2-filters-section">
             <div className="s2-filters-label">Status</div>
             {['all', 'active', 'inactive', 'dead'].map(s => (
               <button key={s} className={`home-nav-item${filterStatus === s ? ' active' : ''}`}
@@ -263,13 +259,37 @@ export default function Subscriptions2Page() {
 
       {/* CONTENT */}
       <div className="s2-content">
+        {filtered.length === 0 ? (
+          <div className="h2-empty-state" style={{ margin: '40px 0' }}>
+            <span className="h2-empty-emoji">🤷</span>
+            <span className="h2-empty-text">No channels match your filters</span>
+          </div>
+        ) : null}
+
         {/* TABLE VIEW */}
-        {chanView === 'table' && (
+        {chanView === 'table' && filtered.length > 0 && (
           <table className="s2-tbl">
             <thead>
               <tr>
-                <th style={{ width: 30 }}></th>
-                <th style={{ width: 30 }}>Fav</th>
+                <th style={{ width: 30 }}>
+                  <div className={`h2-task-check${selectedChannels.size === filtered.length && filtered.length > 0 ? ' checked' : ''}`}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      if (selectedChannels.size === filtered.length) {
+                        setSelectedChannels(new Set());
+                      } else {
+                        setSelectedChannels(new Set(filtered.map(c => c.id)));
+                        if (!bulkMode) setBulkMode(true);
+                      }
+                    }}>
+                    {selectedChannels.size === filtered.length && filtered.length > 0 && '✓'}
+                  </div>
+                </th>
+                <th style={{ width: 30 }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" strokeWidth="2" style={{ width: 14, height: 14, opacity: 0.5 }}>
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </th>
                 <th className="s2-sortable" onClick={() => handleColumnSort('name')}>
                   Name {sortKey === 'name' && (sortDir === 'asc' ? '▲' : '▼')}
                 </th>
@@ -329,7 +349,7 @@ export default function Subscriptions2Page() {
         )}
 
         {/* GRID VIEW */}
-        {chanView === 'grid' && (
+        {chanView === 'grid' && filtered.length > 0 && (
           <div className="s2-grid">
             {filtered.map((ch, i) => {
               const cats = chCats(ch);
@@ -359,7 +379,7 @@ export default function Subscriptions2Page() {
         )}
 
         {/* COMPACT VIEW */}
-        {chanView === 'compact' && (
+        {chanView === 'compact' && filtered.length > 0 && (
           <div className="s2-compact">
             {filtered.map(ch => {
               const cats = chCats(ch);
