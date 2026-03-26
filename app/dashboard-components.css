@@ -4057,7 +4057,10 @@ input[type=range]::-webkit-slider-thumb{
 /* Category row */
 .mcm-cat-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);margin-bottom:8px;transition:all .15s}
 .mcm-cat-row:hover{border-color:var(--border-hover);background:var(--surface-2)}
-.mcm-drag{cursor:grab;color:var(--text-dim);font-size:14px;flex-shrink:0}
+.mcm-drag{cursor:grab;color:var(--text-dim);font-size:14px;flex-shrink:0;user-select:none}
+.mcm-cat-row[draggable]{cursor:default}
+.mcm-cat-row:active{cursor:grabbing}
+.mcm-cat-row.dragging{opacity:.5}
 .mcm-colour{width:16px;height:16px;border-radius:50%;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:all .15s}
 .mcm-colour:hover{border-color:rgba(255,255,255,.2);transform:scale(1.15)}
 .mcm-cat-name{flex:1;background:transparent;border:none;color:var(--text);font-size:13px;font-weight:500;font-family:var(--font-body);outline:none;padding:2px 0}

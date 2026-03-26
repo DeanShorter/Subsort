@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { useChannelData } from './ChannelDataContext';
 import { supabase } from '../../lib/supabase';
@@ -15,10 +15,16 @@ export default function ManageCategoriesModal({ onClose }) {
   const [expandedCat, setExpandedCat] = useState(null);
   const [colourPickerCat, setColourPickerCat] = useState(null);
   const [saving, setSaving] = useState(false);
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
 
-  // Init from DB
+  // Init/re-init from DB (also runs after save+reload)
   useEffect(() => {
-    setCats(dbCategories.map(c => ({ ...c, _deleted: false, _new: false })));
+    setCats(dbCategories.map((c, i) => ({
+      ...c,
+      colour: c.colour || COLOUR_OPTIONS[i % COLOUR_OPTIONS.length],
+      _deleted: false, _new: false,
+    })));
     setSubs(dbSubcategories.map(s => ({ ...s, _deleted: false, _new: false })));
   }, [dbCategories, dbSubcategories]);
 
@@ -52,6 +58,25 @@ export default function ManageCategoriesModal({ onClose }) {
 
   const updateSubName = (id, name) => setSubs(prev => prev.map(s => s.id === id ? { ...s, name } : s));
   const deleteSubcat = (id) => setSubs(prev => prev.map(s => s.id === id ? { ...s, _deleted: true } : s));
+
+  // Drag to reorder
+  const handleDragStart = (idx) => { dragItem.current = idx; };
+  const handleDragEnter = (idx) => { dragOverItem.current = idx; };
+  const handleDragEnd = () => {
+    if (dragItem.current === null || dragOverItem.current === null) return;
+    const from = dragItem.current;
+    const to = dragOverItem.current;
+    if (from === to) { dragItem.current = null; dragOverItem.current = null; return; }
+    setCats(prev => {
+      const active = prev.filter(c => !c._deleted);
+      const deleted = prev.filter(c => c._deleted);
+      const item = active.splice(from, 1)[0];
+      active.splice(to, 0, item);
+      return [...active, ...deleted];
+    });
+    dragItem.current = null;
+    dragOverItem.current = null;
+  };
 
   // ── Save all changes ────────────────────────────────
   const handleSave = async () => {
@@ -111,7 +136,6 @@ export default function ManageCategoriesModal({ onClose }) {
       }
 
       await reload();
-      onClose();
     } catch (e) {
       console.error('Save categories failed:', e);
     } finally {
@@ -132,7 +156,14 @@ export default function ManageCategoriesModal({ onClose }) {
         <div className="mcm-body">
           {activeCats.map((cat, i) => (
             <div key={cat.id}>
-              <div className="mcm-cat-row">
+              <div
+                className="mcm-cat-row"
+                draggable
+                onDragStart={() => handleDragStart(i)}
+                onDragEnter={() => handleDragEnter(i)}
+                onDragEnd={handleDragEnd}
+                onDragOver={e => e.preventDefault()}
+              >
                 <span className="mcm-drag">⠿</span>
                 <div
                   className="mcm-colour"
