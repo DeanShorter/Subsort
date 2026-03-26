@@ -1,19 +1,13 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-
-const CHECKMARK = (
-  <svg viewBox="0 0 12 12" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round">
-    <path d="M2.5 6l2.5 2.5 4.5-5" />
-  </svg>
-);
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 const STEPS = [
   { label: 'Connecting to YouTube' },
-  { label: 'Checking subscriptions' },
-  { label: 'Searching for recent uploads' },
-  { label: 'Preparing your feeds' },
+  { label: 'Pulling subscriptions' },
+  { label: 'Scanning for uploads' },
+  { label: 'Sorting into categories' },
   { label: 'Scrutinising the mess' },
-  { label: null }, // dynamic — set to "Judging {name}..."
+  { label: null }, // dynamic — "Judging {name}..."
 ];
 
 function getGreeting(name) {
@@ -22,205 +16,190 @@ function getGreeting(name) {
   return `Good ${time}, ${name}.`;
 }
 
-function getScoreColour(pct) {
-  if (pct >= 80) return 'var(--accent)';
-  if (pct >= 60) return '#EF9F27';
-  return '#E85D50';
-}
+export default function SyncModal({ visible, onClose, userName, syncState }) {
+  const [steps, setSteps] = useState(() => STEPS.map(() => ({ status: 'pending', val: '' })));
+  const [progress, setProgress] = useState(0);
+  const [progressLabel, setProgressLabel] = useState('Starting...');
+  const [speech, setSpeech] = useState({ visible: false, text: '' });
+  const [subtitle, setSubtitle] = useState("The Critic is reviewing your subscriptions. This won't take long.");
+  const [verdict, setVerdict] = useState(null);
+  const speechRef = useRef(null);
+  const typingRef = useRef(false);
 
-function generateRoast(name, channels, deadChannels, favCount, categories) {
-  const total = channels.length;
-  const active = total - deadChannels.length;
-  const score = total > 0 ? Math.round((active / total) * 100) : 0;
-  const topCat = categories[0] || 'miscellaneous';
+  const name = userName || 'there';
 
-  let roast;
-  if (score >= 90) {
-    roast = `${total} channels, and nearly all of them are active. Either you're incredibly disciplined or you just signed up yesterday.`;
-  } else if (score >= 70) {
-    roast = `You're subscribed to <strong>${total} channels</strong>. You actually engage with about <strong>${active}</strong> of them. The rest are just taking up space, but it's not a disaster.`;
-  } else if (score >= 50) {
-    roast = `Right then, ${name}. You're subscribed to <strong>${total} channels</strong>. You regularly watch about <strong>${active}</strong> of them. The other ${deadChannels.length}? Just vibes, apparently.`;
-  } else {
-    roast = `${name}, we need to talk. <strong>${total} channels</strong> and you barely watch <strong>${active}</strong> of them. The other ${deadChannels.length} are just haunting your feed.`;
-  }
-
-  if (favCount > 0) {
-    roast += `<br><br>You've got <strong>${favCount} favourites</strong> and your top category is <strong>${topCat}</strong>.`;
-  }
-
-  roast += ` Your subscrub score is <strong style="color:${getScoreColour(score)}">${score}%</strong>${score >= 80 ? ' — impressive.' : score >= 60 ? ' — room for improvement.' : ' — we\'ve seen better.'}`;
-
-  return { roast, score };
-}
-
-export default function SyncModal({
-  visible,
-  onClose,
-  userName,
-  // Sync state callbacks
-  syncState, // { step, substep, detail, pct, subCount, videoCount, deadCount, favCount, categories, channels, deadChannels, done }
-}) {
-  const [revealedSteps, setRevealedSteps] = useState(new Set());
-  const [activeStep, setActiveStep] = useState(-1);
-  const [completedSteps, setCompletedSteps] = useState(new Map()); // step → detail string
-  const [pct, setPct] = useState(0);
-  const [subtitle, setSubtitle] = useState('Give us a sec while we figure out what you\'ve been up to...');
-  const [roastVisible, setRoastVisible] = useState(false);
-  const [ctaVisible, setCtaVisible] = useState(false);
-  const [roastData, setRoastData] = useState(null);
-
-  // Reveal all steps on mount
-  useEffect(() => {
-    if (!visible) return;
-    setRevealedSteps(new Set());
-    setActiveStep(-1);
-    setCompletedSteps(new Map());
-    setPct(0);
-    setRoastVisible(false);
-    setCtaVisible(false);
-    setRoastData(null);
-
-    let i = 0;
-    const id = setInterval(() => {
-      setRevealedSteps(prev => new Set([...prev, i]));
-      i++;
-      if (i >= STEPS.length) clearInterval(id);
-    }, 60);
-    return () => clearInterval(id);
-  }, [visible]);
-
-  // React to sync state changes
-  useEffect(() => {
-    if (!syncState) return;
-
-    const { action, step, detail, pct: p, favCount, categories, channels, deadChannels, done } = syncState;
-
-    if (p != null) setPct(p);
-
-    if (action === 'activate' && step != null) {
-      setActiveStep(step);
-      const subtitles = [
-        'Connecting to YouTube...',
-        'Pulling your subscriptions from YouTube...',
-        'Checking what your channels have been posting...',
-        'Sorting everything into categories...',
-        'Looking for dead weight...',
-        'Forming opinions...',
-      ];
-      if (subtitles[step]) setSubtitle(subtitles[step]);
-    }
-
-    if (done) {
-      setActiveStep(-1);
-      setSubtitle('All done. Here\'s the verdict.');
-
-      if (channels && deadChannels) {
-        const { roast, score } = generateRoast(
-          userName || 'there',
-          channels,
-          deadChannels,
-          favCount || 0,
-          categories || []
-        );
-        setRoastData({ roast, score, deadCount: deadChannels.length, favCount: favCount || 0 });
-        setTimeout(() => setRoastVisible(true), 500);
-        setTimeout(() => setCtaVisible(true), 1100);
-      } else {
-        setTimeout(() => setCtaVisible(true), 500);
+  // Typing effect for critic speech
+  const say = useCallback((text) => {
+    return new Promise(resolve => {
+      typingRef.current = true;
+      setSpeech({ visible: true, text: '' });
+      let i = 0;
+      let current = '';
+      function type() {
+        if (i < text.length) {
+          current += text[i]; i++;
+          setSpeech({ visible: true, text: current + '▎' });
+          setTimeout(type, 20 + Math.random() * 15);
+        } else {
+          setSpeech({ visible: true, text: current });
+          typingRef.current = false;
+          setTimeout(resolve, 300);
+        }
       }
+      type();
+    });
+  }, []);
+
+  const activateStep = useCallback((n) => {
+    setSteps(prev => prev.map((s, i) => i === n ? { ...s, status: 'active' } : s));
+  }, []);
+
+  const completeStep = useCallback((n, val, warn) => {
+    setSteps(prev => prev.map((s, i) => i === n ? { status: warn ? 'warn' : 'done', val: val || '' } : s));
+  }, []);
+
+  // React to syncState changes from the sidebar auto-sync
+  useEffect(() => {
+    if (!syncState || !visible) return;
+
+    const { step, detail, prevStep, prevDetail } = syncState;
+
+    // Complete previous step
+    if (prevStep !== undefined && prevDetail) {
+      const isWarn = prevDetail.includes('expired') || prevDetail.includes('issue') || prevDetail.includes('!');
+      completeStep(prevStep, prevDetail, isWarn);
     }
-  }, [syncState, userName]);
+
+    // Activate current step
+    if (step !== undefined) {
+      activateStep(step);
+    }
+
+    // Update progress
+    if (syncState.progress) {
+      setProgress(syncState.progress);
+    }
+    if (syncState.progressLabel) {
+      setProgressLabel(syncState.progressLabel);
+    }
+
+    // Speech
+    if (syncState.speech) {
+      say(syncState.speech);
+    }
+
+    // Subtitle update
+    if (syncState.subtitle) {
+      setSubtitle(syncState.subtitle);
+    }
+
+    // Complete / verdict
+    if (syncState.complete) {
+      setSpeech({ visible: false, text: '' });
+      setSubtitle('The Critic has reached a verdict.');
+      setProgress(100);
+      setProgressLabel('Complete');
+
+      // Build verdict from data
+      const channels = syncState.channelCount || 0;
+      const cats = syncState.categoryCount || 0;
+      const inactive = syncState.inactiveCount || 0;
+      const score = channels > 0 ? Math.max(0, Math.min(100, Math.round(((channels - inactive) / channels) * 100))) : 0;
+
+      setVerdict({
+        score,
+        greeting: `Getting there, ${name}.`,
+        roast: `"${channels} subscriptions and you engage with ${channels - inactive} of them. The other ${inactive} are just paying emotional rent in your feed."`,
+        attrib: `— The Critic, based on ${channels} subscriptions`,
+      });
+    }
+  }, [syncState, visible, activateStep, completeStep, say, name]);
+
+  // Reset on open
+  useEffect(() => {
+    if (visible) {
+      setSteps(STEPS.map(() => ({ status: 'pending', val: '' })));
+      setProgress(0);
+      setProgressLabel('Starting...');
+      setSpeech({ visible: false, text: '' });
+      setSubtitle("The Critic is reviewing your subscriptions. This won't take long.");
+      setVerdict(null);
+    }
+  }, [visible]);
 
   if (!visible) return null;
 
-  const circumference = 2 * Math.PI * 52;
-  const offset = circumference - (circumference * pct / 100);
+  const stepLabels = STEPS.map((s, i) => s.label || `Judging ${name}...`);
+  const scoreColor = verdict ? (verdict.score >= 75 ? 'var(--accent)' : verdict.score >= 50 ? 'var(--amber)' : 'var(--red)') : 'var(--amber)';
+  const dashoffset = verdict ? 132 - (132 * verdict.score / 100) : 46.2;
 
   return (
     <div className="sync-overlay">
       <div className="sync-screen">
+        {/* Greeting */}
         <div className="sync-greeting">
-          <h1>{getGreeting(userName || 'there')}</h1>
+          <h1>{getGreeting(name).split(name)[0]}<span>{name}</span>.</h1>
         </div>
-        <div className="sync-greeting-sub">{subtitle}</div>
+        <div className="sync-sub">{subtitle}</div>
 
-        <div className="sync-ring-area">
-          <div className="sync-ring-wrap">
-            <svg viewBox="0 0 120 120">
-              <circle className="sync-ring-track" cx="60" cy="60" r="52" />
-              <circle
-                className="sync-ring-progress"
-                cx="60" cy="60" r="52"
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
-              />
-            </svg>
-            <span className="sync-ring-pct">{pct}%</span>
+        {/* Critic speech */}
+        <div className={`sync-critic-speech${speech.visible ? ' show' : ''}`}>
+          <div className="sync-critic-tag">The Critic</div>
+          <div className="sync-critic-text">{speech.text}</div>
+        </div>
+
+        {/* Checklist */}
+        <div className="sync-checklist">
+          {steps.map((s, i) => (
+            <div key={i} className={`sync-check-item${s.status === 'active' ? ' active' : ''}${s.status === 'done' || s.status === 'warn' ? ' done' : ''}`}>
+              <div className={`sync-check-icon ${s.status === 'active' ? 'spinning' : s.status === 'done' ? 'done' : s.status === 'warn' ? 'warn' : 'pending'}`}>
+                {s.status === 'done' && '✓'}
+                {s.status === 'warn' && '!'}
+              </div>
+              <div className="sync-check-label">{stepLabels[i]}</div>
+              <div className="sync-check-val" style={s.status === 'warn' ? { color: 'var(--amber)' } : {}}>{s.val}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Progress bar */}
+        <div className="sync-progress-wrap">
+          <div className="sync-progress-bar">
+            <div className="sync-progress-fill" style={{ width: `${progress}%` }} />
+          </div>
+          <div className="sync-progress-meta">
+            <span className="sync-progress-label">{progressLabel}</span>
+            <span className="sync-progress-pct">{progress}%</span>
           </div>
         </div>
 
-        <div className="sync-checklist">
-          {STEPS.map((s, i) => {
-            const isRevealed = revealedSteps.has(i);
-            const isActive = activeStep === i;
-            const isDone = completedSteps.has(i);
-            const detailText = completedSteps.get(i) || '';
-
-            let cls = 'sync-check-item';
-            if (isDone) cls += ' done';
-            else if (isActive) cls += ' active';
-            else if (isRevealed) cls += ' revealed';
-
-            let iconCls = 'sync-check-icon';
-            if (isDone) iconCls += ' complete';
-            else if (isActive) iconCls += ' spinning';
-            else iconCls += ' pending';
-
-            return (
-              <div key={i} className={cls}>
-                <div className={iconCls}>{isDone ? CHECKMARK : null}</div>
-                <span className="sync-check-label">{s.label || `Judging ${userName || 'you'}...`}</span>
-                <span className="sync-check-detail">{detailText}</span>
+        {/* Verdict card */}
+        {verdict && (
+          <div className="sync-verdict show">
+            <div className="sync-verdict-header">
+              <div className="sync-verdict-tag">The Critic</div>
+            </div>
+            <div className="sync-verdict-body">
+              <div className="sync-verdict-ring">
+                <div className="sync-verdict-pulse" />
+                <svg viewBox="0 0 52 52">
+                  <circle cx="26" cy="26" r="21" fill="none" stroke="var(--surface-3)" strokeWidth="3.5" />
+                  <circle cx="26" cy="26" r="21" fill="none" stroke={scoreColor} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="132" strokeDashoffset={dashoffset} transform="rotate(-90 26 26)" />
+                </svg>
+                <span className="sync-verdict-score" style={{ color: scoreColor }}>{verdict.score}%</span>
               </div>
-            );
-          })}
-        </div>
-
-        {roastData && (
-          <div className={`sync-roast-card${roastVisible ? ' revealed' : ''}`}>
-            <div className="sync-roast-header">
-              <div className="sync-roast-avatar">S</div>
-              <div>
-                <div className="sync-roast-from">subscrub</div>
-                <div className="sync-roast-from-sub">Your subscription critic</div>
+              <div className="sync-verdict-content">
+                <div className="sync-verdict-greeting">{verdict.greeting}</div>
+                <div className="sync-verdict-roast">{verdict.roast}</div>
+                <div className="sync-verdict-attrib">{verdict.attrib}</div>
               </div>
             </div>
-            <div className="sync-roast-body" dangerouslySetInnerHTML={{ __html: roastData.roast }} />
-            <div className="sync-roast-stats">
-              <div className="sync-roast-stat">
-                <span className="num" style={{ color: '#E85D50' }}>{roastData.deadCount}</span> inactive
-              </div>
-              <div className="sync-roast-stat">
-                <span className="num" style={{ color: 'var(--accent)' }}>{roastData.favCount}</span> favourites
-              </div>
-              <div className="sync-roast-stat">
-                <span className="num" style={{ color: getScoreColour(roastData.score) }}>{roastData.score}%</span> score
-              </div>
+            <div className="sync-verdict-cta">
+              <button className="sync-btn-primary" onClick={onClose}>Show me the damage</button>
+              <button className="sync-btn-ghost" onClick={onClose}>Skip</button>
             </div>
           </div>
         )}
-
-        <div className={`sync-cta${ctaVisible ? ' revealed' : ''}`}>
-          <button onClick={onClose}>
-            Show me the damage
-            <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
-          </button>
-        </div>
-
-        <div className={`sync-skip${ctaVisible ? ' revealed' : ''}`}>
-          <button onClick={onClose}>Skip to dashboard</button>
-        </div>
       </div>
     </div>
   );

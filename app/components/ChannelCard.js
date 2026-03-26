@@ -43,7 +43,7 @@ export default function ChannelCard({ channel, view = 'hybrid', index = 0, selec
           onClick={e => e.stopPropagation()}
           title={ch.favourited ? 'Remove from favourites' : 'Add to favourites'}
         >
-          <svg viewBox="0 0 16 16" fill={ch.favourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" />
           </svg>
         </button>
