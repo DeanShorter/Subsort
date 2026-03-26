@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import SessionRedirect from './components/SessionRedirect';
 import FloatingRoasts from './components/FloatingRoasts';
+import CriticAnimation from './components/CriticAnimation';
 
 export const metadata = {
   title: 'subscrub — Your subscriptions, scrubbed of chaos',
@@ -97,6 +98,9 @@ export default function HomePage() {
             <div className="lp-critic-face-quote">"Remember when you said you'd fix your feed? That was <strong>3 weeks ago.</strong> You've subscribed to 4 more channels since. Unbelievable."</div>
           </div>
         </div>
+
+        {/* Critic Animation */}
+        <CriticAnimation />
       </div>
 
       <div className="lp-sep mint-amber"><div className="lp-sep-line" /><div className="lp-sep-dot left" style={{ background: 'var(--accent)' }} /><div className="lp-sep-dot right" style={{ background: 'var(--amber)' }} /></div>

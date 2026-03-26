@@ -136,11 +136,12 @@ export default function EditChannelModal({ channelId, onClose }) {
         const inserts = selectedCats
           .map(catName => {
             const cat = dbCategories.find(c => c.name === catName);
-            return cat ? { user_id: user.id, channel_id: ch.id, category_id: cat.id } : null;
+            return cat ? { channel_id: ch.id, category_id: cat.id } : null;
           })
           .filter(Boolean);
         if (inserts.length) {
-          await supabase.from('channel_categories').insert(inserts);
+          const { error: catInsertErr } = await supabase.from('channel_categories').insert(inserts);
+          if (catInsertErr) console.error('[EditChannel] Category insert failed:', catInsertErr);
         }
       }
 

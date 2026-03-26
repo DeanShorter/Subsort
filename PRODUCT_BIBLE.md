@@ -699,15 +699,38 @@ The Critic is an entity within subscrub that analyses the user's feed and delive
 - Moods that escalate based on user behaviour
 - Attribution on everything it says: "— The Critic, based on 326 subscriptions"
 
-### Landing page (Critic-led)
-The landing page shifts from feature-focused to character-focused:
+### Landing page (product-first, Critic second)
+The landing page sells the problem/solution first, then introduces The Critic as the personality layer.
 
-1. **Hero:** "Meet The Critic. It's not angry. It's just disappointed." + score card mockup showing a roast verdict
-2. **Subheading:** "The Critic analyses your YouTube subscriptions, tells you exactly what's wrong, and gets increasingly annoyed until you fix it."
-3. **How it works:** Connect → The Critic analyses → Get your verdict → Fix your feed
-4. **The Critic in action:** live demo of mood escalation or screenshots of different score tiers with roast copy
-5. **Pricing:** framed as "What The Critic unlocks" — Free gets the verdict, Pro gets the full breakdown
-6. **CTA:** "Get your verdict" instead of "Get started free"
+1. **Hero:** "Your YouTube subscriptions are a mess. subscrub fixes that." Product-first, clear value proposition. Stats bar (326 sorted, 14 categories, 52 flagged). Mini app preview showing the actual interface. CTA: "Get started free."
+2. **Enter The Critic:** "Every kingdom needs a ruler." Two-card comparison: "A kind ruler" (encouraging, mint) vs "Or a tyrant" (annoyed, red). Introduces the character after the product is understood.
+3. **How it works:** Connect → Auto-sort → Get your verdict → Scrub. Narrated by The Critic but focused on the practical steps.
+4. **The Critic's patience:** Mood timeline showing the 5 escalation states with quotes. "Ignore it long enough and it gets personal."
+5. **Features:** "Everything you need. Nothing you don't." Six feature cards + Free/Pro split comparison.
+6. **Pricing:** "Start free. Go Pro when you're ready." Two-card layout, Free vs Pro.
+7. **Story:** Personal founder quote about why subscrub exists.
+8. **Final CTA:** "Your subscriptions won't scrub themselves."
+
+**Visual effects:**
+- Floating roasts: The Critic's commentary typed out at varying sizes (12-72px), opacities (2-18%), blur depths (0-6px), angles (-18° to +18°), and travel directions (8 patterns). Up to 12 active at once, spawning every 0.4-2s. Five depth layers create parallax effect. Hidden on mobile.
+- Section separators: diagonal gradient washes between sections with colour progression (mint→amber→red→mint→purple→amber). 120px tall with gradient line and coloured dots.
+- Section background glows: subtle radial gradients per section matching the content mood. Full-bleed behind max-width content.
+- Trust badges: Google OAuth only, read-only access, no algorithm, 2-minute setup.
+
+### The Critic animation (landing page + future video)
+Animated sequence showing The Critic (chameleon) at work. Placeholder HTML mockup built, to be refined into a polished animation or video.
+
+**Narrative sequence:**
+1. The Critic sits on his throne (top-left), speech bubble to his right. Channel cards scroll past on a conveyor below. His eyes dart downward, tracking each channel. He stays mint. Speech bubble: "Premier League... Sports. Fine." "Andrew Huang... Music. Approved."
+2. A dead channel approaches. The Critic turns amber. "Wait. What is this?" Then red: "DailyClick TV. No uploads in 14 months."
+3. All other cards fade away — the dead channel is isolated and alone. It panics, sprouting legs and trembling in place.
+4. The Critic doesn't move. He's too powerful for that. The channel card reaches The Critic's horizontal position. His tongue shoots out and snatches the card. It shrinks and spins into nothing.
+5. Scrub popup: "No uploads in 14 months. 0 videos watched. Subscribed since 2019." Speech bubble: "Scrubbed. You're welcome."
+6. The Critic turns mint. Other cards fade back in. Conveyor resumes. "Now, where were we..."
+
+**Stats bar** (top-right) counts up throughout: Reviewed, Active, Scrubbed, Score.
+
+**Key principle:** The Critic never chases. The tongue does the work. He is unbothered authority — channels come to him, not the other way around.
 
 ### "Roast my subscriptions" viral loop
 The pre-signup hook: connect Google account → The Critic analyses → delivers the verdict → generates a shareable card. No account needed. The share card IS the ad.
@@ -1047,7 +1070,12 @@ All mockups are HTML files that can be opened in a browser:
 - `subscrub-page-personalities.html` — page personality comparison + category navigation reimagined
 - `subscrub-home-revised.html` — Home page with thin critic banner + favourites grid
 - `subscrub-home-critic-moods.html` — Home page with escalating critic moods (5 states, interactive)
+- `subscrub-home-critic-typing.html` — Home page with typing animation, breathing pulse, task list with reactive quips
 - `subscrub-subscriptions-views.html` — Subscriptions with 3 view modes + category management modal
+- `subscrub-topbar-revised.html` — decompressed topbar layouts for Feed and Subscriptions (before/after comparison)
+- `subscrub-landing-critic.html` — landing page v2 (Critic-led, superseded by v3)
+- `subscrub-landing-v3.html` — landing page v3 (product-first hero + floating roasts + gradient separators)
+- `subscrub-critic-animation.html` — The Critic animation: chameleon reviewing/snatching channels (placeholder for production)
 - `subscrub-tokens-refined.css` — refined design tokens (softer borders, transitions, muted colours)
 
 ### Code files
@@ -1060,6 +1088,9 @@ All mockups are HTML files that can be opened in a browser:
 - `freedly-design-system.css` — combined tokens + components (original)
 - `components.css` — components only (separated)
 - `subscrub-tokens-refined.css` — refined tokens with softer surfaces, slower transitions, muted category colours, ghost buttons
+
+### Assets
+- `subscrub-sparkle.svg` — two four-pointed sparkle stars (mint), used next to The Critic logomark and as decorative accents
 
 ### Documents
 - `privacy-policy.md` — privacy policy
