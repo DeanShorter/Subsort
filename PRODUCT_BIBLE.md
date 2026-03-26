@@ -64,10 +64,46 @@ Feed lines concept: three staggered horizontal bars on dark background, top bar 
 ### Tone of voice
 Cheeky, observational, and warm. Like a friend roasting you gently — always directed at the situation (messy feeds, dead channels, subscription hoarding), never at the user personally. Self-deprecating where appropriate. Avoids corporate polish.
 
-Examples:
-- "Your feed scored 43%. Apparently that's a dumpster fire."
-- "347 channels. That's not a subscription list, that's a census."
-- "You've been subscribed for 3 years and watched 2 videos. That's commitment to something, just not their content."
+The product's voice is channelled through The Critic — the central character of subscrub.
+
+### The Critic — character definition
+The Critic is the personality engine of subscrub. It's not a mascot, not a chatbot — it's a voice. Think newspaper columnist, not cartoon character.
+
+**What it is:**
+- An entity that analyses your feed and delivers verdicts
+- First person voice: "I've seen worse. I've also seen better."
+- Has moods that escalate based on user behaviour (encouraging → giving up)
+- Has opinions, patience, and memory
+- Attributed on everything it says: "— The Critic, based on 326 subscriptions"
+
+**What it isn't:**
+- Not a visual mascot (no character illustration, no face — emoji represents mood)
+- Not a chatbot or AI assistant
+- Not mean — exasperated, dry, occasionally proud, but never cruel
+- Not a separate product — it's the voice layer on top of the tool
+
+**Where it appears:**
+- Home page: critic banner (the signature) + task list (the recommendations)
+- Onboarding sync screen: commentary during analysis
+- Share cards: the verdict and attribution
+- Email newsletters: sender identity ("The Critic via subscrub")
+- Social media: tweets as itself
+- Empty states and notifications: personality copy
+- Weekly/monthly summaries: "The Critic's March verdict"
+
+**Where it doesn't appear:**
+- Subscriptions page (control room — functional, no commentary)
+- Settings page (purely functional)
+- Admin pages (internal)
+
+**Voice examples:**
+- Encouraging: "I'll admit it — you've been putting in the work. I'm almost proud."
+- Nudging: "The other 239 are just paying emotional rent in your feed."
+- Impatient: "I gave you a list. You ignored it. I'm trying not to take this personally."
+- Annoyed: "I can't help someone who won't help themselves."
+- Giving up: "I'm not angry. I'm just disappointed. Actually, no — I am angry."
+
+**The key principle:** if someone turns off The Critic (future "serious mode" toggle), the tool works perfectly without it. The Critic is the personality layer, not the product. But it's the reason people remember subscrub.
 
 ### Emoji usage
 Native system emojis only — no emoji library needed. Emojis appear in personality content (roast cards, badges, empty states, thermometer labels, notifications). Never in structural UI elements (nav items, table headers, button labels, page titles).
@@ -535,51 +571,102 @@ Later additions to Phase 3 (requires active user base):
 
 ## 7. Marketing strategy
 
-### Core strategy
-The product's personality IS the marketing. Every touchpoint inside the product is a potential social media post. Build the product to be shareable by default.
+### Core strategy: The Critic IS the marketing
+The Critic is the brand. Not the features, not the design system, not the pricing — The Critic. Every marketing touchpoint should feel like it comes from or references The Critic. The product's personality is its competitive moat — someone can clone the features, they can't clone the character.
+
+### The Critic as brand persona
+The Critic is an entity within subscrub that analyses the user's feed and delivers verdicts. It has moods (encouraging → giving up), opinions, and a first-person voice. It's not a mascot — it's a columnist. Think of it as a character with:
+- A name and title: "The Critic"
+- A voice: first person, observational, dry humour, slightly exasperated
+- Moods that escalate based on user behaviour
+- Attribution on everything it says: "— The Critic, based on 326 subscriptions"
+
+### Landing page (Critic-led)
+The landing page shifts from feature-focused to character-focused:
+
+1. **Hero:** "Meet The Critic. It's not angry. It's just disappointed." + score card mockup showing a roast verdict
+2. **Subheading:** "The Critic analyses your YouTube subscriptions, tells you exactly what's wrong, and gets increasingly annoyed until you fix it."
+3. **How it works:** Connect → The Critic analyses → Get your verdict → Fix your feed
+4. **The Critic in action:** live demo of mood escalation or screenshots of different score tiers with roast copy
+5. **Pricing:** framed as "What The Critic unlocks" — Free gets the verdict, Pro gets the full breakdown
+6. **CTA:** "Get your verdict" instead of "Get started free"
 
 ### "Roast my subscriptions" viral loop
-Let people run the subscription analysis without signing up. Connect Google account → get the roast → see the score → share. The share card is the ad. Every share drives curious people to try their own score.
+The pre-signup hook: connect Google account → The Critic analyses → delivers the verdict → generates a shareable card. No account needed. The share card IS the ad.
 
-### Shareable score cards
-Generated server-side via @vercel/og or satori. Four formats:
-- **Twitter/X landscape (1.91:1)** — score ring, verdict, stat breakdown, "Get your score at getsubscrub.com"
+The shareable card shows: The Critic's verdict, the score ring, the one-liner roast, and "Get your verdict at getsubscrub.com." Low scores drive "look how bad my feed is" sharing. High scores drive "beat this" sharing.
+
+Share card formats:
+- **Twitter/X landscape (1.91:1)** — score ring, The Critic's verdict, stat breakdown, branding
 - **Instagram square (1:1)** — larger ring, centred roast copy, stat pills
-- **Badge earned card** — badge icon, name, cheeky description, subscrub branding
-- **Before/after comparison** — subscription count bars + score improvement, "from dumpster fire to looking sharp"
+- **Badge earned card** — badge icon, name, cheeky Critic commentary
+- **Before/after comparison** — score improvement, "The Critic's verdict: Redemption arc"
 
-Low score cards drive "look how bad my feed is" sharing. High score cards drive "beat my score" competitive sharing.
+### Social media: The Critic's account
+The Critic tweets as itself — not the founder, not the brand. It has opinions, reacts to aggregate data, and has moods:
 
-### Social media (Twitter/X)
-Tweet the way subscrub talks. Observational humour about subscription habits without always mentioning the product:
+- "Someone just connected 847 subscriptions. I need a moment."
+- "A user completed all 3 tasks today. I don't know what to do with my hands."
+- "New achievement unlocked: 'Serial Subscriber.' This is not a compliment."
 - "You're subscribed to 400 channels. You watch 12 of them. The other 388 are just paying emotional rent in your feed."
-- "The average subscrub user removes 47 channels on their first scrub. That's 47 channels that were just... there. Watching you not watch them."
+- "The average subscrub user removes 47 channels on their first scrub. That's 47 channels that were just... there."
 
 ### Reddit launch
-Lead with the roast, not the product. Post titles like "I analysed my 400+ YouTube subscriptions and the results were embarrassing." Show real data and the breakdown. The product reveal comes naturally at the end.
+Lead with The Critic's voice, not a product pitch. Post titles:
+- "I built a tool that roasts your YouTube subscriptions — mine scored 43% (dumpster fire)"
+- "The Critic gave me a 43%. It called my feed a dumpster fire. I deserved it."
 
-Target subreddits: r/YouTube, r/SideProject, r/InternetIsBeautiful
+Show real data, the breakdown, and The Critic's commentary. The product reveal comes naturally at the end.
 
-### Blog content
-- "Why I Built Subscrub" — personal, honest, leads with the problem (written, ready to publish)
-- Data-driven posts: "We analysed 10,000 YouTube subscriptions. Here's what we found."
-- SEO-targeted: "how to organise youtube subscriptions", "clean up youtube subscriptions", "youtube subscription manager"
+Target subreddits: r/YouTube, r/SideProject, r/InternetIsBeautiful, r/gaming (gamer audience angle: "Your YouTube subscriptions are a raid boss. The Critic is your quest giver.")
 
-### Product Hunt
-Launch with attitude. Tagline: "Your YouTube subscription page is a mess and you know it." Screenshots, first comment, and all copy in the subscrub voice.
+### Gamer audience angle
+A large portion of users will be gamers. The product already has gamification elements (score, badges, streaks, task list, rank progression). Lean into this for the gamer audience specifically:
 
-### Email newsletter
-Subject lines match the voice: "Your feed got worse this week. Sorry." / "6 channels died while you weren't looking." / "You earned a badge. It's not a good one."
+- The Critic as a quest-giving NPC
+- Tasks as a quest log
+- Score tiers as rank progression
+- Badges as achievements
+- Seasonal resets: "March review: The Critic's verdict — Redemption arc"
+- Optional leaderboard: "Your score is higher than 73% of subscrub users" (opt-in, anonymous)
+
+What NOT to do: daily login rewards, points currencies, loot boxes, streak punishment. The gamification should feel like a fitness tracker, not a mobile game. Completing tasks makes your actual feed better — the reward is real, not artificial.
+
+### Email newsletters from The Critic
+Subject lines: "The Critic's weekly report: you got worse." / "6 channels died while you weren't looking." / "You earned a badge. It's not a good one." / "The Critic's March verdict: Redemption arc."
+
+The newsletter sender name: "The Critic via subscrub" — not "subscrub" or a personal name.
 
 Sent via Resend. Audience targeting: all subscribers, free only, pro only, active last 7 days, inactive 30+ days.
 
+### Onboarding as meeting The Critic
+The sync screen becomes the user's first meeting with The Critic. Progress steps are The Critic's commentary:
+- "Checking subscriptions... 326. The Critic has seen enough."
+- "Counting inactive channels... 52. The Critic is taking a deep breath."
+- "Calculating your score... The Critic is trying to be kind."
+- Final verdict: "The Critic's verdict: Getting there. Barely."
+
+### Blog content
+- "Meet The Critic — Why Your YouTube Subscriptions Need Roasting" (launch post)
+- "Why I Built Subscrub" — personal, honest, leads with the problem (written, ready to publish)
+- Data-driven: "The Critic Analysed 10,000 YouTube Subscriptions. Here's What It Found."
+- SEO-targeted: "how to organise youtube subscriptions", "clean up youtube subscriptions", "youtube subscription manager"
+
+Blog card gradient categories: Product (mint), Guide (blue), Data (amber), Update (purple), Tutorial (coral), Opinion (pink), News (red).
+
+### Product Hunt
+Launch with The Critic's voice. Tagline: "Meet The Critic. It analyses your YouTube subscriptions and gets increasingly annoyed until you fix them." Screenshots showing the mood escalation. First comment from The Critic's perspective.
+
 ### SEO
-- Meta tags + Open Graph on all pages
+- Meta tags + Open Graph on all pages (OG image should show The Critic's verdict card)
 - sitemap.xml via Next.js app/sitemap.ts
 - robots.txt in public folder
 - Submit to Google Search Console
 - Blog content targeting long-tail queries
 - Backlinks from Product Hunt, Reddit, AlternativeTo, directories
+
+### Key principle
+The Critic is the differentiator. The features are table stakes (any tool can sort subscriptions). The personality is the moat. If someone asks "what's subscrub?" the answer isn't "a YouTube subscription organiser." It's "it's this character that roasts your YouTube feed and gets angrier the longer you ignore it."
 
 ---
 

@@ -231,7 +231,6 @@ export default function Home2Page() {
         <div className="db-header-bar">
           <div className="db-greeting">
             <h1>Good {greetingTime}, <span>{userName}</span>.</h1>
-            <p>{subtitle}</p>
           </div>
           <div className="ph-right">
             <span className="db-clock">Last refresh: {lastRefresh}</span>
