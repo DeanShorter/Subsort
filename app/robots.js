@@ -4,7 +4,7 @@ export default function robots() {
       {
         userAgent: '*',
         allow: '/',
-        disallow: '/dashboard/',  // Don't index the SPA
+        disallow: '/home/',  // Don't index the app
       },
     ],
     sitemap: 'https://getsubscrub.com/sitemap.xml',

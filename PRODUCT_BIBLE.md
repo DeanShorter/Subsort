@@ -39,28 +39,63 @@ Note: Launch with Free and Pro only. Pro+ is a 6-12 month roadmap item that depe
 <a class="logo"><span>sub</span>scrub</a>
 ```
 
-**Logomark: The Critic's magnifying glass.** A mint-coloured magnifying glass with a face inside the lens. The face has mood variants matching The Critic's escalation system. The magnifying glass represents The Critic's core action — scrutinising your feed.
+**Logomark: The Critic (mantis).** A stylised praying mantis in mint, representing The Critic. The mantis embodies scrutiny, patience, authority, and precision — it watches everything, waits, then acts with surgical accuracy. The natural mantis posture (hands together, head tilted) looks inherently judgemental without needing cartoon expressions.
 
-**Primary mark:** friendly expression with sparkles (top-right variant). Used as the default across the product. Tilted slightly for attitude.
+**Why the mantis:**
+- Authority: feels like a genuine expert, not a comedian
+- Versatility: mood is conveyed through head angle, arm position, and eye size — works at every scale
+- Professionalism: ages well, works if subscrub grows beyond its initial niche
+- Distinctiveness: no major tech brand uses a mantis
 
-**Mood variants:**
-- Friendly/pleased (sparkles, slight smile) — default state, new users, encouraging mood
-- Annoyed (furrowed brow, frown) — impatient/annoyed mood
-- Sunglasses + judgemental (flat mouth) — high score, "looking sharp" tier
-- Sunglasses + smile — satisfied, used on social media avatar and share cards
+**Mood variants (conveyed through posture, not cartoon expressions):**
+- Encouraging: head upright, relaxed posture, slightly open arms — approachable
+- Nudging: head tilted, one arm raised — "I'm watching"
+- Impatient: head tilted further, arms crossed — classic disapproval
+- Annoyed: leaning forward, intense stare — confrontational
+- Giving up: head turned away, slumped posture — resigned
+- Sunglasses: for high scores and social media avatar — cool, earned respect
+
+**Primary mark:** the encouraging/neutral posture with a slight head tilt. Used as the default across the product.
 
 **Usage:**
 - Beside the wordmark on the landing page and marketing materials
 - Critic banner on Home page (mood-appropriate variant next to "The Critic" label)
 - Share cards (next to attribution line)
-- Social media avatar (sunglasses version — most distinctive in circle crop)
+- Social media avatar (sunglasses variant — most distinctive in circle crop)
 - Email newsletter sender avatar
 - Landing page hero ("Meet The Critic" visual)
 
 **The wordmark and logomark are independent.** The wordmark works alone in the sidebar and nav. The logomark works alone as an avatar and icon. Together they form the full brand lock-up for marketing and the landing page.
 
+### The Colony (ant army) — future character system
+
+The Critic (mantis) is the face and voice. Behind The Critic is "The Colony" — an army of ants that represent subscrub's background processes and automation. The Critic gives orders, the ants execute.
+
+**Not needed for launch.** Introduce when cron jobs, bots, and automation features go live. The Colony expands the character world without changing the mascot.
+
+**How it maps to product features:**
+- RSS refresh cron job: "The night shift is working."
+- Channel enrichment: "Scouts deployed."
+- Auto-sort: "The workers are sorting your channels."
+- Feed clean after scrub: "The colony rests."
+- New channel discovered: "The scouts found 3 new channels you might like."
+- Background processing: "The colony is busy. Check back shortly."
+
+**If bots/automation become a major feature**, referring to them as "ants" is a natural marketing extension. "Deploy the colony" for batch operations. "Your ant army sorted 326 channels in 4 seconds." The infrastructure becomes narrative.
+
+**The hierarchy:**
+- The Critic (mantis) — the character users interact with, the voice, the judge
+- The Colony (ants) — the workers, invisible until referenced, the automation layer
+- The roasts — can reference any creature for humour ("Your feed looks like something a dung beetle would enjoy")
+
 ### Favicon
-Simplified version of the logomark: just the magnifying glass lens circle with two dots for eyes, mint stroke/fill on dark background. At 16px the handle and expression detail drops — it reads as a mint circle with personality. Rounded square container.
+Simplified version of the mantis logomark: the head silhouette with two dots for eyes, mint fill on dark background. At 16px the body detail drops — it reads as a distinctive angular shape with personality. The mantis head shape is more recognisable at small sizes than a generic circle. Rounded square container.
+
+### Previous logomark concepts (explored, not selected)
+- Magnifying glass with face: explored with AI-generated concepts, felt too generic (search/detective associations)
+- Owl: strong symbolism but too close to Duolingo
+- Dung beetle: funniest option, great for roast copy, but too niche for a primary logo
+- Ant: lacked personality as a solo character, but evolved into The Colony supporting system
 
 ### Typography
 - Display / headings: Outfit (weight 700 for logo, 600 for page titles, 500-800 range)
@@ -87,7 +122,7 @@ Cheeky, observational, and warm. Like a friend roasting you gently — always di
 The product's voice is channelled through The Critic — the central character of subscrub.
 
 ### The Critic — character definition
-The Critic is the personality engine of subscrub. It's a voice with a face — a magnifying glass character that scrutinises your feed and delivers verdicts. Think newspaper columnist with a visual identity, not a generic mascot.
+The Critic is the personality engine of subscrub. It's a voice with a face — a praying mantis that watches your feed with unsettling patience and delivers verdicts with dry authority. Think sharp-witted columnist who happens to be an insect.
 
 **What it is:**
 - An entity that analyses your feed and delivers verdicts
@@ -95,28 +130,30 @@ The Critic is the personality engine of subscrub. It's a voice with a face — a
 - Has moods that escalate based on user behaviour (encouraging → giving up)
 - Has opinions, patience, and memory
 - Attributed on everything it says: "— The Critic, based on 326 subscriptions"
-- Visually represented by the magnifying glass logomark with mood-appropriate expressions
+- Visually represented by the mantis logomark with mood conveyed through posture
+- Commands The Colony (ant army) for background automation (post-launch)
 
 **What it isn't:**
 - Not a chatbot or AI assistant
 - Not mean — exasperated, dry, occasionally proud, but never cruel
 - Not a separate product — it's the voice layer on top of the tool
-- Not a children's mascot — the character has attitude and editorial weight
+- Not a children's mascot — the character has authority and editorial weight
+- Not Duolingo's owl — The Critic is sharp and editorial, not cute and cartoonish
 
 **Visual identity:**
-The magnifying glass logomark IS The Critic. The face inside the lens changes expression to match the mood:
-- Friendly + sparkles → encouraging mood (default, new users)
-- Flat expression → nudging mood
-- Furrowed brow → impatient mood
-- Angry face → annoyed mood
-- Sunglasses + frown → giving up mood (too cool to care anymore)
-- Sunglasses + smile → high score / "looking sharp" reward state
+The mantis logomark IS The Critic. Mood is conveyed through posture, head angle, and eye expression — not cartoon faces:
+- Head upright, relaxed → encouraging mood (default)
+- Head tilted, watching → nudging mood
+- Arms crossed, leaning → impatient mood
+- Leaning forward, intense stare → annoyed mood
+- Head turned away, slumped → giving up mood
+- Sunglasses → high score / social media avatar
 
-The primary (friendly) variant is used everywhere by default. Mood variants appear contextually on the critic banner, share cards, and emails. The sunglasses version is the social media avatar.
+The primary (neutral/encouraging) variant is used everywhere by default. Mood variants appear contextually on the critic banner, share cards, and emails. The sunglasses version is the social media avatar.
 
 **Where it appears (voice + visual):**
-- Home page: critic banner with mood-appropriate logomark + typed roast + task list
-- Onboarding sync screen: commentary during analysis with the magnifying glass visual
+- Home page: critic banner with mood-appropriate mantis + typed roast + task list
+- Onboarding sync screen: commentary during analysis with the mantis watching
 - Share cards: the verdict, attribution, and logomark
 - Email newsletters: sender identity ("The Critic via subscrub") with avatar
 - Social media: tweets as itself, sunglasses avatar
@@ -885,9 +922,9 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Domain migration from usefreedly.com to getsubscrub.com
 
 ### Before launch
-- Get primary logomark (friendly magnifying glass) cleaned up as production SVG
-- Create simplified favicon from logomark (lens circle + eye dots at 16px)
-- Update landing page hero with "Meet The Critic" and logomark visual
+- Get primary logomark (mantis, neutral/encouraging posture) designed as production SVG
+- Create simplified favicon from mantis head silhouette (angular shape + eye dots at 16px)
+- Update landing page hero with "Meet The Critic" and mantis visual
 - Implement sync screen with personalised onboarding
 - Trigger RSS refresh on first login
 - Build the critic banner and action card for Home page (two-card split with mood escalation)
@@ -918,10 +955,11 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Get legal review of privacy policy and terms
 
 ### Post-launch
-- Commission full set of logomark mood variants as clean SVGs (friendly, annoyed, impatient, angry, sunglasses variants)
-- Swap emoji in critic banner for mood-appropriate logomark illustrations
-- Set up social media accounts with sunglasses logomark as avatar
-- Implement cron job for automatic RSS refresh
+- Commission full set of mantis mood variants as clean SVGs (encouraging, nudging, impatient, annoyed, giving up, sunglasses)
+- Swap emoji in critic banner for mood-appropriate mantis illustrations
+- Set up social media accounts with sunglasses mantis as avatar
+- Introduce "The Colony" (ant army) branding when automation features go live
+- Implement cron job for automatic RSS refresh ("The night shift is working")
 - Implement video metadata backfill via YouTube API
 - Implement monthly video cleanup job (check cached videos still exist, remove 404s)
 - Implement channel cleanup check (remove deleted channels from discover_channels, notify users)

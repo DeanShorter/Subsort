@@ -6,7 +6,7 @@ export default function SessionRedirect() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        window.location.href = '/dashboard';
+        window.location.href = '/home';
       }
     }).catch(() => {
       // No valid session — stay on landing page

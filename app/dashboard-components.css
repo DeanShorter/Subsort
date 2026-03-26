@@ -3398,9 +3398,9 @@ input[type=range]::-webkit-slider-thumb{
 .ch-table .ch-table-select{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border-subtle);display:grid;place-items:center;cursor:pointer;transition:all .15s;flex-shrink:0}
 .ch-table .ch-table-select.checked{background:var(--accent);border-color:var(--accent)}
 .ch-table .ch-table-select svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3}
-.ch-table .ch-table-fav{background:none;border:none;padding:0;cursor:pointer;color:var(--text-muted);display:grid;place-items:center;width:18px;height:18px;transition:color .15s}
-.ch-table .ch-table-fav:hover,.ch-table .ch-table-fav.starred{color:var(--color-warning)}
-.ch-table .ch-table-fav svg{width:14px;height:14px}
+.ch-table .ch-table-fav,.s2-tbl .ch-table-fav{background:none;border:none;padding:0;cursor:pointer;color:var(--text-muted);display:grid;place-items:center;width:18px;height:18px;transition:color .15s}
+.ch-table .ch-table-fav:hover,.ch-table .ch-table-fav.starred,.s2-tbl .ch-table-fav:hover,.s2-tbl .ch-table-fav.starred{color:var(--color-warning)}
+.ch-table .ch-table-fav svg,.s2-tbl .ch-table-fav svg{width:14px;height:14px}
 
 /* Channel state badges */
 .ch-state-badge{font-size:.625rem;font-weight:600;padding:2px 7px;border-radius:4px;white-space:nowrap}
@@ -4106,6 +4106,13 @@ input[type=range]::-webkit-slider-thumb{
 .s2-subcat-tab.active{background:#fff;color:#111;border-color:var(--border-white-15)}
 .s2-subcat-empty{font-size:11px;color:var(--text-dim);font-style:italic;padding:5px 0}
 .f2-subcat-empty{font-size:11px;color:var(--text-dim);font-style:italic;padding:5px 0}
+
+/* Filters panel */
+.s2-filters-panel{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px;margin:0 24px 16px;animation:h2FadeUp .2s ease both}
+.s2-filters-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.s2-filters-title{font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:-.2px}
+.s2-filters-section{margin-bottom:12px}
+.s2-filters-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);margin-bottom:6px;padding:0 10px}
 
 /* Content */
 .s2-content{padding:16px 24px 48px}

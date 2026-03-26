@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { autoCategoriseAll } from '../../lib/auto-categorise';
 import EditChannelModal from '../components/EditChannelModal';
 import ManageCategoriesModal from '../components/ManageCategoriesModal';
+import BulkEditModal from '../components/BulkEditModal';
 import { trackEvent } from '../../lib/track';
 
 export default function Subscriptions2Page() {
@@ -28,8 +29,12 @@ export default function Subscriptions2Page() {
   const [sorting, setSorting] = useState(false);
   const [showSortConfirm, setShowSortConfirm] = useState(false);
   const [showManageCats, setShowManageCats] = useState(false);
+  const [showBulkEdit, setShowBulkEdit] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const catTabsRef = useRef(null);
   const [hiddenCols, setHiddenCols] = useState(new Set());
+  const [filterFavOnly, setFilterFavOnly] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'active', 'inactive', 'dead'
   const toggleCol = (col) => setHiddenCols(prev => { const next = new Set(prev); next.has(col) ? next.delete(col) : next.add(col); return next; });
 
   // ── Filter + sort ──────────────────────────────────
@@ -40,6 +45,8 @@ export default function Subscriptions2Page() {
     else if (activeCategory !== 'all') result = result.filter(c => chHasCat(c, activeCategory));
     if (activeSubcategory) result = result.filter(c => c.subcategory === activeSubcategory);
     if (search) { const q = search.toLowerCase(); result = result.filter(c => (c.name || '').toLowerCase().includes(q)); }
+    if (filterFavOnly) result = result.filter(c => c.favourited);
+    if (filterStatus !== 'all') result = result.filter(c => getChannelState(c) === filterStatus);
 
     const dir = sortDir === 'asc' ? 1 : -1;
     result.sort((a, b) => {
@@ -57,7 +64,7 @@ export default function Subscriptions2Page() {
       return cmp * dir;
     });
     return result;
-  }, [channels, activeCategory, activeSubcategory, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised]);
+  }, [channels, activeCategory, activeSubcategory, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterFavOnly, filterStatus, getChannelState]);
 
   // ── Sort column click ──────────────────────────────
   const handleColumnSort = (key) => {
@@ -115,11 +122,7 @@ export default function Subscriptions2Page() {
             <span className="f2-title">Subscriptions</span>
             <span className="ph-count">{filtered.length} channels</span>
           </div>
-          <div className="s2-topbar-right">
-            <button className="s2-btn-ghost" onClick={() => window.__subsortScrollToCats?.()}>
-              <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-              Filters
-            </button>
+          <div className="f2-header-right">
             <div className="ph-view-toggles">
               <button className={`ph-view-btn${chanView === 'compact' ? ' active' : ''}`} title="Compact" onClick={() => setChanView('compact')}>
                 <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
@@ -131,9 +134,8 @@ export default function Subscriptions2Page() {
                 <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
               </button>
             </div>
-            <button className="s2-btn-ghost" onClick={() => {
+            <button className="ph-btn" onClick={() => {
               const keys = ['name', 'subscribers', 'videoCount', 'subDate'];
-              const labels = { name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed' };
               const idx = keys.indexOf(sortKey);
               const nextIdx = (idx + 1) % keys.length;
               setSortKey(keys[nextIdx]);
@@ -142,12 +144,23 @@ export default function Subscriptions2Page() {
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
               Sort: {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed' })[sortKey] || 'Name'}
             </button>
-            <button className="s2-btn-ghost" onClick={() => setBulkMode(b => !b)}>
-              <svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2" /><path d="M5 7h4" /></svg>
-              Bulk Edit
+            <button className={`ph-btn${showFilters ? ' active' : ''}`} onClick={() => setShowFilters(f => !f)}>
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
+              Filters
             </button>
-            <button className="s2-btn-primary" onClick={() => setShowSortConfirm(true)} disabled={sorting}>
-              <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M5 10h4" /></svg>
+            <button className={`ph-btn${bulkMode ? ' active' : ''}`} onClick={() => {
+              if (bulkMode && selectedChannels.size > 0) {
+                setShowBulkEdit(true);
+              } else {
+                setBulkMode(b => !b);
+                if (bulkMode) setSelectedChannels(new Set());
+              }
+            }}>
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="1" width="12" height="12" rx="2" /><path d="M5 7h4" /></svg>
+              {bulkMode && selectedChannels.size > 0 ? `Edit ${selectedChannels.size} selected` : 'Bulk Edit'}
+            </button>
+            <button className="ph-btn primary" onClick={() => setShowSortConfirm(true)} disabled={sorting}>
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M5 10h4" /></svg>
               {sorting ? 'Sorting...' : 'Auto-sort'}
             </button>
             <div className="ph-search-wrap">
@@ -207,6 +220,46 @@ export default function Subscriptions2Page() {
           </div>
         )}
       </div>
+
+      {/* FILTERS PANEL */}
+      {showFilters && (
+        <div className="s2-filters-panel">
+          <div className="s2-filters-header">
+            <span className="s2-filters-title">Filters</span>
+            <button className="mcm-close" onClick={() => setShowFilters(false)} style={{ width: 24, height: 24, fontSize: 11 }}>✕</button>
+          </div>
+
+          <div className="s2-filters-section">
+            <div className="s2-filters-label">Status</div>
+            {['all', 'active', 'inactive', 'dead'].map(s => (
+              <button key={s} className={`home-nav-item${filterStatus === s ? ' active' : ''}`}
+                onClick={() => setFilterStatus(filterStatus === s ? 'all' : s)}
+                style={{ width: '100%' }}>
+                <span className="home-nav-item-label" style={{ textTransform: 'capitalize' }}>{s === 'all' ? 'All statuses' : s}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="s2-filters-section">
+            <div className="s2-filters-label">Favourites</div>
+            <button className={`home-nav-item${filterFavOnly ? ' active' : ''}`}
+              onClick={() => setFilterFavOnly(f => !f)}
+              style={{ width: '100%' }}>
+              <svg viewBox="0 0 24 24" fill={filterFavOnly ? 'var(--color-warning)' : 'none'} stroke="currentColor" strokeWidth="2" style={{ width: 14, height: 14 }}>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <span className="home-nav-item-label">Favourites only</span>
+            </button>
+          </div>
+
+          {(filterStatus !== 'all' || filterFavOnly) && (
+            <button className="ph-btn" onClick={() => { setFilterStatus('all'); setFilterFavOnly(false); }}
+              style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
+              Clear filters
+            </button>
+          )}
+        </div>
+      )}
 
       {/* CONTENT */}
       <div className="s2-content">
@@ -332,6 +385,14 @@ export default function Subscriptions2Page() {
       {/* Edit channel modal */}
       {editingId && <EditChannelModal channelId={editingId} onClose={() => setEditingId(null)} />}
       {showManageCats && <ManageCategoriesModal onClose={() => setShowManageCats(false)} />}
+      {showBulkEdit && (
+        <BulkEditModal
+          selectedIds={selectedChannels}
+          channels={channels}
+          onClose={() => setShowBulkEdit(false)}
+          onSaved={async () => { await reload(); setBulkMode(false); setSelectedChannels(new Set()); }}
+        />
+      )}
 
       {/* Auto-sort confirm */}
       {showSortConfirm && (

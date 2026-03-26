@@ -10,7 +10,7 @@ import SyncModal from './SyncModal';
 import Toast from './Toast';
 
 const DASHBOARD_ROUTES = [
-  '/dashboard',
+  '/home',
   '/subscriptions',
   '/subscriptions2',
   '/feeds',
@@ -23,7 +23,7 @@ const DASHBOARD_ROUTES = [
 
 // Routes that show the sidebar even without auth
 const ALWAYS_SIDEBAR = [
-  '/dashboard', '/subscriptions', '/subscriptions2', '/feeds', '/discover', '/analytics', '/settings',
+  '/home', '/subscriptions', '/subscriptions2', '/feeds', '/discover', '/analytics', '/settings',
 ];
 
 function DashboardInner({ children }) {

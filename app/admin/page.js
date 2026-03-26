@@ -499,7 +499,7 @@ export default function AdminPage() {
         <div style={{ textAlign: 'center' }}>
           <h1 className="ph-title" style={{ marginBottom: '.5rem' }}>Access denied</h1>
           <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>You don't have permission to view this page.</p>
-          <Link href="/dashboard" className="btn-accent" style={{ padding: '.5rem 1.25rem', borderRadius: 'var(--radius-sm)', textDecoration: 'none', display: 'inline-block' }}>
+          <Link href="/home" className="btn-accent" style={{ padding: '.5rem 1.25rem', borderRadius: 'var(--radius-sm)', textDecoration: 'none', display: 'inline-block' }}>
             Back to Dashboard
           </Link>
         </div>
@@ -523,7 +523,7 @@ export default function AdminPage() {
       {/* Admin sidebar */}
       <nav className="home-nav-primary">
         <div className="hnp-header">
-          <Link href="/dashboard" className="home-nav-brand" style={{ textDecoration: 'none' }}>
+          <Link href="/home" className="home-nav-brand" style={{ textDecoration: 'none' }}>
             <span className="home-nav-brand-wordmark">
               <span className="hnp-wordmark">sub</span><span>scrub</span>
             </span>
@@ -554,7 +554,7 @@ export default function AdminPage() {
           <hr className="home-nav-divider" />
 
           <div className="hnp-section">
-            <Link href="/dashboard" className="home-nav-item" style={{ textDecoration: 'none' }}>
+            <Link href="/home" className="home-nav-item" style={{ textDecoration: 'none' }}>
               <svg viewBox="0 0 16 16"><path d="M6 14V8h4v6"/><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/></svg>
               <span className="home-nav-item-label">Back to Subscrub</span>
             </Link>

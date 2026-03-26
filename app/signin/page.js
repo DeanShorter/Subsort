@@ -8,7 +8,7 @@ export default function SignIn() {
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/dashboard',
+        redirectTo: window.location.origin + '/home',
         scopes: 'https://www.googleapis.com/auth/youtube.readonly',
       },
     });

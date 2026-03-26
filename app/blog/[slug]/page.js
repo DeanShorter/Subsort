@@ -74,7 +74,7 @@ export default async function BlogPost({ params }) {
           <div className={styles.cta}>
             <h3>Ready to organise your YouTube?</h3>
             <p>Subscrub is free, runs in your browser, and doesn't store your data on any server.</p>
-            <Link href="/dashboard" className={styles.ctaBtn}>Launch Subscrub</Link>
+            <Link href="/home" className={styles.ctaBtn}>Launch Subscrub</Link>
           </div>
         </footer>
       </article>

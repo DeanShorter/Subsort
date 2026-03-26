@@ -14,7 +14,7 @@ const CAT_ROUTES = ['/subscriptions', '/feeds', '/discover'];
 
 const PAGE_ITEMS = [
   {
-    href: '/dashboard', label: 'Home',
+    href: '/home', label: 'Home',
     svg: <><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 14V8h4v6"/></>,
   },
   {
