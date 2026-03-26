@@ -1,6 +1,5 @@
 'use client';
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
@@ -15,8 +14,13 @@ export default function Feeds2Page() {
     feedVideos, feedVideosLoaded, setFeedVideos,
   } = useChannelData();
 
-  const searchParams = useSearchParams();
-  const [activeCategory, setActiveCategory] = useState(() => searchParams.get('cat') || 'all');
+  const [activeCategory, setActiveCategory] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('cat') || 'all';
+    }
+    return 'all';
+  });
   const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
