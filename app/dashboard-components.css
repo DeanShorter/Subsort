@@ -4156,7 +4156,7 @@ input[type=range]::-webkit-slider-thumb{
 .h2-action-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .h2-action-label{font-size:12px;font-weight:500;color:var(--text-mid)}
 .h2-action-items{display:flex;gap:10px;margin-bottom:14px}
-.h2-action-item{flex:1;background:var(--surface-2);border-radius:var(--radius-md);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.h2-action-item{flex:1;background:rgba(255,255,255,.03);border-radius:var(--radius-md);padding:10px 12px;display:flex;align-items:center;gap:10px}
 .h2-action-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .h2-action-item-info{flex:1}
 .h2-action-item-val{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.5px;line-height:1}

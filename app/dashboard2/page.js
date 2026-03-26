@@ -148,23 +148,30 @@ export default function Home2Page() {
 
   if (dataLoading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
 
+  const greetingTime = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
+  const lastRefresh = (() => { try { const ts = localStorage.getItem('subsort_rss_ts'); return ts ? timeAgo(new Date(parseInt(ts)).toISOString()) : 'Never'; } catch { return 'Never'; } })();
+  const subtitle = channels.length ? `${channels.length} subscriptions · ${categories.length} categories` : 'Sync your subscriptions to get started.';
+
   if (!user) {
     return (
-      <>
-        <div className="h2-header"><div className="f2-header-top"><div className="f2-header-left"><h1 className="f2-title">Home</h1></div></div></div>
+      <main className="home-main">
+        <div className="db-header-bar">
+          <div className="db-greeting"><h1>Good <span>morning</span>, <span>there</span>.</h1><p>Sign in to get started.</p></div>
+        </div>
         <div className="home-feed-empty"><p className="home-feed-empty-text">Sign in to get started.</p><button className="btn-accent" onClick={signIn}>Sign in with Google</button></div>
-      </>
+      </main>
     );
   }
 
   return (
     <>
-      <div className="h2-header">
-        <div className="f2-header-top">
-          <div className="f2-header-left"><h1 className="f2-title">Home</h1></div>
-          <div className="f2-header-right">
-            <span className="h2-sync-meta">{(() => { try { const ts = localStorage.getItem('subsort_rss_ts'); return ts ? `Last refresh: ${timeAgo(new Date(parseInt(ts)).toISOString())}` : ''; } catch { return ''; } })()}</span>
-          </div>
+      <div className="db-header-bar">
+        <div className="db-greeting">
+          <h1>Good <span>{greetingTime}</span>, <span>{userName}</span>.</h1>
+          <p>{subtitle}</p>
+        </div>
+        <div className="ph-right">
+          <span className="db-clock">Last refresh: {lastRefresh}</span>
         </div>
       </div>
 
@@ -237,7 +244,7 @@ export default function Home2Page() {
                 <span className="h2-section-title">⭐ New from your favourites</span>
                 <span className="h2-section-count">{favVideos.length} new</span>
               </div>
-              <Link href="/feeds2" className="h2-section-link">View all →</Link>
+              <Link href="/feeds2?cat=__favs__" className="h2-section-link">View all →</Link>
             </div>
             <div className="h2-fav-grid">
               {favVideos.map((v, i) => {
