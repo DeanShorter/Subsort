@@ -22,15 +22,7 @@ const PAGE_ITEMS = [
     svg: <><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2 6h12"/></>,
   },
   {
-    href: '/subscriptions2', label: 'Subscriptions 2',
-    svg: <><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2 6h12"/></>,
-  },
-  {
-    href: '/feeds', label: 'Feeds',
-    svg: <path d="M3 4h10M3 8h6M3 12h8"/>,
-  },
-  {
-    href: '/feeds2', label: 'Feed',
+    href: '/feeds', label: 'Feed',
     svg: <path d="M3 4h10M3 8h6M3 12h8"/>,
   },
   {

@@ -4135,7 +4135,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* Table */
 .s2-tbl{width:100%;border-collapse:separate;border-spacing:0}
-.s2-tbl th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border-subtle)}
+.s2-tbl th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border-subtle);position:sticky;top:0;background:var(--bg-primary);z-index:2}
 .s2-sortable{cursor:pointer;position:relative}
 .s2-sortable:hover{color:var(--text-mid)}
 .s2-col-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:3px;border:none;background:transparent;color:var(--text-dim);font-size:9px;cursor:pointer;opacity:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
@@ -4408,7 +4408,7 @@ input[type=range]::-webkit-slider-thumb{
 @media(max-width:480px){.h2-fav-grid{grid-template-columns:1fr}.cb-stats{display:none}.h2-disc-row{flex-direction:column}.h2-content{padding:16px 16px 48px}}
 
 /* ─── Feeds 2 (experimental layout) ─── */
-/* When feeds2 is active, app-content needs to scroll since there's no home-main wrapper */
+/* When feeds is active, app-content needs to scroll since there's no home-main wrapper */
 .app-content:has(.f2-header){overflow-y:auto!important}
 
 .f2-header{

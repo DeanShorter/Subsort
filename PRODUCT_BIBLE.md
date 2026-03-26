@@ -271,16 +271,21 @@ All hand-drawn inline SVGs at 16x16 viewBox, 1.5px stroke, round caps/joins, str
 ## 4. Page structure
 
 ### Navigation hierarchy
-**Sidebar (pages only — no categories):** Home, Subscriptions, Feed, Discover, Insights
+**Sidebar (pages only — no categories):** Home, Subscriptions, Feed, Discover (post-launch, greyed out at launch), Insights
 **Sidebar footer:** Settings, Pro
 **Category navigation:** horizontal tabs in the content area of each page (dot + name format), not in the sidebar
 
 ### Pages
-- `/home` — Home: critic banner (shareable verdict), action card (evidence + scrub CTA), favourites grid, today summary bar, recent activity, Discover teaser
+**Core pages (launch):**
+- `/home` — Home: critic banner (shareable verdict), action card (evidence + scrub CTA), favourites grid, today summary bar, recent activity
 - `/subscriptions` — Channel management with 3 view modes (table, grid, compact list), category tabs with "Manage" button, bulk edit, auto-sort
 - `/feed` — Category-based video feeds grouped by time (today, earlier this week), subcategory chips, Critic break cards
-- `/discover` — Personalised channel recommendations in categorised sections (see Discover page spec in section 6)
+
+**Post-launch pages:**
+- `/discover` — Personalised channel recommendations in categorised sections (see Discover page spec in section 6). Greyed out in sidebar at launch with "Coming soon" tooltip. Build after 20+ users with accumulated click data.
 - `/insights` — Pro: watch analytics, punch card chart, category breakdown (subscribed vs watched), feed health deep dive, roast history
+
+**Utility pages:**
 - `/settings` — Account, preferences, connected services
 - `/privacy` — Privacy policy
 - `/terms` — Terms of service
@@ -289,10 +294,13 @@ All hand-drawn inline SVGs at 16x16 viewBox, 1.5px stroke, round caps/joins, str
 ### Page personalities
 Each page has a distinct visual weight, density, and mood. Pages should NOT feel the same.
 
+**Launch pages:**
 - **Home** = "morning briefing" — personal, warm, content-forward. Critic banner at top (the only tinted card in the app), large favourites grid below. Asymmetric layout. The page that talks to you.
 - **Feed** = "lean-back browsing" — big thumbnails dominate, less data, more content. Closest to YouTube's feel. Horizontal scroll rows, category-grouped video lists.
 - **Subscriptions** = "control room" — data-dense, power-user tools. Table view with sortable columns, bulk actions. The only page that should feel like a spreadsheet.
-- **Discover** = "exploration" — bigger cards, more whitespace, looser grid. Browsing possibilities, not managing data.
+
+**Post-launch pages:**
+- **Discover** = "exploration" — bigger cards, more whitespace, looser grid. Browsing possibilities, not managing data. Build after 20+ users.
 - **Insights** = "revelation" — full-width charts and visualisations, storytelling data. The punch card, the roast, the trends.
 
 ### Category navigation (reimagined)
@@ -973,7 +981,8 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Implement breathing pulse on score ring
 - Build critic task list with checkboxes, progress bar, and reactive quips
 - Implement score history tracking (last_critic_action + score_history on profiles table)
-- Build Home page with favourites grid, today summary bar, activity timeline, Discover teaser
+- Build Home page with favourites grid, today summary bar, activity timeline
+- Add "Discover — Coming soon" greyed out item in sidebar nav
 - Rename pages: Dashboard→Home, Feeds→Feed, Analytics→Insights
 - Move categories from sidebar to content area as horizontal tabs (dot + name format)
 - Build category management modal (rename, recolour, subcategories, reorder)
@@ -983,10 +992,6 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Add cheeky empty states throughout the app
 - Implement video click tracking via events table (event: 'video_click', metadata: {video_id, channel_id, category, source})
 - Build video embed modal (YouTube iframe, log click on open)
-- Build admin enrichment panel (manual fill gaps, discover channels, refresh stale)
-- Seed discover_channels table via admin enrichment (all 8 categories)
-- Build Discover page with launch sections: "Popular in [category]" x2, "Based on your favourites"
-- Create discover_channels table in both production and test databases
 - Apply refined design tokens (softer borders, slower transitions, muted category colours, ghost buttons)
 - Add staggered fade-up animations on category/view switching
 - Apply blog card gradient banners per category
@@ -1009,10 +1014,15 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Implement full achievement badges system
 - Build click-powered free tier insights (category distribution, never-clicked channels, smart roasts)
 - Build Pro upsell touchpoints based on click data (blurred recommendations, teaser breakdowns)
+- Build admin enrichment panel (manual fill gaps, discover channels, refresh stale)
+- Create discover_channels table in both production and test databases
+- Seed discover_channels table via admin enrichment (all 8 categories)
+- Build Discover page with launch sections: "Popular in [category]" x2, "Based on your favourites" (after 20+ users)
 - Discover page: add "Try something new" cross-category section (needs 20-30+ users)
 - Discover page: add "The Critic recommends a break" wholesome channel section (tag channels during enrichment)
 - Discover page: add "Based on what you watch" Pro section (needs click data accumulation)
 - Discover page: add collaborative filtering "Users who watch X also subscribe to..." (needs 50+ users)
+- Add Discover teaser card to Home page once Discover is live
 - Build admin dashboard with real Supabase queries
 - Implement category correction consensus algorithm
 - Set up Google AdSense for free tier (or affiliate partnerships)
@@ -1062,7 +1072,9 @@ All mockups are HTML files that can be opened in a browser:
 - `subscrub-critic.html` — subscription critic + alert cards
 - `subscrub-personality.html` — roasts, badges, empty states, unsubscribe confirms
 - `subscrub-share-cards.html` — shareable social media cards
-- `subscrub-sync-screen.html` — personalised sync/onboarding experience
+- `subscrub-sync-screen.html` — personalised sync/onboarding experience (original, narrow centred layout)
+- `subscrub-sync-v2.html` — sync screen v2 (split layout with chameleon placeholder — for when mascot is ready)
+- `subscrub-sync-v3.html` — sync screen v3 (centred, no mascot, Critic voice via speech bubble — current version)
 - `subscrub-feeds.html` — feeds page with sections, subcategories, Critic break card, Pro upsell
 - `subscrub-page-headers.html` — consistent page header patterns (6 variants + mobile)
 - `subscrub-dashboard-tiers.html` — dashboard with Free and Pro tier comparison

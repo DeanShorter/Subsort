@@ -35,7 +35,11 @@
       "Bash(cp \"D:/Subsort/app/feeds/page.js\" \"D:/Subsort/app/feeds2/page.js\")",
       "Bash(ls -d D:/Subsort/app/*/page.js D:/Subsort/app/*/page.tsx)",
       "Bash(rm -rf app/dashboard)",
-      "Bash(mv app/dashboard2 app/dashboard)"
+      "Bash(mv app/dashboard2 app/dashboard)",
+      "Bash(rm -rf app/subscriptions)",
+      "Bash(mv app/subscriptions2 app/subscriptions)",
+      "Bash(rm -rf app/feeds)",
+      "Bash(mv app/feeds2 app/feeds)"
     ]
   }
 }

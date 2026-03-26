@@ -318,7 +318,7 @@ export default function Home2Page() {
         {/* ═══ TODAY BAR ═══ */}
         {todayVideos.length > 0 && (
           <div className="h2-section">
-            <Link href="/feeds2" className="h2-today-bar">
+            <Link href="/feeds" className="h2-today-bar">
               <span className="h2-today-icon">📬</span>
               <div className="h2-today-text">
                 <div className="h2-today-title">{todayVideos.length} new videos today</div>
@@ -339,7 +339,7 @@ export default function Home2Page() {
               <span className="h2-section-title">⭐ New from your favourites</span>
               {favVideos.length > 0 && <span className="h2-section-count">{favVideos.length} new</span>}
             </div>
-            {favVideos.length > 0 && <Link href="/feeds2?cat=__favs__" className="h2-section-link">View all →</Link>}
+            {favVideos.length > 0 && <Link href="/feeds?cat=__favs__" className="h2-section-link">View all →</Link>}
           </div>
           {favVideos.length > 0 ? (
             <div className="h2-fav-grid">
