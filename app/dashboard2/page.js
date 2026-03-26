@@ -7,6 +7,23 @@ import { supabase } from '../../lib/supabase';
 import { trackEvent } from '../../lib/track';
 import Link from 'next/link';
 
+function Sparkline({ trend = 'flat', scoreColor = 'var(--amber)' }) {
+  const heights = trend === 'up' ? [35,40,38,42,50,48,55,60,65,72]
+    : trend === 'flat' ? [60,58,62,60,63,61,64,62,65,65]
+    : [72,68,70,65,63,60,62,58,55,52];
+  return (
+    <div className="h2-spark">
+      {heights.map((h, i) => (
+        <div key={i} className="h2-spark-dot" style={{
+          height: `${(h / 72) * 100}%`,
+          background: scoreColor,
+          opacity: i === heights.length - 1 ? 1 : 0.4,
+        }} />
+      ))}
+    </div>
+  );
+}
+
 export default function Home2Page() {
   const { user, signIn } = useAuth();
   const {
@@ -17,6 +34,7 @@ export default function Home2Page() {
 
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [playingVideo, setPlayingVideo] = useState(null);
+  const [actionDismissed, setActionDismissed] = useState(false);
 
   const channelMap = useMemo(() => {
     const map = {};
@@ -60,28 +78,52 @@ export default function Home2Page() {
   const deadChannels = useMemo(() => findDeadChannels(), [findDeadChannels]);
   const favCount = channels.filter(c => c.favourited).length;
   const inactiveCount = deadChannels.length;
+  const uncatCount = channels.filter(c => !chCats(c).length).length;
 
   const score = useMemo(() => {
     if (!channels.length) return 0;
     return Math.round(((channels.length - inactiveCount) / channels.length) * 100);
   }, [channels, inactiveCount]);
 
-  const scoreClass = score >= 90 ? 'score-perfect' : score >= 75 ? 'score-sharp' : score >= 60 ? 'score-getting' : score >= 40 ? 'score-needs' : 'score-fire';
-  const scoreColour = score >= 90 ? 'var(--teal)' : score >= 75 ? 'var(--accent)' : score >= 60 ? 'var(--amber)' : score >= 40 ? 'var(--orange)' : 'var(--red)';
-  const scoreEmoji = score >= 90 ? '😎' : score >= 75 ? '👍' : score >= 60 ? '😐' : score >= 40 ? '😬' : '🔥';
+  // Mood system based on score and last scrub
+  const mood = useMemo(() => {
+    if (score >= 80) return 'encouraging';
+    if (score >= 65) return 'nudging';
+    if (score >= 50) return 'impatient';
+    if (score >= 35) return 'annoyed';
+    return 'giving_up';
+  }, [score]);
+
+  const scoreColour = mood === 'encouraging' ? 'var(--accent)' : mood === 'nudging' ? 'var(--amber)' : mood === 'impatient' ? 'var(--amber)' : mood === 'annoyed' ? 'var(--red)' : 'var(--text-dim)';
+  const sparkTrend = mood === 'encouraging' ? 'up' : mood === 'nudging' ? 'flat' : 'down';
+
   const userName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
-  const roastText = useMemo(() => {
-    if (!channels.length) return '';
-    const active = channels.length - inactiveCount;
-    if (score >= 90) return `${channels.length} subscriptions and nearly all are active. Either you're incredibly disciplined or you just signed up yesterday.`;
-    if (score >= 75) return `${channels.length} subscriptions and you engage with ${active}. Not bad — but ${inactiveCount} are still collecting dust.`;
-    if (score >= 60) return `${channels.length} subscriptions and you engage with ${active}. The other ${inactiveCount} are just paying emotional rent in your feed.`;
-    return `${channels.length} subscriptions and you only engage with ${active}. The other ${inactiveCount} are haunting your feed like ghosts.`;
-  }, [channels, inactiveCount, score]);
+  const moodEmoji = { encouraging: '😎', nudging: '😐', impatient: '😤', annoyed: '😡', giving_up: '💀' };
+  const moodGreeting = { encouraging: 'Not bad', nudging: 'Getting there', impatient: 'Still here?', annoyed: 'We need to talk', giving_up: 'Fine. Whatever.' };
+  const moodBtnText = { encouraging: 'Keep scrubbing', nudging: 'Scrub now', impatient: 'Scrub now', annoyed: 'Fix this mess', giving_up: 'Prove me wrong' };
 
+  const roastText = useMemo(() => {
+    const active = channels.length - inactiveCount;
+    if (!channels.length) return '';
+    if (mood === 'encouraging') return `You scrubbed recently and your score is solid. <strong>${active} active channels</strong> out of ${channels.length}. Keep going.`;
+    if (mood === 'nudging') return `<strong>${channels.length} subscriptions</strong> and you engage with ${active} of them. The other ${inactiveCount} are just paying emotional rent in your feed.`;
+    if (mood === 'impatient') return `Your score dropped. Those dead channels are multiplying. <strong>${inactiveCount} inactive</strong> and counting.`;
+    if (mood === 'annoyed') return `Remember when you said you'd fix your feed? You've got <strong>${inactiveCount} channels</strong> you've never watched. Just sitting there. Judging you.`;
+    return `At this point I think you and your <strong>${inactiveCount} dead channels</strong> deserve each other. I'm not angry, I'm just disappointed.`;
+  }, [channels, inactiveCount, mood]);
+
+  const actionLabel = useMemo(() => {
+    if (mood === 'encouraging') return "A few loose ends to tidy up when you're ready.";
+    if (mood === 'nudging') return `Those ${inactiveCount} inactive channels aren't going to scrub themselves.`;
+    if (mood === 'impatient') return "Your feed is getting worse, not better. Fix it.";
+    if (mood === 'annoyed') return `Seriously. ${inactiveCount} channels you've never watched. Just sitting there.`;
+    return "I'll be here when you're ready. If you're ever ready.";
+  }, [mood, inactiveCount]);
+
+  // Favourite videos
   const favVideos = useMemo(() => {
     const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
     return feedVideos.filter(v => favIds.has(v.channelId) && v.type !== 'short')
@@ -101,7 +143,7 @@ export default function Home2Page() {
 
   const todayChannelCount = useMemo(() => new Set(todayVideos.map(v => v.channelId)).size, [todayVideos]);
 
-  const ringC = 2 * Math.PI * 18;
+  const ringC = 2 * Math.PI * 21;
   const ringOffset = ringC - (ringC * score / 100);
 
   if (dataLoading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
@@ -127,34 +169,67 @@ export default function Home2Page() {
       </div>
 
       <div className="h2-content">
-        {/* CRITIC BANNER */}
-        <div className={`critic-banner ${scoreClass}`}>
-          <div className="cb-ring">
-            <svg viewBox="0 0 44 44">
-              <circle cx="22" cy="22" r="18" fill="none" stroke="var(--surface-3)" strokeWidth="3.5" />
-              <circle cx="22" cy="22" r="18" fill="none" stroke={scoreColour} strokeWidth="3.5" strokeLinecap="round"
-                strokeDasharray={ringC} strokeDashoffset={ringOffset} transform="rotate(-90 22 22)" />
-            </svg>
-            <span className="cb-ring-val">{score}%</span>
-          </div>
-          <div className="cb-content">
-            <div className="cb-greeting">{greeting}, {userName}. {scoreEmoji}</div>
-            <div className="cb-roast">{roastText}</div>
-          </div>
-          <div className="cb-stats">
-            <div className="cb-stat"><div className="cb-stat-val">{channels.length}</div><div className="cb-stat-label">Subs</div></div>
-            <div className="cb-stat"><div className="cb-stat-val" style={{ color: 'var(--red)' }}>{inactiveCount}</div><div className="cb-stat-label">Inactive</div></div>
-            <div className="cb-stat"><div className="cb-stat-val" style={{ color: 'var(--accent)' }}>{categories.length}</div><div className="cb-stat-label">Categories</div></div>
-          </div>
-          <div className="cb-actions">
-            <button className="cb-share" title="Share your score">
-              <svg viewBox="0 0 16 16"><path d="M4 8V13a1 1 0 001 1h6a1 1 0 001-1V8" /><polyline points="8 2 8 10" /><polyline points="5 5 8 2 11 5" /></svg>
-            </button>
-            <Link href="/subscriptions" className="cb-fix">Fix this →</Link>
+        {/* ═══ CRITIC CARD ═══ */}
+        <div className={`h2-critic-card mood-${mood}`}>
+          <div className="h2-critic-top">
+            <div className="h2-critic-ring">
+              <svg viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="21" fill="none" stroke="var(--surface-3)" strokeWidth="3.5" />
+                <circle cx="26" cy="26" r="21" fill="none" stroke={scoreColour} strokeWidth="3.5" strokeLinecap="round"
+                  strokeDasharray={ringC} strokeDashoffset={ringOffset} transform="rotate(-90 26 26)" />
+              </svg>
+              <span className="h2-critic-val" style={{ color: scoreColour }}>{score}%</span>
+            </div>
+            <div className="h2-critic-text">
+              <div className="h2-critic-greeting">{moodEmoji[mood]} {moodGreeting[mood]}, {userName}.</div>
+              <div className="h2-critic-roast" dangerouslySetInnerHTML={{ __html: roastText }} />
+            </div>
+            <div className="h2-critic-right">
+              <button className="cb-share" title="Share your score">
+                <svg viewBox="0 0 16 16"><path d="M4 8V13a1 1 0 001 1h6a1 1 0 001-1V8" /><polyline points="8 2 8 10" /><polyline points="5 5 8 2 11 5" /></svg>
+              </button>
+              <Sparkline trend={sparkTrend} scoreColor={scoreColour} />
+            </div>
           </div>
         </div>
 
-        {/* FAVOURITES */}
+        {/* ═══ ACTION CARD ═══ */}
+        {!actionDismissed && inactiveCount > 0 && (
+          <div className={`h2-action-card mood-${mood}`}>
+            <div className="h2-action-top">
+              <span className="h2-action-label">{actionLabel}</span>
+            </div>
+            <div className="h2-action-items">
+              <div className="h2-action-item">
+                <div className="h2-action-dot" style={{ background: 'var(--red)' }} />
+                <div className="h2-action-item-info">
+                  <div className="h2-action-item-val" style={{ color: 'var(--red)' }}>{inactiveCount}</div>
+                  <div className="h2-action-item-label">Inactive channels</div>
+                </div>
+              </div>
+              <div className="h2-action-item">
+                <div className="h2-action-dot" style={{ background: 'var(--amber)' }} />
+                <div className="h2-action-item-info">
+                  <div className="h2-action-item-val" style={{ color: 'var(--amber)' }}>{uncatCount}</div>
+                  <div className="h2-action-item-label">Uncategorised</div>
+                </div>
+              </div>
+              <div className="h2-action-item">
+                <div className="h2-action-dot" style={{ background: 'var(--accent)' }} />
+                <div className="h2-action-item-info">
+                  <div className="h2-action-item-val" style={{ color: 'var(--accent)' }}>{favCount}</div>
+                  <div className="h2-action-item-label">Favourites</div>
+                </div>
+              </div>
+            </div>
+            <div className="h2-action-cta">
+              <Link href="/subscriptions2" className="h2-action-btn">{moodBtnText[mood]}</Link>
+              <span className="h2-action-dismiss" onClick={() => setActionDismissed(true)}>Maybe later</span>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ FAVOURITES ═══ */}
         {favVideos.length > 0 && (
           <div className="h2-section">
             <div className="h2-section-header">
@@ -162,7 +237,7 @@ export default function Home2Page() {
                 <span className="h2-section-title">⭐ New from your favourites</span>
                 <span className="h2-section-count">{favVideos.length} new</span>
               </div>
-              <Link href="/feeds2" className="h2-section-link">View all favourites →</Link>
+              <Link href="/feeds2" className="h2-section-link">View all →</Link>
             </div>
             <div className="h2-fav-grid">
               {favVideos.map((v, i) => {
@@ -172,6 +247,7 @@ export default function Home2Page() {
                     onClick={() => { trackEvent('video_click_home'); setPlayingVideo({ id: v.id, title: v.title, channel: v.channel }); }}>
                     <div className="h2-fav-thumb">
                       <img src={v.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.classList.add('loaded')} />
+                      <div className="h2-fav-overlay" />
                       {isNew && <span className="h2-fav-new">New</span>}
                     </div>
                     <div className="h2-fav-info">
@@ -185,7 +261,7 @@ export default function Home2Page() {
           </div>
         )}
 
-        {/* TODAY BAR */}
+        {/* ═══ TODAY BAR ═══ */}
         {todayVideos.length > 0 && (
           <div className="h2-section">
             <Link href="/feeds2" className="h2-today-bar">
@@ -194,15 +270,15 @@ export default function Home2Page() {
                 <div className="h2-today-title">{todayVideos.length} new videos today</div>
                 <div className="h2-today-sub">across {todayCatDots.length} categories from {todayChannelCount} channels</div>
               </div>
-              <div className="h2-today-cats">
-                {todayCatDots.map(cat => (<div key={cat} className="h2-today-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />))}
+              <div className="h2-today-cats h2-today-cats-overlap">
+                {todayCatDots.map(cat => (<div key={cat} className="h2-today-dot-overlap" style={{ background: categoryColours[cat] || 'var(--accent)' }} />))}
               </div>
               <span className="h2-today-arrow">→</span>
             </Link>
           </div>
         )}
 
-        {/* SECONDARY GRID */}
+        {/* ═══ ACTIVITY + DISCOVER ═══ */}
         <div className="h2-section">
           <div className="h2-secondary-grid">
             <div className="h2-panel">
@@ -218,21 +294,9 @@ export default function Home2Page() {
               <div className="h2-panel-header"><span className="h2-panel-title">New in Discover</span><Link href="/discover" className="h2-panel-link">Explore →</Link></div>
               <div style={{ fontSize: '11px', color: 'var(--text-dim)', marginBottom: '10px' }}>3 new channels in your top categories</div>
               <div className="h2-disc-row">
-                <div className="h2-disc-card">
-                  <div className="h2-disc-avatar" style={{ background: 'rgba(232,135,92,0.15)', color: 'var(--orange)' }}>SS</div>
-                  <div className="h2-disc-name">Sky Sports F1</div>
-                  <div className="h2-disc-subs">2.1M subs</div>
-                </div>
-                <div className="h2-disc-card">
-                  <div className="h2-disc-avatar" style={{ background: 'rgba(62,207,160,0.1)', color: 'var(--accent)' }}>JC</div>
-                  <div className="h2-disc-name">Jacob Collier</div>
-                  <div className="h2-disc-subs">4.8M subs</div>
-                </div>
-                <div className="h2-disc-card">
-                  <div className="h2-disc-avatar" style={{ background: 'rgba(239,159,39,0.08)', color: 'var(--amber)' }}>VX</div>
-                  <div className="h2-disc-name">Vox</div>
-                  <div className="h2-disc-subs">12M subs</div>
-                </div>
+                <div className="h2-disc-card"><div className="h2-disc-avatar" style={{ background: 'rgba(232,135,92,0.15)', color: 'var(--orange)' }}>SS</div><div className="h2-disc-name">Sky Sports F1</div><div className="h2-disc-subs">2.1M subs</div></div>
+                <div className="h2-disc-card"><div className="h2-disc-avatar" style={{ background: 'rgba(62,207,160,0.1)', color: 'var(--accent)' }}>JC</div><div className="h2-disc-name">Jacob Collier</div><div className="h2-disc-subs">4.8M subs</div></div>
+                <div className="h2-disc-card"><div className="h2-disc-avatar" style={{ background: 'rgba(239,159,39,0.08)', color: 'var(--amber)' }}>VX</div><div className="h2-disc-name">Vox</div><div className="h2-disc-subs">12M subs</div></div>
               </div>
             </div>
           </div>

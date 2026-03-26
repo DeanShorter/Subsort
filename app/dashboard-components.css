@@ -4034,9 +4034,12 @@ input[type=range]::-webkit-slider-thumb{
 /* Category tabs */
 .s2-cat-tabs{display:flex;gap:4px;padding:10px 0;overflow-x:auto;scrollbar-width:none;border-top:1px solid var(--border-subtle)}
 .s2-cat-tabs::-webkit-scrollbar{display:none}
-.s2-cat-tab{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--radius-md);border:1px solid var(--border-hover);background:transparent;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--text-dim)}
-.s2-cat-tab:hover{border-color:var(--border-white-15);background:var(--surface-hover);color:var(--text-mid)}
-.s2-cat-tab.active{border-color:var(--border-hover);background:var(--bg-card);color:var(--text)}
+.s2-cat-tab{display:flex;align-items:center;gap:8px;padding:0 10px;height:34px;border-radius:8px;border:none;background:none;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--text-secondary)}
+.s2-cat-tab:hover{background:var(--surface-hover);color:var(--text-primary)}
+.s2-cat-tab:hover .s2-ct-count{color:var(--text-secondary)}
+.s2-cat-tab.active{background:rgba(62,207,160,.08);color:var(--accent-text)}
+.s2-cat-tab.active .s2-ct-count{color:var(--accent-text);opacity:.7}
+.s2-cat-tab.active .s2-ct-dot{box-shadow:0 0 0 1px rgba(62,207,160,.08)}
 .s2-ct-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .s2-ct-count{font-size:10px;color:var(--text-dim);margin-left:2px}
 
@@ -4053,8 +4056,13 @@ input[type=range]::-webkit-slider-thumb{
 /* Table */
 .s2-tbl{width:100%;border-collapse:separate;border-spacing:0}
 .s2-tbl th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border-subtle)}
-.s2-sortable{cursor:pointer}
+.s2-sortable{cursor:pointer;position:relative}
 .s2-sortable:hover{color:var(--text-mid)}
+.s2-col-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:3px;border:none;background:transparent;color:var(--text-dim);font-size:9px;cursor:pointer;opacity:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.s2-sortable:hover .s2-col-toggle{opacity:1}
+.s2-col-toggle:hover{background:rgba(232,93,80,.1);color:var(--red)}
+.s2-col-restore{width:20px;height:20px;border-radius:4px;border:1px dashed var(--border-hover);background:transparent;color:var(--accent);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.s2-col-restore:hover{border-color:var(--accent);background:rgba(62,207,160,.04)}
 .s2-tbl td{padding:8px 10px;border-bottom:1px solid var(--border-subtle);font-size:12px;vertical-align:middle}
 .s2-tbl tr:hover td{background:var(--surface-hover)}
 .s2-row-selected td{background:rgba(62,207,160,.04)!important}
@@ -4109,8 +4117,67 @@ input[type=range]::-webkit-slider-thumb{
 .h2-sync-meta{font-size:12px;color:var(--text-dim)}
 .h2-content{padding:20px 28px 48px;overflow-y:auto}
 
-/* Critic banner */
+/* Critic card (mood-based) */
 @keyframes h2FadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.h2-critic-card{border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:10px;position:relative;overflow:hidden;animation:h2FadeUp .4s ease both}
+.h2-critic-card::after{content:'';position:absolute;inset:0;border-radius:var(--radius-lg);pointer-events:none}
+.h2-critic-card.mood-encouraging{background:rgba(62,207,160,.04);border:1px solid rgba(62,207,160,.10)}
+.h2-critic-card.mood-encouraging::after{box-shadow:inset 0 0 60px rgba(62,207,160,.03)}
+.h2-critic-card.mood-nudging{background:rgba(239,159,39,.04);border:1px solid rgba(239,159,39,.10)}
+.h2-critic-card.mood-nudging::after{box-shadow:inset 0 0 60px rgba(239,159,39,.03)}
+.h2-critic-card.mood-impatient{background:rgba(239,159,39,.06);border:1px solid rgba(239,159,39,.15)}
+.h2-critic-card.mood-impatient::after{box-shadow:inset 0 0 60px rgba(239,159,39,.05)}
+.h2-critic-card.mood-annoyed{background:rgba(232,93,80,.05);border:1px solid rgba(232,93,80,.12)}
+.h2-critic-card.mood-annoyed::after{box-shadow:inset 0 0 60px rgba(232,93,80,.04)}
+.h2-critic-card.mood-giving_up{background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08)}
+
+.h2-critic-top{display:flex;align-items:center;gap:16px;position:relative;z-index:1}
+.h2-critic-ring{width:52px;height:52px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.h2-critic-ring svg{position:absolute;inset:0}
+.h2-critic-val{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:-.5px;position:relative;z-index:1}
+.h2-critic-text{flex:1;min-width:0}
+.h2-critic-greeting{font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:-.3px;margin-bottom:3px}
+.h2-critic-roast{font-size:12px;color:var(--text-mid);line-height:1.5}
+.h2-critic-roast strong{color:var(--text);font-weight:500}
+.h2-critic-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+
+/* Sparkline */
+.h2-spark{display:flex;align-items:flex-end;gap:2px;height:20px}
+.h2-spark-dot{width:3px;border-radius:1.5px}
+
+/* Action card */
+.h2-action-card{border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;position:relative;overflow:hidden;animation:h2FadeUp .4s .1s ease both;opacity:0}
+.h2-action-card.mood-encouraging{background:var(--bg-card);border:1px solid var(--border-subtle)}
+.h2-action-card.mood-nudging{background:var(--bg-card);border:1px solid rgba(239,159,39,.06);border-left:3px solid rgba(239,159,39,.3)}
+.h2-action-card.mood-impatient{background:var(--bg-card);border:1px solid rgba(239,159,39,.08);border-left:3px solid var(--amber)}
+.h2-action-card.mood-annoyed{background:var(--bg-card);border:1px solid rgba(232,93,80,.08);border-left:3px solid var(--red)}
+.h2-action-card.mood-giving_up{background:var(--bg-card);border:1px dashed rgba(255,255,255,.06);border-left:3px dashed var(--text-dim)}
+.h2-action-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.h2-action-label{font-size:12px;font-weight:500;color:var(--text-mid)}
+.h2-action-items{display:flex;gap:10px;margin-bottom:14px}
+.h2-action-item{flex:1;background:var(--surface-2);border-radius:var(--radius-md);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.h2-action-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.h2-action-item-info{flex:1}
+.h2-action-item-val{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.h2-action-item-label{font-size:10px;color:var(--text-dim);margin-top:2px}
+.h2-action-cta{display:flex;gap:8px;align-items:center}
+.h2-action-btn{background:var(--accent);border:none;color:#111;padding:9px 18px;border-radius:var(--radius-md);font-size:13px;font-weight:600;font-family:var(--font-body);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.h2-action-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.h2-action-dismiss{font-size:11px;color:var(--text-dim);cursor:pointer;transition:color .15s}
+.h2-action-dismiss:hover{color:var(--text-mid)}
+
+/* Fav overlay on hover */
+.h2-fav-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 60%);opacity:0;transition:opacity .2s;border-radius:inherit}
+.h2-fav-card:hover .h2-fav-overlay{opacity:1}
+
+/* Today dots overlap */
+.h2-today-cats-overlap{display:flex}
+.h2-today-dot-overlap{width:10px;height:10px;border-radius:50%;margin-left:-3px;border:1.5px solid var(--bg-card)}
+.h2-today-dot-overlap:first-child{margin-left:0}
+.h2-today-bar:hover .h2-today-arrow{transform:translateX(3px)}
+
+/* Legacy critic-banner kept for backwards compat */
 .critic-banner{display:flex;align-items:center;gap:16px;padding:18px 20px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);margin-bottom:20px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.15);animation:h2FadeUp .4s ease both}
 .critic-banner.score-fire{border-left:3px solid var(--red)}
 .critic-banner.score-needs{border-left:3px solid var(--orange)}

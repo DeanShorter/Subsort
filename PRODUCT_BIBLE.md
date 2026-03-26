@@ -149,24 +149,34 @@ All hand-drawn inline SVGs at 16x16 viewBox, 1.5px stroke, round caps/joins, str
 ## 4. Page structure
 
 ### Navigation hierarchy
-**Sidebar top:** Home, Subscriptions, Feeds, Discover
-**Sidebar middle (Quick access):** All, Favourites, Recently watched
-**Sidebar bottom:** Categories with expandable subcategories
-**Sidebar footer:** Settings, Blog, Pro
+**Sidebar (pages only — no categories):** Home, Subscriptions, Feed, Discover, Insights
+**Sidebar footer:** Settings, Pro
+**Category navigation:** horizontal tabs in the content area of each page (dot + name format), not in the sidebar
 
 ### Pages
-- `/dashboard` — Home: greeting, stats cards, favourites feed, category breakdown
-- `/subscriptions` — All channels with sidebar category filtering and topbar subcategory chips
-- `/feeds` — Category-based video feeds
+- `/home` — Home: critic banner (shareable verdict), action card (evidence + scrub CTA), favourites grid, today summary bar, recent activity, Discover teaser
+- `/subscriptions` — Channel management with 3 view modes (table, grid, compact list), category tabs with "Manage" button, bulk edit, auto-sort
+- `/feed` — Category-based video feeds grouped by time (today, earlier this week), subcategory chips, amygdala scrub break cards
 - `/discover` — Personalised channel recommendations in categorised sections (see Discover page spec in section 6)
+- `/insights` — Pro: watch analytics, punch card chart, category breakdown (subscribed vs watched), feed health deep dive, roast history
 - `/settings` — Account, preferences, connected services
 - `/privacy` — Privacy policy
 - `/terms` — Terms of service
-- `/blog` — Blog posts
+- `/blog` — Blog posts with gradient banners per category
 
-### Admin pages (separate layout)
-- `/admin` — Overview dashboard with stats, signups chart, feature usage, recent signups table
-- `/admin/newsletter` — Compose and send newsletters with audience targeting
+### Page personalities
+Each page has a distinct visual weight, density, and mood. Pages should NOT feel the same.
+
+- **Home** = "morning briefing" — personal, warm, content-forward. Critic banner at top (the only tinted card in the app), large favourites grid below. Asymmetric layout. The page that talks to you.
+- **Feed** = "lean-back browsing" — big thumbnails dominate, less data, more content. Closest to YouTube's feel. Horizontal scroll rows, category-grouped video lists.
+- **Subscriptions** = "control room" — data-dense, power-user tools. Table view with sortable columns, bulk actions. The only page that should feel like a spreadsheet.
+- **Discover** = "exploration" — bigger cards, more whitespace, looser grid. Browsing possibilities, not managing data.
+- **Insights** = "revelation" — full-width charts and visualisations, storytelling data. The punch card, the roast, the trends.
+
+### Category navigation (reimagined)
+Categories live in the content area as horizontal tabs (dot + name format), NOT in the sidebar. The sidebar is page-level navigation only. When a category tab is clicked, subcategories appear as pills directly below. One place, one interaction, no duplication.
+
+A "Manage" button at the end of the category tab row opens a modal for renaming categories, changing colours, creating/editing/deleting subcategories, and reordering.
 
 ---
 
@@ -256,7 +266,69 @@ Ends with a roast card from "subscrub — Your subscription critic" and a "Show 
 Roasts are built dynamically based on user data. Templates scale by subscription count (under 100 / 100-250 / 250-400 / 400+), category skew, inactive channel severity, and uncategorised count. Always observational, never mean.
 
 ### Subscription critic card
-Dashboard widget showing subscrub score (percentage), score bar, breakdown rows (never watched, inactive, clickbait), and "Let's fix this" CTA. Score colour: red (0-40), amber (40-70), mint (70-100).
+The critic is a living character with moods, patience, and memory. It appears on the Home page as two cards:
+
+**Card 1 — The critic verdict (shareable).** Thin banner at the top of Home. Score ring, emoji, greeting, one-liner roast, score sparkline (7-14 points showing trend), and a share button. This is the subscrub signature — the first thing users see every time they open the app. The card has a tinted background that shifts colour based on the critic's mood (mint when encouraging, amber when nudging, red when annoyed, grey when giving up). This is the ONLY tinted card in the app — everything else uses neutral surfaces.
+
+**Card 2 — The action card (evidence + CTA).** Sits below the critic card. Shows the specific problems (52 never watched, 32 inactive, 20 clickbait flagged) with a "Scrub now" CTA. The left border colour and weight escalates with the critic's mood. The copy gets more urgent over time.
+
+### Critic mood escalation
+The critic's personality intensifies based on how long since the user last took action (scrubbed, unsubscribed, recategorised). Track `last_critic_action` timestamp on the user profile.
+
+**Encouraging (0-3 days since action):**
+- Emoji: 😎 | Tint: mint | Sparkline: green, trending up
+- Greeting: "Not bad, Dean."
+- Roast: "You scrubbed 8 channels last week and your score jumped 4 points."
+- Action: "A few loose ends to tidy up when you're ready."
+- CTA: "Keep scrubbing"
+
+**Nudging (4-7 days):**
+- Emoji: 😐 | Tint: amber | Sparkline: amber, flat
+- Greeting: "Getting there, Dean."
+- Roast: "326 subscriptions and you engage with 87 of them. The other 239 are just paying emotional rent."
+- Action: "Those 52 inactive channels aren't going to scrub themselves."
+- CTA: "Scrub now"
+
+**Impatient (1-2 weeks):**
+- Emoji: 😤 | Tint: deeper amber | Sparkline: amber→red, trending down
+- Greeting: "Still here, Dean?"
+- Roast: "It's been 12 days since your last scrub. Your score dropped from 68% to 63%."
+- Action: "Your feed is getting worse, not better. Fix it."
+- CTA: "Scrub now"
+
+**Annoyed (2-4 weeks):**
+- Emoji: 😡 | Tint: red | Sparkline: red, downward
+- Greeting: "We need to talk, Dean."
+- Roast: "Remember when you said you'd fix your feed? That was 3 weeks ago. You've subscribed to 4 more channels since then."
+- Action: "Seriously. 52 channels you've never watched. Just sitting there. Judging you."
+- CTA: "Fix this mess"
+
+**Giving up (4+ weeks):**
+- Emoji: 💀 | Tint: grey | Border: dashed | Sparkline: grey, flat
+- Greeting: "Fine. Whatever."
+- Roast: "At this point I think you and your 52 dead channels deserve each other."
+- Action: "I'll be here when you're ready. If you're ever ready."
+- CTA: "Prove me wrong"
+
+### Score history tracking
+Store score history as a JSON array on the user profile:
+
+```sql
+ALTER TABLE profiles ADD COLUMN last_critic_action timestamptz;
+ALTER TABLE profiles ADD COLUMN score_history jsonb DEFAULT '[]';
+```
+
+Each entry: `{date, score}`. Append on login/sync. Cap at 30 entries. The sparkline in the critic card renders the last 10-14 data points. Sparkline dot colours match the score tier at that point (mint/amber/red).
+
+### Home page structure (above the fold)
+1. **Critic banner** — score ring, emoji, greeting, roast, sparkline, share button. Tinted background based on mood.
+2. **Action card** — problem breakdown (3 items with coloured dots and counts), scrub CTA, "maybe later" dismiss. Left border escalates with mood.
+3. **New from favourites** — large video card grid (4 columns desktop, 2 mobile). Borderless cards with rounded thumbnails and hover overlay. NEW badges and durations.
+
+### Home page structure (below the fold)
+4. **Today summary bar** — single clickable row: "42 new videos today across 8 categories." Overlapping category dots. Links to Feed.
+5. **Recent activity** — timeline of scrubs, sorts, favourites, badge earned.
+6. **Discover teaser** — 3 new channel recommendations with avatars. Links to Discover.
 
 ### Feed health thermometer
 Gradient bar from red through amber to mint with personality labels:
@@ -336,6 +408,37 @@ The free tier gets increasingly smart over time as click data accumulates. Show 
 - Subscription critic: show the click-enhanced score, teaser for the full Takeout-powered breakdown
 
 **Key principle:** The free tier should feel increasingly smart over time. The user thinks "this app really knows me" — then the Pro upsell is "imagine what it could tell you with your full watch history." They're already sold on the concept because the free version proved it works.
+
+### Video embedding
+Videos play in an embedded YouTube iframe modal within subscrub rather than redirecting to youtube.com. This keeps users in the app and makes subscrub feel like a destination.
+
+**Impact on stats:**
+- Creator views: count normally (iframe views are real views)
+- User's YouTube watch history: does NOT update (YouTube only tracks on youtube.com/app)
+- subscrub tracking: logs click via events table when modal opens (event: 'video_click')
+- Watch duration: available via YouTube iframe API onStateChange callback (post-launch enhancement)
+
+**Implementation:**
+```html
+<iframe src="https://www.youtube.com/embed/{videoId}?autoplay=1"
+  allow="autoplay; encrypted-media" allowfullscreen />
+```
+No API quota cost. No special permissions. Log the click before opening the modal.
+
+### Blog card style
+Each blog post gets a gradient banner (56px) at the top of its card using category-specific colours:
+
+| Category | Gradient | Tag bg | Tag text |
+|---|---|---|---|
+| Product | `#1D9E75 → #3ECFA0` | `rgba(62,207,160,0.1)` | `#1D9E75` |
+| Guide | `#185FA5 → #85B7EB` | `rgba(55,138,221,0.1)` | `#185FA5` |
+| Data | `#BA7517 → #FAC775` | `rgba(239,159,39,0.1)` | `#854F0B` |
+| Update | `#534AB7 → #CECBF6` | `rgba(176,124,237,0.1)` | `#534AB7` |
+| Tutorial | `#993C1D → #F0997B` | `rgba(216,90,48,0.1)` | `#993C1D` |
+| Opinion | `#993556 → #ED93B1` | `rgba(212,83,126,0.1)` | `#993556` |
+| News | `#A32D2D → #F09595` | `rgba(226,75,74,0.1)` | `#A32D2D` |
+
+Each card shows: gradient banner, category tag with colour, title (Outfit 15px 600), excerpt (2-line clamp), date + read time.
 
 ### Discover page
 
@@ -555,14 +658,25 @@ Both need a proper legal review before handling real user data at scale.
 ### Before launch
 - Implement sync screen with personalised onboarding
 - Trigger RSS refresh on first login
+- Build the critic banner and action card for Home page (two-card split with mood escalation)
+- Implement score history tracking (last_critic_action + score_history on profiles table)
+- Build Home page with favourites grid, today summary bar, activity timeline, Discover teaser
+- Rename pages: Dashboard→Home, Feeds→Feed, Analytics→Insights
+- Move categories from sidebar to content area as horizontal tabs (dot + name format)
+- Build category management modal (rename, recolour, subcategories, reorder)
+- Implement 3 view modes for Subscriptions (table, grid, compact list)
 - Build the subscription critic / feed health scoring
 - Create at least the "First scrub" and "Ghost hunter" badges
 - Add cheeky empty states throughout the app
-- Implement video click tracking (video_clicks table + logging on every video card click)
+- Implement video click tracking via events table (event: 'video_click', metadata: {video_id, channel_id, category, source})
+- Build video embed modal (YouTube iframe, log click on open)
 - Build admin enrichment panel (manual fill gaps, discover channels, refresh stale)
 - Seed discover_channels table via admin enrichment (all 8 categories)
 - Build Discover page with launch sections: "Popular in [category]" x2, "Based on your favourites"
 - Create discover_channels table in both production and test databases
+- Apply refined design tokens (softer borders, slower transitions, muted category colours, ghost buttons)
+- Add staggered fade-up animations on category/view switching
+- Apply blog card gradient banners per category
 - Record 30-60 second demo video for landing page
 - Update blog post and all references from Freedly to subscrub
 - Get legal review of privacy policy and terms
@@ -625,6 +739,15 @@ All mockups are HTML files that can be opened in a browser:
 - `subscrub-personality.html` — roasts, badges, empty states, unsubscribe confirms
 - `subscrub-share-cards.html` — shareable social media cards
 - `subscrub-sync-screen.html` — personalised sync/onboarding experience
+- `subscrub-feeds.html` — feeds page with sections, subcategories, amygdala scrub break card, Pro upsell
+- `subscrub-page-headers.html` — consistent page header patterns (6 variants + mobile)
+- `subscrub-dashboard-tiers.html` — dashboard with Free and Pro tier comparison
+- `subscrub-dashboard-critic.html` — dashboard with critic card as right-side panel
+- `subscrub-page-personalities.html` — page personality comparison + category navigation reimagined
+- `subscrub-home-revised.html` — Home page with thin critic banner + favourites grid
+- `subscrub-home-critic-moods.html` — Home page with escalating critic moods (5 states, interactive)
+- `subscrub-subscriptions-views.html` — Subscriptions with 3 view modes + category management modal
+- `subscrub-tokens-refined.css` — refined design tokens (softer borders, transitions, muted colours)
 
 ### Code files
 - `rss-refresh.ts` — RSS fetcher, refresh API route, client hook, refresh button component
@@ -635,6 +758,7 @@ All mockups are HTML files that can be opened in a browser:
 ### Style files
 - `freedly-design-system.css` — combined tokens + components (original)
 - `components.css` — components only (separated)
+- `subscrub-tokens-refined.css` — refined tokens with softer surfaces, slower transitions, muted category colours, ghost buttons
 
 ### Documents
 - `privacy-policy.md` — privacy policy

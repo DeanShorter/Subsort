@@ -26,6 +26,8 @@ export default function Subscriptions2Page() {
   const [selectedChannels, setSelectedChannels] = useState(new Set());
   const [sorting, setSorting] = useState(false);
   const [showSortConfirm, setShowSortConfirm] = useState(false);
+  const [hiddenCols, setHiddenCols] = useState(new Set());
+  const toggleCol = (col) => setHiddenCols(prev => { const next = new Set(prev); next.has(col) ? next.delete(col) : next.add(col); return next; });
 
   // ── Filter + sort ──────────────────────────────────
   const filtered = useMemo(() => {
@@ -45,6 +47,7 @@ export default function Subscriptions2Page() {
         case 'videoCount': cmp = (a.videoCount || 0) - (b.videoCount || 0); break;
         case 'subDate': cmp = (a.subscribedAt || '').localeCompare(b.subscribedAt || ''); break;
         case 'category': cmp = (chCats(a)[0] || '').localeCompare(chCats(b)[0] || ''); break;
+        case 'subcategory': cmp = (a.subcategory || '').localeCompare(b.subcategory || ''); break;
         case 'favourited': cmp = (a.favourited ? 1 : 0) - (b.favourited ? 1 : 0); break;
         default: cmp = 0;
       }
@@ -178,12 +181,36 @@ export default function Subscriptions2Page() {
               <tr>
                 <th style={{ width: 30 }}></th>
                 <th style={{ width: 30 }}>Fav</th>
-                <th className="s2-sortable" onClick={() => handleColumnSort('name')}>Name {sortKey === 'name' && (sortDir === 'asc' ? '▲' : '▼')}</th>
-                <th className="s2-sortable" onClick={() => handleColumnSort('category')}>Category {sortKey === 'category' && (sortDir === 'asc' ? '▲' : '▼')}</th>
-                <th className="s2-sortable" onClick={() => handleColumnSort('subscribers')}>Subs {sortKey === 'subscribers' && (sortDir === 'asc' ? '▲' : '▼')}</th>
-                <th className="s2-sortable" onClick={() => handleColumnSort('videoCount')}>Videos {sortKey === 'videoCount' && (sortDir === 'asc' ? '▲' : '▼')}</th>
-                <th className="s2-sortable" onClick={() => handleColumnSort('subDate')}>Subscribed {sortKey === 'subDate' && (sortDir === 'asc' ? '▲' : '▼')}</th>
-                <th>Status</th>
+                <th className="s2-sortable" onClick={() => handleColumnSort('name')}>
+                  Name {sortKey === 'name' && (sortDir === 'asc' ? '▲' : '▼')}
+                </th>
+                {!hiddenCols.has('category') && <th className="s2-sortable">
+                  <span onClick={() => handleColumnSort('category')}>Category {sortKey === 'category' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                  <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('category'); }} title="Hide column">✕</button>
+                </th>}
+                {!hiddenCols.has('subcategory') && <th className="s2-sortable">
+                  <span onClick={() => handleColumnSort('subcategory')}>Subcategory {sortKey === 'subcategory' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                  <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('subcategory'); }} title="Hide column">✕</button>
+                </th>}
+                {!hiddenCols.has('subscribers') && <th className="s2-sortable">
+                  <span onClick={() => handleColumnSort('subscribers')}>Subs {sortKey === 'subscribers' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                  <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('subscribers'); }} title="Hide column">✕</button>
+                </th>}
+                {!hiddenCols.has('videoCount') && <th className="s2-sortable">
+                  <span onClick={() => handleColumnSort('videoCount')}>Videos {sortKey === 'videoCount' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                  <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('videoCount'); }} title="Hide column">✕</button>
+                </th>}
+                {!hiddenCols.has('subDate') && <th className="s2-sortable">
+                  <span onClick={() => handleColumnSort('subDate')}>Subscribed {sortKey === 'subDate' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                  <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('subDate'); }} title="Hide column">✕</button>
+                </th>}
+                {!hiddenCols.has('status') && <th>
+                  Status
+                  <button className="s2-col-toggle" onClick={() => toggleCol('status')} title="Hide column">✕</button>
+                </th>}
+                {hiddenCols.size > 0 && <th style={{ width: 30 }}>
+                  <button className="s2-col-restore" onClick={() => setHiddenCols(new Set())} title="Show all columns">+</button>
+                </th>}
               </tr>
             </thead>
             <tbody>
@@ -198,11 +225,13 @@ export default function Subscriptions2Page() {
                     <td><input type="checkbox" checked={isSelected} onChange={() => toggleChannelSelect(ch.id)} onClick={e => e.stopPropagation()} /></td>
                     <td><span className={`s2-fav${ch.favourited ? ' active' : ''}`} onClick={e => { e.stopPropagation(); toggleFavourite(ch.id); }}>★</span></td>
                     <td><div className="s2-ch-name"><div className="s2-ch-avatar" style={{ background: `${col}33` }}>{ch.thumbnail ? <img src={ch.thumbnail} alt="" /> : initials}</div>{ch.name}</div></td>
-                    <td><div className="s2-ch-cat"><span className="s2-ct-dot" style={{ background: col }} />{cats[0] || '—'}</div></td>
-                    <td className="s2-num">{formatCount(ch.subscriberCount)}</td>
-                    <td className="s2-num">{ch.videoCount?.toLocaleString() || '—'}</td>
-                    <td className="s2-num">{fmtDate(ch.subscribedAt)}</td>
-                    <td><span className={`s2-status ${state}`}>{state === 'dead' ? 'Inactive' : state === 'inactive' ? 'Low' : 'Active'}</span></td>
+                    {!hiddenCols.has('category') && <td><div className="s2-ch-cat"><span className="s2-ct-dot" style={{ background: col }} />{cats[0] || '—'}</div></td>}
+                    {!hiddenCols.has('subcategory') && <td>{ch.subcategory || <span style={{ color: 'var(--text-dim)' }}>—</span>}</td>}
+                    {!hiddenCols.has('subscribers') && <td className="s2-num">{formatCount(ch.subscriberCount)}</td>}
+                    {!hiddenCols.has('videoCount') && <td className="s2-num">{ch.videoCount?.toLocaleString() || '—'}</td>}
+                    {!hiddenCols.has('subDate') && <td className="s2-num">{fmtDate(ch.subscribedAt)}</td>}
+                    {!hiddenCols.has('status') && <td><span className={`s2-status ${state}`}>{state === 'dead' ? 'Inactive' : state === 'inactive' ? 'Low' : 'Active'}</span></td>}
+                    {hiddenCols.size > 0 && <td></td>}
                   </tr>
                 );
               })}
