@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useChannelData } from './ChannelDataContext';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from './AuthContext';
@@ -21,15 +21,18 @@ export default function EditChannelModal({ channelId, onClose }) {
   const [showSubEdit, setShowSubEdit] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Init state from channel
+  // Init state from channel — only on first open (channelId change), not on ch reference changes
+  const initRef = useRef(null);
   useEffect(() => {
-    if (!ch) return;
+    if (!ch || initRef.current === channelId) return;
+    initRef.current = channelId;
+    console.log('[EditChannel] Init from channel:', { id: channelId, categories: ch.categories, subcategory: ch.subcategory });
     setSelectedCats([...(ch.categories || [])]);
     setSelectedSub(ch.subcategory || '');
     setNotes(ch.notes || '');
     setShowCatEdit(false);
     setShowSubEdit(false);
-  }, [ch]);
+  }, [ch, channelId]);
 
   // Derived
   const cats = chCats(ch);
@@ -67,9 +70,12 @@ export default function EditChannelModal({ channelId, onClose }) {
 
   // ── Toggle category ────────────────────────────────────
   const toggleCat = (cat) => {
-    setSelectedCats(prev =>
-      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
-    );
+    console.log('[EditChannel] Toggle cat:', cat, 'current:', selectedCats);
+    setSelectedCats(prev => {
+      const next = prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat];
+      console.log('[EditChannel] New selectedCats:', next);
+      return next;
+    });
   };
 
   // ── Save ───────────────────────────────────────────────
