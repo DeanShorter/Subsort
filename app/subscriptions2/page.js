@@ -240,8 +240,8 @@ export default function Subscriptions2Page() {
             <button className={`home-nav-item${filterFavOnly ? ' active' : ''}`}
               onClick={() => setFilterFavOnly(f => !f)}
               style={{ width: '100%' }}>
-              <svg viewBox="0 0 24 24" fill={filterFavOnly ? 'var(--color-warning)' : 'none'} stroke="currentColor" strokeWidth="2" style={{ width: 14, height: 14 }}>
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              <svg viewBox="0 0 16 16" fill={filterFavOnly ? 'var(--color-warning)' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
+                <path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" />
               </svg>
               <span className="home-nav-item-label">Favourites only</span>
             </button>
@@ -294,8 +294,8 @@ export default function Subscriptions2Page() {
                 </th>
                 <th style={{ width: 30, textAlign: 'center' }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" strokeWidth="2" width="14" height="14" style={{ opacity: 0.5 }}>
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    <svg viewBox="0 0 16 16" fill="none" stroke="var(--text-dim)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" style={{ opacity: 0.5 }}>
+                      <path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" />
                     </svg>
                   </span>
                 </th>
@@ -341,7 +341,7 @@ export default function Subscriptions2Page() {
                 return (
                   <tr key={ch.id} className={isSelected ? 's2-row-selected' : ''} onClick={() => bulkMode ? toggleChannelSelect(ch.id) : setEditingId(ch.id)}>
                     <td><div className={`h2-task-check${isSelected ? ' checked' : ''}`} onClick={e => { e.stopPropagation(); toggleChannelSelect(ch.id); }}>{isSelected && '✓'}</div></td>
-                    <td><button className={`ch-table-fav${ch.favourited ? ' starred' : ''}`} onClick={e => { e.stopPropagation(); toggleFavourite(ch.id); }}><svg viewBox="0 0 24 24" fill={ch.favourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg></button></td>
+                    <td><button className={`ch-table-fav${ch.favourited ? ' starred' : ''}`} onClick={e => { e.stopPropagation(); toggleFavourite(ch.id); }}><svg viewBox="0 0 16 16" fill={ch.favourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg></button></td>
                     <td><div className="s2-ch-name"><div className="s2-ch-avatar" style={{ background: `${col}33` }}>{ch.thumbnail ? <img src={ch.thumbnail} alt="" /> : initials}</div>{ch.name}</div></td>
                     {!hiddenCols.has('category') && <td><div className="s2-ch-cat"><span className="s2-ct-dot" style={{ background: col }} />{cats[0] || '—'}</div></td>}
                     {!hiddenCols.has('subcategory') && <td>{ch.subcategory || <span style={{ color: 'var(--text-dim)' }}>—</span>}</td>}
