@@ -21,6 +21,7 @@ export default function HomePage() {
           <a className="lp-nav-link" href="#how">How it works</a>
           <a className="lp-nav-link" href="#features">Features</a>
           <a className="lp-nav-link" href="#pricing">Pricing</a>
+          <Link className="lp-nav-link" href="/signin">Log in</Link>
           <Link className="lp-nav-cta" href="/signin">Get started free</Link>
         </div>
       </nav>

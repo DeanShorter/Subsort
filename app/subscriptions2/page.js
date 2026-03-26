@@ -126,9 +126,6 @@ export default function Subscriptions2Page() {
           </div>
           <div className="f2-header-right">
             <div className="ph-view-toggles">
-              <button className={`ph-view-btn${chanView === 'compact' ? ' active' : ''}`} title="Compact" onClick={() => setChanView('compact')}>
-                <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
-              </button>
               <button className={`ph-view-btn${chanView === 'table' ? ' active' : ''}`} title="Table" onClick={() => setChanView('table')}>
                 <svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="3" rx="0.5" /><rect x="1" y="6" width="12" height="3" rx="0.5" /><rect x="1" y="11" width="12" height="3" rx="0.5" /></svg>
               </button>
@@ -384,29 +381,6 @@ export default function Subscriptions2Page() {
                       <div><span className="s2-grid-val">{ch.videoCount?.toLocaleString() || '0'}</span> videos</div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* COMPACT VIEW */}
-        {chanView === 'compact' && filtered.length > 0 && (
-          <div className="s2-compact">
-            {filtered.map(ch => {
-              const cats = chCats(ch);
-              const col = categoryColours[cats[0]] || 'var(--accent)';
-              const initials = (ch.name || '?').substring(0, 2).toUpperCase();
-              return (
-                <div key={ch.id} className="s2-compact-row" onClick={() => setEditingId(ch.id)}>
-                  <span className={`s2-compact-fav${ch.favourited ? ' active' : ''}`}
-                    onClick={e => { e.stopPropagation(); toggleFavourite(ch.id); }}>★</span>
-                  <div className="s2-compact-avatar" style={{ background: `${col}33` }}>
-                    {ch.thumbnail ? <img src={ch.thumbnail} alt="" /> : initials}
-                  </div>
-                  <span className="s2-compact-name">{ch.name}</span>
-                  <div className="s2-compact-cat"><span className="s2-ct-dot" style={{ background: col }} />{cats[0] || '—'}</div>
-                  <span className="s2-compact-subs">{formatCount(ch.subscriberCount)}</span>
                 </div>
               );
             })}
