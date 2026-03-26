@@ -1,11 +1,42 @@
 'use client';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
 import { trackEvent } from '../../lib/track';
 import Link from 'next/link';
+
+function TypedText({ text, speed = 18 }) {
+  const [displayed, setDisplayed] = useState('');
+  const [showCursor, setShowCursor] = useState(true);
+  const textRef = useRef(text);
+
+  useEffect(() => {
+    textRef.current = text;
+    setDisplayed('');
+    setShowCursor(true);
+    let i = 0;
+    const plain = text.replace(/<[^>]+>/g, ''); // strip HTML for typing
+    const interval = setInterval(() => {
+      if (i < plain.length) {
+        setDisplayed(plain.substring(0, i + 1));
+        i++;
+      } else {
+        clearInterval(interval);
+        setTimeout(() => setShowCursor(false), 500);
+      }
+    }, speed + Math.random() * speed * 0.5);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return (
+    <span>
+      {displayed}
+      {showCursor && <span className="h2-cursor" />}
+    </span>
+  );
+}
 
 function Sparkline({ trend = 'flat', scoreColor = 'var(--amber)' }) {
   const heights = trend === 'up' ? [35,40,38,42,50,48,55,60,65,72]
@@ -35,6 +66,7 @@ export default function Home2Page() {
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [playingVideo, setPlayingVideo] = useState(null);
   const [actionDismissed, setActionDismissed] = useState(false);
+  const [completedTasks, setCompletedTasks] = useState(new Set());
 
   const channelMap = useMemo(() => {
     const map = {};
@@ -104,6 +136,36 @@ export default function Home2Page() {
   const moodEmoji = { encouraging: '😎', nudging: '😐', impatient: '😤', annoyed: '😡', giving_up: '💀' };
   const moodGreeting = { encouraging: 'Not bad', nudging: 'Getting there', impatient: 'Still here?', annoyed: 'We need to talk', giving_up: 'Fine. Whatever.' };
   const moodBtnText = { encouraging: 'Keep scrubbing', nudging: 'Scrub now', impatient: 'Scrub now', annoyed: 'Fix this mess', giving_up: 'Prove me wrong' };
+  const moodAttrib = { encouraging: 'reluctantly impressed', nudging: `based on ${channels.length} subscriptions`, impatient: 'losing patience', annoyed: 'visibly frustrated', giving_up: 'emotionally checked out' };
+  const moodActionSince = { encouraging: 'Last scrub: yesterday', nudging: 'Last scrub: 5 days ago', impatient: 'Last scrub: 12 days ago', annoyed: 'Last scrub: 23 days ago', giving_up: 'Last scrub: 38 days ago' };
+
+  // Task list quips based on completion
+  const taskQuip = useMemo(() => {
+    const done = completedTasks.size;
+    if (done === 3) return "Wait. You actually did it? All of them? I... don't know what to say.";
+    if (done === 2) return `${done} down, 1 to go. I'm starting to believe in you. Don't make me regret it.`;
+    if (done === 1) return "One down. That's a start. A slow start, but technically a start.";
+    if (mood === 'encouraging') return "You've been doing well. Just a few loose ends.";
+    if (mood === 'impatient') return "I gave you 3 things to do. They're still here. Staring at me.";
+    if (mood === 'annoyed') return "At this point the tasks are going to outlive us both.";
+    if (mood === 'giving_up') return "The tasks are still here. I'm barely here.";
+    return "I've made this very easy for you. You just have to click the buttons.";
+  }, [completedTasks, mood]);
+
+  const taskProgressPct = Math.round((completedTasks.size / 3) * 100);
+  const taskProgressColor = completedTasks.size >= 2 ? 'var(--accent)' : 'var(--amber)';
+  const taskProgressLabel = completedTasks.size === 3 ? '100% complete — The Critic is speechless. Almost.'
+    : completedTasks.size >= 2 ? `${taskProgressPct}% complete — The Critic is cautiously optimistic.`
+    : completedTasks.size === 1 ? `${taskProgressPct}% complete — The Critic acknowledges your effort.`
+    : '0% complete — The Critic is watching.';
+
+  const toggleTask = (id) => setCompletedTasks(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+
+  const tasks = [
+    { id: 'inactive', label: 'Review inactive channels', sub: "Haven't uploaded in 6+ months", count: inactiveCount, color: 'var(--red)' },
+    { id: 'uncat', label: 'Categorise uncategorised channels', sub: 'No category assigned yet', count: uncatCount, color: 'var(--amber)' },
+    { id: 'favs', label: 'Add more favourites', sub: 'Star your must-watch channels', count: `${favCount} selected`, color: 'var(--accent)' },
+  ];
 
   const roastText = useMemo(() => {
     const active = channels.length - inactiveCount;
@@ -143,7 +205,7 @@ export default function Home2Page() {
 
   const todayChannelCount = useMemo(() => new Set(todayVideos.map(v => v.channelId)).size, [todayVideos]);
 
-  const ringC = 2 * Math.PI * 21;
+  const ringC = 2 * Math.PI * 22;
   const ringOffset = ringC - (ringC * score / 100);
 
   if (dataLoading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
@@ -156,7 +218,7 @@ export default function Home2Page() {
     return (
       <main className="home-main">
         <div className="db-header-bar">
-          <div className="db-greeting"><h1>Good <span>morning</span>, <span>there</span>.</h1><p>Sign in to get started.</p></div>
+          <div className="db-greeting"><h1>Good morning, <span>there</span>.</h1><p>Sign in to get started.</p></div>
         </div>
         <div className="home-feed-empty"><p className="home-feed-empty-text">Sign in to get started.</p><button className="btn-accent" onClick={signIn}>Sign in with Google</button></div>
       </main>
@@ -165,73 +227,91 @@ export default function Home2Page() {
 
   return (
     <>
-      <div className="db-header-bar">
-        <div className="db-greeting">
-          <h1>Good <span>{greetingTime}</span>, <span>{userName}</span>.</h1>
-          <p>{subtitle}</p>
-        </div>
-        <div className="ph-right">
-          <span className="db-clock">Last refresh: {lastRefresh}</span>
-        </div>
-      </div>
-
       <div className="h2-content">
+        <div className="db-header-bar">
+          <div className="db-greeting">
+            <h1>Good {greetingTime}, <span>{userName}</span>.</h1>
+            <p>{subtitle}</p>
+          </div>
+          <div className="ph-right">
+            <span className="db-clock">Last refresh: {lastRefresh}</span>
+          </div>
+        </div>
         {/* ═══ CRITIC CARD ═══ */}
         <div className={`h2-critic-card mood-${mood}`}>
-          <div className="h2-critic-top">
-            <div className="h2-critic-ring">
-              <svg viewBox="0 0 52 52">
-                <circle cx="26" cy="26" r="21" fill="none" stroke="var(--surface-3)" strokeWidth="3.5" />
-                <circle cx="26" cy="26" r="21" fill="none" stroke={scoreColour} strokeWidth="3.5" strokeLinecap="round"
-                  strokeDasharray={ringC} strokeDashoffset={ringOffset} transform="rotate(-90 26 26)" />
-              </svg>
-              <span className="h2-critic-val" style={{ color: scoreColour }}>{score}%</span>
+          {/* Header: icon + title + sparkline + share */}
+          <div className="h2-critic-header">
+            <div className="h2-critic-identity">
+              <div className={`h2-critic-icon mood-${mood}`}>{moodEmoji[mood]}</div>
+              <span className="h2-critic-title">The Critic</span>
             </div>
-            <div className="h2-critic-text">
-              <div className="h2-critic-greeting">{moodEmoji[mood]} {moodGreeting[mood]}, {userName}.</div>
-              <div className="h2-critic-roast" dangerouslySetInnerHTML={{ __html: roastText }} />
-            </div>
-            <div className="h2-critic-right">
+            <div className="h2-critic-actions">
+              <Sparkline trend={sparkTrend} scoreColor={scoreColour} />
               <button className="cb-share" title="Share your score">
                 <svg viewBox="0 0 16 16"><path d="M4 8V13a1 1 0 001 1h6a1 1 0 001-1V8" /><polyline points="8 2 8 10" /><polyline points="5 5 8 2 11 5" /></svg>
               </button>
-              <Sparkline trend={sparkTrend} scoreColor={scoreColour} />
+            </div>
+          </div>
+          {/* Body: ring + roast */}
+          <div className="h2-critic-body">
+            <div className="h2-critic-ring-wrap">
+              <div className={`h2-critic-pulse mood-${mood}`} />
+              <div className="h2-critic-ring">
+                <svg viewBox="0 0 56 56">
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="var(--surface-3)" strokeWidth="4" />
+                  <circle cx="28" cy="28" r="22" fill="none" stroke={scoreColour} strokeWidth="4" strokeLinecap="round"
+                    strokeDasharray={ringC} strokeDashoffset={ringOffset} transform="rotate(-90 28 28)" />
+                </svg>
+                <span className="h2-critic-val" style={{ color: scoreColour }}>{score}%</span>
+              </div>
+            </div>
+            <div className="h2-critic-content">
+              <div className="h2-critic-greeting">{moodGreeting[mood]}, {userName}.</div>
+              <div className="h2-critic-roast">
+                <TypedText text={roastText.replace(/<[^>]+>/g, '')} speed={18} />
+              </div>
+              <div className="h2-critic-attrib">— The Critic, {moodAttrib[mood]}</div>
             </div>
           </div>
         </div>
 
-        {/* ═══ ACTION CARD ═══ */}
-        {!actionDismissed && inactiveCount > 0 && (
+        {/* ═══ CRITIC'S TASK LIST ═══ */}
+        {!actionDismissed && (
           <div className={`h2-action-card mood-${mood}`}>
-            <div className="h2-action-top">
-              <span className="h2-action-label">{actionLabel}</span>
+            <div className="h2-action-header">
+              <div className="h2-action-header-left">
+                <span className="h2-action-title">The Critic's recommendations</span>
+                <span className="h2-action-task-count">{completedTasks.size} of {tasks.length}</span>
+              </div>
+              <span className="h2-action-since">{moodActionSince[mood]}</span>
             </div>
-            <div className="h2-action-items">
-              <div className="h2-action-item">
-                <div className="h2-action-dot" style={{ background: 'var(--red)' }} />
-                <div className="h2-action-item-info">
-                  <div className="h2-action-item-val" style={{ color: 'var(--red)' }}>{inactiveCount}</div>
-                  <div className="h2-action-item-label">Inactive channels</div>
+            <div className="h2-action-quip">"{taskQuip}"</div>
+
+            <div className="h2-task-list">
+              {tasks.map(t => (
+                <div key={t.id} className={`h2-task-row${completedTasks.has(t.id) ? ' done' : ''}`} onClick={() => toggleTask(t.id)}>
+                  <div className="h2-task-check">{completedTasks.has(t.id) && '✓'}</div>
+                  <div className="h2-task-content">
+                    <div className="h2-task-label">{t.label}</div>
+                    <div className="h2-task-sub">{t.sub}</div>
+                  </div>
+                  <div className="h2-task-severity">
+                    <div className="h2-task-dot" style={{ background: t.color }} />
+                    <span className="h2-task-count" style={{ color: t.color }}>{t.count}</span>
+                  </div>
+                  <span className="h2-task-arrow">→</span>
                 </div>
-              </div>
-              <div className="h2-action-item">
-                <div className="h2-action-dot" style={{ background: 'var(--amber)' }} />
-                <div className="h2-action-item-info">
-                  <div className="h2-action-item-val" style={{ color: 'var(--amber)' }}>{uncatCount}</div>
-                  <div className="h2-action-item-label">Uncategorised</div>
-                </div>
-              </div>
-              <div className="h2-action-item">
-                <div className="h2-action-dot" style={{ background: 'var(--accent)' }} />
-                <div className="h2-action-item-info">
-                  <div className="h2-action-item-val" style={{ color: 'var(--accent)' }}>{favCount}</div>
-                  <div className="h2-action-item-label">Favourites</div>
-                </div>
-              </div>
+              ))}
             </div>
-            <div className="h2-action-cta">
-              <Link href="/subscriptions2" className="h2-action-btn">{moodBtnText[mood]}</Link>
-              <span className="h2-action-dismiss" onClick={() => setActionDismissed(true)}>Maybe later</span>
+
+            <div className="h2-action-footer">
+              <div className="h2-action-progress">
+                <div className="h2-action-progress-label">{taskProgressLabel}</div>
+                <div className="h2-action-progress-bar">
+                  <div className="h2-action-progress-fill" style={{ width: `${taskProgressPct}%`, background: taskProgressColor }} />
+                </div>
+              </div>
+              <span className="h2-action-dismiss" onClick={() => setActionDismissed(true)}>Dismiss</span>
             </div>
           </div>
         )}
