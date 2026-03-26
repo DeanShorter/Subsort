@@ -4052,7 +4052,7 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ─── Subscriptions 2 (experimental layout) ─── */
 .app-content:has(.s2-topbar){overflow-y:auto!important}
-.s2-topbar{background:var(--bg-card);border-bottom:1px solid var(--border-subtle);position:sticky;top:0;z-index:10;padding:0 24px}
+.s2-topbar{background:var(--bg-card);border-bottom:1px solid var(--border-subtle);flex-shrink:0;z-index:10;padding:0 24px}
 .s2-topbar-row{display:flex;align-items:center;justify-content:space-between;height:52px}
 .s2-topbar-left{display:flex;align-items:center;gap:10px}
 .s2-topbar-right{display:flex;align-items:center;gap:6px}
@@ -4149,7 +4149,7 @@ input[type=range]::-webkit-slider-thumb{
 .s2-filters-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);margin-bottom:6px;padding:0 10px}
 
 /* Content */
-.s2-content{padding:16px 24px 48px}
+.s2-content{padding:16px 24px 48px;flex:1;overflow-y:auto}
 
 /* Table */
 .s2-tbl{width:100%;border-collapse:separate;border-spacing:0}

@@ -31,12 +31,9 @@ export default function Subscriptions2Page() {
   const [showSortConfirm, setShowSortConfirm] = useState(false);
   const [showManageCats, setShowManageCats] = useState(false);
   const [showBulkEdit, setShowBulkEdit] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
   const catTabsRef = useRef(null);
   useDragScroll(catTabsRef);
   const [hiddenCols, setHiddenCols] = useState(new Set());
-  const [filterFavOnly, setFilterFavOnly] = useState(false);
-  const [filterUncatOnly, setFilterUncatOnly] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'active', 'inactive', 'dead'
   const toggleCol = (col) => setHiddenCols(prev => { const next = new Set(prev); next.has(col) ? next.delete(col) : next.add(col); return next; });
 
@@ -48,8 +45,6 @@ export default function Subscriptions2Page() {
     else if (activeCategory !== 'all') result = result.filter(c => chHasCat(c, activeCategory));
     if (activeSubcategory) result = result.filter(c => c.subcategory === activeSubcategory);
     if (search) { const q = search.toLowerCase(); result = result.filter(c => (c.name || '').toLowerCase().includes(q)); }
-    if (filterFavOnly) result = result.filter(c => c.favourited);
-    if (filterUncatOnly) result = result.filter(c => chIsUncategorised(c));
     if (filterStatus !== 'all') result = result.filter(c => getChannelState(c) === filterStatus);
 
     const dir = sortDir === 'asc' ? 1 : -1;
@@ -68,7 +63,7 @@ export default function Subscriptions2Page() {
       return cmp * dir;
     });
     return result;
-  }, [channels, activeCategory, activeSubcategory, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterFavOnly, filterUncatOnly, filterStatus, getChannelState]);
+  }, [channels, activeCategory, activeSubcategory, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterStatus, getChannelState]);
 
   // ── Sort column click ──────────────────────────────
   const handleColumnSort = (key) => {
@@ -127,6 +122,12 @@ export default function Subscriptions2Page() {
             <span className="ph-count">{filtered.length} channels</span>
           </div>
           <div className="f2-header-right">
+            <div className="f2-type-toggles">
+              <button className={`f2-type-btn${filterStatus === 'all' ? ' active' : ''}`} onClick={() => setFilterStatus('all')}>All</button>
+              <button className={`f2-type-btn${filterStatus === 'active' ? ' active' : ''}`} onClick={() => setFilterStatus('active')}>Active</button>
+              <button className={`f2-type-btn${filterStatus === 'inactive' ? ' active' : ''}`} onClick={() => setFilterStatus('inactive')}>Inactive</button>
+              <button className={`f2-type-btn${filterStatus === 'dead' ? ' active' : ''}`} onClick={() => setFilterStatus('dead')}>Dead</button>
+            </div>
             <div className="ph-view-toggles">
               <button className={`ph-view-btn${chanView === 'table' ? ' active' : ''}`} title="Table" onClick={() => setChanView('table')}>
                 <svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="3" rx="0.5" /><rect x="1" y="6" width="12" height="3" rx="0.5" /><rect x="1" y="11" width="12" height="3" rx="0.5" /></svg>
@@ -135,9 +136,16 @@ export default function Subscriptions2Page() {
                 <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
               </button>
             </div>
-            <button className={`ph-btn${showFilters ? ' active' : ''}`} onClick={() => setShowFilters(f => !f)}>
+            <button className="ph-btn" onClick={() => {
+              const keys = ['name', 'subscribers', 'videoCount', 'subDate', 'category', 'favourited'];
+              const labels = { name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category', favourited: 'Favourites' };
+              const idx = keys.indexOf(sortKey);
+              const nextIdx = (idx + 1) % keys.length;
+              setSortKey(keys[nextIdx]);
+              setSortDir('asc');
+            }}>
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-              Filters
+              Sort: {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category', favourited: 'Favs' })[sortKey] || 'Name'}
             </button>
             {selectedChannels.size > 0 && (
               <button className="ph-btn active" onClick={() => setShowBulkEdit(true)}>
@@ -207,64 +215,6 @@ export default function Subscriptions2Page() {
         )}
       </div>
 
-      {/* FILTERS PANEL */}
-      {showFilters && (
-        <div className="s2-filters-panel">
-          <div className="s2-filters-header">
-            <span className="s2-filters-title">Filters</span>
-            <button className="mcm-close" onClick={() => setShowFilters(false)} style={{ width: 24, height: 24, fontSize: 11 }}>✕</button>
-          </div>
-
-          <div className="s2-filters-section">
-            <div className="s2-filters-label">Sort by</div>
-            {[['name','Name'],['subscribers','Subs'],['videoCount','Videos'],['subDate','Subscribed'],['category','Category'],['favourited','Favourites']].map(([key, label]) => (
-              <button key={key} className={`home-nav-item${sortKey === key ? ' active' : ''}`}
-                onClick={() => { if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc'); else { setSortKey(key); setSortDir('asc'); } }}
-                style={{ width: '100%' }}>
-                <span className="home-nav-item-label">{label} {sortKey === key ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="s2-filters-section">
-            <div className="s2-filters-label">Status</div>
-            {['all', 'active', 'inactive', 'dead'].map(s => (
-              <button key={s} className={`home-nav-item${filterStatus === s ? ' active' : ''}`}
-                onClick={() => setFilterStatus(filterStatus === s ? 'all' : s)}
-                style={{ width: '100%' }}>
-                <span className="home-nav-item-label" style={{ textTransform: 'capitalize' }}>{s === 'all' ? 'All statuses' : s}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="s2-filters-section">
-            <div className="s2-filters-label">Quick filters</div>
-            <button className={`home-nav-item${filterFavOnly ? ' active' : ''}`}
-              onClick={() => setFilterFavOnly(f => !f)}
-              style={{ width: '100%' }}>
-              <svg viewBox="0 0 16 16" fill="none" stroke={filterFavOnly ? 'var(--color-warning)' : 'currentColor'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
-                <path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" />
-              </svg>
-              <span className="home-nav-item-label">Favourites only</span>
-            </button>
-            <button className={`home-nav-item${filterUncatOnly ? ' active' : ''}`}
-              onClick={() => setFilterUncatOnly(f => !f)}
-              style={{ width: '100%' }}>
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ width: 14, height: 14 }}>
-                <circle cx="8" cy="8" r="6" /><path d="M6 6l4 4M10 6l-4 4" />
-              </svg>
-              <span className="home-nav-item-label">Uncategorised only</span>
-            </button>
-          </div>
-
-          {(filterStatus !== 'all' || filterFavOnly || filterUncatOnly) && (
-            <button className="ph-btn" onClick={() => { setFilterStatus('all'); setFilterFavOnly(false); setFilterUncatOnly(false); }}
-              style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
-              Clear filters
-            </button>
-          )}
-        </div>
-      )}
 
       {/* CONTENT */}
       <div className="s2-content">
