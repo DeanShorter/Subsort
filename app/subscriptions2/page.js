@@ -113,6 +113,10 @@ export default function Subscriptions2Page() {
             <span className="ph-count">{filtered.length} channels</span>
           </div>
           <div className="s2-topbar-right">
+            <button className="s2-btn-ghost" onClick={() => window.__subsortScrollToCats?.()}>
+              <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
+              Filters
+            </button>
             <div className="ph-view-toggles">
               <button className={`ph-view-btn${chanView === 'compact' ? ' active' : ''}`} title="Compact" onClick={() => setChanView('compact')}>
                 <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
