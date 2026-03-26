@@ -6,6 +6,7 @@ import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
 import { trackEvent } from '../../lib/track';
 import { useDragScroll } from '../../hooks/useDragScroll';
+import YouTubePlayer from '../components/YouTubePlayer';
 
 export default function Feeds2Page() {
   const { user, signIn } = useAuth();
@@ -329,10 +330,11 @@ export default function Feeds2Page() {
               </div>
             </div>
             <div className="f2-player-embed">
-              <iframe
-                src={`https://www.youtube.com/embed/${playingVideo.id}?autoplay=1`}
-                allow="autoplay; encrypted-media"
-                allowFullScreen
+              <YouTubePlayer
+                videoId={playingVideo.id}
+                videoTitle={playingVideo.title}
+                channelName={playingVideo.channel}
+                onClose={() => setPlayingVideo(null)}
               />
             </div>
           </div>
