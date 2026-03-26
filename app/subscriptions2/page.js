@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { supabase } from '../../lib/supabase';
@@ -28,6 +28,7 @@ export default function Subscriptions2Page() {
   const [sorting, setSorting] = useState(false);
   const [showSortConfirm, setShowSortConfirm] = useState(false);
   const [showManageCats, setShowManageCats] = useState(false);
+  const catTabsRef = useRef(null);
   const [hiddenCols, setHiddenCols] = useState(new Set());
   const toggleCol = (col) => setHiddenCols(prev => { const next = new Set(prev); next.has(col) ? next.delete(col) : next.add(col); return next; });
 
@@ -147,7 +148,10 @@ export default function Subscriptions2Page() {
 
         {/* Category tabs + manage button */}
         <div className="s2-cat-row-wrap">
-          <div className="s2-cat-tabs">
+          <button className="f2-cat-scroll-btn f2-cat-scroll-left" onClick={() => catTabsRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}>
+            <svg viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" /></svg>
+          </button>
+          <div className="s2-cat-tabs" ref={catTabsRef}>
             <button className={`s2-cat-tab${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
               <span className="s2-ct-dot" style={{ background: 'var(--accent)' }} />All<span className="s2-ct-count">{channels.length}</span>
             </button>
@@ -162,6 +166,9 @@ export default function Subscriptions2Page() {
               </button>
             ))}
           </div>
+          <button className="f2-cat-scroll-btn f2-cat-scroll-right" onClick={() => catTabsRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}>
+            <svg viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" /></svg>
+          </button>
           <button className="s2-cat-manage" onClick={() => setShowManageCats(true)}>
             <svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" /></svg>
             Manage Categories
