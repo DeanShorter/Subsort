@@ -18,10 +18,6 @@ const PAGE_ITEMS = [
     svg: <><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 14V8h4v6"/></>,
   },
   {
-    href: '/dashboard2', label: 'Home 2',
-    svg: <><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 14V8h4v6"/></>,
-  },
-  {
     href: '/subscriptions', label: 'Subscriptions',
     svg: <><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2 6h12"/></>,
   },

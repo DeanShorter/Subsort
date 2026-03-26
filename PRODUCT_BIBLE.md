@@ -164,7 +164,7 @@ Render at 32px for empty state hero icons, 16-18px inline with text in cards and
 - 🤷 No search results
 - 🧹 All scrubbed (post-cleanup)
 - 😶 No videos this week
-- 🐕 Amygdala scrub / take a breather
+- 🐕 The Critic recommends a break / palate cleanser
 
 **Roast card reactions:**
 - 💀 Devastating stats
@@ -224,7 +224,7 @@ All hand-drawn inline SVGs at 16x16 viewBox, 1.5px stroke, round caps/joins, str
 ### Pages
 - `/home` — Home: critic banner (shareable verdict), action card (evidence + scrub CTA), favourites grid, today summary bar, recent activity, Discover teaser
 - `/subscriptions` — Channel management with 3 view modes (table, grid, compact list), category tabs with "Manage" button, bulk edit, auto-sort
-- `/feed` — Category-based video feeds grouped by time (today, earlier this week), subcategory chips, amygdala scrub break cards
+- `/feed` — Category-based video feeds grouped by time (today, earlier this week), subcategory chips, Critic break cards
 - `/discover` — Personalised channel recommendations in categorised sections (see Discover page spec in section 6)
 - `/insights` — Pro: watch analytics, punch card chart, category breakdown (subscribed vs watched), feed health deep dive, roast history
 - `/settings` — Account, preferences, connected services
@@ -522,13 +522,16 @@ Free tier feature. Personalised channel recommendations served from the `discove
 
 4. **Try something new** — cross-category recommendation. "Other users obsessed with Tech also have channels in the Education category." Powered by analysing category overlap across users. Needs 20-30+ users to show meaningful patterns. Pushes people outside their bubble.
 
-5. **Amygdala Scrub** — mood-based counterbalance section. Detects when a user's feed is heavy on intense categories (News, Politics, True Crime) and offers wholesome alternatives: cooking, nature, animals, art, comedy, lo-fi music. Only shows when applicable to that user's feed.
+5. **The Critic recommends a break** — mood-based counterbalance section. The Critic detects when a user's feed is heavy on intense categories (News, Politics, True Crime) and intervenes with wholesome alternatives: cooking, nature, animals, art, comedy, lo-fi music. Only shows when applicable to that user's feed. This isn't a standalone feature with its own branding — it's The Critic caring about you.
 
-   Copy examples:
-   - "Your feed is 40% News and Politics. Your cortisol levels called — they'd like a word. Here are some channels that might help."
+   Copy examples (in The Critic's voice):
+   - "I've been watching you scroll through 8 news videos. Here's something lighter."
+   - "Your feed is 40% News and Politics. Your cortisol levels called — they'd like a word."
+   - "That's a lot of heavy stuff today. The Critic recommends a palate cleanser."
    - "It's January. Everyone's doom-scrolling. Here's your antidote."
-   - "Feeling drained from the terrible news in the world? Check out some of these wholesome channels to scrub your amygdala clean."
 
+   In the Feed page: appears as an inline break card between category groups after a cluster of heavy content. Dismissable, once per session.
+   In Discover: appears as a recommendation section for finding new wholesome channels to subscribe to.
    Channels tagged as "wholesome" or "feel-good" during enrichment. Softer card treatment to distinguish from regular recommendations.
 
 **Post-launch sections (need accumulated data):**
@@ -598,6 +601,35 @@ Later additions to Phase 3 (requires active user base):
 - Curator tier (Pro+ at £9.99/month) gates public sharing, ratings, and analytics
 
 **Key principle:** Each phase is independently valuable. Phase 1 works alone. Phase 2 works without Phase 3. Phase 3 only makes sense with an active community. Don't build the next phase until the current one is proven and used.
+
+### Wellbeing features
+
+Features tied to The Critic's personality that help users manage their viewing habits. These aren't health warnings — they're The Critic caring about you in character.
+
+**The Critic recommends a break (feed palate cleanser):**
+Inline break card in the Feed page that appears after a cluster of heavy content (News, Politics, True Crime). The Critic intervenes with 2-3 wholesome video suggestions. Dismissable, once per session. See Discover section for the channel recommendation version.
+
+**Bedtime mode (post-launch):**
+The Critic notices when the user is browsing late at night and comments on it. Escalates based on time and session activity. Implemented client-side using local time + session click count. No server-side logic needed.
+
+Escalation:
+- 11pm: subtle toast. "Getting late. Just saying."
+- Midnight: direct. "It's midnight. You've watched 14 videos since 10pm."
+- 1am: concerned. "It's 1am. I'm not judging. Actually, I am judging."
+- 2am: giving up. "Fine. I'll be here when you wake up at noon."
+
+The tone is caring, not preachy. It's The Critic's personality, not a health warning. The user can dismiss it and keep browsing — this is a nudge, not a lock.
+
+Optional settings: users can set their own bedtime threshold in Settings, or disable it entirely. Default: enabled at 11pm.
+
+**Rabbit holes — the tension:**
+Uncontrolled rabbit holes at 2am are unhealthy — The Critic intervenes via bedtime mode. Intentional rabbit holes during the day (saved as collections, curated as playlists, shared as courses) are the product's value. The difference is awareness and agency:
+- Bedtime mode gives awareness ("you've been here 2 hours")
+- Collections give agency ("save this rabbit hole for later")
+
+Both features can coexist. The Critic's bedtime nudge could even reference collections: "It's 1am and you've clicked on 12 music production videos. Want me to save these as a collection so you can pick up tomorrow?"
+
+This framing turns a wellbeing feature into a conversion mechanism: the bedtime nudge naturally introduces the collections feature (Pro) at the exact moment the user has content worth saving.
 
 ---
 
@@ -716,6 +748,84 @@ Route: `/terms`
 
 Both need a proper legal review before handling real user data at scale.
 
+### YouTube API compliance
+
+subscrub uses the YouTube Data API v3 and must comply with the YouTube API Terms of Service.
+
+**What subscrub does (all compliant):**
+- Read-only OAuth access to user subscriptions (minimum scopes)
+- YouTube iframe embeds for video playback (official embed player, serves YouTube ads, counts views)
+- RSS feeds for detecting new uploads (not subject to API terms — RSS is separate from the API)
+- API calls for channel metadata only (names, thumbnails, subscriber counts, topics)
+- Displays YouTube thumbnails linked to YouTube content
+
+**What subscrub does NOT do:**
+- Download, rip, or re-host video content
+- Strip or bypass YouTube ads
+- Bypass age restrictions or content restrictions
+- Scrape data outside of the official API
+- Claim YouTube content as its own
+- Request write access or broader OAuth scopes than needed
+
+**Required YouTube branding:**
+- YouTube logo displayed near embedded players where required
+- Links back to YouTube for video content
+- "subscrub is not affiliated with or endorsed by YouTube or Google" in footer/FAQ
+
+### Data caching policy
+
+The YouTube API terms require that API-sourced data is refreshed periodically and that deleted content is eventually removed. This applies to data fetched via the API — not to data subscrub generates itself.
+
+**Data that IS subject to API caching rules (refresh periodically):**
+- Channel metadata: names, descriptions, thumbnails, subscriber counts, video counts, topics, country
+- Video metadata: titles, thumbnails, durations (if cached via API)
+- Channel status: whether a channel still exists on YouTube
+
+**Data that is NOT subject to API caching rules (subscrub's own data):**
+- User categories, subcategories, and channel assignments
+- Favourites, notes, and channel organisation
+- Click events and viewing activity (logged by subscrub, not from YouTube)
+- Scores, critic history, score_history, last_critic_action
+- Collections, saved videos, annotations
+- Badges, streaks, and achievement data
+- User preferences and settings
+
+**Data obtained via RSS (not subject to API terms):**
+- New video upload detection (video IDs, titles, publish dates from RSS feeds)
+- RSS is a separate protocol, not the YouTube Data API
+
+**Refresh requirements:**
+- User channel metadata: refreshed on each sync (login/manual refresh)
+- Discover channel metadata: refreshed via enrichment cycle, stale after 7 days, flagged for refresh
+- General staleness threshold: any API-sourced data not refreshed in 30+ days should be flagged for the next enrichment run
+- All API data uses `updated_at` timestamps to track freshness
+
+**Cleanup jobs (post-launch):**
+- Video cleanup: monthly check whether cached videos still exist on YouTube. If API returns 404, remove from cache.
+- Channel cleanup: if a channel ID returns nothing from the API, remove from discover_channels and flag for user notification. "The Critic noticed one of your channels disappeared from YouTube."
+- Deleted user data: when a user deletes their account, all their data (subscriptions, events, preferences, scores) removed within 30 days per privacy policy.
+
+**API quota and approval:**
+- Default quota: 10,000 units/day
+- Current estimated usage: ~4,500-5,000 units/day at 100 users
+- If growth requires more, apply for quota increase via Google Cloud Console
+- Google reviews applications for API terms compliance — clean usage, proper branding, and a clear privacy policy are checked
+- subscrub's architecture (RSS for uploads, API for metadata only) is efficient and would present well in a review
+
+### Google OAuth scopes
+Only request minimum scopes needed. Currently: read-only access to YouTube subscriptions. Verify the scopes in Google Cloud Console match what's documented in the privacy policy. Do not request write access or broader scopes.
+
+### GDPR / UK data protection
+- Clear data deletion process: account deletion removes all user data within 30 days
+- Right to data export: users can request their data
+- Cookie policy: essential cookies only, no tracking cookies
+- Privacy policy accessible from every page (footer link)
+
+### Trademark
+- subscrub is not affiliated with or endorsed by YouTube or Google
+- Add this disclaimer to: landing page footer, FAQ if created, About page if created
+- "YouTube" is a trademark of Google LLC — use correctly, don't modify or abbreviate
+
 ---
 
 ## 9. Infrastructure checklist
@@ -813,12 +923,16 @@ Both need a proper legal review before handling real user data at scale.
 - Set up social media accounts with sunglasses logomark as avatar
 - Implement cron job for automatic RSS refresh
 - Implement video metadata backfill via YouTube API
+- Implement monthly video cleanup job (check cached videos still exist, remove 404s)
+- Implement channel cleanup check (remove deleted channels from discover_channels, notify users)
+- Add staleness flag for API data not refreshed in 30+ days
+- Add "not affiliated with YouTube" disclaimer to landing page footer
 - Build shareable score cards (server-side image generation)
 - Implement full achievement badges system
 - Build click-powered free tier insights (category distribution, never-clicked channels, smart roasts)
 - Build Pro upsell touchpoints based on click data (blurred recommendations, teaser breakdowns)
 - Discover page: add "Try something new" cross-category section (needs 20-30+ users)
-- Discover page: add "Amygdala Scrub" wholesome channel section (tag channels during enrichment)
+- Discover page: add "The Critic recommends a break" wholesome channel section (tag channels during enrichment)
 - Discover page: add "Based on what you watch" Pro section (needs click data accumulation)
 - Discover page: add collaborative filtering "Users who watch X also subscribe to..." (needs 50+ users)
 - Build admin dashboard with real Supabase queries
@@ -829,12 +943,15 @@ Both need a proper legal review before handling real user data at scale.
 - Re-subscribe shame toasts
 - Competitive score sharing between users
 - Launch on Product Hunt, Reddit, Hacker News
+- Implement bedtime mode (client-side time check + session click count, escalating Critic toasts)
+- Add bedtime threshold setting to Settings page (default 11pm, disable option)
 
 ### Phase 2 features (after initial traction, 1-3 months post-launch)
 - Video saves: annotated saves with private collections (Pro feature)
 - Pro upsell on save action (note/collection prompt)
 - saved_videos and collections database tables
 - Collections management UI (create, rename, reorder, delete)
+- Bedtime mode → collections conversion: "Want me to save these as a collection so you can pick up tomorrow?"
 
 ### Phase 3 features (with active community, 6-12 months post-launch)
 - Public shared collections via share link
@@ -868,7 +985,7 @@ All mockups are HTML files that can be opened in a browser:
 - `subscrub-personality.html` — roasts, badges, empty states, unsubscribe confirms
 - `subscrub-share-cards.html` — shareable social media cards
 - `subscrub-sync-screen.html` — personalised sync/onboarding experience
-- `subscrub-feeds.html` — feeds page with sections, subcategories, amygdala scrub break card, Pro upsell
+- `subscrub-feeds.html` — feeds page with sections, subcategories, Critic break card, Pro upsell
 - `subscrub-page-headers.html` — consistent page header patterns (6 variants + mobile)
 - `subscrub-dashboard-tiers.html` — dashboard with Free and Pro tier comparison
 - `subscrub-dashboard-critic.html` — dashboard with critic card as right-side panel

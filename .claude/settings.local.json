@@ -32,7 +32,10 @@
       "Bash(grep -v \"import\\\\|from\\\\|//\")",
       "Bash(node -e \"try{require.resolve\\(''chart.js''\\);console.log\\(''yes''\\)}catch\\(e\\){console.log\\(''no''\\)}\")",
       "Bash(mkdir -p \"D:/Subsort/app/feeds2\")",
-      "Bash(cp \"D:/Subsort/app/feeds/page.js\" \"D:/Subsort/app/feeds2/page.js\")"
+      "Bash(cp \"D:/Subsort/app/feeds/page.js\" \"D:/Subsort/app/feeds2/page.js\")",
+      "Bash(ls -d D:/Subsort/app/*/page.js D:/Subsort/app/*/page.tsx)",
+      "Bash(rm -rf app/dashboard)",
+      "Bash(mv app/dashboard2 app/dashboard)"
     ]
   }
 }
