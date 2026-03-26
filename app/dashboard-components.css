@@ -2417,6 +2417,24 @@ input[type=range]::-webkit-slider-thumb{
 /* Popular grid (2 cols) */
 .disc-popular-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.875rem}
 
+/* Discover empty state */
+.disc-empty-page{display:flex;flex-direction:column;height:100%;overflow-y:auto}
+.disc-empty-header{display:flex;align-items:center;gap:10px;padding:16px 28px;border-bottom:1px solid var(--border-subtle);background:var(--bg-card);flex-shrink:0}
+.disc-coming-soon-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);background:var(--surface-2);padding:3px 10px;border-radius:6px}
+.disc-empty-card{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;background:var(--bg-card);margin:20px 28px;border-radius:var(--radius-lg);border:1px solid var(--border-subtle)}
+.disc-empty-icon{width:64px;height:64px;border-radius:50%;border:1.5px solid var(--border-hover);display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+.disc-empty-icon svg{width:28px;height:28px;color:var(--text-dim)}
+.disc-empty-title{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-.5px;margin-bottom:10px;max-width:440px}
+.disc-empty-desc{font-size:14px;color:var(--text-mid);line-height:1.6;max-width:400px;margin-bottom:24px}
+.disc-empty-quote{display:inline-flex;align-items:center;gap:10px;padding:8px 18px;background:var(--surface-2);border-radius:100px;margin-bottom:28px}
+.disc-empty-quote-text{font-size:13px;font-style:italic;color:var(--text-mid)}
+.disc-empty-quote-attr{font-size:12px;color:var(--text-dim);font-weight:500}
+.disc-empty-actions{display:flex;flex-direction:column;gap:8px;width:100%;max-width:360px}
+.disc-empty-action{display:flex;align-items:center;gap:12px;padding:14px 18px;border:1px solid var(--border-hover);border-radius:var(--radius-md);text-decoration:none;color:var(--text-mid);font-size:14px;font-weight:500;transition:all .2s}
+.disc-empty-action:hover{background:var(--surface-2);border-color:rgba(255,255,255,.1);color:var(--text)}
+.disc-empty-action svg{width:16px;height:16px;flex-shrink:0;opacity:.5}
+.disc-empty-arrow{margin-left:auto;color:var(--text-dim);font-size:14px}
+
 /* Trending channels card */
 .home-trending{
   background:var(--bg-card);border:1px solid var(--border-subtle);
