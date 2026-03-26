@@ -26,6 +26,7 @@ export default function Subscriptions2Page() {
   const [selectedChannels, setSelectedChannels] = useState(new Set());
   const [sorting, setSorting] = useState(false);
   const [showSortConfirm, setShowSortConfirm] = useState(false);
+  const [showManageCats, setShowManageCats] = useState(false);
   const [hiddenCols, setHiddenCols] = useState(new Set());
   const toggleCol = (col) => setHiddenCols(prev => { const next = new Set(prev); next.has(col) ? next.delete(col) : next.add(col); return next; });
 
@@ -158,6 +159,10 @@ export default function Subscriptions2Page() {
               {cat}<span className="s2-ct-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
             </button>
           ))}
+          <button className="s2-cat-manage" onClick={() => setShowManageCats(true)}>
+            <svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" /></svg>
+            Manage
+          </button>
         </div>
 
         {/* Subcategory tabs */}
