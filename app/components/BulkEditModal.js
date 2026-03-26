@@ -32,7 +32,7 @@ export default function BulkEditModal({ selectedIds, channels, onClose, onSaved 
 
     try {
       if (action === 'remove_cat') {
-        // Remove all category assignments for selected channels
+        // Remove all category assignments and subcategories for selected channels
         for (const ch of selected) {
           const currentCats = chCats(ch);
           for (const cat of currentCats) {
@@ -43,6 +43,8 @@ export default function BulkEditModal({ selectedIds, channels, onClose, onSaved 
                 .eq('category_id', dbCat.id);
             }
           }
+          // Clear subcategory
+          await supabase.from('channels').update({ subcategory_id: null }).eq('id', ch.id);
         }
         showToast(`Removed categories from ${selected.length} channels`);
       } else if (action === 'change_cat') {
@@ -51,8 +53,9 @@ export default function BulkEditModal({ selectedIds, channels, onClose, onSaved 
         if (!dbCat) return;
 
         for (const ch of selected) {
-          // Remove existing categories
+          // Remove existing categories and subcategory
           await supabase.from('channel_categories').delete().eq('channel_id', ch.id);
+          await supabase.from('channels').update({ subcategory_id: null }).eq('id', ch.id);
           // Add new category
           await supabase.from('channel_categories').insert({
             channel_id: ch.id,

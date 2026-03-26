@@ -34,6 +34,7 @@ export default function Subscriptions2Page() {
   const catTabsRef = useRef(null);
   const [hiddenCols, setHiddenCols] = useState(new Set());
   const [filterFavOnly, setFilterFavOnly] = useState(false);
+  const [filterUncatOnly, setFilterUncatOnly] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'active', 'inactive', 'dead'
   const toggleCol = (col) => setHiddenCols(prev => { const next = new Set(prev); next.has(col) ? next.delete(col) : next.add(col); return next; });
 
@@ -46,6 +47,7 @@ export default function Subscriptions2Page() {
     if (activeSubcategory) result = result.filter(c => c.subcategory === activeSubcategory);
     if (search) { const q = search.toLowerCase(); result = result.filter(c => (c.name || '').toLowerCase().includes(q)); }
     if (filterFavOnly) result = result.filter(c => c.favourited);
+    if (filterUncatOnly) result = result.filter(c => chIsUncategorised(c));
     if (filterStatus !== 'all') result = result.filter(c => getChannelState(c) === filterStatus);
 
     const dir = sortDir === 'asc' ? 1 : -1;
@@ -64,7 +66,7 @@ export default function Subscriptions2Page() {
       return cmp * dir;
     });
     return result;
-  }, [channels, activeCategory, activeSubcategory, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterFavOnly, filterStatus, getChannelState]);
+  }, [channels, activeCategory, activeSubcategory, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterFavOnly, filterUncatOnly, filterStatus, getChannelState]);
 
   // ── Sort column click ──────────────────────────────
   const handleColumnSort = (key) => {
@@ -237,7 +239,7 @@ export default function Subscriptions2Page() {
           </div>
 
           <div className="s2-filters-section">
-            <div className="s2-filters-label">Favourites</div>
+            <div className="s2-filters-label">Quick filters</div>
             <button className={`home-nav-item${filterFavOnly ? ' active' : ''}`}
               onClick={() => setFilterFavOnly(f => !f)}
               style={{ width: '100%' }}>
@@ -246,10 +248,18 @@ export default function Subscriptions2Page() {
               </svg>
               <span className="home-nav-item-label">Favourites only</span>
             </button>
+            <button className={`home-nav-item${filterUncatOnly ? ' active' : ''}`}
+              onClick={() => setFilterUncatOnly(f => !f)}
+              style={{ width: '100%' }}>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ width: 14, height: 14 }}>
+                <circle cx="8" cy="8" r="6" /><path d="M6 6l4 4M10 6l-4 4" />
+              </svg>
+              <span className="home-nav-item-label">Uncategorised only</span>
+            </button>
           </div>
 
-          {(filterStatus !== 'all' || filterFavOnly) && (
-            <button className="ph-btn" onClick={() => { setFilterStatus('all'); setFilterFavOnly(false); }}
+          {(filterStatus !== 'all' || filterFavOnly || filterUncatOnly) && (
+            <button className="ph-btn" onClick={() => { setFilterStatus('all'); setFilterFavOnly(false); setFilterUncatOnly(false); }}
               style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
               Clear filters
             </button>
@@ -285,10 +295,12 @@ export default function Subscriptions2Page() {
                     {selectedChannels.size === filtered.length && filtered.length > 0 && '✓'}
                   </div>
                 </th>
-                <th style={{ width: 30 }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" strokeWidth="2" style={{ width: 14, height: 14, opacity: 0.5 }}>
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
+                <th style={{ width: 30, textAlign: 'center' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" strokeWidth="2" width="14" height="14" style={{ opacity: 0.5 }}>
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </span>
                 </th>
                 <th className="s2-sortable" onClick={() => handleColumnSort('name')}>
                   Name {sortKey === 'name' && (sortDir === 'asc' ? '▲' : '▼')}
