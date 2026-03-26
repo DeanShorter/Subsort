@@ -40,6 +40,9 @@ export default function VideoModal({ video, onClose }) {
             <span className="vm-source">via Feed</span>
           </div>
           <div className="vm-top-right">
+            <button className="vm-btn" title="Save to Watch Later">
+              <svg viewBox="0 0 16 16"><path d="M3 2h10a1 1 0 011 1v11l-6-3-6 3V3a1 1 0 011-1z" /></svg>
+            </button>
             <a className="vm-btn" href={`https://youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" title="Open on YouTube">
               <svg viewBox="0 0 16 16"><path d="M12 9V13a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1h4" /><path d="M8 8L14 2" /><path d="M10 2h4v4" /></svg>
             </a>

@@ -131,18 +131,28 @@ export default function EditChannelModal({ channelId, onClose }) {
       if (updateErr) console.error('[EditChannel] Channel update failed:', updateErr);
 
       // Update channel_categories
-      await supabase.from('channel_categories').delete().eq('channel_id', ch.id);
+      console.log('[EditChannel] Saving categories:', { channelId: ch.id, selectedCats, dbCategoriesCount: dbCategories.length });
+      const { error: delErr } = await supabase.from('channel_categories').delete().eq('channel_id', ch.id);
+      if (delErr) console.error('[EditChannel] Category delete failed:', delErr);
+
       if (selectedCats.length && dbCategories.length) {
         const inserts = selectedCats
           .map(catName => {
             const cat = dbCategories.find(c => c.name === catName);
+            if (!cat) console.warn('[EditChannel] Category not found in dbCategories:', catName);
             return cat ? { channel_id: ch.id, category_id: cat.id } : null;
           })
           .filter(Boolean);
+        console.log('[EditChannel] Inserting categories:', inserts);
         if (inserts.length) {
           const { error: catInsertErr } = await supabase.from('channel_categories').insert(inserts);
           if (catInsertErr) console.error('[EditChannel] Category insert failed:', catInsertErr);
+          else console.log('[EditChannel] Categories saved successfully');
+        } else {
+          console.warn('[EditChannel] No valid inserts — selectedCats may not match dbCategories names');
         }
+      } else {
+        console.warn('[EditChannel] Skipped category insert:', { selectedCatsLen: selectedCats.length, dbCatsLen: dbCategories.length });
       }
 
       // Reload data

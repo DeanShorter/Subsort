@@ -348,7 +348,7 @@ export default function Home2Page() {
                 const isNew = v.publishedAt && (Date.now() - new Date(v.publishedAt).getTime()) < 24 * 60 * 60 * 1000;
                 return (
                   <div key={v.id} className="h2-fav-card" style={{ animationDelay: `${Math.min(i * 50, 400)}ms` }}
-                    onClick={() => { trackEvent('video_click_home'); setPlayingVideo({ id: v.id, title: v.title, channel: v.channel }); }}>
+                    onClick={() => { trackEvent('video_click_home'); setPlayingVideo(v); }}>
                     <div className="h2-fav-thumb">
                       <img src={v.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.classList.add('loaded')} />
                       <div className="h2-fav-overlay" />

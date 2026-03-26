@@ -285,7 +285,7 @@ export default function Feeds2Page() {
           return (
             <div key={v.id} className="f2-card" style={{ animationDelay: `${Math.min(idx * 50, 400)}ms` }} onClick={() => {
               trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video');
-              setPlayingVideo({ id: v.id, title: v.title, channel: v.channel || '' });
+              setPlayingVideo(v);
             }}>
               <div className="f2-card-thumb">
                 <img src={v.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.classList.add('loaded')} />

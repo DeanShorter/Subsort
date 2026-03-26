@@ -80,6 +80,11 @@ export default function Subscriptions2Page() {
         case 'category': cmp = (chCats(a)[0] || '').localeCompare(chCats(b)[0] || ''); break;
         case 'subcategory': cmp = (a.subcategory || '').localeCompare(b.subcategory || ''); break;
         case 'favourited': cmp = (a.favourited ? 1 : 0) - (b.favourited ? 1 : 0); break;
+        case 'status': {
+          const order = { dead: 0, inactive: 1, active: 2 };
+          cmp = (order[getChannelState(a)] || 0) - (order[getChannelState(b)] || 0);
+          break;
+        }
         default: cmp = 0;
       }
       return cmp * dir;
@@ -302,9 +307,9 @@ export default function Subscriptions2Page() {
                   <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('subDate'); }} title="Hide column">✕</button>
                   <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'subDate')} />
                 </th>}
-                {!hiddenCols.has('status') && <th style={colWidths.status ? { width: colWidths.status } : {}}>
-                  Status
-                  <button className="s2-col-toggle" onClick={() => toggleCol('status')} title="Hide column">✕</button>
+                {!hiddenCols.has('status') && <th className="s2-sortable" style={colWidths.status ? { width: colWidths.status } : {}} onClick={() => handleColumnSort('status')}>
+                  Status {sortKey === 'status' && (sortDir === 'asc' ? '▲' : '▼')}
+                  <button className="s2-col-toggle" onClick={e => { e.stopPropagation(); toggleCol('status'); }} title="Hide column">✕</button>
                   <span className="s2-col-resizer" onMouseDown={e => onResizeStart(e, 'status')} />
                 </th>}
                 {hiddenCols.size > 0 && <th style={{ width: 30 }}>
