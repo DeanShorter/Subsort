@@ -241,7 +241,7 @@ export default function Subscriptions2Page() {
                 const isSelected = selectedChannels.has(ch.id);
                 return (
                   <tr key={ch.id} className={isSelected ? 's2-row-selected' : ''} onClick={() => bulkMode ? toggleChannelSelect(ch.id) : setEditingId(ch.id)}>
-                    <td><input type="checkbox" checked={isSelected} onChange={() => toggleChannelSelect(ch.id)} onClick={e => e.stopPropagation()} /></td>
+                    <td><div className={`h2-task-check${isSelected ? ' checked' : ''}`} onClick={e => { e.stopPropagation(); toggleChannelSelect(ch.id); }}>{isSelected && '✓'}</div></td>
                     <td><span className={`s2-fav${ch.favourited ? ' active' : ''}`} onClick={e => { e.stopPropagation(); toggleFavourite(ch.id); }}>★</span></td>
                     <td><div className="s2-ch-name"><div className="s2-ch-avatar" style={{ background: `${col}33` }}>{ch.thumbnail ? <img src={ch.thumbnail} alt="" /> : initials}</div>{ch.name}</div></td>
                     {!hiddenCols.has('category') && <td><div className="s2-ch-cat"><span className="s2-ct-dot" style={{ background: col }} />{cats[0] || '—'}</div></td>}
