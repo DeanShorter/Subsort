@@ -98,6 +98,7 @@ if (window === window.top) {
   }
 
   function injectButton() {
+    if (!document.body) return;
     if (!isWatchPage()) {
       var existing = document.getElementById('yt-split-view-btn');
       if (existing) existing.remove();
@@ -142,19 +143,22 @@ if (window === window.top) {
     document.body.appendChild(btn);
   }
 
-  // Inject on load and on YouTube SPA navigation
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectButton);
-  } else {
+  function init() {
     injectButton();
+
+    // YouTube uses SPA navigation — listen for URL changes
+    var lastUrl = location.href;
+    new MutationObserver(function() {
+      if (location.href !== lastUrl) {
+        lastUrl = location.href;
+        injectButton();
+      }
+    }).observe(document.body, { childList: true, subtree: true });
   }
 
-  // YouTube uses SPA navigation — listen for URL changes
-  var lastUrl = location.href;
-  new MutationObserver(function() {
-    if (location.href !== lastUrl) {
-      lastUrl = location.href;
-      injectButton();
-    }
-  }).observe(document.body || document.documentElement, { childList: true, subtree: true });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 }

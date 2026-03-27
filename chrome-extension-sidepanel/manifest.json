@@ -3,7 +3,7 @@
   "name": "YouTube Side by Side",
   "version": "0.1.0",
   "description": "Watch two YouTube videos side by side in a Chrome side panel.",
-  "permissions": ["sidePanel", "declarativeNetRequest"],
+  "permissions": ["sidePanel", "declarativeNetRequest", "contextMenus"],
   "host_permissions": ["*://*.youtube.com/*", "*://*.youtube-nocookie.com/*"],
   "background": {
     "service_worker": "service-worker.js"
