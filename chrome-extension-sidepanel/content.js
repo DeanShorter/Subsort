@@ -9,53 +9,16 @@ if (window !== window.top) {
       background: #000 !important;
     }
 
-    /* Hide everything by default */
-    body > * {
+    /* Hide the header/nav */
+    #masthead-container,
+    #guide,
+    tp-yt-app-drawer,
+    ytd-mini-guide-renderer,
+    ytd-masthead {
       display: none !important;
     }
 
-    /* Show the chain of elements leading to the player */
-    ytd-app,
-    ytd-app > #content,
-    ytd-app > #content > ytd-page-manager,
-    ytd-page-manager > ytd-watch-flexy,
-    ytd-watch-flexy > #full-bleed-container,
-    ytd-watch-flexy > #columns,
-    ytd-watch-flexy > #columns > #primary,
-    ytd-watch-flexy > #columns > #primary > #primary-inner,
-    #player-container-outer,
-    #player-container-inner,
-    #player-container,
-    ytd-player,
-    #ytd-player,
-    #player,
-    #movie_player {
-      display: block !important;
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      max-width: none !important;
-      max-height: none !important;
-      min-height: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      overflow: hidden !important;
-      z-index: 9999 !important;
-    }
-
-    .html5-video-container,
-    .html5-video-container video {
-      width: 100vw !important;
-      height: 100vh !important;
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      object-fit: contain !important;
-    }
-
-    /* Hide everything that isn't the player */
+    /* Hide everything below the player */
     #secondary,
     #related,
     #comments,
@@ -63,23 +26,66 @@ if (window !== window.top) {
     #meta,
     #info,
     #below,
-    #masthead-container,
-    #guide,
-    #panels,
-    tp-yt-app-drawer,
-    ytd-masthead,
-    ytd-mini-guide-renderer,
     #description,
+    #panels,
     ytd-watch-next-secondary-results-renderer,
     ytd-comments,
     ytd-engagement-panel-section-list-renderer {
       display: none !important;
     }
 
-    /* Keep player controls visible and clickable */
-    .ytp-chrome-bottom,
-    .ytp-chrome-top {
-      z-index: 10000 !important;
+    /* Remove top margin that YouTube adds for the header */
+    ytd-app,
+    #content,
+    ytd-page-manager {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+
+    /* Make the player fill the entire viewport */
+    ytd-watch-flexy {
+      --ytd-watch-flexy-width-ratio: 1 !important;
+      --ytd-watch-flexy-height-ratio: 1 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    ytd-watch-flexy #full-bleed-container,
+    ytd-watch-flexy #player-full-bleed-container,
+    #player-container-outer,
+    #player-container-inner,
+    #player-container,
+    ytd-player,
+    #ytd-player,
+    #movie_player {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      min-height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .html5-video-container {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .html5-video-container video {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
+    }
+
+    /* Hide columns layout padding */
+    #columns {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    #primary, #primary-inner {
+      padding: 0 !important;
+      margin: 0 !important;
     }
   `;
   document.documentElement.appendChild(style);
