@@ -74,18 +74,28 @@ function setupSlot(position) {
 setupSlot('top');
 setupSlot('bottom');
 
-// --- Listen for "split view" messages from content script ---
+// --- Listen for "split view" messages from content script / service worker ---
+
+function loadVideoIntoSlot(url) {
+  if (!slots.top.currentVideoId) {
+    slots.top.loadFromUrl(url);
+  } else if (!slots.bottom.currentVideoId) {
+    slots.bottom.loadFromUrl(url);
+  } else {
+    slots.top.loadFromUrl(url);
+  }
+}
+
+// Check for a pending video from before the panel was open
+chrome.runtime.sendMessage({ action: 'getPending' }, function(response) {
+  if (response && response.url) {
+    loadVideoIntoSlot(response.url);
+  }
+});
 
 chrome.runtime.onMessage.addListener(function(msg) {
   if (msg.action === 'loadVideo' && msg.url) {
-    // Load into the first empty slot, or top if both are full
-    if (!slots.top.currentVideoId) {
-      slots.top.loadFromUrl(msg.url);
-    } else if (!slots.bottom.currentVideoId) {
-      slots.bottom.loadFromUrl(msg.url);
-    } else {
-      slots.top.loadFromUrl(msg.url);
-    }
+    loadVideoIntoSlot(msg.url);
   }
 });
 
