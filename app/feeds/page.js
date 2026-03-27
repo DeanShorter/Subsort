@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { trackEvent } from '../../lib/track';
 import { useDragScroll } from '../../hooks/useDragScroll';
 import VideoCardPreview from '../components/VideoCardPreview';
-import SplitView from '../components/SplitView';
+import SplitView, { SplitMinibar } from '../components/SplitView';
 
 export default function Feeds2Page() {
   const { user, signIn } = useAuth();
@@ -32,12 +32,32 @@ export default function Feeds2Page() {
   const [visibleCount, setVisibleCount] = useState(60);
   const [splitPanels, setSplitPanels] = useState([]);
   const [splitToast, setSplitToast] = useState('');
+  const [minibarVisible, setMinibarVisible] = useState(false);
   const contentRef = useRef(null);
+  const splitRef = useRef(null);
   const catRowRef = useRef(null);
 
-  // Get the scrollable container (app-content)
+  // Get the scrollable container and track split view visibility
   useEffect(() => {
     contentRef.current = document.getElementById('appContent');
+  }, []);
+
+  useEffect(() => {
+    const scrollEl = contentRef.current;
+    if (!scrollEl || splitPanels.length === 0) { setMinibarVisible(false); return; }
+
+    const onScroll = () => {
+      if (!splitRef.current) return;
+      const rect = splitRef.current.getBoundingClientRect();
+      setMinibarVisible(rect.bottom < 120);
+    };
+
+    scrollEl.addEventListener('scroll', onScroll);
+    return () => scrollEl.removeEventListener('scroll', onScroll);
+  }, [splitPanels.length]);
+
+  const scrollToSplit = useCallback(() => {
+    splitRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
   useDragScroll(catRowRef);
 
@@ -301,13 +321,21 @@ export default function Feeds2Page() {
         </div>
       </div>
 
-      {/* Split view */}
-      <SplitView
+      {/* Split minibar — sticks below header when split view scrolls out */}
+      <SplitMinibar
         panels={splitPanels}
-        onRemovePanel={removeFromSplit}
-        onSwapPanels={swapSplitPanels}
-        scrollRef={contentRef}
+        visible={minibarVisible}
+        onScrollToSplit={scrollToSplit}
       />
+
+      {/* Split view */}
+      <div ref={splitRef}>
+        <SplitView
+          panels={splitPanels}
+          onRemovePanel={removeFromSplit}
+          onSwapPanels={swapSplitPanels}
+        />
+      </div>
 
       {/* Split toast */}
       <div className={`split-toast${splitToast ? ' show' : ''}`}>
