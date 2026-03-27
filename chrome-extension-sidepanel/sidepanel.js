@@ -23,9 +23,15 @@ function extractVideoId(url) {
   return null;
 }
 
-function buildEmbedUrl(videoId) {
-  const origin = chrome.runtime.getURL('').slice(0, -1); // remove trailing slash
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
+function buildEmbedUrl(videoId, muted) {
+  const params = new URLSearchParams({
+    autoplay: '1',
+    rel: '0',
+    modestbranding: '1',
+    controls: '1',
+  });
+  if (muted) params.set('mute', '1');
+  return `https://www.youtube-nocookie.com/embed/${videoId}?${params}`;
 }
 
 // --- Slot logic ---
@@ -38,7 +44,17 @@ function setupSlot(position) {
   const videoArea = document.getElementById(`video-${position}`);
 
   let isMuted = false;
+  let currentVideoId = null;
   let iframe = null;
+
+  function loadIframe() {
+    videoArea.innerHTML = '';
+    iframe = document.createElement('iframe');
+    iframe.src = buildEmbedUrl(currentVideoId, isMuted);
+    iframe.allow = 'autoplay; encrypted-media';
+    iframe.allowFullscreen = true;
+    videoArea.appendChild(iframe);
+  }
 
   function loadVideo() {
     const videoId = extractVideoId(urlInput.value);
@@ -48,35 +64,25 @@ function setupSlot(position) {
       return;
     }
 
-    // Remove existing content
-    videoArea.innerHTML = '';
-
-    iframe = document.createElement('iframe');
-    iframe.src = buildEmbedUrl(videoId);
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
-    videoArea.appendChild(iframe);
-
+    currentVideoId = videoId;
     isMuted = false;
     muteBtn.textContent = 'Mute';
     muteBtn.disabled = false;
+    loadIframe();
   }
 
   function toggleMute() {
-    if (!iframe) return;
+    if (!currentVideoId) return;
     isMuted = !isMuted;
-    // Post message to YouTube iframe API
-    iframe.contentWindow.postMessage(JSON.stringify({
-      event: 'command',
-      func: isMuted ? 'mute' : 'unMute'
-    }), '*');
     muteBtn.textContent = isMuted ? 'Unmute' : 'Mute';
+    loadIframe();
   }
 
   function clearVideo() {
     videoArea.innerHTML = '<span class="placeholder">No video loaded</span>';
     urlInput.value = '';
     iframe = null;
+    currentVideoId = null;
     isMuted = false;
     muteBtn.textContent = 'Mute';
     muteBtn.disabled = true;
