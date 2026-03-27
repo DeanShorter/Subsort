@@ -2,7 +2,7 @@
 import { useRef, useState, useCallback } from 'react';
 import { trackEvent } from '../../lib/track';
 
-export default function VideoCardPreview({ video, categoryColour, isNew }) {
+export default function VideoCardPreview({ video, categoryColour, isNew, onAddToSplit, splitFull }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [loaded, setLoaded] = useState(false); // once loaded, never reset
@@ -84,6 +84,12 @@ export default function VideoCardPreview({ video, categoryColour, isNew }) {
           </svg>
           <span>{muted ? 'Unmute' : 'Mute'}</span>
         </button>
+        {onAddToSplit && !splitFull && (
+          <button className="vc-split-btn" onClick={e => { e.stopPropagation(); onAddToSplit(video); }}>
+            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="12" rx="1" /><rect x="8" y="1" width="5" height="12" rx="1" /></svg>
+            Split
+          </button>
+        )}
       </div>
       <div className="vc-info">
         <div className="vc-info-text">

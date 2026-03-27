@@ -18,12 +18,22 @@ This document is the single source of truth for the subscrub product. It covers 
 
 **Core value prop:** Connect your account, and subscrub sorts everything into clean feeds automatically. No manual setup, no tagging, no algorithm deciding what you should watch.
 
-**Pricing:**
-- Free tier: Manual sorting, feed health check, basic feeds, category browsing, manual subcategories, channel notes, Watch Later bookmarks
-- Pro tier (£4.99/month): Auto cleanup, smart categorisation, auto-generated subcategories, Discover personalisation, watch analytics (Takeout upload), full roast with watch history data, annotated video saves with private collections
-- Pro+ / Creator tier (future, £9.99/month): Public shared collections, community ratings and comments, "course" formatting, curator analytics, featured placement in Discover
+**Monetisation — currently undecided (intentionally):**
 
-Note: Launch with Free and Pro only. Pro+ is a 6-12 month roadmap item that depends on having an active user base. See section 10 for the phased rollout plan.
+Launch with everything free. No paid tier, no feature gating. The priority is getting 100+ active users and understanding how they actually use the product before deciding how to monetise.
+
+The previous Pro/Free split (auto-sort, smart categories, watch analytics behind a paywall) was abandoned because the best features — The Critic, the organised feed, split view, hover-to-preview — all need to be free to give users a reason to stay on subscrub instead of going back to YouTube. Gating them defeats the purpose.
+
+**Models being explored (post-launch, after user data exists):**
+- Ad-supported: non-intrusive sponsored cards in the feed, one every 15+ videos, clearly labelled. Needs meaningful traffic first.
+- Affiliate/referral: category-aware product recommendations ("The Critic recommends" section). Cookbooks for cooking viewers, gear for tech viewers. Monetises existing data without gating features.
+- Scale-based freemium: everything free up to ~200 subscriptions, unlimited for a small monthly fee. Gates on volume, not features. Power users pay naturally.
+- Pay what you want / tip jar: a "Support subscrub" option for users who find it valuable. Low effort, validates willingness to pay.
+- Creator tier (future): public shared collections, curator analytics, community ratings. Only viable with an active user base. Different product surface entirely — don't build until the viewer product is proven.
+
+**The rule:** don't build a payment system until the product has found its audience. The monetisation model should emerge from observed user behaviour, not predicted behaviour.
+
+Note: All previous references to "Free tier" and "Pro tier" feature splits throughout this document are now outdated. All features are free at launch. Feature references that mention "Pro" should be read as "future paid tier, model TBD."
 
 ---
 
@@ -283,7 +293,7 @@ All hand-drawn inline SVGs at 16x16 viewBox, 1.5px stroke, round caps/joins, str
 
 **Post-launch pages:**
 - `/discover` — Personalised channel recommendations in categorised sections (see Discover page spec in section 6). Greyed out in sidebar at launch with "Coming soon" tooltip. Build after 20+ users with accumulated click data.
-- `/insights` — Pro: watch analytics, punch card chart, category breakdown (subscribed vs watched), feed health deep dive, roast history
+- `/insights` — Watch analytics, punch card chart, category breakdown (subscribed vs watched), feed health deep dive, roast history. Unlocks progressively as click data accumulates.
 
 **Utility pages:**
 - `/settings` — Account, preferences, connected services
@@ -341,9 +351,9 @@ A "Manage" button at the end of the category tab row opens a modal for renaming 
 - `channel_categories` — junction table linking channels to categories
 - `channel_recategorisations` — logs every user correction for consensus building
 - `cached_videos` — video cache with title, thumbnail, published date, duration, view count, type
-- `video_clicks` — logs every video click with user, video, channel, category, timestamp (powers free tier insights)
+- `video_clicks` — logs every video click with user, video, channel, category, timestamp (powers insights and smart roasts)
 - `feed_cache` — cached feed data with expiry
-- `watch_history` — uploaded Takeout watch history (Pro tier, via Takeout upload)
+- `watch_history` — uploaded Takeout watch history (future enhancement via Takeout upload)
 - `events` — activity logging
 - `api_usage` — YouTube API quota tracking
 - `newsletter_sends` — newsletter send history
@@ -388,9 +398,9 @@ Personalised loader that narrates the sync process in real time. Greeting adapts
 
 Ends with a roast card from "subscrub — Your subscription critic" and a "Show me the damage" CTA.
 
-**Free tier roast** uses: subscription count, inactive channels, category distribution, uncategorised channels. No watch history data.
+**Launch roast** uses: subscription count, inactive channels, category distribution, uncategorised channels. No watch history data needed — RSS and click tracking power everything.
 
-**Pro tier roast** adds: never-watched channels, watch frequency, category vs actual viewing habits (the fitness/gaming callout).
+**Future enhanced roast** (once click data accumulates): never-watched channels, watch frequency, category vs actual viewing habits (the fitness/gaming callout). This unlocks automatically as the user generates more click data — not behind a paywall.
 
 ### Dynamic roast copy
 Roasts are built dynamically based on user data. Templates scale by subscription count (under 100 / 100-250 / 250-400 / 400+), category skew, inactive channel severity, and uncategorised count. Always observational, never mean.
@@ -496,9 +506,9 @@ Dashboard notification: "Your feed got messier this week. 6 new dead channels cr
 ### Subscrub alert
 Notification card for inactive users: "You've been a sub-slacker lately. Your feed's getting cluttered again — time for a quick scrub."
 
-### Video click tracking (free tier intelligence)
+### Video click tracking
 
-**Concept:** Every time a free user clicks a video in subscrub, we log it. Over time this builds a lightweight watch history without needing Takeout data or extra permissions. The data accumulates naturally as they use the product.
+**Concept:** Every time a user clicks a video in subscrub, we log it. Over time this builds a lightweight watch history without needing Takeout data or extra permissions. The data accumulates naturally as they use the product.
 
 **Data captured per click:** user_id, video_id, channel_id, category_id, timestamp.
 
@@ -515,45 +525,101 @@ CREATE TABLE public.video_clicks (
 );
 ```
 
-**What it enables for free users (after ~50+ clicks over a couple of weeks):**
+**What it enables (after ~50+ clicks over a couple of weeks):**
 
 - Subscription critic score improves — factors in "channels you never click on" alongside inactive channels
 - Category insights — "You spend 68% of your time in Tech and Gaming. Your 22 Music channels are basically decorative."
 - Smarter roasts — "You scroll past VoxCraft every single time. At this point you're just keeping them around for emotional support."
 - Better Discover recommendations — based on what they actually click, not just what they're subscribed to
 
-**Free-to-Pro conversion strategy:**
-
-The free tier gets increasingly smart over time as click data accumulates. Show the headline insight for free, tease the depth for Pro:
-
-- Free: "You've clicked on videos from 34 of your 347 channels this month."
-- Pro upsell: "Want to see which 313 you're ignoring? Upgrade to Pro for the full breakdown."
-
-- Free roast: "You clicked on 0 News videos this month despite being subscribed to 34 News channels."
-- Pro roast adds: "And looking at your full YouTube watch history, you haven't watched a News video since October 2024. Just saying."
-
-**Upsell touchpoints:**
-- Dashboard card after enough click data: "Based on your activity in subscrub, you've clicked on 12 Entertainment videos this week but 0 from your 34 News channels. Full watch analytics can tell you exactly where your time goes."
-- Discover page: show 2 personalised recommendations based on clicks, blur the rest with a Pro badge
-- Subscription critic: show the click-enhanced score, teaser for the full Takeout-powered breakdown
-
-**Key principle:** The free tier should feel increasingly smart over time. The user thinks "this app really knows me" — then the Pro upsell is "imagine what it could tell you with your full watch history." They're already sold on the concept because the free version proved it works.
+All insights unlock automatically as click data accumulates. No feature gating — the product just gets smarter the more you use it.
 
 ### Video embedding
-Videos play in an embedded YouTube iframe modal within subscrub rather than redirecting to youtube.com. This keeps users in the app and makes subscrub feel like a destination.
+Videos play inline within the feed via embedded YouTube iframes — no modals, no redirects, no separate player page. The feed IS the player.
 
 **Impact on stats:**
 - Creator views: count normally (iframe views are real views)
 - User's YouTube watch history: does NOT update (YouTube only tracks on youtube.com/app)
-- subscrub tracking: logs click via events table when modal opens (event: 'video_click')
+- subscrub tracking: logs click via events table (event: 'video_click')
 - Watch duration: available via YouTube iframe API onStateChange callback (post-launch enhancement)
 
-**Implementation:**
-```html
-<iframe src="https://www.youtube.com/embed/{videoId}?autoplay=1"
-  allow="autoplay; encrypted-media" allowfullscreen />
+**Iframe parameters:**
 ```
-No API quota cost. No special permissions. Log the click before opening the modal.
+autoplay=1&rel=0&modestbranding=1&enablejsapi=1&controls=1&origin=https://getsubscrub.com
+```
+- `rel=0` — related videos from same channel only
+- `modestbranding=1` — removes YouTube logo from control bar (small one still appears on hover)
+- `enablejsapi=1` — enables event listeners for play, pause, end states
+- `controls=1` — YouTube's native controls fully accessible (settings, quality, fullscreen, captions)
+- Must not overlay or obscure YouTube controls (API terms)
+- Player minimum 200x200px, recommended 480x270px
+
+No API quota cost. No special permissions.
+
+### Feed page — Hover-to-preview
+
+The core feed interaction. 3-column grid with large thumbnails. Hovering a card plays the video inline.
+
+**Behaviour:**
+- 400ms hover delay prevents accidental triggers while scrolling
+- Thumbnail fades out (0.8s, 0.3s delay) revealing the YouTube iframe underneath already playing
+- Video starts muted by default
+- Mint border glow appears around the playing card
+- Equaliser animation ("Playing") appears to the right of the card info
+- Duration badge and play overlay fade out during playback
+- YouTube's native controls are fully accessible (no overlay blocking them)
+- Only one video plays at a time — hovering a new card stops the previous one
+
+**Mute behaviour:**
+- Each card has its own mute state (per-card, not global)
+- Unmute button appears on the playing card (bottom-left of thumbnail)
+- When muted: video stops on mouse leave (just previewing)
+- When unmuted: video continues playing on mouse leave (committed to watching)
+
+**Key principle:** The user never leaves the feed to watch a video. They browse by hovering, commit by unmuting, and go fullscreen via YouTube's native button if they want immersion.
+
+### Feed page — Split view (multi-watch)
+
+Two videos playing simultaneously, side by side. The feature that justifies watching on subscrub instead of YouTube.
+
+**Use case:** Podcast audio + sports visuals. Music livestream + coding tutorial. Two camera angles of the same event.
+
+**How it works:**
+1. While browsing the feed, hover a video card — a "Split" button with a split-screen icon appears on the thumbnail (bottom-left, on hover)
+2. Click "Split" — the video gets added to the split view container at the top of the feed
+3. If no split view exists: creates one with the video in the left panel
+4. If split view already has one video: adds to the right panel
+5. If both panels are full: replaces the less recently interacted panel
+6. Toast notification confirms: "Added to split view: [title]"
+7. Page scrolls to the top to show the split view
+
+**Split view container:**
+- Sits at the top of the feed content area, above "Today" section
+- Two video panels with a draggable resize handle between them
+- Three layout presets: equal (50/50), left focus (60/40), right focus (40/60)
+- Each panel has: YouTube iframe (full native controls accessible), info bar below with category badge, title, channel, equaliser, swap button, and close button
+- No overlay on the iframe — all subscrub controls live in the info bar below each video
+
+**Independent audio:**
+- Each panel has its own mute/unmute state
+- Typical use: sports on left (muted), podcast on right (unmuted)
+
+**Floating mini bar:**
+- When the user scrolls past the split view, a thin bar (34px) slides in below the category tabs
+- Shows both video titles with category dots and equaliser state (muted/unmuted)
+- "Back to split view" link scrolls to top
+- Audio keeps playing regardless of scroll position — the mini bar is a reminder, not a controller
+
+**Theatre mode (same feature, not separate):**
+- Button in the split view to "black out" the rest of the UI — sidebar, topbar, and feed hide
+- The two videos expand to fill the viewport
+- Exit via button or Escape key
+- Minimal effort: one CSS class toggle
+
+**Limits:**
+- Maximum 2 videos — not a video wall
+- Split view is a persistent container, not a layout mode — the rest of the feed continues below it
+- On mobile (<900px): panels stack vertically
 
 ### Blog card style
 Each blog post gets a gradient banner (56px) at the top of its card using category-specific colours:
@@ -572,7 +638,7 @@ Each card shows: gradient banner, category tag with colour, title (Outfit 15px 6
 
 ### Discover page
 
-Free tier feature. Personalised channel recommendations served from the `discover_channels` table (populated via admin-controlled enrichment using YouTube API). All sections exclude channels the user is already subscribed to.
+Personalised channel recommendations served from the `discover_channels` table (populated via admin-controlled enrichment using YouTube API). All sections exclude channels the user is already subscribed to.
 
 **Launch sections (work immediately with enrichment data):**
 
@@ -649,10 +715,10 @@ CREATE TABLE public.collections (
 );
 ```
 
-Pro upsell moment: when a free user clicks "Save" it works. When they try to add a note or create a collection, the Pro prompt appears: "Want to organise your saved videos? Pro lets you annotate, tag, and sort into collections."
+All save features are free at launch: bookmarks, notes, and collections.
 
-**Phase 3 — Shared collections / curated playlists (Pro+ / Creator tier, 6-12 months post-launch):**
-Pro users can toggle a collection to public via a share link. Anyone with the link can view the playlist. Shared collections appear in Discover as user-curated content.
+**Phase 3 — Shared collections / curated playlists (future, 6-12 months post-launch):**
+Users can toggle a collection to public via a share link. Anyone with the link can view the playlist. Shared collections appear in Discover as user-curated content.
 
 Later additions to Phase 3 (requires active user base):
 - Community ratings on shared collections (thumbs up/down or 5-star)
@@ -660,7 +726,7 @@ Later additions to Phase 3 (requires active user base):
 - "Course" formatting — ordered steps, progress tracking for viewers
 - Curator analytics — views, saves, ratings on your shared collections
 - Featured placement in Discover for highly-rated collections
-- Curator tier (Pro+ at £9.99/month) gates public sharing, ratings, and analytics
+- Potential future paid tier: creator/curator tools could be the monetisation surface here (analytics, promotion, featured placement). Model TBD based on user behaviour.
 
 **Key principle:** Each phase is independently valuable. Phase 1 works alone. Phase 2 works without Phase 3. Phase 3 only makes sense with an active community. Don't build the next phase until the current one is proven and used.
 
@@ -991,7 +1057,10 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Create at least the "First scrub" and "Ghost hunter" badges
 - Add cheeky empty states throughout the app
 - Implement video click tracking via events table (event: 'video_click', metadata: {video_id, channel_id, category, source})
-- Build video embed modal (YouTube iframe, log click on open)
+- Build hover-to-preview feed (3-column grid, 400ms hover delay, per-card mute, mint border glow, equaliser indicator)
+- Build split view (click-to-split button on feed cards, two-panel container, independent mute, resize handle, layout presets)
+- Build floating mini bar for split view (appears on scroll, shows both titles + mute state, "Back to split view" link)
+- Build split view theatre mode (CSS class toggle to hide sidebar/topbar/feed, videos fill viewport)
 - Apply refined design tokens (softer borders, slower transitions, muted category colours, ghost buttons)
 - Add staggered fade-up animations on category/view switching
 - Apply blog card gradient banners per category
@@ -1012,20 +1081,19 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Add "not affiliated with YouTube" disclaimer to landing page footer
 - Build shareable score cards (server-side image generation)
 - Implement full achievement badges system
-- Build click-powered free tier insights (category distribution, never-clicked channels, smart roasts)
-- Build Pro upsell touchpoints based on click data (blurred recommendations, teaser breakdowns)
+- Build click-powered insights (category distribution, never-clicked channels, smart roasts)
 - Build admin enrichment panel (manual fill gaps, discover channels, refresh stale)
 - Create discover_channels table in both production and test databases
 - Seed discover_channels table via admin enrichment (all 8 categories)
 - Build Discover page with launch sections: "Popular in [category]" x2, "Based on your favourites" (after 20+ users)
 - Discover page: add "Try something new" cross-category section (needs 20-30+ users)
 - Discover page: add "The Critic recommends a break" wholesome channel section (tag channels during enrichment)
-- Discover page: add "Based on what you watch" Pro section (needs click data accumulation)
+- Discover page: add "Based on what you watch" section (needs click data accumulation)
 - Discover page: add collaborative filtering "Users who watch X also subscribe to..." (needs 50+ users)
 - Add Discover teaser card to Home page once Discover is live
 - Build admin dashboard with real Supabase queries
 - Implement category correction consensus algorithm
-- Set up Google AdSense for free tier (or affiliate partnerships)
+- Explore monetisation: ad-supported, affiliate, scale-based freemium, or tip jar — based on observed user behaviour
 - Weekly nudge notifications
 - Unsubscribe confirmation roasts
 - Re-subscribe shame toasts
@@ -1035,8 +1103,7 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Add bedtime threshold setting to Settings page (default 11pm, disable option)
 
 ### Phase 2 features (after initial traction, 1-3 months post-launch)
-- Video saves: annotated saves with private collections (Pro feature)
-- Pro upsell on save action (note/collection prompt)
+- Video saves: annotated saves with private collections
 - saved_videos and collections database tables
 - Collections management UI (create, rename, reorder, delete)
 - Bedtime mode → collections conversion: "Want me to save these as a collection so you can pick up tomorrow?"
@@ -1049,7 +1116,7 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - "Course" formatting with ordered steps and progress tracking
 - Curator analytics (views, saves, ratings)
 - Featured placement in Discover for top-rated collections
-- Pro+ / Creator tier (£9.99/month) gating public sharing and curator tools
+- Evaluate creator/curator paid tier based on demand — model TBD
 
 ---
 
@@ -1075,9 +1142,9 @@ All mockups are HTML files that can be opened in a browser:
 - `subscrub-sync-screen.html` — personalised sync/onboarding experience (original, narrow centred layout)
 - `subscrub-sync-v2.html` — sync screen v2 (split layout with chameleon placeholder — for when mascot is ready)
 - `subscrub-sync-v3.html` — sync screen v3 (centred, no mascot, Critic voice via speech bubble — current version)
-- `subscrub-feeds.html` — feeds page with sections, subcategories, Critic break card, Pro upsell
+- `subscrub-feeds.html` — feeds page with sections, subcategories, Critic break card (early version, superseded by hover-to-preview)
 - `subscrub-page-headers.html` — consistent page header patterns (6 variants + mobile)
-- `subscrub-dashboard-tiers.html` — dashboard with Free and Pro tier comparison
+- `subscrub-dashboard-tiers.html` — dashboard with tier comparison (outdated — all features now free)
 - `subscrub-dashboard-critic.html` — dashboard with critic card as right-side panel
 - `subscrub-page-personalities.html` — page personality comparison + category navigation reimagined
 - `subscrub-home-revised.html` — Home page with thin critic banner + favourites grid
@@ -1088,6 +1155,14 @@ All mockups are HTML files that can be opened in a browser:
 - `subscrub-landing-critic.html` — landing page v2 (Critic-led, superseded by v3)
 - `subscrub-landing-v3.html` — landing page v3 (product-first hero + floating roasts + gradient separators)
 - `subscrub-critic-animation.html` — The Critic animation: chameleon reviewing/snatching channels (placeholder for production)
+- `subscrub-video-modal.html` — single video modal with channel info and Critic note (superseded by inline approach)
+- `subscrub-video-modal-3col.html` — 3-column video modal with More From / Discover panels (superseded by inline approach)
+- `subscrub-inline-video.html` — inline 3-col expand with side panels (superseded by simpler approach)
+- `subscrub-inline-expand.html` — inline card expansion, full-width (superseded)
+- `subscrub-inline-expand-v3.html` — inline expand with directional animation (superseded)
+- `subscrub-inline-expand-v4.html` — inline expand with gap-fill attempts (superseded by hover-to-preview)
+- `subscrub-feed-hover-play.html` — feed with hover-to-preview video playback (current feed approach)
+- `subscrub-split-view.html` — split view with click-to-split buttons, floating mini bar, theatre mode concept
 - `subscrub-tokens-refined.css` — refined design tokens (softer borders, transitions, muted colours)
 
 ### Code files

@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { trackEvent } from '../../lib/track';
 import { useDragScroll } from '../../hooks/useDragScroll';
 import VideoCardPreview from '../components/VideoCardPreview';
+import SplitView from '../components/SplitView';
 
 export default function Feeds2Page() {
   const { user, signIn } = useAuth();
@@ -29,8 +30,35 @@ export default function Feeds2Page() {
   const [typeFilter, setTypeFilter] = useState('videos');
   const [feedView, setFeedView] = useState('grid');
   const [visibleCount, setVisibleCount] = useState(60);
+  const [splitPanels, setSplitPanels] = useState([]);
+  const [splitToast, setSplitToast] = useState('');
+  const contentRef = useRef(null);
   const catRowRef = useRef(null);
+
+  // Get the scrollable container (app-content)
+  useEffect(() => {
+    contentRef.current = document.getElementById('appContent');
+  }, []);
   useDragScroll(catRowRef);
+
+  const addToSplit = useCallback((video) => {
+    setSplitPanels(prev => {
+      if (prev.length >= 2) return prev;
+      if (prev.some(v => v.id === video.id)) return prev;
+      return [...prev, video];
+    });
+    setSplitToast(`Added to split view: ${video.title}`);
+    setTimeout(() => setSplitToast(''), 2500);
+    trackEvent('split_view_add', { video_id: video.id });
+  }, []);
+
+  const removeFromSplit = useCallback((index) => {
+    setSplitPanels(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const swapSplitPanels = useCallback(() => {
+    setSplitPanels(prev => prev.length === 2 ? [prev[1], prev[0]] : prev);
+  }, []);
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -273,6 +301,20 @@ export default function Feeds2Page() {
         </div>
       </div>
 
+      {/* Split view */}
+      <SplitView
+        panels={splitPanels}
+        onRemovePanel={removeFromSplit}
+        onSwapPanels={swapSplitPanels}
+        scrollRef={contentRef}
+      />
+
+      {/* Split toast */}
+      <div className={`split-toast${splitToast ? ' show' : ''}`}>
+        <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="12" rx="1" /><rect x="8" y="1" width="5" height="12" rx="1" /></svg>
+        <span>{splitToast}</span>
+      </div>
+
       {/* Video grid — 3 columns, full width */}
       <div className={`f2-grid${feedView === 'list' ? ' f2-grid-list' : ''}`} key={`${activeCategory}-${activeSubcategory}-${typeFilter}`}>
         {visibleVideos.length > 0 ? visibleVideos.map((v, idx) => {
@@ -288,6 +330,8 @@ export default function Feeds2Page() {
                 video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '' }}
                 categoryColour={catCol}
                 isNew={isNew}
+                onAddToSplit={addToSplit}
+                splitFull={splitPanels.length >= 2}
               />
             </div>
           );

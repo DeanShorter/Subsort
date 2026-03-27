@@ -4565,6 +4565,81 @@ input[type=range]::-webkit-slider-thumb{
 .f2-player-embed{aspect-ratio:16/9;width:100%}
 .f2-player-embed iframe{width:100%;height:100%;border:none}
 
+/* ═══ Split View ═══ */
+.split-wrap{position:relative;margin-bottom:20px;padding-top:28px}
+.split-label{position:absolute;top:0;left:0;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-dim)}
+.split-label-icon svg{width:12px;height:12px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round}
+.split-view{display:flex;gap:0;border-radius:var(--radius-xl);overflow:hidden;background:var(--bg-card);border:1px solid var(--border-hover);transition:all .4s cubic-bezier(.16,1,.3,1)}
+.split-panel{display:flex;flex-direction:column;min-width:0;transition:flex .4s cubic-bezier(.16,1,.3,1)}
+.split-view.layout-equal .split-panel{flex:1}
+.split-view.layout-primary .split-panel:first-child{flex:1.5}
+.split-view.layout-primary .split-panel:last-child{flex:.5}
+.split-view.layout-secondary .split-panel:first-child{flex:.5}
+.split-view.layout-secondary .split-panel:last-child{flex:1.5}
+.sp-video{width:100%;background:#000}
+.sp-video-inner{position:relative;padding-top:56.25%}
+.sp-video-inner iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.split-handle{width:6px;flex-shrink:0;background:var(--surface-2);cursor:col-resize;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.split-handle:hover{background:var(--surface-3)}
+.split-handle-dots{display:flex;flex-direction:column;gap:3px}
+.split-handle-dot{width:2px;height:2px;border-radius:50%;background:var(--text-dim);opacity:.3}
+.split-handle:hover .split-handle-dot{opacity:.6}
+.sp-info{padding:8px 12px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border-subtle)}
+.sp-info-left{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.sp-cat{font-size:8px;font-weight:500;padding:2px 6px;border-radius:100px;display:flex;align-items:center;gap:3px;flex-shrink:0}
+.sp-cat-dot{width:4px;height:4px;border-radius:50%}
+.sp-info-text{flex:1;min-width:0}
+.sp-title{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:-.2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-channel{font-size:8px;color:var(--text-dim)}
+.sp-now{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.sp-now-bars{display:flex;gap:1px;align-items:flex-end;height:10px}
+.sp-now-bar{width:2px;border-radius:1px}
+.sp-now-bar.unmuted{background:var(--accent);animation:vcEqBar .6s ease infinite alternate}
+.sp-now-bar.muted{background:var(--text-dim);height:3px!important;animation:none}
+.sp-now-bar:nth-child(1){height:4px;animation-delay:0s}
+.sp-now-bar:nth-child(2){height:8px;animation-delay:.15s}
+.sp-now-bar:nth-child(3){height:5px;animation-delay:.3s}
+.sp-info-controls{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.sp-btn{width:24px;height:24px;border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);transition:all .2s}
+.sp-btn:hover{background:var(--surface-3);border-color:var(--border-hover);color:var(--text-mid)}
+.sp-btn.close-btn:hover{background:rgba(232,93,80,.08);border-color:rgba(232,93,80,.15);color:var(--red)}
+.sp-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* Split button on video cards */
+.vc-split-btn{position:absolute;bottom:8px;left:8px;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.12);font-size:9px;font-weight:500;font-family:var(--font-body);color:#fff;z-index:4;opacity:0;transition:all .25s;display:flex;align-items:center;gap:4px;cursor:pointer}
+.vcard:hover .vc-split-btn{opacity:1}
+.vc-split-btn:hover{background:rgba(62,207,160,.2);border-color:rgba(62,207,160,.2);color:var(--accent);transform:scale(1.03)}
+.vc-split-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* Split minibar */
+.split-minibar{position:fixed;top:0;left:var(--sidebar-width,200px);right:0;height:34px;background:var(--surface-2);border-bottom:1px solid var(--border-hover);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:40;transform:translateY(-100%);transition:transform .3s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.split-minibar.show{transform:translateY(0);pointer-events:auto}
+.minibar-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.minibar-icon svg{width:12px;height:12px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round}
+.minibar-videos{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.minibar-vid{display:flex;align-items:center;gap:5px;min-width:0}
+.minibar-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.minibar-name{font-size:10px;color:var(--text-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.minibar-sep{font-size:10px;color:var(--text-dim)}
+.minibar-eq{display:flex;gap:1px;align-items:flex-end;height:8px;flex-shrink:0}
+.minibar-eq-bar{width:1.5px;border-radius:1px}
+.minibar-eq-bar.on{background:var(--accent);animation:miniEq .5s ease infinite alternate}
+.minibar-eq-bar.off{background:var(--text-dim);height:2px!important;animation:none}
+.minibar-eq-bar:nth-child(1){height:3px;animation-delay:0s}
+.minibar-eq-bar:nth-child(2){height:6px;animation-delay:.12s}
+.minibar-eq-bar:nth-child(3){height:4px;animation-delay:.24s}
+@keyframes miniEq{0%{height:2px}100%{height:8px}}
+.minibar-back{margin-left:auto;font-size:9px;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:3px;flex-shrink:0;padding:3px 8px;border-radius:4px;transition:all .2s;border:1px solid transparent}
+.minibar-back:hover{background:var(--mint-dim);border-color:rgba(62,207,160,.2)}
+.minibar-back svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* Split toast */
+.split-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);padding:10px 18px;border-radius:var(--radius-md);background:var(--surface-2);border:1px solid rgba(62,207,160,.2);font-size:12px;color:var(--accent);display:flex;align-items:center;gap:8px;z-index:60;opacity:0;transition:all .4s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.split-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.split-toast svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+@media(max-width:900px){.split-view{flex-direction:column}.split-handle{width:100%;height:8px;cursor:row-resize}.split-handle-dots{flex-direction:row}.split-view.layout-primary .split-panel,.split-view.layout-secondary .split-panel{flex:1!important}.split-minibar{left:0}}
+
 /* ═══ Hover-to-Preview Video Cards ═══ */
 .vcard{border-radius:var(--radius-lg);position:relative;transition:transform .3s ease,box-shadow .3s ease}
 .vcard:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
