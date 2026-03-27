@@ -4498,8 +4498,8 @@ input[type=range]::-webkit-slider-thumb{
 .f2-cat-btn .f2-cat-count{font-size:12px;color:var(--text-dim);margin-left:2px;font-variant-numeric:tabular-nums}
 .f2-cat-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
 .f2-cat-btn:hover .f2-cat-count{color:var(--text-secondary)}
-.f2-cat-btn.active{background:rgba(62,207,160,.08);color:var(--accent-text)}
-.f2-cat-btn.active .f2-cat-count{color:var(--accent-text);opacity:.7}
+.f2-cat-btn.active{background:rgba(62,207,160,.08);color:#fff}
+.f2-cat-btn.active .f2-cat-count{color:#fff;opacity:.7}
 .f2-cat-btn.active .hnp-cat-dot{box-shadow:0 0 0 1px rgba(62,207,160,.08)}
 .f2-cat-btn.active .hnp-cat-dot{box-shadow:0 0 0 1px var(--surface-3)}
 
@@ -4566,7 +4566,7 @@ input[type=range]::-webkit-slider-thumb{
 .f2-player-embed iframe{width:100%;height:100%;border:none}
 
 /* ═══ Split View ═══ */
-.split-wrap{position:relative;margin-bottom:20px;padding-top:28px;width:100%}
+.split-wrap{position:relative;margin-bottom:20px;padding-top:28px;width:100%;padding-left:24px;padding-right:24px}
 .split-label{position:absolute;top:0;left:0;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-dim)}
 .split-label-icon svg{width:12px;height:12px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round}
 .split-view{display:flex;gap:0;border-radius:var(--radius-xl);overflow:hidden;background:var(--bg-card);border:1px solid var(--border-hover);transition:all .4s cubic-bezier(.16,1,.3,1)}
@@ -4612,15 +4612,15 @@ input[type=range]::-webkit-slider-thumb{
 .vc-split-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 
 /* Split minibar */
-.split-minibar{position:fixed;top:var(--f2-header-height,88px);left:var(--sidebar-width,200px);right:0;height:34px;background:var(--surface-2);border-bottom:1px solid var(--border-hover);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:30;transform:translateY(-100%);transition:transform .3s cubic-bezier(.16,1,.3,1);pointer-events:none}
-.split-minibar.show{transform:translateY(0);pointer-events:auto}
+.split-minibar{position:sticky;top:0;left:0;right:0;height:34px;background:var(--accent);border-bottom:1px solid rgba(62,207,160,.3);display:flex;align-items:center;padding:0 24px;gap:10px;z-index:9;transform:translateY(-34px);margin-top:-34px;transition:transform .3s cubic-bezier(.16,1,.3,1);pointer-events:none;color:#111}
+.split-minibar.show{transform:translateY(0);pointer-events:auto;margin-top:0}
 .minibar-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.minibar-icon svg{width:12px;height:12px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round}
+.minibar-icon svg{width:12px;height:12px;stroke:#111;fill:none;stroke-width:1.5;stroke-linecap:round}
 .minibar-videos{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
 .minibar-vid{display:flex;align-items:center;gap:5px;min-width:0}
 .minibar-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
-.minibar-name{font-size:10px;color:var(--text-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
-.minibar-sep{font-size:10px;color:var(--text-dim)}
+.minibar-name{font-size:10px;color:#111;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.minibar-sep{font-size:10px;color:rgba(0,0,0,.4)}
 .minibar-eq{display:flex;gap:1px;align-items:flex-end;height:8px;flex-shrink:0}
 .minibar-eq-bar{width:1.5px;border-radius:1px}
 .minibar-eq-bar.on{background:var(--accent);animation:miniEq .5s ease infinite alternate}
@@ -4629,8 +4629,8 @@ input[type=range]::-webkit-slider-thumb{
 .minibar-eq-bar:nth-child(2){height:6px;animation-delay:.12s}
 .minibar-eq-bar:nth-child(3){height:4px;animation-delay:.24s}
 @keyframes miniEq{0%{height:2px}100%{height:8px}}
-.minibar-back{margin-left:auto;font-size:9px;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:3px;flex-shrink:0;padding:3px 8px;border-radius:4px;transition:all .2s;border:1px solid transparent}
-.minibar-back:hover{background:var(--mint-dim);border-color:rgba(62,207,160,.2)}
+.minibar-back{margin-left:auto;font-size:9px;color:#111;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:3px;flex-shrink:0;padding:3px 8px;border-radius:4px;transition:all .2s;border:1px solid rgba(0,0,0,.15)}
+.minibar-back:hover{background:rgba(0,0,0,.1);border-color:rgba(0,0,0,.25)}
 .minibar-back svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 
 /* Split toast */
