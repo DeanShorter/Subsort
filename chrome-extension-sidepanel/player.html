@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #111; }
+    iframe { width: 100%; height: 100%; border: none; }
+  </style>
+</head>
+<body>
+  <script>
+    let iframe = null;
+
+    window.addEventListener('message', (e) => {
+      const msg = e.data;
+      if (!msg || !msg.action) return;
+
+      if (msg.action === 'load') {
+        if (iframe) iframe.remove();
+        iframe = document.createElement('iframe');
+        const params = new URLSearchParams({
+          autoplay: '1',
+          rel: '0',
+          modestbranding: '1',
+          controls: '1',
+        });
+        if (msg.muted) params.set('mute', '1');
+        iframe.src = 'https://www.youtube.com/embed/' + msg.videoId + '?' + params;
+        iframe.allow = 'autoplay; encrypted-media';
+        iframe.allowFullscreen = true;
+        document.body.appendChild(iframe);
+      }
+
+      if (msg.action === 'clear') {
+        if (iframe) { iframe.remove(); iframe = null; }
+      }
+    });
+  </script>
+</body>
+</html>

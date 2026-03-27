@@ -76,15 +76,10 @@
       justify-content: center;
     }
 
-    .video-area iframe {
+    .video-area iframe.player-frame {
       width: 100%;
       height: 100%;
       border: none;
-    }
-
-    .video-area .placeholder {
-      color: #555;
-      font-size: 14px;
     }
 
     /* Drag handle */
@@ -121,7 +116,7 @@
         <button id="clear-top" class="clear-btn">&#x2715;</button>
       </div>
       <div class="video-area" id="video-top">
-        <span class="placeholder">No video loaded</span>
+        <iframe id="player-top" src="player.html" class="player-frame"></iframe>
       </div>
     </div>
 
@@ -135,7 +130,7 @@
         <button id="clear-bottom" class="clear-btn">&#x2715;</button>
       </div>
       <div class="video-area" id="video-bottom">
-        <span class="placeholder">No video loaded</span>
+        <iframe id="player-bottom" src="player.html" class="player-frame"></iframe>
       </div>
     </div>
   </div>

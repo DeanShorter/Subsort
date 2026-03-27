@@ -4,34 +4,19 @@ function extractVideoId(url) {
   if (!url) return null;
   url = url.trim();
 
-  // youtu.be/VIDEO_ID
   let match = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
   if (match) return match[1];
 
-  // youtube.com/watch?v=VIDEO_ID
   match = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
   if (match) return match[1];
 
-  // youtube.com/embed/VIDEO_ID
   match = url.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
   if (match) return match[1];
 
-  // youtube.com/shorts/VIDEO_ID
   match = url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
   if (match) return match[1];
 
   return null;
-}
-
-function buildEmbedUrl(videoId, muted) {
-  const params = new URLSearchParams({
-    autoplay: '1',
-    rel: '0',
-    modestbranding: '1',
-    controls: '1',
-  });
-  if (muted) params.set('mute', '1');
-  return `https://www.youtube-nocookie.com/embed/${videoId}?${params}`;
 }
 
 // --- Slot logic ---
@@ -41,19 +26,13 @@ function setupSlot(position) {
   const loadBtn = document.getElementById(`load-${position}`);
   const muteBtn = document.getElementById(`mute-${position}`);
   const clearBtn = document.getElementById(`clear-${position}`);
-  const videoArea = document.getElementById(`video-${position}`);
+  const playerFrame = document.getElementById(`player-${position}`);
 
   let isMuted = false;
   let currentVideoId = null;
-  let iframe = null;
 
-  function loadIframe() {
-    videoArea.innerHTML = '';
-    iframe = document.createElement('iframe');
-    iframe.src = buildEmbedUrl(currentVideoId, isMuted);
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
-    videoArea.appendChild(iframe);
+  function sendToPlayer(msg) {
+    playerFrame.contentWindow.postMessage(msg, '*');
   }
 
   function loadVideo() {
@@ -68,24 +47,23 @@ function setupSlot(position) {
     isMuted = false;
     muteBtn.textContent = 'Mute';
     muteBtn.disabled = false;
-    loadIframe();
+    sendToPlayer({ action: 'load', videoId, muted: false });
   }
 
   function toggleMute() {
     if (!currentVideoId) return;
     isMuted = !isMuted;
     muteBtn.textContent = isMuted ? 'Unmute' : 'Mute';
-    loadIframe();
+    sendToPlayer({ action: 'load', videoId: currentVideoId, muted: isMuted });
   }
 
   function clearVideo() {
-    videoArea.innerHTML = '<span class="placeholder">No video loaded</span>';
     urlInput.value = '';
-    iframe = null;
     currentVideoId = null;
     isMuted = false;
     muteBtn.textContent = 'Mute';
     muteBtn.disabled = true;
+    sendToPlayer({ action: 'clear' });
   }
 
   loadBtn.addEventListener('click', loadVideo);
@@ -113,7 +91,6 @@ handle.addEventListener('mousedown', (e) => {
   dragging = true;
   handle.classList.add('dragging');
   document.body.style.cursor = 'row-resize';
-  // Prevent iframes from stealing pointer events while dragging
   document.querySelectorAll('iframe').forEach(f => f.style.pointerEvents = 'none');
 });
 
@@ -124,7 +101,6 @@ document.addEventListener('mousemove', (e) => {
   const totalHeight = containerRect.height - handleHeight;
   const offsetY = e.clientY - containerRect.top;
 
-  // Clamp so neither slot gets smaller than 80px
   const minPx = 80;
   const topHeight = Math.max(minPx, Math.min(offsetY, totalHeight - minPx));
   const topPercent = (topHeight / totalHeight) * 100;
