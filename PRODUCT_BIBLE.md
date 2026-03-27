@@ -18,22 +18,29 @@ This document is the single source of truth for the subscrub product. It covers 
 
 **Core value prop:** Connect your account, and subscrub sorts everything into clean feeds automatically. No manual setup, no tagging, no algorithm deciding what you should watch.
 
-**Monetisation — currently undecided (intentionally):**
+**Pricing:**
 
-Launch with everything free. No paid tier, no feature gating. The priority is getting 100+ active users and understanding how they actually use the product before deciding how to monetise.
+- **Free tier: 50 subscriptions.** Enough to experience every feature — The Critic scores channels, categories populate, the feed has content, hover-to-preview works. But 50 is deliberately tight. Anyone who needs subscrub has 200+. They hit the wall fast, after they've already seen the value.
+- **Pro tier: unlimited. £3/month or £24/year.** All subscriptions, all categories, The Critic at full power, split view Chrome extension with smart pairing, full insights as click data accumulates. One price, everything included. No feature gating — Pro unlocks scale, not features.
 
-The previous Pro/Free split (auto-sort, smart categories, watch analytics behind a paywall) was abandoned because the best features — The Critic, the organised feed, split view, hover-to-preview — all need to be free to give users a reason to stay on subscrub instead of going back to YouTube. Gating them defeats the purpose.
+**What happens at the free limit:** The Critic addresses it in character. "I can see you have 326 subscriptions, but I'm only allowed to judge 50 of them. The other 276 are living rent-free in your feed and I can't do anything about it. Upgrade to let me finish the job." The constraint feels like a character limitation, not a paywall. The Critic wants to help but can't — the user is the one holding it back.
 
-**Models being explored (post-launch, after user data exists):**
-- Ad-supported: non-intrusive sponsored cards in the feed, one every 15+ videos, clearly labelled. Needs meaningful traffic first.
-- Affiliate/referral: category-aware product recommendations ("The Critic recommends" section). Cookbooks for cooking viewers, gear for tech viewers. Monetises existing data without gating features.
-- Scale-based freemium: everything free up to ~200 subscriptions, unlimited for a small monthly fee. Gates on volume, not features. Power users pay naturally.
-- Pay what you want / tip jar: a "Support subscrub" option for users who find it valuable. Low effort, validates willingness to pay.
-- Creator tier (future): public shared collections, curator analytics, community ratings. Only viable with an active user base. Different product surface entirely — don't build until the viewer product is proven.
+**Why 50:** it's enough to demonstrate genuine value (categories work, feed is browsable, Critic has opinions) but not enough to replace YouTube's subscription page. The user thinks "this is great, but I need my other 276 channels in here." That's the conversion moment.
 
-**The rule:** don't build a payment system until the product has found its audience. The monetisation model should emerge from observed user behaviour, not predicted behaviour.
+**Chrome extension (split view for YouTube):**
 
-Note: All previous references to "Free tier" and "Pro tier" feature splits throughout this document are now outdated. All features are free at launch. Feature references that mention "Pro" should be read as "future paid tier, model TBD."
+The extension is included in the Pro tier — it's a perk of subscribing, not a standalone product. This avoids competing with free multi-video extensions on the Chrome Web Store (YouTube Multitasker and others already do basic side-by-side for free). subscrub's extension is differentiated by the intelligence layer: smart pairing suggestions based on category data, "Split with..." menu showing your feed, remembering favourite combinations.
+
+Extension phases:
+- Phase 1 (launch): Extension requires a subscrub Pro account. Two-panel side panel with independent mute, resize handle, URL input. Persists across Chrome tabs.
+- Phase 2 (post-launch): Smart integration — browse your subscrub feed directly in the extension panel, "Split with..." suggestions based on category and viewing habits, remember favourite pairs.
+- Phase 3 (stretch): Firefox/Edge/Safari ports. Keyboard shortcuts. Mobile companion.
+
+**YouTube ToS considerations for the extension:** Don't modify YouTube's DOM or inject content over their player. The safest approach is a separate panel (side panel API) that embeds two standard YouTube iframes. Don't interfere with ads. Don't break API terms. Two iframes side by side in the extension's own UI, not overlaid on youtube.com.
+
+**Future monetisation layers (not for launch):**
+- Affiliate/referral: category-aware product recommendations ("The Critic recommends" section). Only viable with meaningful user base.
+- Creator tier (future): public shared collections, curator analytics, community ratings. Different product surface — don't build until the viewer product is proven.
 
 ---
 
@@ -715,7 +722,7 @@ CREATE TABLE public.collections (
 );
 ```
 
-All save features are free at launch: bookmarks, notes, and collections.
+Watch Later bookmarks are free. Annotated saves and collections require Pro.
 
 **Phase 3 — Shared collections / curated playlists (future, 6-12 months post-launch):**
 Users can toggle a collection to public via a share link. Anyone with the link can view the playlist. Shared collections appear in Discover as user-curated content.
@@ -780,8 +787,8 @@ The landing page sells the problem/solution first, then introduces The Critic as
 2. **Enter The Critic:** "Every kingdom needs a ruler." Two-card comparison: "A kind ruler" (encouraging, mint) vs "Or a tyrant" (annoyed, red). Introduces the character after the product is understood.
 3. **How it works:** Connect → Auto-sort → Get your verdict → Scrub. Narrated by The Critic but focused on the practical steps.
 4. **The Critic's patience:** Mood timeline showing the 5 escalation states with quotes. "Ignore it long enough and it gets personal."
-5. **Features:** "Everything you need. Nothing you don't." Six feature cards + Free/Pro split comparison.
-6. **Pricing:** "Start free. Go Pro when you're ready." Two-card layout, Free vs Pro.
+5. **Features:** "Everything you need. Nothing you don't." Six feature cards including split view Chrome extension.
+6. **Pricing:** "Start free. Go Pro when you're ready." Two-card layout — Free (50 subscriptions, full features) vs Pro (unlimited subscriptions, Chrome extension, £3/month or £24/year). The Critic comments on the free limit: "I can judge 50 channels for free. The other 276? That's a Pro problem."
 7. **Story:** Personal founder quote about why subscrub exists.
 8. **Final CTA:** "Your subscriptions won't scrub themselves."
 
@@ -1067,6 +1074,11 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Record 30-60 second demo video for landing page
 - Update blog post and all references from Freedly to subscrub
 - Get legal review of privacy policy and terms
+- Implement subscription limit (50 channels for free, unlimited for Pro)
+- Build free-to-Pro upgrade flow with The Critic's in-character messaging at the limit
+- Integrate Stripe for Pro subscriptions (£3/month or £24/year)
+- Build Chrome extension (Pro-only, requires subscrub account — two-panel side panel, independent mute, resize handle, URL input, persists across tabs)
+- Publish extension on Chrome Web Store with subscrub branding
 
 ### Post-launch
 - Commission full chameleon mood variant SVGs (sunglasses version + eye expression variants)
@@ -1093,7 +1105,8 @@ Only request minimum scopes needed. Currently: read-only access to YouTube subsc
 - Add Discover teaser card to Home page once Discover is live
 - Build admin dashboard with real Supabase queries
 - Implement category correction consensus algorithm
-- Explore monetisation: ad-supported, affiliate, scale-based freemium, or tip jar — based on observed user behaviour
+- Chrome extension Phase 2: smart integration — browse subscrub feed in panel, "Split with..." suggestions based on category/habits, remember favourite pairs
+- Explore affiliate/referral monetisation layer (category-aware product recommendations)
 - Weekly nudge notifications
 - Unsubscribe confirmation roasts
 - Re-subscribe shame toasts
@@ -1144,7 +1157,7 @@ All mockups are HTML files that can be opened in a browser:
 - `subscrub-sync-v3.html` — sync screen v3 (centred, no mascot, Critic voice via speech bubble — current version)
 - `subscrub-feeds.html` — feeds page with sections, subcategories, Critic break card (early version, superseded by hover-to-preview)
 - `subscrub-page-headers.html` — consistent page header patterns (6 variants + mobile)
-- `subscrub-dashboard-tiers.html` — dashboard with tier comparison (outdated — all features now free)
+- `subscrub-dashboard-tiers.html` — dashboard with tier comparison (outdated — needs updating to 50 sub limit model)
 - `subscrub-dashboard-critic.html` — dashboard with critic card as right-side panel
 - `subscrub-page-personalities.html` — page personality comparison + category navigation reimagined
 - `subscrub-home-revised.html` — Home page with thin critic banner + favourites grid
