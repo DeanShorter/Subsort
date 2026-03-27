@@ -17,10 +17,18 @@ export default function SplitView({ panels, onRemovePanel, onSwapPanels, scrollR
       if (!splitRef.current) return;
       const rect = splitRef.current.getBoundingClientRect();
       const containerRect = scrollEl.getBoundingClientRect();
-      setMinibarVisible(rect.bottom < containerRect.top);
+      const isHidden = rect.bottom < containerRect.top + 120; // offset for header height
+      setMinibarVisible(isHidden);
+
+      // Measure f2-header height and set CSS var
+      const header = document.querySelector('.f2-header');
+      if (header) {
+        document.documentElement.style.setProperty('--f2-header-height', header.offsetHeight + 'px');
+      }
     };
 
     scrollEl.addEventListener('scroll', onScroll);
+    onScroll(); // initial check
     return () => scrollEl.removeEventListener('scroll', onScroll);
   }, [scrollRef, panels.length]);
 
