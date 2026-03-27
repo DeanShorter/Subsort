@@ -4,7 +4,7 @@ function extractVideoId(url) {
   if (!url) return null;
   url = url.trim();
 
-  let match = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  var match = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
   if (match) return match[1];
 
   match = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
@@ -25,51 +25,69 @@ function buildWatchUrl(videoId) {
 
 // --- Slot logic ---
 
+var slots = {};
+
 function setupSlot(position) {
-  const urlInput = document.getElementById('url-' + position);
-  const loadBtn = document.getElementById('load-' + position);
-  const clearBtn = document.getElementById('clear-' + position);
-  const videoArea = document.getElementById('video-' + position);
+  var urlInput = document.getElementById('url-' + position);
+  var loadBtn = document.getElementById('load-' + position);
+  var clearBtn = document.getElementById('clear-' + position);
+  var videoArea = document.getElementById('video-' + position);
 
-  let currentVideoId = null;
-
-  function createIframe(videoId) {
-    videoArea.innerHTML = '';
-    var iframe = document.createElement('iframe');
-    iframe.src = buildWatchUrl(videoId);
-    iframe.sandbox = 'allow-scripts allow-same-origin allow-popups allow-forms';
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.referrerPolicy = 'no-referrer';
-    videoArea.appendChild(iframe);
-  }
-
-  function loadVideo() {
-    const videoId = extractVideoId(urlInput.value);
-    if (!videoId) {
-      urlInput.style.borderColor = '#c44';
-      setTimeout(function() { urlInput.style.borderColor = '#444'; }, 1500);
-      return;
+  var slot = {
+    currentVideoId: null,
+    loadFromUrl: function(url) {
+      urlInput.value = url;
+      slot.loadVideo();
+    },
+    loadVideo: function() {
+      var videoId = extractVideoId(urlInput.value);
+      if (!videoId) {
+        urlInput.style.borderColor = '#c44';
+        setTimeout(function() { urlInput.style.borderColor = '#444'; }, 1500);
+        return;
+      }
+      slot.currentVideoId = videoId;
+      videoArea.innerHTML = '';
+      var iframe = document.createElement('iframe');
+      iframe.src = buildWatchUrl(videoId);
+      iframe.sandbox = 'allow-scripts allow-same-origin allow-popups allow-forms';
+      iframe.allow = 'autoplay; encrypted-media';
+      iframe.referrerPolicy = 'no-referrer';
+      videoArea.appendChild(iframe);
+    },
+    clearVideo: function() {
+      videoArea.innerHTML = '<span class="placeholder">No video loaded</span>';
+      urlInput.value = '';
+      slot.currentVideoId = null;
     }
+  };
 
-    currentVideoId = videoId;
-    createIframe(videoId);
-  }
-
-  function clearVideo() {
-    videoArea.innerHTML = '<span class="placeholder">No video loaded</span>';
-    urlInput.value = '';
-    currentVideoId = null;
-  }
-
-  loadBtn.addEventListener('click', loadVideo);
+  loadBtn.addEventListener('click', slot.loadVideo);
   urlInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') loadVideo();
+    if (e.key === 'Enter') slot.loadVideo();
   });
-  clearBtn.addEventListener('click', clearVideo);
+  clearBtn.addEventListener('click', slot.clearVideo);
+
+  slots[position] = slot;
 }
 
 setupSlot('top');
 setupSlot('bottom');
+
+// --- Listen for "split view" messages from content script ---
+
+chrome.runtime.onMessage.addListener(function(msg) {
+  if (msg.action === 'loadVideo' && msg.url) {
+    // Load into the first empty slot, or top if both are full
+    if (!slots.top.currentVideoId) {
+      slots.top.loadFromUrl(msg.url);
+    } else if (!slots.bottom.currentVideoId) {
+      slots.bottom.loadFromUrl(msg.url);
+    } else {
+      slots.top.loadFromUrl(msg.url);
+    }
+  }
+});
 
 // --- Drag handle for resizing ---
 

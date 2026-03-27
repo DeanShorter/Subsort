@@ -1,4 +1,4 @@
-// Only strip the page down to the video player when inside an iframe (our side panel)
+// --- Iframe mode: strip page to video player only ---
 if (window !== window.top) {
   var style = document.createElement('style');
   style.textContent = `
@@ -89,4 +89,72 @@ if (window !== window.top) {
     }
   `;
   document.documentElement.appendChild(style);
+}
+
+// --- Main page mode: show "Split View" overlay button on watch pages ---
+if (window === window.top) {
+  function isWatchPage() {
+    return location.pathname === '/watch' || location.pathname.startsWith('/shorts/');
+  }
+
+  function injectButton() {
+    if (!isWatchPage()) {
+      var existing = document.getElementById('yt-split-view-btn');
+      if (existing) existing.remove();
+      return;
+    }
+    if (document.getElementById('yt-split-view-btn')) return;
+
+    var btn = document.createElement('button');
+    btn.id = 'yt-split-view-btn';
+    btn.textContent = 'Split View';
+    btn.style.cssText = [
+      'position: fixed',
+      'top: 80px',
+      'right: 16px',
+      'z-index: 99999',
+      'padding: 8px 16px',
+      'background: rgba(0,0,0,0.75)',
+      'color: #fff',
+      'border: 1px solid rgba(255,255,255,0.2)',
+      'border-radius: 6px',
+      'font-family: system-ui, sans-serif',
+      'font-size: 13px',
+      'cursor: pointer',
+      'backdrop-filter: blur(4px)',
+      'transition: background 0.15s'
+    ].join(';');
+
+    btn.addEventListener('mouseenter', function() {
+      btn.style.background = 'rgba(255,255,255,0.2)';
+    });
+    btn.addEventListener('mouseleave', function() {
+      btn.style.background = 'rgba(0,0,0,0.75)';
+    });
+
+    btn.addEventListener('click', function() {
+      chrome.runtime.sendMessage({
+        action: 'loadVideo',
+        url: location.href
+      });
+    });
+
+    document.body.appendChild(btn);
+  }
+
+  // Inject on load and on YouTube SPA navigation
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectButton);
+  } else {
+    injectButton();
+  }
+
+  // YouTube uses SPA navigation — listen for URL changes
+  var lastUrl = location.href;
+  new MutationObserver(function() {
+    if (location.href !== lastUrl) {
+      lastUrl = location.href;
+      injectButton();
+    }
+  }).observe(document.body || document.documentElement, { childList: true, subtree: true });
 }
