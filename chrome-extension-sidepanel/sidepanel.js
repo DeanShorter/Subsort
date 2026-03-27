@@ -19,23 +19,36 @@ function extractVideoId(url) {
   return null;
 }
 
+function buildEmbedUrl(videoId, muted) {
+  const params = new URLSearchParams({
+    autoplay: '1',
+    rel: '0',
+    modestbranding: '1',
+    controls: '1',
+  });
+  if (muted) params.set('mute', '1');
+  return 'https://www.youtube-nocookie.com/embed/' + videoId + '?' + params;
+}
+
 // --- Slot logic ---
 
 function setupSlot(position) {
-  const urlInput = document.getElementById(`url-${position}`);
-  const loadBtn = document.getElementById(`load-${position}`);
-  const muteBtn = document.getElementById(`mute-${position}`);
-  const clearBtn = document.getElementById(`clear-${position}`);
-  const videoArea = document.getElementById(`video-${position}`);
+  const urlInput = document.getElementById('url-' + position);
+  const loadBtn = document.getElementById('load-' + position);
+  const muteBtn = document.getElementById('mute-' + position);
+  const clearBtn = document.getElementById('clear-' + position);
+  const videoArea = document.getElementById('video-' + position);
 
   let isMuted = false;
   let currentVideoId = null;
 
-  function createPlayerFrame(videoId, muted) {
+  function createIframe(videoId, muted) {
     videoArea.innerHTML = '';
     const iframe = document.createElement('iframe');
-    iframe.src = `player.html#v=${videoId}&muted=${muted ? '1' : '0'}`;
+    iframe.src = buildEmbedUrl(videoId, muted);
     iframe.allow = 'autoplay; encrypted-media';
+    iframe.referrerPolicy = 'no-referrer';
+    iframe.allowFullscreen = true;
     videoArea.appendChild(iframe);
   }
 
@@ -43,7 +56,7 @@ function setupSlot(position) {
     const videoId = extractVideoId(urlInput.value);
     if (!videoId) {
       urlInput.style.borderColor = '#c44';
-      setTimeout(() => { urlInput.style.borderColor = '#444'; }, 1500);
+      setTimeout(function() { urlInput.style.borderColor = '#444'; }, 1500);
       return;
     }
 
@@ -51,14 +64,14 @@ function setupSlot(position) {
     isMuted = false;
     muteBtn.textContent = 'Mute';
     muteBtn.disabled = false;
-    createPlayerFrame(videoId, false);
+    createIframe(videoId, false);
   }
 
   function toggleMute() {
     if (!currentVideoId) return;
     isMuted = !isMuted;
     muteBtn.textContent = isMuted ? 'Unmute' : 'Mute';
-    createPlayerFrame(currentVideoId, isMuted);
+    createIframe(currentVideoId, isMuted);
   }
 
   function clearVideo() {
@@ -71,7 +84,7 @@ function setupSlot(position) {
   }
 
   loadBtn.addEventListener('click', loadVideo);
-  urlInput.addEventListener('keydown', (e) => {
+  urlInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') loadVideo();
   });
   muteBtn.addEventListener('click', toggleMute);
@@ -83,40 +96,39 @@ setupSlot('bottom');
 
 // --- Drag handle for resizing ---
 
-const handle = document.getElementById('drag-handle');
-const slotTop = document.getElementById('slot-top');
-const slotBottom = document.getElementById('slot-bottom');
-const container = document.getElementById('container');
+var handle = document.getElementById('drag-handle');
+var slotTop = document.getElementById('slot-top');
+var slotBottom = document.getElementById('slot-bottom');
+var container = document.getElementById('container');
+var dragging = false;
 
-let dragging = false;
-
-handle.addEventListener('mousedown', (e) => {
+handle.addEventListener('mousedown', function(e) {
   e.preventDefault();
   dragging = true;
   handle.classList.add('dragging');
   document.body.style.cursor = 'row-resize';
-  document.querySelectorAll('iframe').forEach(f => f.style.pointerEvents = 'none');
+  document.querySelectorAll('iframe').forEach(function(f) { f.style.pointerEvents = 'none'; });
 });
 
-document.addEventListener('mousemove', (e) => {
+document.addEventListener('mousemove', function(e) {
   if (!dragging) return;
-  const containerRect = container.getBoundingClientRect();
-  const handleHeight = handle.offsetHeight;
-  const totalHeight = containerRect.height - handleHeight;
-  const offsetY = e.clientY - containerRect.top;
+  var containerRect = container.getBoundingClientRect();
+  var handleHeight = handle.offsetHeight;
+  var totalHeight = containerRect.height - handleHeight;
+  var offsetY = e.clientY - containerRect.top;
 
-  const minPx = 80;
-  const topHeight = Math.max(minPx, Math.min(offsetY, totalHeight - minPx));
-  const topPercent = (topHeight / totalHeight) * 100;
+  var minPx = 80;
+  var topHeight = Math.max(minPx, Math.min(offsetY, totalHeight - minPx));
+  var topPercent = (topHeight / totalHeight) * 100;
 
-  slotTop.style.flex = `0 0 ${topPercent}%`;
-  slotBottom.style.flex = `0 0 ${100 - topPercent}%`;
+  slotTop.style.flex = '0 0 ' + topPercent + '%';
+  slotBottom.style.flex = '0 0 ' + (100 - topPercent) + '%';
 });
 
-document.addEventListener('mouseup', () => {
+document.addEventListener('mouseup', function() {
   if (!dragging) return;
   dragging = false;
   handle.classList.remove('dragging');
   document.body.style.cursor = '';
-  document.querySelectorAll('iframe').forEach(f => f.style.pointerEvents = '');
+  document.querySelectorAll('iframe').forEach(function(f) { f.style.pointerEvents = ''; });
 });
