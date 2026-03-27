@@ -60,7 +60,7 @@ export default function VideoCardPreview({ video, categoryColour, isNew, onAddTo
   const catCol = categoryColour || 'var(--accent)';
 
   return (
-    <div className="vcard" ref={cardRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div className="vcard" ref={cardRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-video-id={video.id}>
       <div className={`vc-thumb${playing ? ' playing' : ''}`} onClick={!loaded ? handlePlayClick : undefined}>
         <div className="vc-thumb-bg">
           <img src={video.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.style.opacity = '1'} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0, transition: 'opacity 0.3s' }} />

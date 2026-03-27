@@ -32,6 +32,11 @@
       "js": ["content.js"],
       "all_frames": true,
       "run_at": "document_start"
+    },
+    {
+      "matches": ["http://localhost/*", "https://localhost/*", "http://127.0.0.1/*"],
+      "js": ["content-subsort.js"],
+      "run_at": "document_idle"
     }
   ],
   "icons": {}
