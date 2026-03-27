@@ -14,10 +14,11 @@
     "default_title": "Open YouTube Side Panel"
   },
   "sandbox": {
-    "pages": ["player.html"]
+    "pages": ["player.html"],
+    "content_security_policy": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline'; child-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src 'self'"
   },
   "icons": {}
 }
