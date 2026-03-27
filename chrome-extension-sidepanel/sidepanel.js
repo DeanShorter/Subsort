@@ -28,11 +28,9 @@ function buildWatchUrl(videoId) {
 function setupSlot(position) {
   const urlInput = document.getElementById('url-' + position);
   const loadBtn = document.getElementById('load-' + position);
-  const muteBtn = document.getElementById('mute-' + position);
   const clearBtn = document.getElementById('clear-' + position);
   const videoArea = document.getElementById('video-' + position);
 
-  let isMuted = false;
   let currentVideoId = null;
 
   function createIframe(videoId) {
@@ -54,7 +52,6 @@ function setupSlot(position) {
     }
 
     currentVideoId = videoId;
-    muteBtn.disabled = true;
     createIframe(videoId);
   }
 
@@ -62,9 +59,6 @@ function setupSlot(position) {
     videoArea.innerHTML = '<span class="placeholder">No video loaded</span>';
     urlInput.value = '';
     currentVideoId = null;
-    isMuted = false;
-    muteBtn.textContent = 'Mute';
-    muteBtn.disabled = true;
   }
 
   loadBtn.addEventListener('click', loadVideo);
