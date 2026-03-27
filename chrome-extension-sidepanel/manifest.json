@@ -3,7 +3,8 @@
   "name": "YouTube Side by Side",
   "version": "0.1.0",
   "description": "Watch two YouTube videos side by side in a Chrome side panel.",
-  "permissions": ["sidePanel"],
+  "permissions": ["sidePanel", "declarativeNetRequest"],
+  "host_permissions": ["*://*.youtube.com/*", "*://*.youtube-nocookie.com/*"],
   "background": {
     "service_worker": "service-worker.js"
   },
@@ -12,6 +13,15 @@
   },
   "action": {
     "default_title": "Open YouTube Side Panel"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_youtube",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com"
