@@ -24,7 +24,8 @@ function extractVideoId(url) {
 }
 
 function buildEmbedUrl(videoId) {
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=1&enablejsapi=1`;
+  const origin = chrome.runtime.getURL('').slice(0, -1); // remove trailing slash
+  return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
 }
 
 // --- Slot logic ---

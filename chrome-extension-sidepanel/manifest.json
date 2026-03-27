@@ -13,5 +13,8 @@
   "action": {
     "default_title": "Open YouTube Side Panel"
   },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com"
+  },
   "icons": {}
 }
