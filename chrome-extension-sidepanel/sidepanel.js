@@ -19,15 +19,8 @@ function extractVideoId(url) {
   return null;
 }
 
-function buildEmbedUrl(videoId, muted) {
-  const params = new URLSearchParams({
-    autoplay: '1',
-    rel: '0',
-    modestbranding: '1',
-    controls: '1',
-  });
-  if (muted) params.set('mute', '1');
-  return 'https://www.youtube-nocookie.com/embed/' + videoId + '?' + params;
+function buildWatchUrl(videoId) {
+  return 'https://www.youtube.com/watch?v=' + videoId;
 }
 
 // --- Slot logic ---
@@ -42,13 +35,13 @@ function setupSlot(position) {
   let isMuted = false;
   let currentVideoId = null;
 
-  function createIframe(videoId, muted) {
+  function createIframe(videoId) {
     videoArea.innerHTML = '';
-    const iframe = document.createElement('iframe');
-    iframe.src = buildEmbedUrl(videoId, muted);
+    var iframe = document.createElement('iframe');
+    iframe.src = buildWatchUrl(videoId);
+    iframe.sandbox = 'allow-scripts allow-same-origin allow-popups allow-forms';
     iframe.allow = 'autoplay; encrypted-media';
     iframe.referrerPolicy = 'no-referrer';
-    iframe.allowFullscreen = true;
     videoArea.appendChild(iframe);
   }
 
@@ -61,17 +54,8 @@ function setupSlot(position) {
     }
 
     currentVideoId = videoId;
-    isMuted = false;
-    muteBtn.textContent = 'Mute';
-    muteBtn.disabled = false;
-    createIframe(videoId, false);
-  }
-
-  function toggleMute() {
-    if (!currentVideoId) return;
-    isMuted = !isMuted;
-    muteBtn.textContent = isMuted ? 'Unmute' : 'Mute';
-    createIframe(currentVideoId, isMuted);
+    muteBtn.disabled = true;
+    createIframe(videoId);
   }
 
   function clearVideo() {
