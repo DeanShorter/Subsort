@@ -28,7 +28,6 @@ export default function Feeds2Page() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('videos');
   const [feedView, setFeedView] = useState('grid');
-  const [globalMuted, setGlobalMuted] = useState(true);
   const [visibleCount, setVisibleCount] = useState(60);
   const catRowRef = useRef(null);
   useDragScroll(catRowRef);
@@ -287,8 +286,6 @@ export default function Feeds2Page() {
             <div key={v.id} style={{ animationDelay: `${Math.min(idx * 50, 400)}ms`, opacity: 0, animation: `f2CardIn 0.3s ease forwards ${Math.min(idx * 50, 400)}ms` }}>
               <VideoCardPreview
                 video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '' }}
-                globalMuted={globalMuted}
-                onToggleMute={() => setGlobalMuted(m => !m)}
                 categoryColour={catCol}
                 isNew={isNew}
               />
@@ -299,14 +296,6 @@ export default function Feeds2Page() {
         )}
       </div>
 
-      {/* Mute indicator */}
-      <div className={`vc-mute-indicator${!globalMuted ? ' unmuted' : ''}`} onClick={() => setGlobalMuted(m => !m)}>
-        <svg viewBox="0 0 16 16">
-          <path d="M8 2L4 6H1v4h3l4 4V2z" />
-          {!globalMuted && <><path d="M12 5.5a4 4 0 010 5" /><path d="M14 3.5a7 7 0 010 9" /></>}
-        </svg>
-        <span>{globalMuted ? 'Hover to preview · Click to unmute' : 'Sound on · Click to mute'}</span>
-      </div>
     </>
   );
 }

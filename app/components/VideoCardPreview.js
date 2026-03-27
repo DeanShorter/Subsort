@@ -1,24 +1,30 @@
 'use client';
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { trackEvent } from '../../lib/track';
 
-export default function VideoCardPreview({ video, globalMuted, onToggleMute, categoryColour, isNew }) {
+export default function VideoCardPreview({ video, categoryColour, isNew }) {
   const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
   const iframeRef = useRef(null);
   const hoverTimer = useRef(null);
   const cardRef = useRef(null);
 
+  const buildSrc = useCallback((isMuted) => {
+    return `https://www.youtube.com/embed/${video.id}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1&controls=1&mute=${isMuted ? 1 : 0}`;
+  }, [video.id]);
+
   const startVideo = useCallback(() => {
     if (!iframeRef.current) return;
-    const muteParam = globalMuted ? '&mute=1' : '&mute=0';
-    iframeRef.current.src = `https://www.youtube.com/embed/${video.id}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1&controls=1${muteParam}`;
+    iframeRef.current.src = buildSrc(true); // always start muted
     setPlaying(true);
+    setMuted(true);
     trackEvent(video.type === 'short' ? 'video_preview_short' : 'video_preview_video', { video_id: video.id });
-  }, [video.id, video.type, globalMuted]);
+  }, [video.id, video.type, buildSrc]);
 
   const stopVideo = useCallback(() => {
     if (iframeRef.current) iframeRef.current.src = '';
     setPlaying(false);
+    setMuted(true);
   }, []);
 
   const handleMouseEnter = useCallback(() => {
@@ -27,27 +33,23 @@ export default function VideoCardPreview({ video, globalMuted, onToggleMute, cat
 
   const handleMouseLeave = useCallback(() => {
     clearTimeout(hoverTimer.current);
-    if (globalMuted) {
+    if (muted) {
       setTimeout(() => {
         if (cardRef.current && !cardRef.current.matches(':hover')) {
           stopVideo();
         }
       }, 300);
     }
-  }, [globalMuted, stopVideo]);
+  }, [muted, stopVideo]);
 
-  const handleUnmute = useCallback((e) => {
+  const toggleMute = useCallback((e) => {
     e.stopPropagation();
-    onToggleMute?.();
-  }, [onToggleMute]);
-
-  // Update mute state when globalMuted changes while playing
-  useEffect(() => {
+    const newMuted = !muted;
+    setMuted(newMuted);
     if (playing && iframeRef.current) {
-      const muteParam = globalMuted ? '&mute=1' : '&mute=0';
-      iframeRef.current.src = `https://www.youtube.com/embed/${video.id}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1&controls=1${muteParam}`;
+      iframeRef.current.src = buildSrc(newMuted);
     }
-  }, [globalMuted, playing, video.id]);
+  }, [muted, playing, buildSrc]);
 
   const catCol = categoryColour || 'var(--accent)';
 
@@ -67,12 +69,12 @@ export default function VideoCardPreview({ video, globalMuted, onToggleMute, cat
         </div>
         {video.type === 'short' && <span className="feed-shorts-badge" style={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}>SHORT</span>}
         {isNew && <span className="vc-new">New</span>}
-        <button className="vc-unmute" onClick={handleUnmute}>
+        <button className="vc-unmute" onClick={toggleMute}>
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 2L4 6H1v4h3l4 4V2z" />
-            {globalMuted ? <line x1="12" y1="6" x2="12" y2="10" /> : <><path d="M12 5.5a4 4 0 010 5" /><path d="M14 3.5a7 7 0 010 9" /></>}
+            {muted ? <line x1="12" y1="6" x2="12" y2="10" /> : <><path d="M12 5.5a4 4 0 010 5" /><path d="M14 3.5a7 7 0 010 9" /></>}
           </svg>
-          <span>{globalMuted ? 'Unmute' : 'Mute'}</span>
+          <span>{muted ? 'Unmute' : 'Mute'}</span>
         </button>
       </div>
       <div className="vc-info">
