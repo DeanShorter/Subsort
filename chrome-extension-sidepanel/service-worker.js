@@ -6,6 +6,7 @@ chrome.action.onClicked.addListener((_tab) => {
 
 // Create context menu items
 chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
     id: 'add-to-split-view',
     title: 'Add to Split View',
