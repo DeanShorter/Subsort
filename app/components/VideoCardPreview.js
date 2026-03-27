@@ -5,6 +5,7 @@ import { trackEvent } from '../../lib/track';
 export default function VideoCardPreview({ video, categoryColour, isNew }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
+  const [loaded, setLoaded] = useState(false); // once loaded, never reset
   const iframeRef = useRef(null);
   const hoverTimer = useRef(null);
   const cardRef = useRef(null);
@@ -14,61 +15,68 @@ export default function VideoCardPreview({ video, categoryColour, isNew }) {
   }, [video.id]);
 
   const startVideo = useCallback(() => {
-    if (!iframeRef.current) return;
-    iframeRef.current.src = buildSrc(true); // always start muted
+    if (!iframeRef.current || loaded) return; // don't restart if already loaded
+    iframeRef.current.src = buildSrc(true);
     setPlaying(true);
     setMuted(true);
+    setLoaded(true);
     trackEvent(video.type === 'short' ? 'video_preview_short' : 'video_preview_video', { video_id: video.id });
-  }, [video.id, video.type, buildSrc]);
-
-  const stopVideo = useCallback(() => {
-    if (iframeRef.current) iframeRef.current.src = '';
-    setPlaying(false);
-    setMuted(true);
-  }, []);
+  }, [video.id, video.type, buildSrc, loaded]);
 
   const handleMouseEnter = useCallback(() => {
+    if (loaded) return; // already loaded — don't restart
     hoverTimer.current = setTimeout(startVideo, 400);
-  }, [startVideo]);
+  }, [startVideo, loaded]);
 
   const handleMouseLeave = useCallback(() => {
     clearTimeout(hoverTimer.current);
-    if (muted) {
-      setTimeout(() => {
-        if (cardRef.current && !cardRef.current.matches(':hover')) {
-          stopVideo();
-        }
-      }, 300);
-    }
-  }, [muted, stopVideo]);
+    // Don't stop if unmuted or already loaded with interaction
+    // Only stop auto-preview (muted, no explicit play)
+  }, []);
 
   const toggleMute = useCallback((e) => {
     e.stopPropagation();
     const newMuted = !muted;
     setMuted(newMuted);
-    if (playing && iframeRef.current) {
+    setLoaded(true); // mark as loaded on any interaction
+    if (!playing) {
+      // Start playing if not already
+      if (iframeRef.current) iframeRef.current.src = buildSrc(newMuted);
+      setPlaying(true);
+    } else if (iframeRef.current) {
       iframeRef.current.src = buildSrc(newMuted);
     }
   }, [muted, playing, buildSrc]);
+
+  const handlePlayClick = useCallback(() => {
+    if (loaded) return; // already playing
+    if (iframeRef.current) iframeRef.current.src = buildSrc(true);
+    setPlaying(true);
+    setMuted(true);
+    setLoaded(true);
+    trackEvent(video.type === 'short' ? 'video_preview_short' : 'video_preview_video', { video_id: video.id });
+  }, [loaded, buildSrc, video.id, video.type]);
 
   const catCol = categoryColour || 'var(--accent)';
 
   return (
     <div className="vcard" ref={cardRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <div className={`vc-thumb${playing ? ' playing' : ''}`}>
+      <div className={`vc-thumb${playing ? ' playing' : ''}`} onClick={!loaded ? handlePlayClick : undefined}>
         <div className="vc-thumb-bg">
           <img src={video.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.style.opacity = '1'} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0, transition: 'opacity 0.3s' }} />
         </div>
         <div className="vc-iframe-wrap">
           <iframe ref={iframeRef} src="" allow="autoplay; encrypted-media; fullscreen" allowFullScreen />
         </div>
-        <div className="vc-overlay">
-          <div className="vc-play">
-            <svg viewBox="0 0 16 16"><polygon points="5,3 13,8 5,13" fill="#111" /></svg>
+        {!loaded && (
+          <div className="vc-overlay">
+            <div className="vc-play">
+              <svg viewBox="0 0 16 16"><polygon points="5,3 13,8 5,13" fill="#111" /></svg>
+            </div>
           </div>
-        </div>
+        )}
         {video.type === 'short' && <span className="feed-shorts-badge" style={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}>SHORT</span>}
-        {isNew && <span className="vc-new">New</span>}
+        {isNew && !loaded && <span className="vc-new">New</span>}
         <button className="vc-unmute" onClick={toggleMute}>
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 2L4 6H1v4h3l4 4V2z" />
