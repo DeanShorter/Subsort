@@ -71,7 +71,6 @@ function setupSlot(position) {
   urlInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') loadVideo();
   });
-  muteBtn.addEventListener('click', toggleMute);
   clearBtn.addEventListener('click', clearVideo);
 }
 
