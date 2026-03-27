@@ -23,9 +23,10 @@ chrome.runtime.onInstalled.addListener(() => {
     title: 'Add to Split View',
     contexts: ['all'],
     documentUrlPatterns: [
-      'http://localhost/*',
-      'https://localhost/*',
-      'http://127.0.0.1/*'
+      'http://localhost:3000/*',
+      'http://localhost:3001/*',
+      'http://127.0.0.1:3000/*',
+      'https://*.vercel.app/*'
     ]
   });
 });

@@ -34,7 +34,7 @@
       "run_at": "document_start"
     },
     {
-      "matches": ["http://localhost/*", "https://localhost/*", "http://127.0.0.1/*"],
+      "matches": ["http://localhost:3000/*", "http://localhost:3001/*", "http://127.0.0.1:3000/*", "https://*.vercel.app/*"],
       "js": ["content-subsort.js"],
       "run_at": "document_idle"
     }
