@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Side by Side</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: system-ui, sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      overflow: hidden;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .slot {
+      display: flex;
+      flex-direction: column;
+      min-height: 80px;
+      overflow: hidden;
+    }
+
+    #slot-top { flex: 1 1 50%; }
+    #slot-bottom { flex: 1 1 50%; }
+
+    .slot-controls {
+      display: flex;
+      gap: 6px;
+      padding: 6px 8px;
+      background: #252525;
+      align-items: center;
+    }
+
+    .slot-controls input {
+      flex: 1;
+      padding: 5px 8px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #333;
+      color: #e0e0e0;
+      font-size: 13px;
+    }
+
+    .slot-controls input:focus {
+      outline: none;
+      border-color: #777;
+    }
+
+    .slot-controls button {
+      padding: 5px 10px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #333;
+      color: #e0e0e0;
+      cursor: pointer;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .slot-controls button:hover { background: #444; }
+
+    .video-area {
+      flex: 1;
+      position: relative;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-area iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-area .placeholder {
+      color: #555;
+      font-size: 14px;
+    }
+
+    /* Drag handle */
+    #drag-handle {
+      height: 6px;
+      background: #333;
+      cursor: row-resize;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #drag-handle:hover, #drag-handle.dragging {
+      background: #555;
+    }
+
+    #drag-handle::after {
+      content: "";
+      width: 40px;
+      height: 2px;
+      background: #666;
+      border-radius: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="slot-top" class="slot">
+      <div class="slot-controls">
+        <input type="text" id="url-top" placeholder="Paste YouTube URL…">
+        <button id="load-top">Load</button>
+        <button id="mute-top" class="mute-btn" disabled>Mute</button>
+        <button id="clear-top" class="clear-btn">&#x2715;</button>
+      </div>
+      <div class="video-area" id="video-top">
+        <span class="placeholder">No video loaded</span>
+      </div>
+    </div>
+
+    <div id="drag-handle"></div>
+
+    <div id="slot-bottom" class="slot">
+      <div class="slot-controls">
+        <input type="text" id="url-bottom" placeholder="Paste YouTube URL…">
+        <button id="load-bottom">Load</button>
+        <button id="mute-bottom" class="mute-btn" disabled>Mute</button>
+        <button id="clear-bottom" class="clear-btn">&#x2715;</button>
+      </div>
+      <div class="video-area" id="video-bottom">
+        <span class="placeholder">No video loaded</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

@@ -319,14 +319,13 @@ export default function Feeds2Page() {
             </div>
           )}
         </div>
+        {/* Split minibar — inside header so it sticks with it */}
+        <SplitMinibar
+          panels={splitPanels}
+          visible={minibarVisible}
+          onScrollToSplit={scrollToSplit}
+        />
       </div>
-
-      {/* Split minibar — sticks below header when split view scrolls out */}
-      <SplitMinibar
-        panels={splitPanels}
-        visible={minibarVisible}
-        onScrollToSplit={scrollToSplit}
-      />
 
       {/* Split view */}
       <div ref={splitRef}>
