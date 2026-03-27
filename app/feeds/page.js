@@ -6,7 +6,7 @@ import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
 import { trackEvent } from '../../lib/track';
 import { useDragScroll } from '../../hooks/useDragScroll';
-import VideoModal from '../components/VideoModal';
+import VideoCardPreview from '../components/VideoCardPreview';
 
 export default function Feeds2Page() {
   const { user, signIn } = useAuth();
@@ -28,7 +28,7 @@ export default function Feeds2Page() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('videos');
   const [feedView, setFeedView] = useState('grid');
-  const [playingVideo, setPlayingVideo] = useState(null); // { id, title, channel }
+  const [globalMuted, setGlobalMuted] = useState(true);
   const [visibleCount, setVisibleCount] = useState(60);
   const catRowRef = useRef(null);
   useDragScroll(catRowRef);
@@ -281,31 +281,17 @@ export default function Feeds2Page() {
           const cats = ch ? (ch.categories || []) : [];
           const catLabel = cats[0] || '';
           const catCol = catLabel ? categoryColours[catLabel] : null;
+          const isNew = v.publishedAt && (Date.now() - new Date(v.publishedAt).getTime()) < 24 * 60 * 60 * 1000;
 
           return (
-            <div key={v.id} className="f2-card" style={{ animationDelay: `${Math.min(idx * 50, 400)}ms` }} onClick={() => {
-              trackEvent(v.type === 'short' ? 'video_click_feeds_short' : 'video_click_feeds_video');
-              setPlayingVideo(v);
-            }}>
-              <div className="f2-card-thumb">
-                <img src={v.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.classList.add('loaded')} />
-                {v.type === 'short' && <span className="feed-shorts-badge">SHORT</span>}
-              </div>
-              <div className="f2-card-info">
-                <div className="f2-card-title">{v.title}</div>
-                <div className="f2-card-channel">{v.channel}{v.publishedAt ? ` · ${timeAgo(v.publishedAt)}` : ''}</div>
-                {catLabel && (
-                  <div className="f2-card-tags">
-                    <span className="f2-card-tag" style={catCol ? { background: `${catCol}22`, color: catCol } : {}}>{catLabel}</span>
-                    {ch?.subcategory && (
-                      <span className="f2-card-subcat">
-                        <span className="hnp-cat-slash" style={{ color: catCol || 'var(--accent)' }}>/</span>
-                        {ch.subcategory}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
+            <div key={v.id} style={{ animationDelay: `${Math.min(idx * 50, 400)}ms`, opacity: 0, animation: `f2CardIn 0.3s ease forwards ${Math.min(idx * 50, 400)}ms` }}>
+              <VideoCardPreview
+                video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '' }}
+                globalMuted={globalMuted}
+                onToggleMute={() => setGlobalMuted(m => !m)}
+                categoryColour={catCol}
+                isNew={isNew}
+              />
             </div>
           );
         }) : (
@@ -313,10 +299,14 @@ export default function Feeds2Page() {
         )}
       </div>
 
-      {/* Video modal */}
-      {playingVideo && (
-        <VideoModal video={playingVideo} onClose={() => setPlayingVideo(null)} />
-      )}
+      {/* Mute indicator */}
+      <div className={`vc-mute-indicator${!globalMuted ? ' unmuted' : ''}`} onClick={() => setGlobalMuted(m => !m)}>
+        <svg viewBox="0 0 16 16">
+          <path d="M8 2L4 6H1v4h3l4 4V2z" />
+          {!globalMuted && <><path d="M12 5.5a4 4 0 010 5" /><path d="M14 3.5a7 7 0 010 9" /></>}
+        </svg>
+        <span>{globalMuted ? 'Hover to preview · Click to unmute' : 'Sound on · Click to mute'}</span>
+      </div>
     </>
   );
 }
