@@ -324,6 +324,7 @@ export default function Feeds2Page() {
           panels={splitPanels}
           visible={minibarVisible}
           onScrollToSplit={scrollToSplit}
+          scrollContainerRef={contentRef}
         />
       </div>
 

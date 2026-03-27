@@ -6,36 +6,40 @@
     * { margin: 0; padding: 0; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #111; }
     iframe { width: 100%; height: 100%; border: none; }
+    .empty { display: flex; align-items: center; justify-content: center; height: 100%; color: #555; font-family: system-ui, sans-serif; font-size: 14px; }
   </style>
 </head>
 <body>
+  <div class="empty" id="placeholder">No video loaded</div>
   <script>
-    let iframe = null;
+    function loadFromHash() {
+      var hash = location.hash.slice(1);
+      if (!hash) return;
+      var params = new URLSearchParams(hash);
+      var videoId = params.get('v');
+      if (!videoId) return;
 
-    window.addEventListener('message', (e) => {
-      const msg = e.data;
-      if (!msg || !msg.action) return;
+      document.getElementById('placeholder').style.display = 'none';
+      var existing = document.querySelector('iframe');
+      if (existing) existing.remove();
 
-      if (msg.action === 'load') {
-        if (iframe) iframe.remove();
-        iframe = document.createElement('iframe');
-        const params = new URLSearchParams({
-          autoplay: '1',
-          rel: '0',
-          modestbranding: '1',
-          controls: '1',
-        });
-        if (msg.muted) params.set('mute', '1');
-        iframe.src = 'https://www.youtube.com/embed/' + msg.videoId + '?' + params;
-        iframe.allow = 'autoplay; encrypted-media';
-        iframe.allowFullscreen = true;
-        document.body.appendChild(iframe);
-      }
+      var embedParams = new URLSearchParams({
+        autoplay: '1',
+        rel: '0',
+        modestbranding: '1',
+        controls: '1'
+      });
+      if (params.get('muted') === '1') embedParams.set('mute', '1');
 
-      if (msg.action === 'clear') {
-        if (iframe) { iframe.remove(); iframe = null; }
-      }
-    });
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/' + videoId + '?' + embedParams;
+      iframe.allow = 'autoplay; encrypted-media';
+      iframe.allowFullscreen = true;
+      document.body.appendChild(iframe);
+    }
+
+    window.addEventListener('hashchange', loadFromHash);
+    loadFromHash();
   </script>
 </body>
 </html>

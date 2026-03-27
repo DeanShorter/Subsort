@@ -26,13 +26,17 @@ function setupSlot(position) {
   const loadBtn = document.getElementById(`load-${position}`);
   const muteBtn = document.getElementById(`mute-${position}`);
   const clearBtn = document.getElementById(`clear-${position}`);
-  const playerFrame = document.getElementById(`player-${position}`);
+  const videoArea = document.getElementById(`video-${position}`);
 
   let isMuted = false;
   let currentVideoId = null;
 
-  function sendToPlayer(msg) {
-    playerFrame.contentWindow.postMessage(msg, '*');
+  function createPlayerFrame(videoId, muted) {
+    videoArea.innerHTML = '';
+    const iframe = document.createElement('iframe');
+    iframe.src = `player.html#v=${videoId}&muted=${muted ? '1' : '0'}`;
+    iframe.allow = 'autoplay; encrypted-media';
+    videoArea.appendChild(iframe);
   }
 
   function loadVideo() {
@@ -47,23 +51,23 @@ function setupSlot(position) {
     isMuted = false;
     muteBtn.textContent = 'Mute';
     muteBtn.disabled = false;
-    sendToPlayer({ action: 'load', videoId, muted: false });
+    createPlayerFrame(videoId, false);
   }
 
   function toggleMute() {
     if (!currentVideoId) return;
     isMuted = !isMuted;
     muteBtn.textContent = isMuted ? 'Unmute' : 'Mute';
-    sendToPlayer({ action: 'load', videoId: currentVideoId, muted: isMuted });
+    createPlayerFrame(currentVideoId, isMuted);
   }
 
   function clearVideo() {
+    videoArea.innerHTML = '<span class="placeholder">No video loaded</span>';
     urlInput.value = '';
     currentVideoId = null;
     isMuted = false;
     muteBtn.textContent = 'Mute';
     muteBtn.disabled = true;
-    sendToPlayer({ action: 'clear' });
   }
 
   loadBtn.addEventListener('click', loadVideo);

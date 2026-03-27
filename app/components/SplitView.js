@@ -88,15 +88,55 @@ export default function SplitView({ panels, onRemovePanel, onSwapPanels }) {
   );
 }
 
-export function SplitMinibar({ panels, visible, onScrollToSplit }) {
+export function SplitMinibar({ panels, visible, onScrollToSplit, scrollContainerRef }) {
   const getVideoInfo = useVideoInfo();
+  const dragRef = useRef(null);
+
+  const handleDragStart = useCallback((e) => {
+    e.preventDefault();
+    const startY = e.clientY || e.touches?.[0]?.clientY;
+    const scrollEl = scrollContainerRef?.current;
+    if (!scrollEl) return;
+    const startScroll = scrollEl.scrollTop;
+
+    const onMove = (ev) => {
+      const y = ev.clientY || ev.touches?.[0]?.clientY;
+      const delta = y - startY;
+      if (delta > 0) {
+        // Dragging down — scroll up to reveal split view
+        scrollEl.scrollTop = Math.max(0, startScroll - delta * 2);
+      }
+    };
+
+    const onEnd = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+  }, [scrollContainerRef]);
 
   if (panels.length === 0) return null;
 
   return (
-    <div className={`split-minibar${visible ? ' show' : ''}`}>
+    <div
+      className={`split-minibar${visible ? ' show' : ''}`}
+      ref={dragRef}
+      onMouseDown={handleDragStart}
+      onTouchStart={handleDragStart}
+      style={{ cursor: visible ? 'grab' : 'default' }}
+    >
       <div className="minibar-icon">
         <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="12" rx="1.5" /><rect x="8" y="1" width="5" height="12" rx="1.5" /></svg>
+      </div>
+      {/* Drag handle indicator */}
+      <div className="minibar-drag-handle">
+        <div className="minibar-drag-dot" /><div className="minibar-drag-dot" /><div className="minibar-drag-dot" />
       </div>
       <div className="minibar-videos">
         {panels.map((video, i) => {
@@ -117,7 +157,7 @@ export function SplitMinibar({ panels, visible, onScrollToSplit }) {
           );
         })}
       </div>
-      <div className="minibar-back" onClick={onScrollToSplit}>
+      <div className="minibar-back" onClick={e => { e.stopPropagation(); onScrollToSplit(); }}>
         <svg viewBox="0 0 12 12"><polyline points="6 2 6 10" /><polyline points="3 5 6 2 9 5" /></svg>
         Back to split view
       </div>
