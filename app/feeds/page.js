@@ -57,7 +57,7 @@ export default function Feeds2Page() {
   }, [splitPanels.length]);
 
   const scrollToSplit = useCallback(() => {
-    splitRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
   useDragScroll(catRowRef);
 
