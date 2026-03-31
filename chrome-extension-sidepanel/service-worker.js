@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
     id: 'add-to-split-view',
-    title: 'Add to Split View',
+    title: 'Add to Subscrub Split View',
     contexts: ['link'],
     targetUrlPatterns: [
       '*://*.youtube.com/watch*',
@@ -20,7 +20,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
   chrome.contextMenus.create({
     id: 'add-to-split-view-subsort',
-    title: 'Add to Split View',
+    title: 'Add to Subscrub Split View',
     contexts: ['all'],
     documentUrlPatterns: [
       'http://localhost:3000/*',

@@ -108,7 +108,7 @@ if (window === window.top) {
 
     var btn = document.createElement('button');
     btn.id = 'yt-split-view-btn';
-    btn.textContent = 'Split View';
+    btn.textContent = 'Add to Subscrub Split View';
     btn.style.cssText = [
       'position: fixed',
       'top: 80px',
