@@ -141,105 +141,124 @@ export default function Subscriptions2Page() {
 
   return (
     <>
-      {/* TOPBAR */}
+      {/* PAGE HEADER */}
       <div className="s2-topbar">
         <div className="s2-topbar-row">
           <div className="s2-topbar-left">
-            <span className="f2-title">Subscriptions</span>
-            <span className="ph-count">{filtered.length} channels</span>
+            <span className="page-title" style={{ fontSize: 24, fontWeight: 500, letterSpacing: '-.3px' }}>Subscriptions <span style={{ fontWeight: 400, fontSize: 15, color: 'var(--text-muted)', marginLeft: 8 }}>{filtered.length} channels</span></span>
           </div>
           <div className="f2-header-right">
-            <div className="f2-type-toggles">
-              <button className={`f2-type-btn${filterStatus === 'all' ? ' active' : ''}`} onClick={() => setFilterStatus('all')}>All</button>
-              <button className={`f2-type-btn${filterStatus === 'active' ? ' active' : ''}`} onClick={() => setFilterStatus('active')}>Active</button>
-              <button className={`f2-type-btn${filterStatus === 'inactive' ? ' active' : ''}`} onClick={() => setFilterStatus('inactive')}>Inactive</button>
-              <button className={`f2-type-btn${filterStatus === 'dead' ? ' active' : ''}`} onClick={() => setFilterStatus('dead')}>Dead</button>
-            </div>
-            <div className="ph-view-toggles">
-              <button className={`ph-view-btn${chanView === 'table' ? ' active' : ''}`} title="Table" onClick={() => setChanView('table')}>
-                <svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="3" rx="0.5" /><rect x="1" y="6" width="12" height="3" rx="0.5" /><rect x="1" y="11" width="12" height="3" rx="0.5" /></svg>
-              </button>
-              <button className={`ph-view-btn${chanView === 'grid' ? ' active' : ''}`} title="Grid" onClick={() => setChanView('grid')}>
-                <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
-              </button>
-            </div>
-            <button className="ph-btn" onClick={() => {
-              const keys = ['name', 'subscribers', 'videoCount', 'subDate', 'category', 'favourited'];
-              const labels = { name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category', favourited: 'Favourites' };
-              const idx = keys.indexOf(sortKey);
-              const nextIdx = (idx + 1) % keys.length;
-              setSortKey(keys[nextIdx]);
-              setSortDir('asc');
-            }}>
-              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-              Sort: {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category', favourited: 'Favs' })[sortKey] || 'Name'}
+            <input className="s2-search-pill" type="text" placeholder="Search channels..." value={search} onChange={e => setSearch(e.target.value)} />
+            <button className="s2-icon-btn" title="Grid view" onClick={() => setChanView('grid')}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="6" height="5" rx="1" stroke={chanView === 'grid' ? 'var(--accent)' : '#999'} strokeWidth="1.2" /><rect x="9" y="2" width="6" height="5" rx="1" stroke={chanView === 'grid' ? 'var(--accent)' : '#999'} strokeWidth="1.2" /><rect x="1" y="9" width="6" height="5" rx="1" stroke={chanView === 'grid' ? 'var(--accent)' : '#999'} strokeWidth="1.2" /><rect x="9" y="9" width="6" height="5" rx="1" stroke={chanView === 'grid' ? 'var(--accent)' : '#999'} strokeWidth="1.2" /></svg>
             </button>
-            {selectedChannels.size > 0 && (
-              <button className="ph-btn active" onClick={() => setShowBulkEdit(true)}>
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="1" width="12" height="12" rx="2" /><path d="M5 7h4" /></svg>
-                Edit {selectedChannels.size} selected
-              </button>
-            )}
-            <button className="ph-btn primary" onClick={() => setShowSortConfirm(true)} disabled={sorting}>
-              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 4h10M4 7h6M5 10h4" /></svg>
+            <button className="s2-icon-btn" title="Table view" onClick={() => setChanView('table')}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke={chanView === 'table' ? 'var(--accent)' : '#999'} strokeWidth="1.2" strokeLinecap="round" /></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* INSIGHTS ROW */}
+      <div className="s2-insights">
+        <div className="s2-insight">
+          <div className="s2-insight-header" style={{ background: 'var(--accent-soft)' }}>
+            <div>
+              <div className="s2-insight-stat" style={{ color: 'var(--accent)' }}>{channels.filter(c => chIsUncategorised(c)).length}</div>
+              <div className="s2-insight-label" style={{ color: 'var(--accent-text)' }}>uncategorised</div>
+            </div>
+            <div className="s2-insight-icon" style={{ background: 'var(--accent)' }}>
+              <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
+            </div>
+          </div>
+          <div className="s2-insight-body">
+            <div className="s2-insight-quote">"{channels.filter(c => chIsUncategorised(c)).length} channels with no category. That's a messy drawer. Let me sort it."</div>
+            <button className="s2-insight-cta" style={{ background: 'var(--accent)' }} onClick={() => setShowSortConfirm(true)} disabled={sorting}>
               {sorting ? 'Sorting...' : 'Auto-sort'}
+              <svg viewBox="0 0 14 14"><path d="M5 3l4.5 4-4.5 4" /></svg>
             </button>
-            <div className="ph-search-wrap">
-              <svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4.5" fill="none" /><path d="M9.5 9.5L13 13" /></svg>
-              <input className="ph-search" type="text" placeholder="Search channels..." value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
           </div>
         </div>
 
-        {/* Category tabs + manage button */}
-        <div className="s2-cat-row-wrap">
-          <button className="f2-cat-scroll-btn f2-cat-scroll-left" onClick={() => catTabsRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}>
-            <svg viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" /></svg>
+        <div className="s2-insight">
+          <div className="s2-insight-header" style={{ background: 'var(--orange-soft)' }}>
+            <div>
+              <div className="s2-insight-stat" style={{ color: 'var(--orange)' }}>{channels.filter(c => { const d = c.subscribedAt; return d && (Date.now() - new Date(d).getTime()) > 7 * 365 * 24 * 60 * 60 * 1000; }).length}</div>
+              <div className="s2-insight-label" style={{ color: 'var(--orange-text)' }}>7+ year subs</div>
+            </div>
+            <div className="s2-insight-icon" style={{ background: 'var(--orange)' }}>
+              <svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" /><path d="M7 4.5v3l2 1.5" /></svg>
+            </div>
+          </div>
+          <div className="s2-insight-body">
+            <div className="s2-insight-quote">"Long-term loyalty. But maybe it's time to check if you still watch them?"</div>
+            <button className="s2-insight-cta" style={{ background: 'var(--orange)' }} onClick={() => { setSortKey('subDate'); setSortDir('asc'); }}>
+              Review
+              <svg viewBox="0 0 14 14"><path d="M5 3l4.5 4-4.5 4" /></svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="s2-insight">
+          <div className="s2-insight-header" style={{ background: 'var(--iris-soft)' }}>
+            <div>
+              <div className="s2-insight-stat" style={{ color: 'var(--iris)' }}>{channels.filter(c => c.favourited).length}</div>
+              <div className="s2-insight-label" style={{ color: 'var(--iris-text)' }}>favourites</div>
+            </div>
+            <div className="s2-insight-icon" style={{ background: 'var(--iris)' }}>
+              <svg viewBox="0 0 14 14"><path d="M7 1.5l1.5 3 3.5.4-2.5 2.5.5 3.3L7 9.2l-3 1.5.5-3.3L2 5l3.5-.5z" fill="#fff" stroke="none" /></svg>
+            </div>
+          </div>
+          <div className="s2-insight-body">
+            <div className="s2-insight-quote">"Found channels similar to your favourites. Worth a look?"</div>
+            <button className="s2-insight-cta" style={{ background: 'var(--iris)' }} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
+              Discover
+              <svg viewBox="0 0 14 14"><path d="M5 3l4.5 4-4.5 4" /></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* CATEGORY BAR */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 40px', borderBottom: '1px solid #eee' }}>
+        <div className="s2-cat-tabs" ref={catTabsRef} style={{ gap: 6 }}>
+          <button className={`s2-cat-tab${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
+            All <span className="s2-ct-count">{channels.length}</span>
           </button>
-          <div className="s2-cat-tabs" ref={catTabsRef}>
-            <button className={`s2-cat-tab${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
-              <span className="s2-ct-dot" style={{ background: 'var(--accent)' }} />All<span className="s2-ct-count">{channels.length}</span>
+          <button className={`s2-cat-tab${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
+            Favourites <span className="s2-ct-count">{channels.filter(c => c.favourited).length}</span>
+          </button>
+          {categories.map(cat => (
+            <button key={cat} className={`s2-cat-tab${activeCategory === cat ? ' active' : ''}`}
+              onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}>
+              {cat} <span className="s2-ct-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
             </button>
-            <button className={`s2-cat-tab${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
-              <span style={{ fontSize: 10, color: '#EFD700' }}>★</span>Favourites<span className="s2-ct-count">{channels.filter(c => c.favourited).length}</span>
-            </button>
-            {categories.map(cat => (
-              <button key={cat} className={`s2-cat-tab${activeCategory === cat ? ' active' : ''}`}
-                onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}>
-                <span className="s2-ct-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
-                {cat}<span className="s2-ct-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
+          ))}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {['all', 'active', 'inactive', 'dead'].map(s => (
+              <button key={s} className={`s2-fpill${filterStatus === s ? ' active' : ' inactive'}`}
+                onClick={() => setFilterStatus(filterStatus === s ? 'all' : s)}>
+                {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
           </div>
-          <button className="f2-cat-scroll-btn f2-cat-scroll-right" onClick={() => catTabsRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}>
-            <svg viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" /></svg>
+          <button className="s2-sort-pill" onClick={() => {
+            const keys = ['name', 'subscribers', 'videoCount', 'subDate', 'category'];
+            const idx = keys.indexOf(sortKey);
+            setSortKey(keys[(idx + 1) % keys.length]);
+            setSortDir('asc');
+          }}>
+            <svg viewBox="0 0 12 12"><path d="M2 3h8M3 6h6M4 9h4" /></svg>
+            {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category' })[sortKey] || 'Name'}
           </button>
-          <button className="s2-cat-manage" onClick={() => setShowManageCats(true)}>
-            <svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" /></svg>
-            Manage Categories
-          </button>
+          {selectedChannels.size > 0 && (
+            <button className="s2-insight-cta" style={{ background: 'var(--accent)', fontSize: 12 }} onClick={() => setShowBulkEdit(true)}>
+              Edit {selectedChannels.size}
+            </button>
+          )}
         </div>
-
-        {/* Subcategory tabs */}
-        {activeCategory !== 'all' && activeCategory !== '__favs__' && activeCategory !== '__uncat__' && (
-          <div className="s2-subcat-tabs">
-            {activeSubs.length > 0 ? (
-              <>
-                <button className={`s2-subcat-tab${!activeSubcategory ? ' active' : ''}`} onClick={() => setActiveSubcategory(null)}>
-                  All {activeCategory}
-                </button>
-                {activeSubs.map(sub => (
-                  <button key={sub} className={`s2-subcat-tab${activeSubcategory === sub ? ' active' : ''}`}
-                    onClick={() => setActiveSubcategory(prev => prev === sub ? null : sub)}>
-                    {sub}
-                  </button>
-                ))}
-              </>
-            ) : (
-              <span className="s2-subcat-empty">No subcategories yet — add them from the channel modal or Manage categories</span>
-            )}
-          </div>
-        )}
       </div>
 
 

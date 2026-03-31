@@ -88,6 +88,7 @@
   --border-hover:       #d0d0d3;
   --border-focus:       #b0b0b5;
   --border-active:      #00A651;
+  --border-thick:       3px solid #1a1a1a;
   --border-white-15:    rgba(0, 0, 0, 0.08);
   --border-white-30:    rgba(0, 0, 0, 0.15);
 
