@@ -35,6 +35,7 @@ export default function Subscriptions2Page() {
   const catTabsRef = useRef(null);
   useDragScroll(catTabsRef);
   const [hiddenCols, setHiddenCols] = useState(new Set());
+  const [showColumnsMenu, setShowColumnsMenu] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   const [colWidths, setColWidths] = useState({});
   const resizingCol = useRef(null);
@@ -257,6 +258,37 @@ export default function Subscriptions2Page() {
               <svg viewBox="0 0 12 12"><path d="M2 3h8M3 6h6M4 9h4" /></svg>
               {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category' })[sortKey] || 'Name'}
             </button>
+            <div style={{ position: 'relative' }}>
+              <button className="s2-sort-pill" onClick={() => setShowColumnsMenu(v => !v)}>
+                <svg viewBox="0 0 12 12"><rect x="1" y="1" width="4" height="10" rx="1" stroke="currentColor" fill="none" strokeWidth="1.1" /><rect x="7" y="1" width="4" height="10" rx="1" stroke="currentColor" fill="none" strokeWidth="1.1" /></svg>
+                Columns
+              </button>
+              {showColumnsMenu && (
+                <div className="s2-columns-dropdown">
+                  {[
+                    { key: 'category', label: 'Category' },
+                    { key: 'subcategory', label: 'Subcategory' },
+                    { key: 'subscribers', label: 'Subscribers' },
+                    { key: 'videoCount', label: 'Videos' },
+                    { key: 'subDate', label: 'Subscribed' },
+                    { key: 'status', label: 'Status' },
+                  ].map(col => (
+                    <label key={col.key} className="s2-columns-item">
+                      <input
+                        type="checkbox"
+                        checked={!hiddenCols.has(col.key)}
+                        onChange={() => setHiddenCols(prev => {
+                          const next = new Set(prev);
+                          next.has(col.key) ? next.delete(col.key) : next.add(col.key);
+                          return next;
+                        })}
+                      />
+                      <span>{col.label}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
             {selectedChannels.size > 0 && (
               <button className="s2-insight-cta" style={{ background: 'var(--accent)', fontSize: 12 }} onClick={() => setShowBulkEdit(true)}>
                 Edit {selectedChannels.size}
