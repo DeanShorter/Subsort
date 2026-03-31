@@ -1,11 +1,28 @@
 'use client';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useChannelData } from './ChannelDataContext';
 
 export default function ChannelPanel({ channelId, onClose }) {
   const { channels, categories, subcategories, categoryColours, chCats, formatCount, getChannelState } = useChannelData();
 
   const ch = channels.find(c => c.id === channelId);
+
+  // Get watch history data for this channel
+  const watchActivity = useMemo(() => {
+    if (!ch || typeof window === 'undefined') return null;
+    try {
+      const wh = JSON.parse(localStorage.getItem('subsort_watchhistory'));
+      if (!wh?.topChannels) return null;
+      const match = wh.topChannels.find(tc =>
+        tc.channelName && ch.name && tc.channelName.toLowerCase() === ch.name.toLowerCase()
+      );
+      if (!match) return { watched: 0, lastWatched: null, rate: 'none' };
+      const pct = ch.videoCount ? Math.round((match.count / ch.videoCount) * 100) : 0;
+      const rate = pct >= 50 ? 'high' : pct >= 20 ? 'medium' : pct >= 5 ? 'low' : 'minimal';
+      return { watched: match.count, lastWatched: null, rate, pct };
+    } catch { return null; }
+  }, [ch]);
+
   if (!ch) return null;
 
   const cats = chCats(ch);
@@ -48,18 +65,27 @@ export default function ChannelPanel({ channelId, onClose }) {
         <div className="sp-panel-section-title">YOUR ACTIVITY</div>
         <div className="sp-panel-stat-row">
           <span className="sp-panel-stat-label">Videos watched</span>
-          <span className="sp-panel-stat-value">— of {ch.videoCount != null ? ch.videoCount.toLocaleString() : '—'}</span>
+          <span className="sp-panel-stat-value">
+            {watchActivity ? `${watchActivity.watched} of ${ch.videoCount?.toLocaleString() || '—'}` : `— of ${ch.videoCount?.toLocaleString() || '—'}`}
+          </span>
         </div>
         <div className="sp-panel-bar">
-          <div className="sp-panel-bar-fill" style={{ width: '0%', background: 'var(--accent)' }} />
+          <div className="sp-panel-bar-fill" style={{ width: `${watchActivity?.pct || 0}%`, background: watchActivity?.pct >= 50 ? 'var(--accent)' : watchActivity?.pct >= 20 ? 'var(--orange)' : 'var(--text-muted)' }} />
         </div>
         <div className="sp-panel-stat-row" style={{ marginTop: 8 }}>
-          <span className="sp-panel-stat-label">Last watched</span>
-          <span className="sp-panel-stat-value">—</span>
-        </div>
-        <div className="sp-panel-stat-row">
           <span className="sp-panel-stat-label">Watch rate</span>
-          <span className="sp-panel-stat-value" style={{ color: 'var(--text-muted)' }}>Not tracked yet</span>
+          <span className="sp-panel-stat-value" style={{
+            color: !watchActivity ? 'var(--text-muted)' :
+              watchActivity.rate === 'high' ? 'var(--accent)' :
+              watchActivity.rate === 'medium' ? 'var(--orange)' :
+              watchActivity.rate === 'low' ? 'var(--text-secondary)' : 'var(--text-muted)'
+          }}>
+            {!watchActivity ? 'Upload watch history' :
+              watchActivity.rate === 'high' ? 'High' :
+              watchActivity.rate === 'medium' ? 'Medium' :
+              watchActivity.rate === 'low' ? 'Low' :
+              watchActivity.rate === 'minimal' ? 'Minimal' : 'None'}
+          </span>
         </div>
       </div>
 
