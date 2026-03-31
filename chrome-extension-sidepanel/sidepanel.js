@@ -49,7 +49,26 @@ function setLayout(horizontal) {
 }
 
 layoutBtn.addEventListener('click', function() {
-  setLayout(!isHorizontal);
+  if (!isHorizontal) {
+    // Switching to horizontal — pop out into a window
+    saveState();
+    chrome.storage.local.set({ splitState: {
+      top: slots.top ? slots.top.currentVideoId : null,
+      bottom: slots.bottom ? slots.bottom.currentVideoId : null,
+      horizontal: true
+    }}, function() {
+      chrome.runtime.sendMessage({ action: 'popout' });
+    });
+  } else {
+    // Switching to vertical — dock back to side panel
+    chrome.storage.local.set({ splitState: {
+      top: slots.top ? slots.top.currentVideoId : null,
+      bottom: slots.bottom ? slots.bottom.currentVideoId : null,
+      horizontal: false
+    }}, function() {
+      chrome.runtime.sendMessage({ action: 'dockin' });
+    });
+  }
 });
 
 // --- State persistence ---
@@ -135,6 +154,7 @@ chrome.storage.local.get('splitState', function(result) {
 
   // Then load any pending video into an available slot
   chrome.runtime.sendMessage({ action: 'getPending' }, function(response) {
+    if (chrome.runtime.lastError) return;
     if (response && response.url) {
       loadVideoIntoSlot(response.url);
     }

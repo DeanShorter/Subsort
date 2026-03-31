@@ -42,6 +42,9 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Track popup window ID so we can close it when docking back
+var popupWindowId = null;
+
 // Store pending video URL so the side panel can pick it up
 var pendingVideoUrl = null;
 
@@ -50,6 +53,44 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === 'getPending') {
     sendResponse({ url: pendingVideoUrl });
     pendingVideoUrl = null;
+  }
+
+  if (msg.action === 'popout') {
+    // Get the current window to position the popup at the bottom
+    chrome.windows.getCurrent((win) => {
+      var popWidth = win.width;
+      var popHeight = Math.round(win.height * 0.4);
+      var popLeft = win.left;
+      var popTop = win.top + win.height - popHeight;
+      chrome.windows.create({
+        url: chrome.runtime.getURL('sidepanel.html'),
+        type: 'popup',
+        width: popWidth,
+        height: popHeight,
+        left: popLeft,
+        top: popTop
+      }, (w) => {
+        popupWindowId = w.id;
+      });
+    });
+  }
+
+  if (msg.action === 'dockin') {
+    // Close the popup window and open the side panel
+    if (popupWindowId) {
+      chrome.windows.remove(popupWindowId, () => {
+        popupWindowId = null;
+      });
+    } else if (sender.tab) {
+      // If sent from a popup tab, close that window
+      chrome.windows.remove(sender.tab.windowId, () => {
+        popupWindowId = null;
+      });
+    }
+    // Open side panel in the last focused normal window
+    chrome.windows.getLastFocused({ windowTypes: ['normal'] }, (win) => {
+      if (win) chrome.sidePanel.open({ windowId: win.id });
+    });
   }
 });
 
