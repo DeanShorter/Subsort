@@ -18,6 +18,17 @@ chrome.runtime.onInstalled.addListener(() => {
     ]
   });
 
+  // Right-click anywhere on a YouTube watch/shorts page
+  chrome.contextMenus.create({
+    id: 'add-to-split-view-page',
+    title: 'Add to Subscrub Split View',
+    contexts: ['page', 'video', 'frame', 'image'],
+    documentUrlPatterns: [
+      '*://*.youtube.com/watch*',
+      '*://*.youtube.com/shorts/*'
+    ]
+  });
+
   chrome.contextMenus.create({
     id: 'add-to-split-view-subsort',
     title: 'Add to Subscrub Split View',
@@ -57,6 +68,10 @@ function sendToSidePanel(url, windowId) {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'add-to-split-view' && info.linkUrl) {
     sendToSidePanel(info.linkUrl, tab.windowId);
+  }
+
+  if (info.menuItemId === 'add-to-split-view-page') {
+    sendToSidePanel(tab.url, tab.windowId);
   }
 
   if (info.menuItemId === 'add-to-split-view-subsort') {
