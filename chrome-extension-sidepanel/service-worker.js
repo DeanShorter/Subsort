@@ -56,7 +56,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   if (msg.action === 'popout') {
-    // Get the current window to position the popup at the bottom
+    // Disable the side panel so it closes, then open popup
+    chrome.sidePanel.setOptions({ enabled: false });
     chrome.windows.getCurrent((win) => {
       var popWidth = win.width;
       var popHeight = Math.round(win.height * 0.4);
@@ -71,6 +72,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         top: popTop
       }, (w) => {
         popupWindowId = w.id;
+        // Re-enable for next time
+        chrome.sidePanel.setOptions({ enabled: true });
       });
     });
   }

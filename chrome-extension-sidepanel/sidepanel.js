@@ -42,7 +42,6 @@ function setLayout(horizontal) {
     slotsWrap.classList.remove('horizontal');
     layoutIcon.innerHTML = verticalIcon;
   }
-  // Reset flex to 50/50 on toggle
   document.getElementById('slot-top').style.flex = '';
   document.getElementById('slot-bottom').style.flex = '';
   saveState();
@@ -50,25 +49,45 @@ function setLayout(horizontal) {
 
 layoutBtn.addEventListener('click', function() {
   if (!isHorizontal) {
-    // Switching to horizontal — pop out into a window
     saveState();
     chrome.storage.local.set({ splitState: {
       top: slots.top ? slots.top.currentVideoId : null,
       bottom: slots.bottom ? slots.bottom.currentVideoId : null,
-      horizontal: true
+      horizontal: true,
+      dark: isDark
     }}, function() {
       chrome.runtime.sendMessage({ action: 'popout' });
     });
   } else {
-    // Switching to vertical — dock back to side panel
     chrome.storage.local.set({ splitState: {
       top: slots.top ? slots.top.currentVideoId : null,
       bottom: slots.bottom ? slots.bottom.currentVideoId : null,
-      horizontal: false
+      horizontal: false,
+      dark: isDark
     }}, function() {
       chrome.runtime.sendMessage({ action: 'dockin' });
     });
   }
+});
+
+// --- Dark mode ---
+
+var isDark = false;
+var themeBtn = document.getElementById('toggle-theme');
+var themeIcon = document.getElementById('theme-icon');
+
+var sunIcon = '<circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>';
+var moonIcon = '<path d="M13 8.5a5.5 5.5 0 01-7.5-7.5 6.5 6.5 0 107.5 7.5z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/>';
+
+function setTheme(dark) {
+  isDark = dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  themeIcon.innerHTML = dark ? sunIcon : moonIcon;
+  saveState();
+}
+
+themeBtn.addEventListener('click', function() {
+  setTheme(!isDark);
 });
 
 // --- State persistence ---
@@ -78,7 +97,8 @@ function saveState() {
     splitState: {
       top: slots.top ? slots.top.currentVideoId : null,
       bottom: slots.bottom ? slots.bottom.currentVideoId : null,
-      horizontal: isHorizontal
+      horizontal: isHorizontal,
+      dark: isDark
     }
   });
 }
@@ -88,20 +108,21 @@ function saveState() {
 var slots = {};
 
 function setupSlot(position) {
-  var urlInput = document.getElementById('url-' + position);
-  var loadBtn = document.getElementById('load-' + position);
-  var clearBtn = document.getElementById('clear-' + position);
   var videoArea = document.getElementById('video-' + position);
+  var muteBtn = document.querySelector('.mute-btn[data-slot="' + position + '"]');
+  var clearBtn = document.querySelector('.clear-btn[data-slot="' + position + '"]');
 
   var slot = {
     currentVideoId: null,
+    isMuted: false,
     loadFromUrl: function(url) {
-      urlInput.value = url;
-      slot.loadVideo();
+      var videoId = extractVideoId(url);
+      if (videoId) slot.loadFromVideoId(videoId);
     },
     loadFromVideoId: function(videoId) {
-      urlInput.value = buildWatchUrl(videoId);
       slot.currentVideoId = videoId;
+      slot.isMuted = false;
+      updateMuteIcon(muteBtn, false);
       videoArea.innerHTML = '';
       var iframe = document.createElement('iframe');
       iframe.src = buildWatchUrl(videoId);
@@ -111,48 +132,75 @@ function setupSlot(position) {
       videoArea.appendChild(iframe);
       saveState();
     },
-    loadVideo: function() {
-      var videoId = extractVideoId(urlInput.value);
-      if (!videoId) {
-        urlInput.style.borderColor = 'var(--green)';
-        setTimeout(function() { urlInput.style.borderColor = ''; }, 1500);
-        return;
-      }
-      slot.loadFromVideoId(videoId);
-    },
     clearVideo: function() {
       videoArea.innerHTML = '<span class="placeholder">No video loaded</span>';
-      urlInput.value = '';
       slot.currentVideoId = null;
+      slot.isMuted = false;
+      updateMuteIcon(muteBtn, false);
       saveState();
+    },
+    toggleMute: function() {
+      if (!slot.currentVideoId) return;
+      slot.isMuted = !slot.isMuted;
+      updateMuteIcon(muteBtn, slot.isMuted);
+      // Reload iframe with mute param
+      var iframe = videoArea.querySelector('iframe');
+      if (iframe) {
+        var url = buildWatchUrl(slot.currentVideoId);
+        // YouTube watch page doesn't have a mute param, so we use postMessage
+        // Reload approach: append a hash to force different state
+        iframe.src = url + (slot.isMuted ? '&mute=1' : '');
+      }
     }
   };
 
-  loadBtn.addEventListener('click', slot.loadVideo);
-  urlInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') slot.loadVideo();
-  });
+  muteBtn.addEventListener('click', slot.toggleMute);
   clearBtn.addEventListener('click', slot.clearVideo);
 
   slots[position] = slot;
 }
 
+function updateMuteIcon(btn, muted) {
+  var waves = btn.querySelector('.mute-waves');
+  if (muted) {
+    waves.setAttribute('d', 'M12 4l-4 8');
+    btn.classList.add('active');
+  } else {
+    waves.setAttribute('d', 'M12 5.5a4 4 0 010 5');
+    btn.classList.remove('active');
+  }
+}
+
 setupSlot('top');
 setupSlot('bottom');
+
+// --- Swap videos ---
+
+document.getElementById('swap-btn').addEventListener('click', function() {
+  var topId = slots.top.currentVideoId;
+  var bottomId = slots.bottom.currentVideoId;
+
+  if (!topId && !bottomId) return;
+
+  // Clear both
+  slots.top.clearVideo();
+  slots.bottom.clearVideo();
+
+  // Reload swapped
+  if (bottomId) slots.top.loadFromVideoId(bottomId);
+  if (topId) slots.bottom.loadFromVideoId(topId);
+});
 
 // --- Restore state from storage ---
 
 chrome.storage.local.get('splitState', function(result) {
   var state = result.splitState;
 
-  // Restore layout
   if (state && state.horizontal) setLayout(true);
-
-  // Restore saved videos
+  if (state && state.dark) setTheme(true);
   if (state && state.top) slots.top.loadFromVideoId(state.top);
   if (state && state.bottom) slots.bottom.loadFromVideoId(state.bottom);
 
-  // Then load any pending video into an available slot
   chrome.runtime.sendMessage({ action: 'getPending' }, function(response) {
     if (chrome.runtime.lastError) return;
     if (response && response.url) {
@@ -161,7 +209,7 @@ chrome.storage.local.get('splitState', function(result) {
   });
 });
 
-// --- Listen for "split view" messages from content script / service worker ---
+// --- Listen for messages ---
 
 function loadVideoIntoSlot(url) {
   if (!slots.top.currentVideoId) {

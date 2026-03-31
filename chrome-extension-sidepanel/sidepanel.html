@@ -21,6 +21,22 @@
       --r-sm: 12px;
     }
 
+    [data-theme="dark"] {
+      --bg: #1a1a1a;
+      --card: #252525;
+      --txt: #e0e0e0;
+      --txt-mid: #aaa;
+      --txt-light: #777;
+      --txt-faint: #555;
+      --border: #383838;
+      --green-soft: #1a2e22;
+      --green-text: #66d98e;
+    }
+
+    [data-theme="dark"] .logo-pill {
+      background: #000;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
@@ -60,12 +76,38 @@
       letter-spacing: -0.3px;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .panel-title {
       font-family: 'Outfit', sans-serif;
       font-size: 13px;
       font-weight: 600;
       color: var(--txt-light);
       letter-spacing: -0.2px;
+    }
+
+    /* Icon buttons */
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border: 2px solid var(--border);
+      border-radius: var(--r-sm);
+      background: var(--card);
+      color: var(--txt-light);
+      cursor: pointer;
+      transition: all 0.15s;
+      padding: 0;
+    }
+    .icon-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
     }
 
     /* Slots */
@@ -82,10 +124,10 @@
     #slot-top { flex: 1 1 50%; }
     #slot-bottom { flex: 1 1 50%; }
 
-    .slot-controls {
+    .slot-bar {
       display: flex;
       gap: 6px;
-      padding: 8px 10px;
+      padding: 6px 10px;
       background: var(--green-soft);
       align-items: center;
       border-bottom: 1px solid var(--border);
@@ -98,62 +140,35 @@
       color: var(--green-text);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-right: 4px;
       flex-shrink: 0;
     }
 
-    .slot-controls input {
-      flex: 1;
-      padding: 6px 10px;
-      border: 2px solid var(--border);
-      border-radius: var(--r-sm);
-      background: var(--card);
-      color: var(--txt);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-    }
+    .slot-bar .spacer { flex: 1; }
 
-    .slot-controls input::placeholder {
-      color: var(--txt-faint);
-    }
-
-    .slot-controls input:focus {
-      outline: none;
-      border-color: var(--green);
-    }
-
-    .slot-controls button {
-      padding: 6px 14px;
-      border: 2px solid var(--border);
-      border-radius: var(--r-sm);
-      background: var(--card);
-      color: var(--txt-mid);
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      white-space: nowrap;
-      transition: all 0.15s;
-    }
-
-    .slot-controls button:hover {
-      background: var(--green);
-      color: #fff;
-      border-color: var(--green);
-    }
-
-    .slot-actions {
+    .slot-btn {
       display: flex;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-
-    .slot-controls .clear-btn {
-      padding: 6px 10px;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
       color: var(--txt-light);
+      cursor: pointer;
+      transition: all 0.15s;
+      padding: 0;
     }
-
-    .slot-controls .clear-btn:hover {
+    .slot-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .slot-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+    .slot-btn.clear-btn:hover {
       background: #fee;
       color: #c44;
       border-color: #ecc;
@@ -205,26 +220,6 @@
       background: var(--green);
     }
 
-    /* Layout toggle button */
-    .layout-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      border: 2px solid var(--border);
-      border-radius: var(--r-sm);
-      background: var(--card);
-      color: var(--txt-light);
-      cursor: pointer;
-      transition: all 0.15s;
-      padding: 0;
-    }
-    .layout-btn:hover {
-      border-color: var(--green);
-      color: var(--green);
-    }
-
     /* Horizontal layout */
     #slots-wrap {
       display: flex;
@@ -245,26 +240,6 @@
     #slots-wrap.horizontal #slot-top { flex: 1 1 50%; }
     #slots-wrap.horizontal #slot-bottom { flex: 1 1 50%; }
 
-    #slots-wrap.horizontal .slot-controls {
-      flex-direction: column;
-      padding: 6px;
-      gap: 4px;
-    }
-
-    #slots-wrap.horizontal .slot-controls input {
-      width: 100%;
-    }
-
-    #slots-wrap.horizontal .slot-controls .slot-actions {
-      display: flex;
-      gap: 4px;
-      width: 100%;
-    }
-
-    #slots-wrap.horizontal .slot-controls .slot-actions button {
-      flex: 1;
-    }
-
     #slots-wrap.horizontal #drag-handle {
       width: 14px;
       height: auto;
@@ -284,9 +259,19 @@
       <div class="logo-pill">
         <span style="color: #00A651;">SUB</span><span style="color: #fff;">SCRUB</span>
       </div>
-      <div style="display: flex; align-items: center; gap: 8px;">
+      <div class="header-actions">
         <span class="panel-title">Split View</span>
-        <button id="toggle-layout" class="layout-btn" title="Toggle vertical/horizontal">
+        <button id="swap-btn" class="icon-btn" title="Swap videos">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M4 1.5v11M4 1.5L1.5 4M4 1.5L6.5 4M10 12.5v-11M10 12.5L7.5 10M10 12.5L12.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="toggle-theme" class="icon-btn" title="Toggle light/dark mode">
+          <svg id="theme-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M13 8.5a5.5 5.5 0 01-7.5-7.5 6.5 6.5 0 107.5 7.5z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="toggle-layout" class="icon-btn" title="Toggle vertical/horizontal">
           <svg id="layout-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
             <rect x="1" y="1" width="14" height="6" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
             <rect x="1" y="9" width="14" height="6" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -297,13 +282,20 @@
 
     <div id="slots-wrap">
       <div id="slot-top" class="slot">
-        <div class="slot-controls">
+        <div class="slot-bar">
           <span class="slot-label">A</span>
-          <input type="text" id="url-top" placeholder="Paste YouTube URL...">
-          <div class="slot-actions">
-            <button id="load-top">Load</button>
-            <button id="clear-top" class="clear-btn">&#x2715;</button>
-          </div>
+          <span class="spacer"></span>
+          <button class="slot-btn mute-btn" data-slot="top" title="Mute/Unmute">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 2L4 6H1v4h3l4 4V2z"/>
+              <path class="mute-waves" d="M12 5.5a4 4 0 010 5"/>
+            </svg>
+          </button>
+          <button class="slot-btn clear-btn" data-slot="top" title="Remove video">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
         <div class="video-area" id="video-top">
           <span class="placeholder">No video loaded</span>
@@ -313,13 +305,20 @@
       <div id="drag-handle"></div>
 
       <div id="slot-bottom" class="slot">
-        <div class="slot-controls">
+        <div class="slot-bar">
           <span class="slot-label">B</span>
-          <input type="text" id="url-bottom" placeholder="Paste YouTube URL...">
-          <div class="slot-actions">
-            <button id="load-bottom">Load</button>
-            <button id="clear-bottom" class="clear-btn">&#x2715;</button>
-          </div>
+          <span class="spacer"></span>
+          <button class="slot-btn mute-btn" data-slot="bottom" title="Mute/Unmute">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 2L4 6H1v4h3l4 4V2z"/>
+              <path class="mute-waves" d="M12 5.5a4 4 0 010 5"/>
+            </svg>
+          </button>
+          <button class="slot-btn clear-btn" data-slot="bottom" title="Remove video">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
         <div class="video-area" id="video-bottom">
           <span class="placeholder">No video loaded</span>
