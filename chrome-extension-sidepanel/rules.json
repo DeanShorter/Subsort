@@ -40,7 +40,7 @@
       ]
     },
     "condition": {
-      "requestDomains": ["accounts.google.com", "consent.youtube.com"],
+      "requestDomains": ["accounts.google.com", "consent.youtube.com", "google.com", "www.google.com"],
       "resourceTypes": ["sub_frame"]
     }
   }
