@@ -109,20 +109,16 @@ var slots = {};
 
 function setupSlot(position) {
   var videoArea = document.getElementById('video-' + position);
-  var muteBtn = document.querySelector('.mute-btn[data-slot="' + position + '"]');
   var clearBtn = document.querySelector('.clear-btn[data-slot="' + position + '"]');
 
   var slot = {
     currentVideoId: null,
-    isMuted: false,
     loadFromUrl: function(url) {
       var videoId = extractVideoId(url);
       if (videoId) slot.loadFromVideoId(videoId);
     },
     loadFromVideoId: function(videoId) {
       slot.currentVideoId = videoId;
-      slot.isMuted = false;
-      updateMuteIcon(muteBtn, false);
       videoArea.innerHTML = '';
       var iframe = document.createElement('iframe');
       iframe.src = buildWatchUrl(videoId);
@@ -135,40 +131,12 @@ function setupSlot(position) {
     clearVideo: function() {
       videoArea.innerHTML = '<span class="placeholder">No video loaded</span>';
       slot.currentVideoId = null;
-      slot.isMuted = false;
-      updateMuteIcon(muteBtn, false);
       saveState();
-    },
-    toggleMute: function() {
-      if (!slot.currentVideoId) return;
-      slot.isMuted = !slot.isMuted;
-      updateMuteIcon(muteBtn, slot.isMuted);
-      // Reload iframe with mute param
-      var iframe = videoArea.querySelector('iframe');
-      if (iframe) {
-        var url = buildWatchUrl(slot.currentVideoId);
-        // YouTube watch page doesn't have a mute param, so we use postMessage
-        // Reload approach: append a hash to force different state
-        iframe.src = url + (slot.isMuted ? '&mute=1' : '');
-      }
     }
   };
-
-  muteBtn.addEventListener('click', slot.toggleMute);
   clearBtn.addEventListener('click', slot.clearVideo);
 
   slots[position] = slot;
-}
-
-function updateMuteIcon(btn, muted) {
-  var waves = btn.querySelector('.mute-waves');
-  if (muted) {
-    waves.setAttribute('d', 'M12 4l-4 8');
-    btn.classList.add('active');
-  } else {
-    waves.setAttribute('d', 'M12 5.5a4 4 0 010 5');
-    btn.classList.remove('active');
-  }
 }
 
 setupSlot('top');
