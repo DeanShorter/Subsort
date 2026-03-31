@@ -1,16 +1,60 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useChannelData } from './ChannelDataContext';
+import { useAuth } from './AuthContext';
+import { supabase } from '../../lib/supabase';
 import { showToast } from './Toast';
 
 export default function WatchHistoryUpload() {
   const { channels } = useChannelData();
+  const { user } = useAuth();
   const [watchData, setWatchData] = useState(() => {
     if (typeof window === 'undefined') return null;
     try { return JSON.parse(localStorage.getItem('subsort_watchhistory')); } catch { return null; }
   });
   const [parsing, setParsing] = useState(false);
   const fileRef = useRef(null);
+
+  // Load from Supabase if not in localStorage
+  useEffect(() => {
+    if (watchData || !user) return;
+    supabase.from('watch_history').select('*').eq('user_id', user.id).single()
+      .then(({ data }) => {
+        if (data) {
+          const restored = {
+            totalEntries: data.total_entries,
+            uniqueChannels: data.unique_channels,
+            dateRange: { from: data.date_from, to: data.date_to },
+            topChannels: data.top_channels || [],
+            missingSubs: data.missing_subs || [],
+            dayOfWeek: data.day_of_week || {},
+            hourOfDay: data.hour_of_day || {},
+          };
+          localStorage.setItem('subsort_watchhistory', JSON.stringify(restored));
+          setWatchData(restored);
+        }
+      });
+  }, [user, watchData]);
+
+  // Save to Supabase after parsing
+  const saveToSupabase = async (data) => {
+    if (!user) return;
+    const row = {
+      user_id: user.id,
+      total_entries: data.totalEntries,
+      unique_channels: data.uniqueChannels,
+      date_from: data.dateRange.from,
+      date_to: data.dateRange.to,
+      top_channels: data.topChannels,
+      missing_subs: data.missingSubs,
+      day_of_week: data.dayOfWeek,
+      hour_of_day: data.hourOfDay,
+      uploaded_at: new Date().toISOString(),
+    };
+    const { error } = await supabase.from('watch_history').upsert(row, { onConflict: 'user_id' });
+    if (error) console.error('[WatchHistory] Save to Supabase failed:', error);
+    else console.log('[WatchHistory] Saved to Supabase');
+  };
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -79,8 +123,25 @@ export default function WatchHistoryUpload() {
         }
 
         const topChannels = Object.values(channelCounts).sort((a, b) => b.count - a.count);
-        const subNames = new Set(channels.map(c => (c.name || '').toLowerCase()));
-        const missingSubs = topChannels.filter(c => c.channelName && !subNames.has(c.channelName.toLowerCase()) && c.count >= 3);
+        // Build set of all possible identifiers for subscribed channels
+        const subIdentifiers = new Set();
+        channels.forEach(c => {
+          if (c.channelId) subIdentifiers.add(c.channelId);
+          if (c.id) subIdentifiers.add(c.id);
+          if (c.customUrl) subIdentifiers.add(c.customUrl.replace(/^@/, '').toLowerCase());
+          if (c.name) subIdentifiers.add(c.name.toLowerCase());
+        });
+
+        const missingSubs = topChannels.filter(c => {
+          if (!c.channelName || c.count < 3) return false;
+          const tcUrlId = c.channelUrl?.replace(/\/$/, '').split('/').pop();
+          const tcHandle = c.channelUrl?.match(/@([^/]+)/)?.[1];
+          return !(
+            (tcUrlId && subIdentifiers.has(tcUrlId)) ||
+            (tcHandle && subIdentifiers.has(tcHandle.toLowerCase())) ||
+            (c.channelName && subIdentifiers.has(c.channelName.toLowerCase()))
+          );
+        });
 
         const data = {
           totalEntries: entries.length,
@@ -94,6 +155,7 @@ export default function WatchHistoryUpload() {
 
         localStorage.setItem('subsort_watchhistory', JSON.stringify(data));
         setWatchData(data);
+        saveToSupabase(data);
         showToast(`Parsed ${entries.length.toLocaleString()} watch history entries!`);
       } catch (err) {
         showToast('Failed to parse: ' + err.message);

@@ -13,9 +13,23 @@ export default function ChannelPanel({ channelId, onClose }) {
     try {
       const wh = JSON.parse(localStorage.getItem('subsort_watchhistory'));
       if (!wh?.topChannels) return null;
-      const match = wh.topChannels.find(tc =>
-        tc.channelName && ch.name && tc.channelName.toLowerCase() === ch.name.toLowerCase()
-      );
+      // Match against all possible identifiers
+      const ids = new Set([
+        ch.channelId,
+        ch.id,
+        ch.customUrl?.replace(/^@/, ''),
+        ch.name?.toLowerCase(),
+      ].filter(Boolean));
+
+      const match = wh.topChannels.find(tc => {
+        const tcUrlId = tc.channelUrl?.replace(/\/$/, '').split('/').pop();
+        const tcHandle = tc.channelUrl?.match(/@([^/]+)/)?.[1];
+        return (
+          (tcUrlId && ids.has(tcUrlId)) ||
+          (tcHandle && ids.has(tcHandle.toLowerCase())) ||
+          (tc.channelName && ids.has(tc.channelName.toLowerCase()))
+        );
+      });
       if (!match) return { watched: 0, lastWatched: null, rate: 'none' };
       const pct = ch.videoCount ? Math.round((match.count / ch.videoCount) * 100) : 0;
       const rate = pct >= 50 ? 'high' : pct >= 20 ? 'medium' : pct >= 5 ? 'low' : 'minimal';
