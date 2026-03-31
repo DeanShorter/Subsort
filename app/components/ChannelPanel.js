@@ -43,6 +43,26 @@ export default function ChannelPanel({ channelId, onClose }) {
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Status</span><span className={`s2-status ${state}`}>{state === 'dead' ? 'Dead' : state === 'inactive' ? 'Inactive' : 'Active'}</span></div>
       </div>
 
+      {/* Your Activity */}
+      <div className="sp-panel-section">
+        <div className="sp-panel-section-title">YOUR ACTIVITY</div>
+        <div className="sp-panel-stat-row">
+          <span className="sp-panel-stat-label">Videos watched</span>
+          <span className="sp-panel-stat-value">— of {ch.videoCount != null ? ch.videoCount.toLocaleString() : '—'}</span>
+        </div>
+        <div className="sp-panel-bar">
+          <div className="sp-panel-bar-fill" style={{ width: '0%', background: 'var(--accent)' }} />
+        </div>
+        <div className="sp-panel-stat-row" style={{ marginTop: 8 }}>
+          <span className="sp-panel-stat-label">Last watched</span>
+          <span className="sp-panel-stat-value">—</span>
+        </div>
+        <div className="sp-panel-stat-row">
+          <span className="sp-panel-stat-label">Watch rate</span>
+          <span className="sp-panel-stat-value" style={{ color: 'var(--text-muted)' }}>Not tracked yet</span>
+        </div>
+      </div>
+
       {/* Category */}
       <div className="sp-panel-section">
         <div className="sp-panel-section-title">CATEGORY</div>
@@ -52,8 +72,17 @@ export default function ChannelPanel({ channelId, onClose }) {
           )) : (
             <span className="sp-panel-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>Uncategorised</span>
           )}
-          {ch.subcategory && (
-            <span className="sp-panel-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>{ch.subcategory}</span>
+        </div>
+      </div>
+
+      {/* Subcategory */}
+      <div className="sp-panel-section">
+        <div className="sp-panel-section-title">SUBCATEGORY</div>
+        <div className="sp-panel-tags">
+          {ch.subcategory ? (
+            <span className="sp-panel-tag" style={{ background: `${col}15`, color: col }}>{ch.subcategory}</span>
+          ) : (
+            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>None assigned</span>
           )}
         </div>
       </div>

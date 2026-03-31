@@ -221,51 +221,49 @@ export default function Subscriptions2Page() {
         </div>
       </div>
 
-      {/* CATEGORY BAR */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 40px', borderBottom: '1px solid #eee' }}>
-        <div className="s2-cat-tabs" ref={catTabsRef} style={{ gap: 6 }}>
-          <button className={`s2-cat-tab${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
-            All <span className="s2-ct-count">{channels.length}</span>
-          </button>
-          <button className={`s2-cat-tab${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
-            Favourites <span className="s2-ct-count">{channels.filter(c => c.favourited).length}</span>
-          </button>
-          {categories.map(cat => (
-            <button key={cat} className={`s2-cat-tab${activeCategory === cat ? ' active' : ''}`}
-              onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}>
-              {cat} <span className="s2-ct-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
+      {/* CONTENT */}
+      <div className="s2-content">
+        {/* CATEGORY BAR */}
+        <div className="s2-cat-bar">
+          <div className="s2-cat-tabs" ref={catTabsRef} style={{ gap: 6 }}>
+            <button className={`s2-cat-tab${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
+              All <span className="s2-ct-count">{channels.length}</span>
             </button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <div style={{ display: 'flex', gap: 4 }}>
-            {['all', 'active', 'inactive', 'dead'].map(s => (
-              <button key={s} className={`s2-fpill${filterStatus === s ? ' active' : ' inactive'}`}
-                onClick={() => setFilterStatus(filterStatus === s ? 'all' : s)}>
-                {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+            <button className={`s2-cat-tab${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
+              Favourites <span className="s2-ct-count">{channels.filter(c => c.favourited).length}</span>
+            </button>
+            {categories.map(cat => (
+              <button key={cat} className={`s2-cat-tab${activeCategory === cat ? ' active' : ''}`}
+                onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}>
+                {cat} <span className="s2-ct-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
               </button>
             ))}
           </div>
-          <button className="s2-sort-pill" onClick={() => {
-            const keys = ['name', 'subscribers', 'videoCount', 'subDate', 'category'];
-            const idx = keys.indexOf(sortKey);
-            setSortKey(keys[(idx + 1) % keys.length]);
-            setSortDir('asc');
-          }}>
-            <svg viewBox="0 0 12 12"><path d="M2 3h8M3 6h6M4 9h4" /></svg>
-            {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category' })[sortKey] || 'Name'}
-          </button>
-          {selectedChannels.size > 0 && (
-            <button className="s2-insight-cta" style={{ background: 'var(--accent)', fontSize: 12 }} onClick={() => setShowBulkEdit(true)}>
-              Edit {selectedChannels.size}
+          <div className="s2-cat-bar-right">
+            <div className="s2-filter-pills">
+              {['all', 'active', 'inactive', 'dead'].map(s => (
+                <button key={s} className={`s2-fpill${filterStatus === s ? ' active' : ' inactive'}`}
+                  onClick={() => setFilterStatus(filterStatus === s ? 'all' : s)}>
+                  {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+                </button>
+              ))}
+            </div>
+            <button className="s2-sort-pill" onClick={() => {
+              const keys = ['name', 'subscribers', 'videoCount', 'subDate', 'category'];
+              const idx = keys.indexOf(sortKey);
+              setSortKey(keys[(idx + 1) % keys.length]);
+              setSortDir('asc');
+            }}>
+              <svg viewBox="0 0 12 12"><path d="M2 3h8M3 6h6M4 9h4" /></svg>
+              {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category' })[sortKey] || 'Name'}
             </button>
-          )}
+            {selectedChannels.size > 0 && (
+              <button className="s2-insight-cta" style={{ background: 'var(--accent)', fontSize: 12 }} onClick={() => setShowBulkEdit(true)}>
+                Edit {selectedChannels.size}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-
-
-      {/* CONTENT */}
-      <div className="s2-content">
         {filtered.length === 0 ? (
           <div className="h2-empty-state" style={{ margin: '40px 0' }}>
             <span className="h2-empty-emoji">🤷</span>
