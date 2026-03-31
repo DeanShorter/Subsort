@@ -7,6 +7,7 @@ import { autoCategoriseAll } from '../../lib/auto-categorise';
 import EditChannelModal from '../components/EditChannelModal';
 import ManageCategoriesModal from '../components/ManageCategoriesModal';
 import BulkEditModal from '../components/BulkEditModal';
+import ChannelPanel from '../components/ChannelPanel';
 import { trackEvent } from '../../lib/track';
 import { useDragScroll } from '../../hooks/useDragScroll';
 
@@ -140,7 +141,8 @@ export default function Subscriptions2Page() {
   }
 
   return (
-    <>
+    <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
       {/* PAGE HEADER */}
       <div className="s2-topbar">
         <div className="s2-topbar-row">
@@ -393,8 +395,7 @@ export default function Subscriptions2Page() {
         )}
       </div>
 
-      {/* Edit channel modal */}
-      {editingId && <EditChannelModal channelId={editingId} onClose={() => setEditingId(null)} />}
+      {/* Edit channel modal (kept for manage categories) */}
       {showManageCats && <ManageCategoriesModal onClose={() => setShowManageCats(false)} />}
       {showBulkEdit && (
         <BulkEditModal
@@ -420,6 +421,9 @@ export default function Subscriptions2Page() {
           </div>
         </div>
       )}
-    </>
+    </div>
+    {/* Channel slide panel */}
+    {editingId && <ChannelPanel channelId={editingId} onClose={() => setEditingId(null)} />}
+    </div>
   );
 }
