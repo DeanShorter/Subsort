@@ -54,13 +54,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 function sendToSidePanel(url, windowId) {
-  // Try to send directly first
-  chrome.runtime.sendMessage({ action: 'loadVideo', url: url }, () => {
-    if (chrome.runtime.lastError) {
-      // Side panel not ready — store it and open the panel
-      pendingVideoUrl = url;
-      chrome.sidePanel.open({ windowId: windowId });
-    }
+  // Always store as pending in case the panel isn't open yet
+  pendingVideoUrl = url;
+  // Open the panel (no-op if already open), then try direct send
+  chrome.sidePanel.open({ windowId: windowId }).then(() => {
+    chrome.runtime.sendMessage({ action: 'loadVideo', url: url }, () => {
+      if (chrome.runtime.lastError) {
+        // Panel just opened — it will pick up pendingVideoUrl on load
+      }
+    });
   });
 }
 

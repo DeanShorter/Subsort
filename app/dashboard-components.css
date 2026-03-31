@@ -1460,13 +1460,15 @@ input[type=range]::-webkit-slider-thumb{
 .hnp-brand-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;overflow:hidden}
 .home-nav-brand{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
 .home-nav-brand-wordmark{
-  font-family:var(--font-display);font-size:22px;font-weight:700;
-  letter-spacing:-0.5px;
+  font-family:var(--font-display);font-size:14px;font-weight:700;
+  letter-spacing:-0.3px;
   white-space:nowrap;line-height:1;flex-shrink:0;cursor:pointer;
   transition:opacity .2s;
+  background:#1a1a1a;padding:6px 16px;border-radius:20px;
+  display:inline-flex;
 }
-.home-nav-brand-wordmark span{color:var(--text-primary)}
-.home-nav-brand-wordmark .hnp-wordmark{color:var(--accent)}
+.home-nav-brand-wordmark span{color:#fff;text-transform:uppercase}
+.home-nav-brand-wordmark .hnp-wordmark{color:var(--accent);text-transform:uppercase}
 .home-nav-brand-icon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:none}
 /* Tier badge below logo */
 .hnp-brand-group .tier-badge{align-self:flex-start;margin-right:0}
@@ -1519,10 +1521,10 @@ input[type=range]::-webkit-slider-thumb{
   justify-content:center;padding:0;width:38px;height:34px;margin:0 auto;
 }
 .home-nav-item:hover{background:var(--surface-hover);color:var(--text-primary)}
-.home-nav-item.active{background:rgba(62,207,160,.08);color:var(--accent-text)}
+.home-nav-item.active{background:var(--accent);color:#fff;font-weight:500}
 /* Active strip removed */
 .home-nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:var(--text-muted);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.home-nav-item.active svg{stroke:var(--accent)}
+.home-nav-item.active svg{stroke:#fff}
 .hnp-fav-btn svg{fill:var(--color-favourite);stroke:var(--color-favourite)}
 .hnp-fav-btn.active svg{fill:var(--color-favourite);stroke:var(--color-favourite)}
 
@@ -1541,7 +1543,7 @@ input[type=range]::-webkit-slider-thumb{
   padding:1px 7px;border-radius:10px;
   font-variant-numeric:tabular-nums;flex-shrink:0;margin-left:auto;
 }
-.home-nav-item.active .hnp-count{color:var(--accent-text);background:rgba(62,207,160,.12)}
+.home-nav-item.active .hnp-count{color:#fff;background:rgba(255,255,255,.2)}
 .home-nav-primary.collapsed .hnp-count{display:none}
 
 /* Pro badge */

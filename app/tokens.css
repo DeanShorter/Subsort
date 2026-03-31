@@ -58,48 +58,59 @@
   --color-rose-500:     #d4537e;
 
 
-  /* ─── Semantic Backgrounds ────────────────────────────────── */
+  /* ─── Semantic Backgrounds (Light theme) ─────────────────── */
 
-  --bg-primary:         var(--color-gray-950);
-  --bg-secondary:       var(--color-gray-900);
-  --bg-card:            var(--color-gray-850);
-  --bg-card-hover:      var(--color-gray-800);
-  --bg-surface:         var(--color-gray-800);
-  --bg-surface-raised:  var(--color-gray-750);
-  --bg-overlay:         rgba(0, 0, 0, 0.5);
-  --bg-overlay-light:   rgba(0, 0, 0, 0.4);
-  --bg-scrim:           rgba(0, 0, 0, 0.75);
-
-
-  /* ─── Semantic Text ───────────────────────────────────────── */
-
-  --text-primary:       var(--color-gray-200);
-  --text-secondary:     var(--color-gray-300);
-  --text-muted:         var(--color-gray-400);
-  --text-on-accent:     var(--color-white);
-  --text-on-dark:       var(--color-white);
+  --bg-primary:         #f4f4f5;
+  --bg-secondary:       #eeeef0;
+  --bg-card:            #ffffff;
+  --bg-card-hover:      #f9f9fa;
+  --bg-surface:         #f4f4f5;
+  --bg-surface-raised:  #eaeaec;
+  --bg-overlay:         rgba(0, 0, 0, 0.3);
+  --bg-overlay-light:   rgba(0, 0, 0, 0.2);
+  --bg-scrim:           rgba(0, 0, 0, 0.5);
 
 
-  /* ─── Semantic Borders ────────────────────────────────────── */
+  /* ─── Semantic Text (Light theme) ──────────────────────────── */
 
-  --border-subtle:      rgba(255, 255, 255, 0.06);
-  --border-hover:       rgba(255, 255, 255, 0.10);
-  --border-focus:       rgba(255, 255, 255, 0.14);
-  --border-active:      var(--color-mint-500);
-  --border-white-15:    rgba(255, 255, 255, 0.15);
-  --border-white-30:    rgba(255, 255, 255, 0.30);
+  --text-primary:       #1a1a1a;
+  --text-secondary:     #555555;
+  --text-muted:         #999999;
+  --text-on-accent:     #ffffff;
+  --text-on-dark:       #ffffff;
+  --text-dim:           #cccccc;
+  --text-mid:           #555555;
 
 
-  /* ─── Accent ──────────────────────────────────────────────── */
+  /* ─── Semantic Borders (Light theme) ───────────────────────── */
 
-  --accent:             var(--color-mint-500);
-  --accent-hover:       var(--color-mint-400);
-  --accent-pressed:     var(--color-mint-700);
-  --accent-soft:        rgba(56, 233, 177, 0.12);
-  --accent-soft-hover:  rgba(56, 233, 177, 0.18);
-  --accent-glow:        rgba(56, 233, 177, 0.25);
-  --accent-border:      rgba(56, 233, 177, 0.25);
-  --accent-text:        var(--color-mint-600);
+  --border-subtle:      #e2e2e4;
+  --border-hover:       #d0d0d3;
+  --border-focus:       #b0b0b5;
+  --border-active:      #00A651;
+  --border-white-15:    rgba(0, 0, 0, 0.08);
+  --border-white-30:    rgba(0, 0, 0, 0.15);
+
+
+  /* ─── Accent (Green) ─────────────────────────────────────── */
+
+  --accent:             #00A651;
+  --accent-hover:       #008A43;
+  --accent-pressed:     #006B35;
+  --accent-soft:        #E8F8EF;
+  --accent-soft-hover:  #D0F0DF;
+  --accent-glow:        rgba(0, 166, 81, 0.20);
+  --accent-border:      rgba(0, 166, 81, 0.25);
+  --accent-text:        #006B35;
+
+  /* ─── Secondary Accents ──────────────────────────────────── */
+
+  --iris:               #8B6FE8;
+  --iris-soft:          #F0ECFD;
+  --iris-text:          #4A3A8A;
+  --orange:             #FF8C42;
+  --orange-soft:        #FFF2E8;
+  --orange-text:        #8A4A15;
 
 
   /* ─── Status Colors ───────────────────────────────────────── */
@@ -110,8 +121,8 @@
   --color-danger:       var(--color-red-600);
   --color-info:         var(--color-blue-500);
 
-  --color-favourite:    var(--color-amber-400);
-  --color-favourite-bg: rgba(251, 191, 36, 0.10);
+  --color-favourite:    #FF8C42;
+  --color-favourite-bg: rgba(255, 140, 66, 0.10);
 
   --color-error-soft:   rgba(232, 93, 80, 0.10);
   --color-error-border: rgba(232, 93, 80, 0.20);
@@ -125,13 +136,15 @@
   --color-yt-red-text:  var(--color-red-yt-light);
 
 
-  /* ─── Surfaces (white overlays for hover/active states) ──── */
+  /* ─── Surfaces (light theme — dark overlays) ────────────── */
 
-  --surface-hover:      rgba(255, 255, 255, 0.04);
-  --surface-active:     rgba(255, 255, 255, 0.06);
-  --surface-selected:   rgba(255, 255, 255, 0.08);
-  --surface-raised:     rgba(255, 255, 255, 0.10);
-  --surface-bright:     rgba(255, 255, 255, 0.15);
+  --surface-hover:      rgba(0, 0, 0, 0.02);
+  --surface-active:     rgba(0, 0, 0, 0.04);
+  --surface-selected:   rgba(0, 0, 0, 0.06);
+  --surface-raised:     rgba(0, 0, 0, 0.04);
+  --surface-bright:     rgba(0, 0, 0, 0.08);
+  --surface-2:          #f4f4f5;
+  --surface-3:          #eaeaec;
 
 
   /* ─── Typography ──────────────────────────────────────────── */
@@ -210,15 +223,15 @@
 
   /* ─── Shadows ─────────────────────────────────────────────── */
 
-  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.15);
-  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.15);
-  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.25);
-  --shadow-lg:    0 8px 32px rgba(0, 0, 0, 0.40);
-  --shadow-xl:    0 12px 40px rgba(0, 0, 0, 0.40);
-  --shadow-2xl:   0 24px 60px rgba(0, 0, 0, 0.18);
-  --shadow-glow-accent: 0 4px 20px rgba(56, 233, 177, 0.25);
-  --shadow-glow-amber:  0 4px 20px rgba(251, 191, 36, 0.35);
-  --shadow-glow-red:    0 4px 20px rgba(255, 0, 0, 0.25);
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg:    0 8px 32px rgba(0, 0, 0, 0.10);
+  --shadow-xl:    0 12px 40px rgba(0, 0, 0, 0.12);
+  --shadow-2xl:   0 24px 60px rgba(0, 0, 0, 0.10);
+  --shadow-glow-accent: 0 4px 20px rgba(0, 166, 81, 0.15);
+  --shadow-glow-amber:  0 4px 20px rgba(255, 140, 66, 0.20);
+  --shadow-glow-red:    0 4px 20px rgba(232, 93, 80, 0.20);
 
 
   /* ─── Z-Index Layers ──────────────────────────────────────── */
