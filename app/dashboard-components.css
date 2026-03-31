@@ -4171,12 +4171,12 @@ input[type=range]::-webkit-slider-thumb{
 
 /* Content */
 .s2-content{padding:0;flex:1;overflow-y:auto}
-.s2-cat-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 40px;border-bottom:1px solid #eee;background:var(--bg-card);position:sticky;top:0;z-index:2}
+.s2-cat-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 40px;border-bottom:1px solid #eee;background:var(--bg-card);position:sticky;top:0;z-index:10;overflow:visible}
 .s2-cat-bar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .s2-filter-pills{display:flex;gap:4px}
 
 /* Columns dropdown */
-.s2-columns-dropdown{position:absolute;top:100%;right:0;margin-top:6px;background:var(--bg-card);border:2px solid var(--border-subtle);border-radius:var(--radius-md);padding:8px;min-width:160px;z-index:20;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.s2-columns-dropdown{position:absolute;top:100%;right:0;margin-top:6px;background:var(--bg-card);border:2px solid var(--border-subtle);border-radius:var(--radius-md);padding:8px;min-width:160px;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.12)}
 .s2-columns-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;font-size:13px;color:var(--text-secondary);cursor:pointer;transition:background .15s}
 .s2-columns-item:hover{background:var(--bg-primary)}
 .s2-columns-item input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
@@ -4184,12 +4184,13 @@ input[type=range]::-webkit-slider-thumb{
 /* Table */
 .s2-tbl{width:100%;border-collapse:collapse}
 .s2-tbl th{position:relative}
-.s2-tbl th{font-size:12px;font-weight:500;color:var(--text-muted);letter-spacing:.3px;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-subtle);position:sticky;top:0;background:var(--bg-card);z-index:2}
+.s2-tbl th{font-size:12px;font-weight:500;color:var(--text-muted);letter-spacing:.3px;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-subtle);position:sticky;top:0;background:var(--bg-card);z-index:1}
 .s2-tbl th:first-child{padding-left:40px}
 .s2-tbl th:last-child{padding-right:40px}
 .s2-tbl td{padding:11px 16px;font-size:14px;vertical-align:middle;border-bottom:1px solid #f5f5f5}
 .s2-tbl td:first-child{padding-left:40px}
 .s2-tbl td:last-child{padding-right:40px}
+.s2-tbl td{background:var(--bg-card)}
 .s2-tbl tr:hover td{background:#fafafa}
 .s2-sortable{cursor:pointer;position:relative}
 .s2-sortable:hover{color:var(--text-mid)}
@@ -4389,6 +4390,23 @@ input[type=range]::-webkit-slider-thumb{
 .h2-action-progress-fill{height:100%;border-radius:2px;transition:width .4s ease}
 .h2-action-dismiss{font-size:11px;color:var(--text-dim);cursor:pointer;transition:color .15s}
 .h2-action-dismiss:hover{color:var(--text-mid)}
+
+/* The Critic Noticed */
+.obs-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.obs-section-title{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:500}
+.obs-section-title svg{flex-shrink:0}
+.obs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.obs-card{border:3px solid var(--text-primary);border-radius:var(--radius-lg);box-shadow:3px 3px 0px var(--text-primary);overflow:hidden;background:var(--bg-card)}
+.obs-header{padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.obs-type{font-size:10px;font-weight:600;letter-spacing:.5px}
+.obs-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.obs-body{padding:0 16px 14px}
+.obs-quote{font-size:13px;font-style:italic;line-height:1.5;color:var(--text-secondary);margin-bottom:10px}
+.obs-channel{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500}
+.obs-ch-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;flex-shrink:0}
+.obs-detail{font-size:13px;color:var(--text-secondary)}
+
+@media(max-width:768px){.obs-grid{grid-template-columns:1fr}}
 
 /* Fav overlay on hover */
 .h2-fav-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 60%);opacity:0;transition:opacity .2s;border-radius:inherit}

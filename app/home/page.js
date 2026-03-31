@@ -275,6 +275,113 @@ export default function Home2Page() {
           </div>
         </div>
 
+        {/* ═══ THE CRITIC NOTICED ═══ */}
+        <div style={{ marginBottom: 20 }}>
+          <div className="obs-section-header">
+            <div className="obs-section-title">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l2 4 4.5.6-3.2 3.2.7 4.4L8 11.5l-4 2.2.7-4.4L1.5 6.1l4.5-.6z" fill="var(--text-dim)" /></svg>
+              The Critic noticed...
+            </div>
+            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Updated today</span>
+          </div>
+          <div className="obs-grid">
+            {/* On This Day */}
+            <div className="obs-card">
+              <div className="obs-header" style={{ background: 'var(--accent-soft)' }}>
+                <span className="obs-type" style={{ color: 'var(--accent-text)' }}>ON THIS DAY</span>
+                <div className="obs-icon" style={{ background: 'var(--accent)' }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4" stroke="#fff" strokeWidth="1.2" /><path d="M6 3.5v3l2 1.5" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                </div>
+              </div>
+              <div className="obs-body">
+                <div className="obs-quote">
+                  {(() => {
+                    const today = new Date();
+                    const m = today.getMonth(), d = today.getDate();
+                    const anniversaries = channels.filter(ch => {
+                      if (!ch.subscribedAt) return false;
+                      const s = new Date(ch.subscribedAt);
+                      return s.getMonth() === m && s.getDate() === d && s.getFullYear() < today.getFullYear();
+                    });
+                    if (anniversaries.length > 0) {
+                      const ch = anniversaries[0];
+                      const years = today.getFullYear() - new Date(ch.subscribedAt).getFullYear();
+                      return `"${years} year${years > 1 ? 's' : ''} ago today, you subscribed to ${ch.name}. That's commitment."`;
+                    }
+                    const oldest = [...channels].filter(c => c.subscribedAt).sort((a, b) => new Date(a.subscribedAt) - new Date(b.subscribedAt))[0];
+                    if (oldest) {
+                      const years = Math.floor((Date.now() - new Date(oldest.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+                      return `"Your oldest subscription is ${oldest.name} — ${years} year${years !== 1 ? 's' : ''} and counting."`;
+                    }
+                    return '"No subscription anniversaries today. But The Critic is always watching."';
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            {/* Pattern */}
+            <div className="obs-card">
+              <div className="obs-header" style={{ background: 'var(--orange-soft)' }}>
+                <span className="obs-type" style={{ color: 'var(--orange-text)' }}>PATTERN</span>
+                <div className="obs-icon" style={{ background: 'var(--orange)' }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 9l2.5-4 2 3 1.5-2L11 9" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+              </div>
+              <div className="obs-body">
+                <div className="obs-quote">
+                  {(() => {
+                    const catCounts = {};
+                    channels.forEach(ch => chCats(ch).forEach(c => catCounts[c] = (catCounts[c] || 0) + 1));
+                    const top = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0];
+                    if (top) return `"You subscribe to more ${top[0]} channels than anything else. ${top[1]} and counting."`;
+                    return '"Not enough data to spot patterns yet."';
+                  })()}
+                </div>
+                {(() => {
+                  const catCounts = {};
+                  channels.forEach(ch => chCats(ch).forEach(c => catCounts[c] = (catCounts[c] || 0) + 1));
+                  const top = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0];
+                  if (top) return <div className="obs-detail"><span style={{ fontWeight: 500, color: 'var(--orange)' }}>{top[1]}</span> of {channels.length} channels</div>;
+                  return null;
+                })()}
+              </div>
+            </div>
+
+            {/* Milestone */}
+            <div className="obs-card">
+              <div className="obs-header" style={{ background: 'var(--iris-soft)' }}>
+                <span className="obs-type" style={{ color: 'var(--iris-text)' }}>MILESTONE</span>
+                <div className="obs-icon" style={{ background: 'var(--iris)' }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3 .4-2.2 2.1.5 3L6 8l-2.8 1.5.5-3L1.5 4.4l3-.4z" fill="#fff" /></svg>
+                </div>
+              </div>
+              <div className="obs-body">
+                <div className="obs-quote">
+                  {(() => {
+                    const highVid = [...channels].filter(c => c.videoCount > 500).sort((a, b) => b.videoCount - a.videoCount)[0];
+                    if (highVid) return `"${highVid.name} has ${highVid.videoCount.toLocaleString()} videos. That's a library, not a channel."`;
+                    const most = [...channels].sort((a, b) => (b.subscriberCount || 0) - (a.subscriberCount || 0))[0];
+                    if (most) return `"Your most popular subscription is ${most.name} with ${formatCount(most.subscriberCount)} subscribers."`;
+                    return '"No milestones spotted yet. Keep subscribing."';
+                  })()}
+                </div>
+                {(() => {
+                  const highVid = [...channels].filter(c => c.videoCount > 500).sort((a, b) => b.videoCount - a.videoCount)[0];
+                  if (highVid) return (
+                    <div className="obs-channel">
+                      <div className="obs-ch-avatar" style={{ background: categoryColours[chCats(highVid)[0]] || 'var(--iris)' }}>
+                        {(highVid.name || '??').substring(0, 2).toUpperCase()}
+                      </div>
+                      {highVid.name}
+                    </div>
+                  );
+                  return null;
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ═══ CRITIC'S TASK LIST ═══ */}
         {!actionDismissed && (
           <div className={`h2-action-card mood-${mood}`}>

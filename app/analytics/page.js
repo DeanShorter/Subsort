@@ -4,6 +4,7 @@ import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import PageHeader from '../components/PageHeader';
 import PunchCardChart from '../components/PunchCardChart';
+import WatchHistoryUpload from '../components/WatchHistoryUpload';
 
 export default function AnalyticsPage() {
   const { user, signIn } = useAuth();
@@ -237,6 +238,11 @@ export default function AnalyticsPage() {
           );
         })}
       </div>
+      </div>
+
+      {/* Watch History Upload */}
+      <div style={{ marginTop: 24 }}>
+        <WatchHistoryUpload />
       </div>
     </main>
   );
