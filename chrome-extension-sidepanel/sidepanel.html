@@ -142,6 +142,12 @@
       border-color: var(--green);
     }
 
+    .slot-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
     .slot-controls .clear-btn {
       padding: 6px 10px;
       color: var(--txt-light);
@@ -198,6 +204,78 @@
     #drag-handle:hover::after, #drag-handle.dragging::after {
       background: var(--green);
     }
+
+    /* Layout toggle button */
+    .layout-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border: 2px solid var(--border);
+      border-radius: var(--r-sm);
+      background: var(--card);
+      color: var(--txt-light);
+      cursor: pointer;
+      transition: all 0.15s;
+      padding: 0;
+    }
+    .layout-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* Horizontal layout */
+    #slots-wrap {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    #slots-wrap.horizontal {
+      flex-direction: row;
+    }
+
+    #slots-wrap.horizontal .slot {
+      min-height: 0;
+      min-width: 80px;
+    }
+
+    #slots-wrap.horizontal #slot-top { flex: 1 1 50%; }
+    #slots-wrap.horizontal #slot-bottom { flex: 1 1 50%; }
+
+    #slots-wrap.horizontal .slot-controls {
+      flex-direction: column;
+      padding: 6px;
+      gap: 4px;
+    }
+
+    #slots-wrap.horizontal .slot-controls input {
+      width: 100%;
+    }
+
+    #slots-wrap.horizontal .slot-controls .slot-actions {
+      display: flex;
+      gap: 4px;
+      width: 100%;
+    }
+
+    #slots-wrap.horizontal .slot-controls .slot-actions button {
+      flex: 1;
+    }
+
+    #slots-wrap.horizontal #drag-handle {
+      width: 14px;
+      height: auto;
+      cursor: col-resize;
+      flex-direction: column;
+    }
+
+    #slots-wrap.horizontal #drag-handle::after {
+      width: 4px;
+      height: 40px;
+    }
   </style>
 </head>
 <body>
@@ -206,32 +284,46 @@
       <div class="logo-pill">
         <span style="color: #00A651;">SUB</span><span style="color: #fff;">SCRUB</span>
       </div>
-      <span class="panel-title">Split View</span>
-    </div>
-
-    <div id="slot-top" class="slot">
-      <div class="slot-controls">
-        <span class="slot-label">A</span>
-        <input type="text" id="url-top" placeholder="Paste YouTube URL...">
-        <button id="load-top">Load</button>
-        <button id="clear-top" class="clear-btn">&#x2715;</button>
-      </div>
-      <div class="video-area" id="video-top">
-        <span class="placeholder">No video loaded</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="panel-title">Split View</span>
+        <button id="toggle-layout" class="layout-btn" title="Toggle vertical/horizontal">
+          <svg id="layout-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="1" y="1" width="14" height="6" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <rect x="1" y="9" width="14" height="6" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          </svg>
+        </button>
       </div>
     </div>
 
-    <div id="drag-handle"></div>
-
-    <div id="slot-bottom" class="slot">
-      <div class="slot-controls">
-        <span class="slot-label">B</span>
-        <input type="text" id="url-bottom" placeholder="Paste YouTube URL...">
-        <button id="load-bottom">Load</button>
-        <button id="clear-bottom" class="clear-btn">&#x2715;</button>
+    <div id="slots-wrap">
+      <div id="slot-top" class="slot">
+        <div class="slot-controls">
+          <span class="slot-label">A</span>
+          <input type="text" id="url-top" placeholder="Paste YouTube URL...">
+          <div class="slot-actions">
+            <button id="load-top">Load</button>
+            <button id="clear-top" class="clear-btn">&#x2715;</button>
+          </div>
+        </div>
+        <div class="video-area" id="video-top">
+          <span class="placeholder">No video loaded</span>
+        </div>
       </div>
-      <div class="video-area" id="video-bottom">
-        <span class="placeholder">No video loaded</span>
+
+      <div id="drag-handle"></div>
+
+      <div id="slot-bottom" class="slot">
+        <div class="slot-controls">
+          <span class="slot-label">B</span>
+          <input type="text" id="url-bottom" placeholder="Paste YouTube URL...">
+          <div class="slot-actions">
+            <button id="load-bottom">Load</button>
+            <button id="clear-bottom" class="clear-btn">&#x2715;</button>
+          </div>
+        </div>
+        <div class="video-area" id="video-bottom">
+          <span class="placeholder">No video loaded</span>
+        </div>
       </div>
     </div>
   </div>
