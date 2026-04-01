@@ -203,13 +203,23 @@ export default function Subscriptions2Page() {
 
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-    {/* Category panel */}
-    {showCatPanel && (
+    {/* Category panel — expanded or collapsed strip */}
+    {showCatPanel ? (
       <CategoryPanel
         selectedCats={selectedCatFilters}
         onToggleCat={handleToggleCat}
         onClose={() => setShowCatPanel(false)}
       />
+    ) : (
+      <div className="cp-collapsed" onClick={() => setShowCatPanel(true)}>
+        <button className="cp-expand-btn">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--text-secondary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        <span className="cp-collapsed-label">Categories</span>
+        {selectedCatFilters.size > 0 && (
+          <span className="cp-collapsed-badge">{selectedCatFilters.size}</span>
+        )}
+      </div>
     )}
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
       {/* PAGE HEADER */}
@@ -286,12 +296,6 @@ export default function Subscriptions2Page() {
         {/* CONTROL ROW */}
         <div className="s2-ctrl-row">
           <div className="s2-ctrl-left">
-            {!showCatPanel && (
-              <button className="s2-sort-pill" onClick={() => setShowCatPanel(true)}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M4 7h6M6 10h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                Categories
-              </button>
-            )}
             {selectedCatFilters.size > 0 && (
               <>
                 <span style={{ fontSize: 12, color: 'var(--text-muted)', marginRight: 4 }}>Showing:</span>

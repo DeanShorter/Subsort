@@ -80,6 +80,17 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
                   <span className="cp-name">{cat}</span>
                 </div>
                 <div className="cp-item-right">
+                  <div className="cp-item-actions">
+                    <button className="cp-action-btn" title="Add subcategory" onClick={e => { e.stopPropagation(); toggleExpand(cat); }}>
+                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                    </button>
+                    <button className="cp-action-btn" title="Edit" onClick={e => e.stopPropagation()}>
+                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M7 2.5l2.5 2.5M3 7l-1 3 3-1 5.5-5.5-2.5-2.5z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+                    <button className="cp-action-btn cp-action-del" title="Delete" onClick={e => e.stopPropagation()}>
+                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4.5 3V2h3v1M3 3v7a1 1 0 001 1h4a1 1 0 001-1V3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+                  </div>
                   {subs.length > 0 && (
                     <button className={`cp-chevron${isExpanded ? ' open' : ''}`} onClick={e => { e.stopPropagation(); toggleExpand(cat); }}>
                       <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="var(--text-muted)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
