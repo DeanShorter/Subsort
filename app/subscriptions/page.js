@@ -129,6 +129,27 @@ export default function Subscriptions2Page() {
   // ── Date formatter ─────────────────────────────────
   const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : '—';
 
+  // ── Keyboard navigation ───────────────────────────
+  useEffect(() => {
+    if (!editingId) return;
+    const handleKey = (e) => {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'Escape') return;
+      e.preventDefault();
+      if (e.key === 'Escape') { setEditingId(null); return; }
+      const idx = filtered.findIndex(c => c.id === editingId);
+      if (idx === -1) return;
+      const next = e.key === 'ArrowDown' ? idx + 1 : idx - 1;
+      if (next >= 0 && next < filtered.length) {
+        setEditingId(filtered[next].id);
+        // Scroll the row into view
+        const row = document.querySelector(`tr[data-id="${filtered[next].id}"]`);
+        row?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [editingId, filtered]);
+
   // ── Loading / auth ─────────────────────────────────
   if (loading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
 
@@ -376,7 +397,7 @@ export default function Subscriptions2Page() {
                 const state = getChannelState(ch);
                 const isSelected = selectedChannels.has(ch.id);
                 return (
-                  <tr key={ch.id} className={isSelected ? 's2-row-selected' : ''} onClick={() => bulkMode ? toggleChannelSelect(ch.id) : setEditingId(ch.id)}>
+                  <tr key={ch.id} data-id={ch.id} className={`${isSelected ? 's2-row-selected' : ''}${editingId === ch.id ? ' selected' : ''}`} onClick={() => bulkMode ? toggleChannelSelect(ch.id) : setEditingId(ch.id)}>
                     <td><div className={`h2-task-check${isSelected ? ' checked' : ''}`} onClick={e => { e.stopPropagation(); toggleChannelSelect(ch.id); }}>{isSelected && '✓'}</div></td>
                     <td><button className={`ch-table-fav${ch.favourited ? ' starred' : ''}`} onClick={e => { e.stopPropagation(); toggleFavourite(ch.id); }}><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg></button></td>
                     <td><div className="s2-ch-name"><div className="s2-ch-avatar" style={{ background: `${col}33` }}>{ch.thumbnail ? <img src={ch.thumbnail} alt="" /> : initials}</div>{ch.name}</div></td>

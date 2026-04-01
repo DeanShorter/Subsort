@@ -4192,6 +4192,7 @@ input[type=range]::-webkit-slider-thumb{
 .s2-tbl td:last-child{padding-right:40px}
 .s2-tbl td{background:var(--bg-card)}
 .s2-tbl tr:hover td{background:#fafafa}
+.s2-tbl tr.selected td{background:#E8F8EF}
 .s2-sortable{cursor:pointer;position:relative}
 .s2-sortable:hover{color:var(--text-mid)}
 .s2-col-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:3px;border:none;background:transparent;color:var(--text-dim);font-size:9px;cursor:pointer;opacity:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
