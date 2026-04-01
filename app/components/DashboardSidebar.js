@@ -52,8 +52,9 @@ const SETTINGS_ITEMS = [
 ];
 
 function NavItem({ href, label, svg, dot, isActive }) {
+  const activeStyle = isActive && dot ? { background: dot, color: '#fff' } : undefined;
   return (
-    <Link href={href} className={`home-nav-item${isActive ? ' active' : ''}`}>
+    <Link href={href} className={`home-nav-item${isActive ? ' active' : ''}`} style={activeStyle}>
       {dot ? (
         <span className="hnp-cat-dot" style={{ background: isActive ? '#fff' : dot }} />
       ) : (
