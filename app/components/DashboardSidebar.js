@@ -15,23 +15,24 @@ const CAT_ROUTES = [];
 const PAGE_ITEMS = [
   {
     href: '/home', label: 'Home',
-    svg: <><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 14V8h4v6"/></>,
+    dot: null, // custom 4-dot icon
+    svg: <><rect x="2" y="2" width="5" height="5" rx="2" fill="#00A651" /><rect x="9" y="2" width="5" height="5" rx="2" fill="#FF8C42" /><rect x="2" y="9" width="5" height="5" rx="2" fill="#8B6FE8" /><rect x="9" y="9" width="5" height="5" rx="2" fill="#2D9CDB" /></>,
   },
   {
     href: '/subscriptions', label: 'Subscriptions',
-    svg: <><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2 6h12"/></>,
+    dot: '#00A651',
   },
   {
     href: '/feeds', label: 'Feed',
-    svg: <path d="M3 4h10M3 8h6M3 12h8"/>,
+    dot: '#FF8C42',
   },
   {
     href: '/discover', label: 'Discover',
-    svg: <><circle cx="8" cy="8" r="6"/><path d="M10.5 5.5l-1 3.5-3.5 1 1-3.5z"/></>,
+    dot: '#8B6FE8',
   },
   {
     href: '/stash', label: 'Stash',
-    svg: <><path d="M3 2h10a1 1 0 011 1v11l-6-3-6 3V3a1 1 0 011-1z"/></>,
+    dot: '#2D9CDB',
   },
   {
     href: '/analytics', label: 'Insights',
@@ -50,10 +51,14 @@ const SETTINGS_ITEMS = [
   },
 ];
 
-function NavItem({ href, label, svg, isActive }) {
+function NavItem({ href, label, svg, dot, isActive }) {
   return (
     <Link href={href} className={`home-nav-item${isActive ? ' active' : ''}`}>
-      <svg viewBox="0 0 16 16">{svg}</svg>
+      {dot ? (
+        <span className="hnp-cat-dot" style={{ background: isActive ? '#fff' : dot }} />
+      ) : (
+        <svg viewBox="0 0 16 16">{svg}</svg>
+      )}
       <span className="home-nav-item-label">{label}</span>
     </Link>
   );

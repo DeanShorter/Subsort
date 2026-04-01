@@ -4610,10 +4610,11 @@ input[type=range]::-webkit-slider-thumb{
 }
 @keyframes f2CardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .f2-card{
-  background:var(--surface);border:1px solid var(--border-hover);
-  border-radius:10px;overflow:hidden;cursor:pointer;
-  transition:border-color .2s,transform .2s;text-decoration:none;color:inherit;
+  background:var(--bg-card);border:2px solid var(--text-primary);
+  border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;
+  transition:all .2s;text-decoration:none;color:inherit;
   display:block;opacity:0;animation:f2CardIn .3s ease forwards;
+  box-shadow:3px 3px 0px var(--text-primary);
 }
 .f2-card:hover{border-color:var(--border-white-15);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .f2-card:hover .f2-card-thumb img.loaded{filter:brightness(1.1)}
@@ -4751,7 +4752,7 @@ input[type=range]::-webkit-slider-thumb{
 @media(max-width:900px){.split-view{flex-direction:column}.split-handle{width:100%;height:8px;cursor:row-resize}.split-handle-dots{flex-direction:row}.split-view.layout-primary .split-panel,.split-view.layout-secondary .split-panel{flex:1!important}.split-minibar{left:0!important}}
 
 /* ═══ Hover-to-Preview Video Cards ═══ */
-.vcard{border-radius:var(--radius-lg);position:relative;transition:transform .3s ease,box-shadow .3s ease}
+.vcard{border:2px solid var(--text-primary);border-radius:var(--radius-lg);box-shadow:3px 3px 0px var(--text-primary);background:var(--bg-card);position:relative;transition:transform .3s ease,box-shadow .3s ease;overflow:hidden}
 .vcard:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .vc-thumb{aspect-ratio:16/9;border-radius:var(--radius-lg);overflow:hidden;position:relative;background:var(--surface-2);cursor:pointer;transition:box-shadow .5s ease}
 .vc-thumb-bg{width:100%;height:100%;position:absolute;inset:0;transition:opacity .6s ease;z-index:1}
