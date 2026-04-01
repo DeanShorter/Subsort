@@ -3,7 +3,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useChannelData } from './ChannelDataContext';
 
 export default function ChannelPanel({ channelId, onClose }) {
-  const { channels, categories, subcategories, categoryColours, chCats, formatCount, getChannelState } = useChannelData();
+  const { channels, categories, subcategories, categoryColours, chCats, formatCount, getChannelState, feedVideos } = useChannelData();
 
   const ch = channels.find(c => c.id === channelId);
 
@@ -68,9 +68,10 @@ export default function ChannelPanel({ channelId, onClose }) {
         <div className="sp-panel-section-title">CHANNEL STATS</div>
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Subscribers</span><span className="sp-panel-stat-value">{ch.subscriberCount ? formatCount(ch.subscriberCount) : '—'}</span></div>
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Videos</span><span className="sp-panel-stat-value">{ch.videoCount != null ? ch.videoCount.toLocaleString() : '—'}</span></div>
+        <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Total views</span><span className="sp-panel-stat-value">{ch.viewCount ? formatCount(ch.viewCount) : '—'}</span></div>
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Subscribed</span><span className="sp-panel-stat-value">{fmtDate(ch.subscribedAt)}</span></div>
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Channel created</span><span className="sp-panel-stat-value">{fmtDate(ch.channelCreatedAt)}</span></div>
-        <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Total views</span><span className="sp-panel-stat-value">{ch.viewCount ? formatCount(ch.viewCount) : '—'}</span></div>
+        {ch.country && <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Country</span><span className="sp-panel-stat-value">{ch.country}</span></div>}
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Status</span><span className={`s2-status ${state}`}>{state === 'dead' ? 'Dead' : state === 'inactive' ? 'Inactive' : 'Active'}</span></div>
       </div>
 
@@ -126,6 +127,40 @@ export default function ChannelPanel({ channelId, onClose }) {
           )}
         </div>
       </div>
+
+      {/* Keywords */}
+      {ch.keywords && ch.keywords.split(',').filter(k => k.trim()).length > 0 && (
+        <div className="sp-panel-section">
+          <div className="sp-panel-section-title">KEYWORDS</div>
+          <div className="sp-panel-tags">
+            {ch.keywords.split(',').map(k => k.trim()).filter(Boolean).slice(0, 8).map(k => (
+              <span key={k} className="sp-panel-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', fontSize: 11 }}>{k}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent videos */}
+      {(() => {
+        const recentVids = feedVideos.filter(v => v.channelId === ch.channelId).slice(0, 3);
+        if (!recentVids.length) return null;
+        return (
+          <div className="sp-panel-section">
+            <div className="sp-panel-section-title">RECENT UPLOADS</div>
+            {recentVids.map(v => (
+              <div key={v.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
+                <div style={{ width: 60, height: 34, borderRadius: 4, overflow: 'hidden', flexShrink: 0, background: 'var(--bg-primary)' }}>
+                  {v.thumbnail && <img src={v.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.title}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{v.publishedAt ? new Date(v.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Notes */}
       {ch.notes && (
