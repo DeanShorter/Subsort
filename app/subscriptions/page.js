@@ -8,6 +8,7 @@ import EditChannelModal from '../components/EditChannelModal';
 import ManageCategoriesModal from '../components/ManageCategoriesModal';
 import BulkEditModal from '../components/BulkEditModal';
 import ChannelPanel from '../components/ChannelPanel';
+import CategoryPanel from '../components/CategoryPanel';
 import { trackEvent } from '../../lib/track';
 import { useDragScroll } from '../../hooks/useDragScroll';
 
@@ -21,7 +22,10 @@ export default function Subscriptions2Page() {
 
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const [selectedCatFilters, setSelectedCatFilters] = useState(new Set());
+  const [showCatPanel, setShowCatPanel] = useState(true);
   const [search, setSearch] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
   const [sortKey, setSortKey] = useState('name');
   const [sortDir, setSortDir] = useState('asc');
   const [chanView, setChanView] = useState('table');
@@ -64,9 +68,22 @@ export default function Subscriptions2Page() {
   // ── Filter + sort ──────────────────────────────────
   const filtered = useMemo(() => {
     let result = [...channels];
-    if (activeCategory === '__favs__') result = result.filter(c => c.favourited);
-    else if (activeCategory === '__uncat__') result = result.filter(c => chIsUncategorised(c));
-    else if (activeCategory !== 'all') result = result.filter(c => chHasCat(c, activeCategory));
+    // Multi-select category filtering
+    if (selectedCatFilters.size > 0) {
+      result = result.filter(c => {
+        for (const f of selectedCatFilters) {
+          if (f === '__favs__' && c.favourited) return true;
+          if (chHasCat(c, f)) return true;
+        }
+        return false;
+      });
+    } else if (activeCategory === '__favs__') {
+      result = result.filter(c => c.favourited);
+    } else if (activeCategory === '__uncat__') {
+      result = result.filter(c => chIsUncategorised(c));
+    } else if (activeCategory !== 'all') {
+      result = result.filter(c => chHasCat(c, activeCategory));
+    }
     if (activeSubcategory) result = result.filter(c => c.subcategory === activeSubcategory);
     if (search) { const q = search.toLowerCase(); result = result.filter(c => (c.name || '').toLowerCase().includes(q)); }
     if (filterStatus !== 'all') result = result.filter(c => getChannelState(c) === filterStatus);
@@ -92,7 +109,29 @@ export default function Subscriptions2Page() {
       return cmp * dir;
     });
     return result;
-  }, [channels, activeCategory, activeSubcategory, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterStatus, getChannelState]);
+  }, [channels, activeCategory, activeSubcategory, selectedCatFilters, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterStatus, getChannelState]);
+
+  // ── Category panel toggle ──────────────────────────
+  const handleToggleCat = useCallback((cat) => {
+    if (cat === '__all__') {
+      setSelectedCatFilters(new Set());
+      setActiveCategory('all');
+      setActiveSubcategory(null);
+    } else if (cat === '__favs__') {
+      setSelectedCatFilters(prev => {
+        const next = new Set(prev);
+        next.has('__favs__') ? next.delete('__favs__') : next.add('__favs__');
+        return next;
+      });
+      setActiveCategory(prev => prev === '__favs__' ? 'all' : '__favs__');
+    } else {
+      setSelectedCatFilters(prev => {
+        const next = new Set(prev);
+        next.has(cat) ? next.delete(cat) : next.add(cat);
+        return next;
+      });
+    }
+  }, []);
 
   // ── Sort column click ──────────────────────────────
   const handleColumnSort = (key) => {
@@ -164,21 +203,20 @@ export default function Subscriptions2Page() {
 
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+    {/* Category panel */}
+    {showCatPanel && (
+      <CategoryPanel
+        selectedCats={selectedCatFilters}
+        onToggleCat={handleToggleCat}
+        onClose={() => setShowCatPanel(false)}
+      />
+    )}
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
       {/* PAGE HEADER */}
       <div className="s2-topbar">
         <div className="s2-topbar-row">
           <div className="s2-topbar-left">
-            <span className="page-title" style={{ fontSize: 24, fontWeight: 500, letterSpacing: '-.3px' }}>Subscriptions <span style={{ fontWeight: 400, fontSize: 15, color: 'var(--text-muted)', marginLeft: 8 }}>{filtered.length} channels</span></span>
-          </div>
-          <div className="f2-header-right">
-            <input className="s2-search-pill" type="text" placeholder="Search channels..." value={search} onChange={e => setSearch(e.target.value)} />
-            <button className="s2-icon-btn" title="Grid view" onClick={() => setChanView('grid')}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="6" height="5" rx="1" stroke={chanView === 'grid' ? 'var(--accent)' : '#999'} strokeWidth="1.2" /><rect x="9" y="2" width="6" height="5" rx="1" stroke={chanView === 'grid' ? 'var(--accent)' : '#999'} strokeWidth="1.2" /><rect x="1" y="9" width="6" height="5" rx="1" stroke={chanView === 'grid' ? 'var(--accent)' : '#999'} strokeWidth="1.2" /><rect x="9" y="9" width="6" height="5" rx="1" stroke={chanView === 'grid' ? 'var(--accent)' : '#999'} strokeWidth="1.2" /></svg>
-            </button>
-            <button className="s2-icon-btn" title="Table view" onClick={() => setChanView('table')}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke={chanView === 'table' ? 'var(--accent)' : '#999'} strokeWidth="1.2" strokeLinecap="round" /></svg>
-            </button>
+            <span className="page-title" style={{ fontSize: 21, fontWeight: 500, letterSpacing: '-.3px' }}>Subscriptions <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-muted)', marginLeft: 8 }}>{filtered.length} of {channels.length} channels</span></span>
           </div>
         </div>
       </div>
@@ -245,43 +283,48 @@ export default function Subscriptions2Page() {
 
       {/* CONTENT */}
       <div className="s2-content">
-        {/* CATEGORY BAR */}
-        <div className="s2-cat-bar">
-          <div className="s2-cat-tabs" ref={catTabsRef} style={{ gap: 6 }}>
-            <button className={`s2-cat-tab${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
-              All <span className="s2-ct-count">{channels.length}</span>
-            </button>
-            <button className={`s2-cat-tab${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
-              Favourites <span className="s2-ct-count">{channels.filter(c => c.favourited).length}</span>
-            </button>
-            {categories.map(cat => (
-              <button key={cat} className={`s2-cat-tab${activeCategory === cat ? ' active' : ''}`}
-                onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}>
-                {cat} <span className="s2-ct-count">{channels.filter(c => chHasCat(c, cat)).length}</span>
+        {/* CONTROL ROW */}
+        <div className="s2-ctrl-row">
+          <div className="s2-ctrl-left">
+            {!showCatPanel && (
+              <button className="s2-sort-pill" onClick={() => setShowCatPanel(true)}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M4 7h6M6 10h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                Categories
               </button>
-            ))}
+            )}
+            {selectedCatFilters.size > 0 && (
+              <>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', marginRight: 4 }}>Showing:</span>
+                {[...selectedCatFilters].map(f => (
+                  <span key={f} className="s2-filter-tag">
+                    {f === '__favs__' ? 'Favourites' : f}
+                    <span className="s2-filter-tag-x" onClick={() => handleToggleCat(f)}>&times;</span>
+                  </span>
+                ))}
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', cursor: 'pointer', marginLeft: 4 }} onClick={() => setSelectedCatFilters(new Set())}>Clear all</span>
+              </>
+            )}
           </div>
-          <div className="s2-cat-bar-right">
-            <div className="s2-filter-pills">
-              {['all', 'active', 'inactive', 'dead'].map(s => (
-                <button key={s} className={`s2-fpill${filterStatus === s ? ' active' : ' inactive'}`}
-                  onClick={() => setFilterStatus(filterStatus === s ? 'all' : s)}>
-                  {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
-                </button>
-              ))}
-            </div>
+          <div className="s2-ctrl-right">
+            <button className="s2-ctrl-icon" onClick={() => { setShowSearch(s => !s); if (showSearch) setSearch(''); }}>
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#999" strokeWidth="1.3" /><path d="M10.5 10.5l3 3" stroke="#999" strokeWidth="1.3" strokeLinecap="round" /></svg>
+            </button>
+            {showSearch && <input className="s2-search-pill" type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} autoFocus style={{ width: 140 }} />}
+            <button className="s2-sort-pill" onClick={() => setFilterStatus(filterStatus === 'all' ? 'active' : filterStatus === 'active' ? 'inactive' : filterStatus === 'inactive' ? 'dead' : 'all')}>
+              Status: {filterStatus === 'all' ? 'All' : filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)}
+            </button>
             <button className="s2-sort-pill" onClick={() => {
               const keys = ['name', 'subscribers', 'videoCount', 'subDate', 'category'];
               const idx = keys.indexOf(sortKey);
               setSortKey(keys[(idx + 1) % keys.length]);
               setSortDir('asc');
             }}>
-              <svg viewBox="0 0 12 12"><path d="M2 3h8M3 6h6M4 9h4" /></svg>
-              {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category' })[sortKey] || 'Name'}
+              <svg viewBox="0 0 12 12" width="11" height="11"><path d="M2 3h8M3 6h6M4 9h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+              Sort
             </button>
             <div style={{ position: 'relative' }}>
               <button className="s2-sort-pill" onClick={() => setShowColumnsMenu(v => !v)}>
-                <svg viewBox="0 0 12 12"><rect x="1" y="1" width="4" height="10" rx="1" stroke="currentColor" fill="none" strokeWidth="1.1" /><rect x="7" y="1" width="4" height="10" rx="1" stroke="currentColor" fill="none" strokeWidth="1.1" /></svg>
+                <svg viewBox="0 0 12 12" width="11" height="11"><rect x="1" y="1" width="4" height="10" rx="1" stroke="currentColor" fill="none" strokeWidth="1.1" /><rect x="7" y="1" width="4" height="10" rx="1" stroke="currentColor" fill="none" strokeWidth="1.1" /></svg>
                 Columns
               </button>
               {showColumnsMenu && (
@@ -295,15 +338,7 @@ export default function Subscriptions2Page() {
                     { key: 'status', label: 'Status' },
                   ].map(col => (
                     <label key={col.key} className="s2-columns-item">
-                      <input
-                        type="checkbox"
-                        checked={!hiddenCols.has(col.key)}
-                        onChange={() => setHiddenCols(prev => {
-                          const next = new Set(prev);
-                          next.has(col.key) ? next.delete(col.key) : next.add(col.key);
-                          return next;
-                        })}
-                      />
+                      <input type="checkbox" checked={!hiddenCols.has(col.key)} onChange={() => setHiddenCols(prev => { const next = new Set(prev); next.has(col.key) ? next.delete(col.key) : next.add(col.key); return next; })} />
                       <span>{col.label}</span>
                     </label>
                   ))}
