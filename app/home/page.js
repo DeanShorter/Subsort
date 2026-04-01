@@ -379,6 +379,15 @@ export default function Home2Page() {
                 })()}
               </div>
             </div>
+            {/* Placeholder */}
+            <div className="obs-card" style={{ borderStyle: 'dashed', opacity: 0.5 }}>
+              <div className="obs-header" style={{ background: 'var(--bg-primary)' }}>
+                <span className="obs-type" style={{ color: 'var(--text-muted)' }}>COMING SOON</span>
+              </div>
+              <div className="obs-body">
+                <div className="obs-quote">"The Critic is always watching. More observations will appear as it learns your habits."</div>
+              </div>
+            </div>
           </div>
         </div>
 
