@@ -4259,7 +4259,7 @@ input[type=range]::-webkit-slider-thumb{
 .stash-empty-icon{width:48px;height:48px;border-radius:50%;background:var(--ocean-soft);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
 
 /* ═══ Category Panel ═══ */
-.cp-panel{width:260px;background:var(--bg-card);border-right:var(--border-thick);display:flex;flex-direction:column;flex-shrink:0}
+.cp-panel{width:auto;min-width:200px;max-width:320px;background:var(--bg-card);border-right:var(--border-thick);display:flex;flex-direction:column;flex-shrink:0}
 .cp-head{padding:20px 16px 0 20px;display:flex;align-items:center;justify-content:space-between}
 .cp-title{font-size:15px;font-weight:500}
 .cp-toggle{width:28px;height:28px;border-radius:50%;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
@@ -4302,8 +4302,8 @@ input[type=range]::-webkit-slider-thumb{
 .cp-collapsed{width:40px;background:var(--bg-card);border-right:var(--border-thick);display:flex;flex-direction:column;align-items:center;padding:16px 0;cursor:pointer;flex-shrink:0;transition:background .15s}
 .cp-collapsed:hover{background:#fafafa}
 .cp-expand-btn{width:24px;height:24px;border-radius:50%;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;margin-bottom:12px;flex-shrink:0}
-.cp-collapsed-label{writing-mode:vertical-rl;text-orientation:mixed;font-size:13px;font-weight:500;color:var(--text-secondary);letter-spacing:.3px;flex:1}
-.cp-collapsed-badge{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:12px;flex-shrink:0}
+.cp-collapsed-label{writing-mode:vertical-rl;text-orientation:mixed;font-size:13px;font-weight:500;color:var(--text-secondary);letter-spacing:.3px}
+.cp-collapsed-badge{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:8px;flex-shrink:0}
 
 /* ═══ Channel Slide Panel ═══ */
 .sp-slide-panel{width:340px;border-left:var(--border-thick);background:var(--bg-card);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;animation:spSlideIn .3s ease}
