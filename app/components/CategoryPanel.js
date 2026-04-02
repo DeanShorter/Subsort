@@ -322,7 +322,7 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
             <h2>Delete &ldquo;{deleteCatConfirm.name}&rdquo;?</h2>
             <p className="subtitle">
               {deleteCatConfirm.count} channel{deleteCatConfirm.count !== 1 ? 's are' : ' is'} assigned to this category.
-              They&rsquo;ll be uncategorised until you reassign them.
+              They&rsquo;ll be uncategorised until they&rsquo;re reassigned.
             </p>
             <div className="modal-footer">
               <button className="btn-cancel" onClick={() => setDeleteCatConfirm(null)}>Cancel</button>

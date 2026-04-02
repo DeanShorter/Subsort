@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { showToast } from './Toast';
 
 export default function ChannelPanel({ channelId, onClose }) {
-  const { channels, categories, subcategories, categoryColours, chCats, formatCount, getChannelState, feedVideos, dbCategories, dbSubcategories, reload } = useChannelData();
+  const { channels, categories, subcategories, categoryColours, chCats, formatCount, getChannelState, feedVideos, dbCategories, dbSubcategories, reload, toggleFavourite } = useChannelData();
   const { user } = useAuth();
   const [editingCat, setEditingCat] = useState(false);
   const [editingSub, setEditingSub] = useState(false);
@@ -21,7 +21,6 @@ export default function ChannelPanel({ channelId, onClose }) {
     try {
       const wh = JSON.parse(localStorage.getItem('subsort_watchhistory'));
       if (!wh?.topChannels) return null;
-      // Match against all possible identifiers
       const ids = new Set([
         ch.channelId,
         ch.id,
@@ -44,6 +43,30 @@ export default function ChannelPanel({ channelId, onClose }) {
       return { watched: match.count, lastWatched: null, rate, pct };
     } catch { return null; }
   }, [ch]);
+
+  // Derive upload frequency and last upload from feed videos
+  const uploadStats = useMemo(() => {
+    if (!ch) return { lastUpload: null, frequency: null };
+    const vids = feedVideos
+      .filter(v => v.channelId === ch.channelId && v.publishedAt)
+      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    const lastUpload = vids[0]?.publishedAt || null;
+    let frequency = null;
+    if (vids.length >= 2) {
+      const newest = new Date(vids[0].publishedAt);
+      const oldest = new Date(vids[vids.length - 1].publishedAt);
+      const daySpan = (newest - oldest) / (1000 * 60 * 60 * 24);
+      if (daySpan > 0) {
+        const perWeek = (vids.length - 1) / (daySpan / 7);
+        if (perWeek >= 5) frequency = 'Daily';
+        else if (perWeek >= 2) frequency = `${Math.round(perWeek)}/week`;
+        else if (perWeek >= 0.8) frequency = 'Weekly';
+        else if (perWeek >= 0.4) frequency = 'Biweekly';
+        else frequency = 'Monthly';
+      }
+    }
+    return { lastUpload, frequency };
+  }, [ch, feedVideos]);
 
   // Init edit state when channel changes
   useEffect(() => {
@@ -111,14 +134,55 @@ export default function ChannelPanel({ channelId, onClose }) {
 
   return (
     <div className="sp-slide-panel">
-      {/* Header */}
+      {/* Header — avatar left, name/handle right */}
       <div className="sp-panel-header">
-        <div>
+        <div className="sp-panel-header-left">
           <div className="sp-panel-avatar" style={{ background: col }}>{ch.thumbnail ? <img src={ch.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : initials}</div>
-          <div className="sp-panel-name">{ch.name}</div>
-          {handle && <div className="sp-panel-handle">{handle}</div>}
+          <div className="sp-panel-header-info">
+            <div className="sp-panel-name">{ch.name}</div>
+            {handle && <div className="sp-panel-handle">{handle}</div>}
+          </div>
         </div>
         <button className="sp-panel-close" onClick={onClose}>&times;</button>
+      </div>
+
+      {/* Critic */}
+      <div className="sp-panel-critic">
+        <div className="sp-panel-critic-header">
+          <div className="sp-panel-critic-icon" style={{ background: 'var(--accent)' }}>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3 .4-2.2 2.1.5 3L6 8l-2.8 1.5.5-3L1.5 4.4l3-.4z" fill="#fff" /></svg>
+          </div>
+          <span className="sp-panel-critic-label" style={{ color: 'var(--accent-text)' }}>The Critic</span>
+        </div>
+        <div className="sp-panel-critic-quote" style={{ color: 'var(--orange-text)' }}>
+          {state === 'active' && ch.favourited && `"One of your favourites. ${ch.subscriberCount > 100000 ? 'Popular choice.' : 'Solid pick.'} Keep watching."`}
+          {state === 'active' && !ch.favourited && `"Active channel, regular uploads. ${cats.length === 0 ? 'Needs a category though.' : 'Doing fine.'}"`}
+          {state === 'inactive' && `"This one's been quiet. Might be time to reconsider."`}
+          {state === 'dead' && `"No uploads, low activity. This is dead weight, Dean."`}
+        </div>
+      </div>
+
+      {/* Favourite + YouTube buttons */}
+      <div className="sp-panel-quick-actions">
+        <button
+          className={`sp-panel-fav-btn${ch.favourited ? ' on' : ''}`}
+          onClick={() => toggleFavourite(ch.id)}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1.5l1.7 3.5 3.8.5-2.75 2.7.65 3.8L7 10.2 3.6 12l.65-3.8L1.5 5.5l3.8-.5z"
+              fill={ch.favourited ? 'var(--orange)' : 'none'}
+              stroke={ch.favourited ? 'var(--orange)' : 'currentColor'}
+              strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {ch.favourited ? 'Favourited' : 'Favourite'}
+        </button>
+        <a className="sp-panel-yt-btn" href={ytUrl} target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="1" y="2.5" width="12" height="9" rx="2" stroke="currentColor" strokeWidth="1.2" />
+            <path d="M5.5 5v4l4-2z" fill="currentColor" />
+          </svg>
+          Open on YouTube
+        </a>
       </div>
 
       {/* Stats */}
@@ -127,9 +191,10 @@ export default function ChannelPanel({ channelId, onClose }) {
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Subscribers</span><span className="sp-panel-stat-value">{ch.subscriberCount ? formatCount(ch.subscriberCount) : '—'}</span></div>
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Videos</span><span className="sp-panel-stat-value">{ch.videoCount != null ? ch.videoCount.toLocaleString() : '—'}</span></div>
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Total views</span><span className="sp-panel-stat-value">{ch.viewCount ? formatCount(ch.viewCount) : '—'}</span></div>
-        <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Subscribed</span><span className="sp-panel-stat-value">{fmtDate(ch.subscribedAt)}</span></div>
+        <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Subscribed since</span><span className="sp-panel-stat-value">{fmtDate(ch.subscribedAt)}</span></div>
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Channel created</span><span className="sp-panel-stat-value">{fmtDate(ch.channelCreatedAt)}</span></div>
-        {ch.country && <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Country</span><span className="sp-panel-stat-value">{ch.country}</span></div>}
+        <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Upload frequency</span><span className="sp-panel-stat-value">{uploadStats.frequency || '—'}</span></div>
+        <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Last upload</span><span className="sp-panel-stat-value">{uploadStats.lastUpload ? fmtDate(uploadStats.lastUpload) : '—'}</span></div>
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Status</span><span className={`s2-status ${state}`}>{state === 'dead' ? 'Dead' : state === 'inactive' ? 'Inactive' : 'Active'}</span></div>
       </div>
 
@@ -202,31 +267,40 @@ export default function ChannelPanel({ channelId, onClose }) {
       <div className="sp-panel-section">
         <div className="sp-panel-section-header">
           <span className="sp-panel-section-title">SUBCATEGORY</span>
-          {!editingSub ? (
-            <button className="sp-panel-edit-btn" onClick={() => setEditingSub(true)}>{ch.subcategory ? 'Edit' : 'Add'}</button>
-          ) : (
-            <div style={{ display: 'flex', gap: 4 }}>
-              <button className="sp-panel-save-btn" onClick={saveSub}>Save</button>
-              <button className="sp-panel-edit-btn" onClick={() => { setEditingSub(false); setSelectedSub(ch.subcategory || ''); }}>Cancel</button>
-            </div>
+          {availableSubs.length > 0 && (
+            !editingSub ? (
+              <div style={{ display: 'flex', gap: 4 }}>
+                {!ch.subcategory && <button className="sp-panel-edit-btn" onClick={() => setEditingSub(true)}>Add</button>}
+                <button className="sp-panel-edit-btn" onClick={() => setEditingSub(true)}>Edit</button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 4 }}>
+                <button className="sp-panel-save-btn" onClick={saveSub}>Save</button>
+                <button className="sp-panel-edit-btn" onClick={() => { setEditingSub(false); setSelectedSub(ch.subcategory || ''); }}>Cancel</button>
+              </div>
+            )
           )}
         </div>
         {editingSub ? (
-          <div>
-            {availableSubs.length > 0 && (
-              <select className="sp-panel-select" value={selectedSub} onChange={e => setSelectedSub(e.target.value)}>
-                <option value="">None</option>
-                {availableSubs.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            )}
-            <input className="sp-panel-input" type="text" placeholder={availableSubs.length > 0 ? 'Or type new...' : 'Type subcategory...'} onKeyDown={e => { if (e.key === 'Enter' && e.target.value.trim()) { setSelectedSub(e.target.value.trim()); e.target.value = ''; } }} style={{ marginTop: availableSubs.length > 0 ? 6 : 0 }} />
+          <div className="sp-panel-cat-list">
+            {availableSubs.map(s => (
+              <label key={s} className={`sp-panel-cat-option${selectedSub === s ? ' on' : ''}`}
+                onClick={() => setSelectedSub(prev => prev === s ? '' : s)}>
+                <div className={`cp-check${selectedSub === s ? ' on' : ''}`}>
+                  {selectedSub === s && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 5.5l2 2 3.5-3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                </div>
+                {s}
+              </label>
+            ))}
           </div>
         ) : (
           <div className="sp-panel-tags">
             {ch.subcategory ? (
               <span className="sp-panel-tag" style={{ background: `${col}15`, color: col }}>{ch.subcategory}</span>
             ) : (
-              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>None assigned</span>
+              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                {availableSubs.length > 0 ? 'None assigned' : 'None yet.'}
+              </span>
             )}
           </div>
         )}
@@ -261,28 +335,6 @@ export default function ChannelPanel({ channelId, onClose }) {
           <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{ch.notes}</div>
         </div>
       )}
-
-      {/* Critic */}
-      <div className="sp-panel-critic">
-        <div className="sp-panel-critic-header">
-          <div className="sp-panel-critic-icon" style={{ background: 'var(--accent)' }}>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3 .4-2.2 2.1.5 3L6 8l-2.8 1.5.5-3L1.5 4.4l3-.4z" fill="#fff" /></svg>
-          </div>
-          <span className="sp-panel-critic-label" style={{ color: 'var(--accent-text)' }}>The Critic</span>
-        </div>
-        <div className="sp-panel-critic-quote" style={{ color: 'var(--orange-text)' }}>
-          {state === 'active' && ch.favourited && `"One of your favourites. ${ch.subscriberCount > 100000 ? 'Popular choice.' : 'Solid pick.'} Keep watching."`}
-          {state === 'active' && !ch.favourited && `"Active channel, regular uploads. ${cats.length === 0 ? 'Needs a category though.' : 'Doing fine.'}"`}
-          {state === 'inactive' && `"This one's been quiet. Might be time to reconsider."`}
-          {state === 'dead' && `"No uploads, low activity. This is dead weight, Dean."`}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="sp-panel-actions">
-        <button className="sp-panel-action-btn" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }} onClick={onClose}>Recategorise</button>
-        <a className="sp-panel-action-btn" style={{ background: 'var(--accent)', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={ytUrl} target="_blank" rel="noopener noreferrer">Open on YouTube</a>
-      </div>
     </div>
   );
 }
