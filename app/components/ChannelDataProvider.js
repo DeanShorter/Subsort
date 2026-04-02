@@ -111,9 +111,9 @@ export function ChannelDataProvider({ children, user }) {
   }, []);
 
   // ── Load all user data from Supabase ─────────────────────
-  const loadUserData = useCallback(async () => {
+  const loadUserData = useCallback(async (opts) => {
     if (!user) return;
-    setLoading(true);
+    if (!opts?.silent) setLoading(true);
 
     try {
       // Categories
@@ -224,7 +224,7 @@ export function ChannelDataProvider({ children, user }) {
     <ChannelDataContext.Provider value={{
       channels, categories, subcategories, categoryColours,
       dbCategories, dbSubcategories, loading,
-      reload: loadUserData,
+      reload: () => loadUserData({ silent: true }),
       chCats, chHasCat, chIsUncategorised, formatCount, findDeadChannels, toggleFavourite, getChannelState,
       feedVideos, feedVideosLoaded,
       setFeedVideos: (vids) => { setFeedVideos(vids); setFeedVideosLoaded(true); },
