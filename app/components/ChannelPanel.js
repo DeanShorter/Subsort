@@ -223,6 +223,9 @@ export default function ChannelPanel({ channelId, onClose }) {
         <div className="sp-panel-stat-row"><span className="sp-panel-stat-label">Status</span><span className={`s2-status ${state}`}>{state === 'dead' ? 'Dead' : state === 'inactive' ? 'Inactive' : 'Active'}</span></div>
       </div>
 
+      {/* ── Divider: between stats and activity ── */}
+      <div className="sp-panel-divider" />
+
       {/* Your Activity */}
       <div className="sp-panel-section">
         <div className="sp-panel-section-title">YOUR ACTIVITY</div>
@@ -331,9 +334,6 @@ export default function ChannelPanel({ channelId, onClose }) {
           </div>
         )}
       </div>
-
-      {/* ── Divider 3: after category/subcategory ── */}
-      <div className="sp-panel-divider" />
 
       {/* Notes */}
       {ch.notes && (
