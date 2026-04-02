@@ -46,7 +46,8 @@
       "Bash(grep -v \"$f.js:\")",
       "Bash(rm -rf public/dashboard)",
       "Bash(rm -f app/page.old.js app/page.module.old.css app/page.module.css)",
-      "Bash(rm -f app/components/DashboardPersonality.js app/components/HeroBg.js app/components/StepPreview.js app/components/SubscriptionCritic.js)"
+      "Bash(rm -f app/components/DashboardPersonality.js app/components/HeroBg.js app/components/StepPreview.js app/components/SubscriptionCritic.js)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

@@ -382,18 +382,16 @@ export default function AdminPage() {
       setAuthChecked(true);
       if (!admin) return;
 
-      // Fetch stats + events + API usage in parallel
-      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-      const [usersRes, channelsRes, eventsRes, apiUsageRes] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: false }),
-        supabase.from('channels').select('id', { count: 'exact', head: true }),
-        supabase.from('events').select('event, user_id'),
-        supabase.from('api_usage').select('endpoint, units, created_at').gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
-      ]);
+      // Fetch admin data via service-role API (bypasses RLS)
+      const adminRes = await fetch('/api/admin/stats', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!adminRes.ok) { console.error('Admin API failed:', adminRes.status); return; }
+      const adminData = await adminRes.json();
 
-      const users = usersRes.data || [];
+      const users = adminData.users || [];
       const proCount = users.filter(u => u.tier === 'pro').length;
-      const totalChannels = channelsRes.count || 0;
+      const totalChannels = adminData.totalChannels || 0;
 
       setStats({
         users: users.length,

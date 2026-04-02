@@ -18,6 +18,7 @@ export default function HomePage() {
           <a href="#features" className="lp-nav-link">Features</a>
           <a href="#critic" className="lp-nav-link">The Critic</a>
           <a href="#pricing" className="lp-nav-link">Pricing</a>
+          <Link href="/signin" className="lp-nav-link">Sign in</Link>
           <a href="#join" className="lp-nav-cta">Join the waitlist</a>
         </div>
       </nav>
