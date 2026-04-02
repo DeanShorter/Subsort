@@ -3,6 +3,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { supabase } from '../../lib/supabase';
+import { showToast } from '../components/Toast';
 import { autoCategoriseAll } from '../../lib/auto-categorise';
 import EditChannelModal from '../components/EditChannelModal';
 import ManageCategoriesModal from '../components/ManageCategoriesModal';
@@ -158,10 +159,40 @@ export default function Subscriptions2Page() {
     setSorting(true);
     setShowSortConfirm(false);
     try {
-      await autoCategoriseAll(channels, reload, dbCategories);
-    } catch (e) { console.error('Auto-sort failed:', e); }
+      const { assignments, assigned } = autoCategoriseAll(channels, chIsUncategorised);
+      if (!assigned) { setSorting(false); return; }
+
+      // Ensure all needed categories exist in DB
+      const neededCats = [...new Set(assignments.map(a => a.category))];
+      const existingNames = new Set(dbCategories.map(c => c.name));
+      const newCats = neededCats.filter(c => !existingNames.has(c));
+      if (newCats.length) {
+        await supabase.from('categories').insert(newCats.map((name, i) => ({
+          name, user_id: user.id, sort_order: dbCategories.length + i,
+        })));
+      }
+
+      // Re-fetch categories to get IDs for newly created ones
+      const { data: allCats } = await supabase.from('categories').select('*');
+      const catLookup = {};
+      (allCats || []).forEach(c => { catLookup[c.name] = c.id; });
+
+      // Insert channel_categories assignments
+      const inserts = assignments
+        .map(a => ({ channel_id: a.channel.id, category_id: catLookup[a.category], user_id: user.id }))
+        .filter(row => row.category_id);
+      if (inserts.length) {
+        // Batch in groups to avoid payload limits
+        for (let i = 0; i < inserts.length; i += 200) {
+          await supabase.from('channel_categories').insert(inserts.slice(i, i + 200));
+        }
+      }
+
+      await reload();
+      showToast(`Sorted ${assigned} channels`);
+    } catch (e) { console.error('Auto-sort failed:', e); showToast('Auto-sort failed'); }
     finally { setSorting(false); }
-  }, [user, channels, sorting, reload, dbCategories]);
+  }, [user, channels, sorting, reload, dbCategories, chIsUncategorised]);
 
   // ── Subcats for active category ────────────────────
   const activeSubs = activeCategory !== 'all' && activeCategory !== '__favs__' && activeCategory !== '__uncat__'
