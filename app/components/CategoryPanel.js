@@ -39,10 +39,15 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
     const dbCat = dbCategories.find(c => c.name === catName);
     if (!dbCat) { showToast('Category not found'); return; }
 
+    const name = newSubValue.trim();
     const { error } = await supabase.from('subcategories')
-      .insert({ name: newSubValue.trim(), category_id: dbCat.id, sort_order: 999, user_id: user.id });
+      .insert({ name, category_id: dbCat.id, sort_order: 999, user_id: user.id });
     if (error) { showToast('Failed to add subcategory'); console.error(error); }
-    else { showToast(`Added subcategory: ${newSubValue.trim()}`); await reload(); }
+    else {
+      showToast(`Added subcategory: ${name}`);
+      // Background reload — don't block UI
+      reload();
+    }
     setNewSubValue('');
     setAddingSubTo(null);
   }, [newSubValue, user, dbCategories, reload]);
@@ -55,7 +60,10 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
 
     const { error } = await supabase.from('categories').update({ name: editValue.trim() }).eq('id', dbCat.id);
     if (error) { showToast('Failed to rename'); console.error(error); }
-    else { showToast(`Renamed to: ${editValue.trim()}`); await reload(); }
+    else {
+      showToast(`Renamed to: ${editValue.trim()}`);
+      reload();
+    }
     setEditingCat(null);
     setEditValue('');
   }, [editValue, user, dbCategories, reload]);
@@ -67,14 +75,14 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
     if (!dbCat) return;
     if (!confirm(`Delete "${catName}"? All channels in this category will become uncategorised.`)) return;
 
-    // Remove channel_categories entries
     await supabase.from('channel_categories').delete().eq('category_id', dbCat.id);
-    // Remove subcategories
     await supabase.from('subcategories').delete().eq('category_id', dbCat.id);
-    // Remove category
     const { error } = await supabase.from('categories').delete().eq('id', dbCat.id);
     if (error) { showToast('Failed to delete'); console.error(error); }
-    else { showToast(`Deleted: ${catName}`); await reload(); }
+    else {
+      showToast(`Deleted: ${catName}`);
+      reload();
+    }
   }, [user, dbCategories, reload]);
 
   return (

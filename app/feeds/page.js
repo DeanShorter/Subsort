@@ -256,17 +256,11 @@ export default function Feeds2Page() {
               <svg viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" /></svg>
             </button>
           <div className="f2-cat-row" ref={catRowRef}>
-            <button className={`f2-cat-btn${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
-              <span className="hnp-cat-dot" style={{ background: 'var(--accent)' }} />
-              All
-              <span className="f2-cat-count">{typeFilteredVideos.length}</span>
+            <button className={`f2-cat-pill${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
+              All <span className="f2-cat-count">{typeFilteredVideos.length}</span>
             </button>
-            <button className={`f2-cat-btn${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
-              <svg viewBox="0 0 16 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12, color: '#EFD700' }}>
-                <path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" />
-              </svg>
-              Favourites
-              <span className="f2-cat-count">{typeFilteredVideos.filter(v => {
+            <button className={`f2-cat-pill${activeCategory === '__favs__' ? ' active' : ''}`} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
+              Favourites <span className="f2-cat-count">{typeFilteredVideos.filter(v => {
                 const ch = channelMap[v.channelId];
                 return ch && ch.favourited;
               }).length}</span>
@@ -279,10 +273,9 @@ export default function Feeds2Page() {
               return (
                 <button
                   key={cat}
-                  className={`f2-cat-btn${activeCategory === cat ? ' active' : ''}`}
+                  className={`f2-cat-pill${activeCategory === cat ? ' active' : ''}`}
                   onClick={() => { setActiveCategory(prev => prev === cat ? 'all' : cat); setActiveSubcategory(null); }}
                 >
-                  <span className="hnp-cat-dot" style={{ background: categoryColours[cat] || 'var(--accent)' }} />
                   {cat}
                   <span className="f2-cat-count">{count}</span>
                 </button>

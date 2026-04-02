@@ -4172,7 +4172,7 @@ input[type=range]::-webkit-slider-thumb{
 /* Content */
 .s2-content{padding:0;flex:1;overflow-y:auto}
 /* Control row */
-.s2-ctrl-row{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;border-bottom:1px solid #eee;flex-shrink:0;background:var(--bg-card)}
+.s2-ctrl-row{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;border-bottom:1px solid #eee;background:var(--bg-card);position:sticky;top:0;z-index:3}
 .s2-ctrl-left{display:flex;align-items:center;gap:6px;flex:1;flex-wrap:wrap}
 .s2-ctrl-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .s2-ctrl-icon{width:30px;height:30px;border-radius:50%;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
@@ -4190,7 +4190,7 @@ input[type=range]::-webkit-slider-thumb{
 /* Table */
 .s2-tbl{width:100%;border-collapse:collapse}
 .s2-tbl th{position:relative}
-.s2-tbl th{font-size:12px;font-weight:500;color:var(--text-muted);letter-spacing:.3px;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-subtle);position:sticky;top:0;background:var(--bg-card);z-index:1}
+.s2-tbl th{font-size:12px;font-weight:500;color:var(--text-muted);letter-spacing:.3px;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-subtle);position:sticky;top:42px;background:var(--bg-card);z-index:1}
 .s2-tbl th:first-child{padding-left:40px}
 .s2-tbl th:last-child{padding-right:40px}
 .s2-tbl td{padding:11px 16px;font-size:14px;vertical-align:middle;border-bottom:1px solid #f5f5f5}
@@ -4325,6 +4325,19 @@ input[type=range]::-webkit-slider-thumb{
 .sp-panel-tags{display:flex;gap:6px;flex-wrap:wrap}
 .sp-panel-bar{height:6px;border-radius:3px;background:var(--bg-primary);overflow:hidden;margin-top:6px}
 .sp-panel-bar-fill{height:100%;border-radius:3px}
+.sp-panel-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sp-panel-edit-btn{font-size:11px;font-weight:500;color:var(--text-muted);cursor:pointer;background:none;border:none;font-family:var(--font-body);padding:2px 8px;border-radius:6px;transition:all .15s}
+.sp-panel-edit-btn:hover{background:var(--bg-primary);color:var(--text-secondary)}
+.sp-panel-save-btn{font-size:11px;font-weight:500;color:var(--accent);cursor:pointer;background:var(--accent-soft);border:none;font-family:var(--font-body);padding:2px 8px;border-radius:6px;transition:all .15s}
+.sp-panel-save-btn:hover{background:var(--accent);color:#fff}
+.sp-panel-cat-list{display:flex;flex-direction:column;gap:2px}
+.sp-panel-cat-option{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;font-size:12px;cursor:pointer;transition:background .15s}
+.sp-panel-cat-option:hover{background:var(--bg-primary)}
+.sp-panel-cat-option.on{font-weight:500}
+.sp-panel-select{width:100%;padding:6px 10px;border-radius:8px;border:1.5px solid var(--border-subtle);font-size:12px;font-family:var(--font-body);outline:none;background:var(--bg-primary)}
+.sp-panel-select:focus{border-color:var(--accent)}
+.sp-panel-input{width:100%;padding:6px 10px;border-radius:8px;border:1.5px solid var(--border-subtle);font-size:12px;font-family:var(--font-body);outline:none;background:var(--bg-primary)}
+.sp-panel-input:focus{border-color:var(--accent)}
 .sp-panel-tag{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500}
 .sp-panel-critic{padding:20px 24px;background:var(--orange-soft);margin:16px;border-radius:var(--radius-md)}
 .sp-panel-critic-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
@@ -4652,6 +4665,11 @@ input[type=range]::-webkit-slider-thumb{
   border:none;cursor:pointer;
   transition:all .15s;white-space:nowrap;flex-shrink:0;
 }
+/* Feed category pills */
+.f2-cat-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:500;font-family:var(--font-body);color:var(--text-secondary);background:var(--bg-primary);border:none;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.f2-cat-pill:hover{background:var(--bg-surface-raised);color:var(--text-primary)}
+.f2-cat-pill.active{background:var(--accent);color:#fff}
+.f2-cat-pill.active .f2-cat-count{color:#fff;opacity:.6}
 .f2-cat-btn .f2-cat-count{font-size:12px;color:var(--text-dim);margin-left:2px;font-variant-numeric:tabular-nums}
 .f2-cat-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
 .f2-cat-btn:hover .f2-cat-count{color:var(--text-secondary)}

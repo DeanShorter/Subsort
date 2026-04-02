@@ -1,9 +1,17 @@
 'use client';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useChannelData } from './ChannelDataContext';
+import { useAuth } from './AuthContext';
+import { supabase } from '../../lib/supabase';
+import { showToast } from './Toast';
 
 export default function ChannelPanel({ channelId, onClose }) {
-  const { channels, categories, subcategories, categoryColours, chCats, formatCount, getChannelState, feedVideos } = useChannelData();
+  const { channels, categories, subcategories, categoryColours, chCats, formatCount, getChannelState, feedVideos, dbCategories, dbSubcategories, reload } = useChannelData();
+  const { user } = useAuth();
+  const [editingCat, setEditingCat] = useState(false);
+  const [editingSub, setEditingSub] = useState(false);
+  const [selectedCats, setSelectedCats] = useState([]);
+  const [selectedSub, setSelectedSub] = useState('');
 
   const ch = channels.find(c => c.id === channelId);
 
@@ -36,6 +44,56 @@ export default function ChannelPanel({ channelId, onClose }) {
       return { watched: match.count, lastWatched: null, rate, pct };
     } catch { return null; }
   }, [ch]);
+
+  // Init edit state when channel changes
+  useEffect(() => {
+    if (!ch) return;
+    setSelectedCats([...(ch.categories || [])]);
+    setSelectedSub(ch.subcategory || '');
+    setEditingCat(false);
+    setEditingSub(false);
+  }, [channelId, ch]);
+
+  // Available subcategories for selected categories
+  const availableSubs = useMemo(() => {
+    const all = [];
+    for (const cat of selectedCats) {
+      for (const sub of (subcategories[cat] || [])) {
+        if (!all.includes(sub)) all.push(sub);
+      }
+    }
+    return all;
+  }, [selectedCats, subcategories]);
+
+  // Save categories
+  const saveCats = useCallback(async () => {
+    if (!ch || !user) return;
+    await supabase.from('channel_categories').delete().eq('channel_id', ch.id);
+    if (selectedCats.length && dbCategories.length) {
+      const inserts = selectedCats.map(catName => {
+        const cat = dbCategories.find(c => c.name === catName);
+        return cat ? { channel_id: ch.id, category_id: cat.id } : null;
+      }).filter(Boolean);
+      if (inserts.length) await supabase.from('channel_categories').insert(inserts);
+    }
+    showToast('Categories updated');
+    setEditingCat(false);
+    await reload();
+  }, [ch, user, selectedCats, dbCategories, reload]);
+
+  // Save subcategory
+  const saveSub = useCallback(async () => {
+    if (!ch || !user) return;
+    let subId = null;
+    if (selectedSub) {
+      const subRow = dbSubcategories.find(s => s.name === selectedSub);
+      subId = subRow?.id || null;
+    }
+    await supabase.from('channels').update({ subcategory_id: subId }).eq('id', ch.id);
+    showToast('Subcategory updated');
+    setEditingSub(false);
+    await reload();
+  }, [ch, user, selectedSub, dbSubcategories, reload]);
 
   if (!ch) return null;
 
@@ -106,39 +164,73 @@ export default function ChannelPanel({ channelId, onClose }) {
 
       {/* Category */}
       <div className="sp-panel-section">
-        <div className="sp-panel-section-title">CATEGORY</div>
-        <div className="sp-panel-tags">
-          {cats.length > 0 ? cats.map(c => (
-            <span key={c} className="sp-panel-tag" style={{ background: `${categoryColours[c] || 'var(--accent)'}15`, color: categoryColours[c] || 'var(--accent)' }}>{c}</span>
-          )) : (
-            <span className="sp-panel-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>Uncategorised</span>
+        <div className="sp-panel-section-header">
+          <span className="sp-panel-section-title">CATEGORY</span>
+          {!editingCat ? (
+            <button className="sp-panel-edit-btn" onClick={() => setEditingCat(true)}>Edit</button>
+          ) : (
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button className="sp-panel-save-btn" onClick={saveCats}>Save</button>
+              <button className="sp-panel-edit-btn" onClick={() => { setEditingCat(false); setSelectedCats([...(ch.categories || [])]); }}>Cancel</button>
+            </div>
           )}
         </div>
+        {editingCat ? (
+          <div className="sp-panel-cat-list">
+            {categories.map(c => (
+              <label key={c} className={`sp-panel-cat-option${selectedCats.includes(c) ? ' on' : ''}`}
+                onClick={() => setSelectedCats(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])}>
+                <div className={`cp-check${selectedCats.includes(c) ? ' on' : ''}`}>
+                  {selectedCats.includes(c) && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 5.5l2 2 3.5-3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                </div>
+                {c}
+              </label>
+            ))}
+          </div>
+        ) : (
+          <div className="sp-panel-tags">
+            {cats.length > 0 ? cats.map(c => (
+              <span key={c} className="sp-panel-tag" style={{ background: `${categoryColours[c] || 'var(--accent)'}15`, color: categoryColours[c] || 'var(--accent)' }}>{c}</span>
+            )) : (
+              <span className="sp-panel-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>Uncategorised</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Subcategory */}
       <div className="sp-panel-section">
-        <div className="sp-panel-section-title">SUBCATEGORY</div>
-        <div className="sp-panel-tags">
-          {ch.subcategory ? (
-            <span className="sp-panel-tag" style={{ background: `${col}15`, color: col }}>{ch.subcategory}</span>
+        <div className="sp-panel-section-header">
+          <span className="sp-panel-section-title">SUBCATEGORY</span>
+          {!editingSub ? (
+            <button className="sp-panel-edit-btn" onClick={() => setEditingSub(true)}>{ch.subcategory ? 'Edit' : 'Add'}</button>
           ) : (
-            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>None assigned</span>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button className="sp-panel-save-btn" onClick={saveSub}>Save</button>
+              <button className="sp-panel-edit-btn" onClick={() => { setEditingSub(false); setSelectedSub(ch.subcategory || ''); }}>Cancel</button>
+            </div>
           )}
         </div>
-      </div>
-
-      {/* Keywords */}
-      {ch.keywords && ch.keywords.split(',').filter(k => k.trim()).length > 0 && (
-        <div className="sp-panel-section">
-          <div className="sp-panel-section-title">KEYWORDS</div>
-          <div className="sp-panel-tags">
-            {ch.keywords.split(',').map(k => k.trim()).filter(Boolean).slice(0, 8).map(k => (
-              <span key={k} className="sp-panel-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', fontSize: 11 }}>{k}</span>
-            ))}
+        {editingSub ? (
+          <div>
+            {availableSubs.length > 0 && (
+              <select className="sp-panel-select" value={selectedSub} onChange={e => setSelectedSub(e.target.value)}>
+                <option value="">None</option>
+                {availableSubs.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            )}
+            <input className="sp-panel-input" type="text" placeholder={availableSubs.length > 0 ? 'Or type new...' : 'Type subcategory...'} onKeyDown={e => { if (e.key === 'Enter' && e.target.value.trim()) { setSelectedSub(e.target.value.trim()); e.target.value = ''; } }} style={{ marginTop: availableSubs.length > 0 ? 6 : 0 }} />
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="sp-panel-tags">
+            {ch.subcategory ? (
+              <span className="sp-panel-tag" style={{ background: `${col}15`, color: col }}>{ch.subcategory}</span>
+            ) : (
+              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>None assigned</span>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Recent videos */}
       {(() => {
