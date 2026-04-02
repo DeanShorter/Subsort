@@ -1,11 +1,19 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useChannelData } from './ChannelDataContext';
+import { useAuth } from './AuthContext';
+import { supabase } from '../../lib/supabase';
+import { showToast } from './Toast';
 
 export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
-  const { categories, subcategories, categoryColours, channels, chCats, chHasCat } = useChannelData();
+  const { categories, subcategories, categoryColours, channels, chCats, chHasCat, dbCategories, dbSubcategories, reload } = useChannelData();
+  const { user } = useAuth();
   const [searchQ, setSearchQ] = useState('');
   const [expandedCats, setExpandedCats] = useState(new Set());
+  const [editingCat, setEditingCat] = useState(null); // category name being renamed
+  const [editValue, setEditValue] = useState('');
+  const [addingSubTo, setAddingSubTo] = useState(null); // category name getting new subcat
+  const [newSubValue, setNewSubValue] = useState('');
 
   const toggleExpand = (cat) => {
     setExpandedCats(prev => {
@@ -24,6 +32,50 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
   const getCatCount = (cat) => channels.filter(c => chHasCat(c, cat)).length;
   const getSubCount = (cat, sub) => channels.filter(c => chHasCat(c, cat) && c.subcategory === sub).length;
   const favCount = channels.filter(c => c.favourited).length;
+
+  // ── Add subcategory ──────────────────────────────
+  const handleAddSub = useCallback(async (catName) => {
+    if (!newSubValue.trim() || !user) return;
+    const dbCat = dbCategories.find(c => c.name === catName);
+    if (!dbCat) { showToast('Category not found'); return; }
+
+    const { error } = await supabase.from('subcategories')
+      .insert({ name: newSubValue.trim(), category_id: dbCat.id, sort_order: 999, user_id: user.id });
+    if (error) { showToast('Failed to add subcategory'); console.error(error); }
+    else { showToast(`Added subcategory: ${newSubValue.trim()}`); await reload(); }
+    setNewSubValue('');
+    setAddingSubTo(null);
+  }, [newSubValue, user, dbCategories, reload]);
+
+  // ── Rename category ──────────────────────────────
+  const handleRename = useCallback(async (oldName) => {
+    if (!editValue.trim() || !user) return;
+    const dbCat = dbCategories.find(c => c.name === oldName);
+    if (!dbCat) return;
+
+    const { error } = await supabase.from('categories').update({ name: editValue.trim() }).eq('id', dbCat.id);
+    if (error) { showToast('Failed to rename'); console.error(error); }
+    else { showToast(`Renamed to: ${editValue.trim()}`); await reload(); }
+    setEditingCat(null);
+    setEditValue('');
+  }, [editValue, user, dbCategories, reload]);
+
+  // ── Delete category ──────────────────────────────
+  const handleDelete = useCallback(async (catName) => {
+    if (!user) return;
+    const dbCat = dbCategories.find(c => c.name === catName);
+    if (!dbCat) return;
+    if (!confirm(`Delete "${catName}"? All channels in this category will become uncategorised.`)) return;
+
+    // Remove channel_categories entries
+    await supabase.from('channel_categories').delete().eq('category_id', dbCat.id);
+    // Remove subcategories
+    await supabase.from('subcategories').delete().eq('category_id', dbCat.id);
+    // Remove category
+    const { error } = await supabase.from('categories').delete().eq('id', dbCat.id);
+    if (error) { showToast('Failed to delete'); console.error(error); }
+    else { showToast(`Deleted: ${catName}`); await reload(); }
+  }, [user, dbCategories, reload]);
 
   return (
     <div className="cp-panel">
@@ -67,49 +119,100 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
         {filteredCats.map(cat => {
           const isOn = selectedCats.has(cat);
           const subs = subcategories[cat] || [];
-          const isExpanded = expandedCats.has(cat);
+          const isExpanded = expandedCats.has(cat) || addingSubTo === cat;
           const count = getCatCount(cat);
+          const isEditing = editingCat === cat;
 
           return (
             <div key={cat}>
               <div className={`cp-item${isOn ? ' on' : ''}`}>
-                <div className="cp-item-left" onClick={() => onToggleCat(cat)}>
+                <div className="cp-item-left" onClick={() => !isEditing && onToggleCat(cat)}>
                   <div className={`cp-check${isOn ? ' on' : ''}`}>
                     {isOn && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 5.5l2 2 3.5-3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                   </div>
-                  <span className="cp-name">{cat}</span>
+                  {isEditing ? (
+                    <input
+                      className="cp-rename-input"
+                      value={editValue}
+                      onChange={e => setEditValue(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleRename(cat); if (e.key === 'Escape') setEditingCat(null); }}
+                      autoFocus
+                      onClick={e => e.stopPropagation()}
+                    />
+                  ) : (
+                    <span className="cp-name">{cat}</span>
+                  )}
                 </div>
                 <div className="cp-item-right">
-                  <div className="cp-item-actions">
-                    <button className="cp-action-btn" title="Add subcategory" onClick={e => { e.stopPropagation(); toggleExpand(cat); }}>
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                    </button>
-                    <button className="cp-action-btn" title="Edit" onClick={e => e.stopPropagation()}>
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M7 2.5l2.5 2.5M3 7l-1 3 3-1 5.5-5.5-2.5-2.5z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </button>
-                    <button className="cp-action-btn cp-action-del" title="Delete" onClick={e => e.stopPropagation()}>
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4.5 3V2h3v1M3 3v7a1 1 0 001 1h4a1 1 0 001-1V3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </button>
-                  </div>
-                  {subs.length > 0 && (
+                  {isEditing ? (
+                    <>
+                      <button className="cp-action-btn cp-action-confirm" onClick={e => { e.stopPropagation(); handleRename(cat); }} title="Save">
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="#00A651" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      </button>
+                      <button className="cp-action-btn" onClick={e => { e.stopPropagation(); setEditingCat(null); }} title="Cancel">
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="var(--text-muted)" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="cp-item-actions">
+                      <button className="cp-action-btn" title="Add subcategory" onClick={e => { e.stopPropagation(); setAddingSubTo(cat); setExpandedCats(prev => new Set(prev).add(cat)); }}>
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                      </button>
+                      <button className="cp-action-btn" title="Edit" onClick={e => { e.stopPropagation(); setEditingCat(cat); setEditValue(cat); }}>
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M7 2.5l2.5 2.5M3 7l-1 3 3-1 5.5-5.5-2.5-2.5z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      </button>
+                      <button className="cp-action-btn cp-action-del" title="Delete" onClick={e => { e.stopPropagation(); handleDelete(cat); }}>
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4.5 3V2h3v1M3 3v7a1 1 0 001 1h4a1 1 0 001-1V3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      </button>
+                    </div>
+                  )}
+                  {!isEditing && subs.length > 0 && (
                     <button className={`cp-chevron${isExpanded ? ' open' : ''}`} onClick={e => { e.stopPropagation(); toggleExpand(cat); }}>
                       <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="var(--text-muted)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </button>
                   )}
-                  <span className="cp-count">{count}</span>
+                  {!isEditing && <span className="cp-count">{count}</span>}
                 </div>
               </div>
 
               {/* Subcategories */}
-              {isExpanded && subs.map(sub => (
-                <div key={sub} className="cp-sub-item">
-                  <div className="cp-sub-left">
-                    <div className="cp-sub-dash" />
-                    <span className="cp-sub-name">{sub}</span>
-                  </div>
-                  <span className="cp-sub-count">{getSubCount(cat, sub)}</span>
-                </div>
-              ))}
+              {isExpanded && (
+                <>
+                  {subs.map(sub => (
+                    <div key={sub} className="cp-sub-item">
+                      <div className="cp-sub-left">
+                        <div className="cp-sub-dash" />
+                        <span className="cp-sub-name">{sub}</span>
+                      </div>
+                      <span className="cp-sub-count">{getSubCount(cat, sub)}</span>
+                    </div>
+                  ))}
+                  {/* Add new subcategory input */}
+                  {addingSubTo === cat && (
+                    <div className="cp-sub-item">
+                      <div className="cp-sub-left">
+                        <div className="cp-sub-dash" />
+                        <input
+                          className="cp-sub-input"
+                          placeholder="Subcategory name..."
+                          value={newSubValue}
+                          onChange={e => setNewSubValue(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') handleAddSub(cat); if (e.key === 'Escape') { setAddingSubTo(null); setNewSubValue(''); } }}
+                          autoFocus
+                        />
+                      </div>
+                      <div style={{ display: 'flex', gap: 2 }}>
+                        <button className="cp-action-btn cp-action-confirm" onClick={() => handleAddSub(cat)} title="Add">
+                          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="#00A651" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </button>
+                        <button className="cp-action-btn" onClick={() => { setAddingSubTo(null); setNewSubValue(''); }} title="Cancel">
+                          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="var(--text-muted)" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           );
         })}
