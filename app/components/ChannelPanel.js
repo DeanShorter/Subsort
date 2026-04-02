@@ -12,6 +12,7 @@ export default function ChannelPanel({ channelId, onClose }) {
   const [editingSub, setEditingSub] = useState(false);
   const [selectedCats, setSelectedCats] = useState([]);
   const [selectedSub, setSelectedSub] = useState('');
+  const [showRecent, setShowRecent] = useState(false);
 
   const ch = channels.find(c => c.id === channelId);
 
@@ -22,20 +23,13 @@ export default function ChannelPanel({ channelId, onClose }) {
       const wh = JSON.parse(localStorage.getItem('subsort_watchhistory'));
       if (!wh?.topChannels) return null;
       const ids = new Set([
-        ch.channelId,
-        ch.id,
-        ch.customUrl?.replace(/^@/, ''),
-        ch.name?.toLowerCase(),
+        ch.channelId, ch.id, ch.customUrl?.replace(/^@/, ''), ch.name?.toLowerCase(),
       ].filter(Boolean));
 
       const match = wh.topChannels.find(tc => {
         const tcUrlId = tc.channelUrl?.replace(/\/$/, '').split('/').pop();
         const tcHandle = tc.channelUrl?.match(/@([^/]+)/)?.[1];
-        return (
-          (tcUrlId && ids.has(tcUrlId)) ||
-          (tcHandle && ids.has(tcHandle.toLowerCase())) ||
-          (tc.channelName && ids.has(tc.channelName.toLowerCase()))
-        );
+        return (tcUrlId && ids.has(tcUrlId)) || (tcHandle && ids.has(tcHandle.toLowerCase())) || (tc.channelName && ids.has(tc.channelName.toLowerCase()));
       });
       if (!match) return { watched: 0, lastWatched: null, rate: 'none' };
       const pct = ch.videoCount ? Math.round((match.count / ch.videoCount) * 100) : 0;
@@ -68,6 +62,11 @@ export default function ChannelPanel({ channelId, onClose }) {
     return { lastUpload, frequency };
   }, [ch, feedVideos]);
 
+  const recentVids = useMemo(() => {
+    if (!ch) return [];
+    return feedVideos.filter(v => v.channelId === ch.channelId).slice(0, 5);
+  }, [ch, feedVideos]);
+
   // Init edit state when channel changes
   useEffect(() => {
     if (!ch) return;
@@ -75,6 +74,7 @@ export default function ChannelPanel({ channelId, onClose }) {
     setSelectedSub(ch.subcategory || '');
     setEditingCat(false);
     setEditingSub(false);
+    setShowRecent(false);
   }, [channelId, ch]);
 
   // Available subcategories for selected categories
@@ -162,13 +162,10 @@ export default function ChannelPanel({ channelId, onClose }) {
         </div>
       </div>
 
-      {/* Favourite + YouTube buttons */}
+      {/* Favourite + Recent uploads + YouTube buttons */}
       <div className="sp-panel-quick-actions">
-        <button
-          className={`sp-panel-fav-btn${ch.favourited ? ' on' : ''}`}
-          onClick={() => toggleFavourite(ch.id)}
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <button className={`sp-panel-qa-btn${ch.favourited ? ' sp-panel-qa-fav-on' : ''}`} onClick={() => toggleFavourite(ch.id)}>
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
             <path d="M7 1.5l1.7 3.5 3.8.5-2.75 2.7.65 3.8L7 10.2 3.6 12l.65-3.8L1.5 5.5l3.8-.5z"
               fill={ch.favourited ? 'var(--orange)' : 'none'}
               stroke={ch.favourited ? 'var(--orange)' : 'currentColor'}
@@ -176,14 +173,42 @@ export default function ChannelPanel({ channelId, onClose }) {
           </svg>
           {ch.favourited ? 'Favourited' : 'Favourite'}
         </button>
-        <a className="sp-panel-yt-btn" href={ytUrl} target="_blank" rel="noopener noreferrer">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <rect x="1" y="2.5" width="12" height="9" rx="2" stroke="currentColor" strokeWidth="1.2" />
-            <path d="M5.5 5v4l4-2z" fill="currentColor" />
+        {recentVids.length > 0 && (
+          <button className="sp-panel-qa-btn" onClick={() => setShowRecent(!showRecent)}>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <rect x="1.5" y="2" width="11" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
+              <path d="M5 5.5v3l3.5-1.5z" fill="currentColor" />
+            </svg>
+            Recent uploads
+          </button>
+        )}
+        <a className="sp-panel-qa-btn" href={ytUrl} target="_blank" rel="noopener noreferrer">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1L13 7L7 13M13 7H1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Open on YouTube
+          YouTube
         </a>
       </div>
+
+      {/* Recent uploads expandable */}
+      {showRecent && (
+        <div className="sp-panel-recent">
+          {recentVids.map(v => (
+            <div key={v.id} className="sp-panel-recent-item">
+              <div className="sp-panel-recent-thumb">
+                {v.thumbnail && <img src={v.thumbnail} alt="" />}
+              </div>
+              <div className="sp-panel-recent-info">
+                <div className="sp-panel-recent-title">{v.title}</div>
+                <div className="sp-panel-recent-date">{v.publishedAt ? new Date(v.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Divider 1: after buttons ── */}
+      <div className="sp-panel-divider" />
 
       {/* Stats */}
       <div className="sp-panel-section">
@@ -227,8 +252,11 @@ export default function ChannelPanel({ channelId, onClose }) {
         </div>
       </div>
 
-      {/* Category */}
-      <div className="sp-panel-section">
+      {/* ── Divider 2: after Your Activity ── */}
+      <div className="sp-panel-divider" />
+
+      {/* Category & Subcategory — single section */}
+      <div className="sp-panel-section sp-panel-section-no-border">
         <div className="sp-panel-section-header">
           <span className="sp-panel-section-title">CATEGORY</span>
           {!editingCat ? (
@@ -261,11 +289,9 @@ export default function ChannelPanel({ channelId, onClose }) {
             )}
           </div>
         )}
-      </div>
 
-      {/* Subcategory */}
-      <div className="sp-panel-section">
-        <div className="sp-panel-section-header">
+        {/* Subcategory — within the same section */}
+        <div className="sp-panel-section-header" style={{ marginTop: 16 }}>
           <span className="sp-panel-section-title">SUBCATEGORY</span>
           {availableSubs.length > 0 && (
             !editingSub ? (
@@ -306,31 +332,12 @@ export default function ChannelPanel({ channelId, onClose }) {
         )}
       </div>
 
-      {/* Recent videos */}
-      {(() => {
-        const recentVids = feedVideos.filter(v => v.channelId === ch.channelId).slice(0, 3);
-        if (!recentVids.length) return null;
-        return (
-          <div className="sp-panel-section">
-            <div className="sp-panel-section-title">RECENT UPLOADS</div>
-            {recentVids.map(v => (
-              <div key={v.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
-                <div style={{ width: 60, height: 34, borderRadius: 4, overflow: 'hidden', flexShrink: 0, background: 'var(--bg-primary)' }}>
-                  {v.thumbnail && <img src={v.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.title}</div>
-                  <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{v.publishedAt ? new Date(v.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-      })()}
+      {/* ── Divider 3: after category/subcategory ── */}
+      <div className="sp-panel-divider" />
 
       {/* Notes */}
       {ch.notes && (
-        <div className="sp-panel-section">
+        <div className="sp-panel-section sp-panel-section-no-border">
           <div className="sp-panel-section-title">NOTES</div>
           <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{ch.notes}</div>
         </div>
