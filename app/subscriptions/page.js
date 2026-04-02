@@ -4,7 +4,7 @@ import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { supabase } from '../../lib/supabase';
 import { showToast } from '../components/Toast';
-import { autoCategoriseAll } from '../../lib/auto-categorise';
+import { autoCategoriseAll, persistAutoSort } from '../../lib/auto-categorise';
 import EditChannelModal from '../components/EditChannelModal';
 import ManageCategoriesModal from '../components/ManageCategoriesModal';
 import BulkEditModal from '../components/BulkEditModal';
@@ -162,32 +162,7 @@ export default function Subscriptions2Page() {
       const { assignments, assigned } = autoCategoriseAll(channels, chIsUncategorised);
       if (!assigned) { setSorting(false); return; }
 
-      // Ensure all needed categories exist in DB
-      const neededCats = [...new Set(assignments.map(a => a.category))];
-      const existingNames = new Set(dbCategories.map(c => c.name));
-      const newCats = neededCats.filter(c => !existingNames.has(c));
-      if (newCats.length) {
-        await supabase.from('categories').insert(newCats.map((name, i) => ({
-          name, user_id: user.id, sort_order: dbCategories.length + i,
-        })));
-      }
-
-      // Re-fetch categories to get IDs for newly created ones
-      const { data: allCats } = await supabase.from('categories').select('*');
-      const catLookup = {};
-      (allCats || []).forEach(c => { catLookup[c.name] = c.id; });
-
-      // Insert channel_categories assignments
-      const inserts = assignments
-        .map(a => ({ channel_id: a.channel.id, category_id: catLookup[a.category], user_id: user.id }))
-        .filter(row => row.category_id);
-      if (inserts.length) {
-        // Batch in groups to avoid payload limits
-        for (let i = 0; i < inserts.length; i += 200) {
-          await supabase.from('channel_categories').insert(inserts.slice(i, i + 200));
-        }
-      }
-
+      await persistAutoSort(supabase, user, assignments, dbCategories);
       await reload();
       showToast(`Sorted ${assigned} channels`);
     } catch (e) { console.error('Auto-sort failed:', e); showToast('Auto-sort failed'); }
@@ -205,8 +180,9 @@ export default function Subscriptions2Page() {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (showSearch && searchWrapRef.current && !searchWrapRef.current.contains(e.target)) {
-        setShowSearch(false);
-        setSearch('');
+        if (!search) {
+          setShowSearch(false);
+        }
       }
       if (showColumnsMenu && columnsWrapRef.current && !columnsWrapRef.current.contains(e.target)) {
         setShowColumnsMenu(false);
@@ -214,7 +190,7 @@ export default function Subscriptions2Page() {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showSearch, showColumnsMenu]);
+  }, [showSearch, showColumnsMenu, search]);
 
   // ── Keyboard navigation ───────────────────────────
   useEffect(() => {
@@ -360,10 +336,19 @@ export default function Subscriptions2Page() {
           </div>
           <div className="s2-ctrl-right">
             <div ref={searchWrapRef} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <button className="s2-ctrl-icon" onClick={() => { setShowSearch(s => !s); if (showSearch) setSearch(''); }}>
+              <button className="s2-ctrl-icon" onClick={() => { if (showSearch && !search) { setShowSearch(false); } else { setShowSearch(true); } }}>
                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#999" strokeWidth="1.3" /><path d="M10.5 10.5l3 3" stroke="#999" strokeWidth="1.3" strokeLinecap="round" /></svg>
               </button>
-              {showSearch && <input className="s2-search-pill" type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} autoFocus style={{ width: 140 }} />}
+              {showSearch && (
+                <>
+                  <input className="s2-search-pill" type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} autoFocus style={{ width: 140 }} />
+                  {search && (
+                    <button className="s2-ctrl-icon" onClick={() => setSearch('')} style={{ marginLeft: -4 }}>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="#999" strokeWidth="1.3" strokeLinecap="round" /></svg>
+                    </button>
+                  )}
+                </>
+              )}
             </div>
             <button className="s2-sort-pill" onClick={() => setFilterStatus(filterStatus === 'all' ? 'active' : filterStatus === 'active' ? 'inactive' : filterStatus === 'inactive' ? 'dead' : 'all')}>
               Status: {filterStatus === 'all' ? 'All' : filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)}

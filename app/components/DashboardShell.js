@@ -7,6 +7,7 @@ import { useAuth } from './AuthContext';
 import { ChannelDataProvider } from './ChannelDataProvider';
 import DashboardSidebar from './DashboardSidebar';
 import SyncModal from './SyncModal';
+import OnboardingFlow from './OnboardingFlow';
 import Toast from './Toast';
 
 const DASHBOARD_ROUTES = [
@@ -32,6 +33,13 @@ function DashboardInner({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [syncModalVisible, setSyncModalVisible] = useState(false);
   const [syncState, setSyncState] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    // Check if there's a pending onboarding step (returning from OAuth)
+    if (localStorage.getItem('subsort_onboarding_step')) return true;
+    // Check if onboarding was already completed
+    return !localStorage.getItem('subsort_onboarding_done');
+  });
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
@@ -56,8 +64,12 @@ function DashboardInner({ children }) {
   return (
     <ChannelDataProvider user={user}>
       <div className="app-shell">
+        <OnboardingFlow
+          visible={showOnboarding && !!user}
+          onComplete={() => setShowOnboarding(false)}
+        />
         <SyncModal
-          visible={syncModalVisible}
+          visible={syncModalVisible && !showOnboarding}
           onClose={() => setSyncModalVisible(false)}
           userName={userName}
           syncState={syncState}
@@ -91,6 +103,7 @@ function DashboardInner({ children }) {
           <DashboardSidebar
             mobileOpen={mobileOpen}
             onMobileClose={closeMobile}
+            suppressAutoSync={showOnboarding}
           />
         )}
         <div className="app-content" id="appContent">

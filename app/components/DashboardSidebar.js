@@ -65,7 +65,7 @@ function NavItem({ href, label, svg, dot, isActive }) {
   );
 }
 
-export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) {
+export default function DashboardSidebar({ mobileOpen = false, onMobileClose, suppressAutoSync = false }) {
   const pathname = usePathname();
   const { user, accessToken, userTier, signIn, signOut } = useAuth();
   const { channels, categories, subcategories, categoryColours, chHasCat, reload } = useChannelData();
@@ -86,7 +86,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose }) 
 
   // Auto-sync on login: full modal if 24h+ since last sync, silent RSS otherwise
   useEffect(() => {
-    if (!user || autoSyncDone.current || syncing) return;
+    if (!user || autoSyncDone.current || syncing || suppressAutoSync) return;
     autoSyncDone.current = true;
 
     const FULL_SYNC_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
