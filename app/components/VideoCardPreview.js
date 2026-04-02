@@ -2,7 +2,7 @@
 import { useRef, useState, useCallback } from 'react';
 import { trackEvent } from '../../lib/track';
 
-export default function VideoCardPreview({ video, categoryColour, isNew, onAddToSplit, splitFull }) {
+export default function VideoCardPreview({ video, categoryColour, onAddToSplit, splitFull }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [loaded, setLoaded] = useState(false); // once loaded, never reset
@@ -76,7 +76,6 @@ export default function VideoCardPreview({ video, categoryColour, isNew, onAddTo
           </div>
         )}
         {video.type === 'short' && <span className="feed-shorts-badge" style={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}>SHORT</span>}
-        {isNew && !loaded && <span className="vc-new">New</span>}
         <button className="vc-unmute" onClick={toggleMute}>
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 2L4 6H1v4h3l4 4V2z" />

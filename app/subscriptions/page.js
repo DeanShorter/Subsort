@@ -37,6 +37,8 @@ export default function Subscriptions2Page() {
   const [showManageCats, setShowManageCats] = useState(false);
   const [showBulkEdit, setShowBulkEdit] = useState(false);
   const catTabsRef = useRef(null);
+  const searchWrapRef = useRef(null);
+  const columnsWrapRef = useRef(null);
   useDragScroll(catTabsRef);
   const [hiddenCols, setHiddenCols] = useState(new Set());
   const [showColumnsMenu, setShowColumnsMenu] = useState(false);
@@ -167,6 +169,21 @@ export default function Subscriptions2Page() {
 
   // ── Date formatter ─────────────────────────────────
   const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : '—';
+
+  // ── Click outside to close search & columns ────────
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (showSearch && searchWrapRef.current && !searchWrapRef.current.contains(e.target)) {
+        setShowSearch(false);
+        setSearch('');
+      }
+      if (showColumnsMenu && columnsWrapRef.current && !columnsWrapRef.current.contains(e.target)) {
+        setShowColumnsMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showSearch, showColumnsMenu]);
 
   // ── Keyboard navigation ───────────────────────────
   useEffect(() => {
@@ -310,10 +327,12 @@ export default function Subscriptions2Page() {
             )}
           </div>
           <div className="s2-ctrl-right">
-            <button className="s2-ctrl-icon" onClick={() => { setShowSearch(s => !s); if (showSearch) setSearch(''); }}>
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#999" strokeWidth="1.3" /><path d="M10.5 10.5l3 3" stroke="#999" strokeWidth="1.3" strokeLinecap="round" /></svg>
-            </button>
-            {showSearch && <input className="s2-search-pill" type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} autoFocus style={{ width: 140 }} />}
+            <div ref={searchWrapRef} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button className="s2-ctrl-icon" onClick={() => { setShowSearch(s => !s); if (showSearch) setSearch(''); }}>
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#999" strokeWidth="1.3" /><path d="M10.5 10.5l3 3" stroke="#999" strokeWidth="1.3" strokeLinecap="round" /></svg>
+              </button>
+              {showSearch && <input className="s2-search-pill" type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} autoFocus style={{ width: 140 }} />}
+            </div>
             <button className="s2-sort-pill" onClick={() => setFilterStatus(filterStatus === 'all' ? 'active' : filterStatus === 'active' ? 'inactive' : filterStatus === 'inactive' ? 'dead' : 'all')}>
               Status: {filterStatus === 'all' ? 'All' : filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)}
             </button>
@@ -324,9 +343,9 @@ export default function Subscriptions2Page() {
               setSortDir('asc');
             }}>
               <svg viewBox="0 0 12 12" width="11" height="11"><path d="M2 3h8M3 6h6M4 9h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
-              Sort
+              Sort: {({ name: 'Name', subscribers: 'Subs', videoCount: 'Videos', subDate: 'Subscribed', category: 'Category' })[sortKey] || 'Name'}
             </button>
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative' }} ref={columnsWrapRef}>
               <button className="s2-sort-pill" onClick={() => setShowColumnsMenu(v => !v)}>
                 <svg viewBox="0 0 12 12" width="11" height="11"><rect x="1" y="1" width="4" height="10" rx="1" stroke="currentColor" fill="none" strokeWidth="1.1" /><rect x="7" y="1" width="4" height="10" rx="1" stroke="currentColor" fill="none" strokeWidth="1.1" /></svg>
                 Columns
