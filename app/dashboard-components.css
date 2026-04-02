@@ -4296,6 +4296,9 @@ input[type=range]::-webkit-slider-thumb{
 .cp-sub-left{display:flex;align-items:center;gap:5px;flex:1;min-width:0}
 .cp-sub-dash{width:10px;border-top:1.5px solid var(--border-subtle);flex-shrink:0;margin-right:3px}
 .cp-sub-name{font-size:12px;color:var(--text-secondary)}
+.cp-sub-right{display:flex;align-items:center;gap:2px;flex-shrink:0}
+.cp-sub-actions{display:flex;gap:1px;opacity:0;transition:opacity .15s}
+.cp-sub-item:hover .cp-sub-actions{opacity:1}
 .cp-sub-count{font-size:11px;color:var(--text-muted);width:30px;text-align:right;flex-shrink:0}
 .cp-foot{padding:12px 16px 12px 20px;border-top:1px solid #eee}
 .cp-add-btn{display:flex;align-items:center;gap:7px;width:100%;padding:8px 12px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:var(--font-body);background:var(--accent);color:#fff}

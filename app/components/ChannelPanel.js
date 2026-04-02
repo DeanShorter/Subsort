@@ -68,11 +68,11 @@ export default function ChannelPanel({ channelId, onClose }) {
   // Save categories
   const saveCats = useCallback(async () => {
     if (!ch || !user) return;
-    await supabase.from('channel_categories').delete().eq('channel_id', ch.id);
+    await supabase.from('channel_categories').delete().eq('channel_id', ch.id).eq('user_id', user.id);
     if (selectedCats.length && dbCategories.length) {
       const inserts = selectedCats.map(catName => {
         const cat = dbCategories.find(c => c.name === catName);
-        return cat ? { channel_id: ch.id, category_id: cat.id } : null;
+        return cat ? { channel_id: ch.id, category_id: cat.id, user_id: user.id } : null;
       }).filter(Boolean);
       if (inserts.length) await supabase.from('channel_categories').insert(inserts);
     }
