@@ -5,17 +5,22 @@ import { useAuth } from './AuthContext';
 import { supabase } from '../../lib/supabase';
 import { showToast } from './Toast';
 
-export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
+export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAutoSort }) {
   const { categories, subcategories, categoryColours, channels, chCats, chHasCat, dbCategories, dbSubcategories, reload } = useChannelData();
   const { user } = useAuth();
   const [searchQ, setSearchQ] = useState('');
   const [expandedCats, setExpandedCats] = useState(new Set());
-  const [editingCat, setEditingCat] = useState(null); // category name being renamed
+  const [editingCat, setEditingCat] = useState(null);
   const [editValue, setEditValue] = useState('');
-  const [addingSubTo, setAddingSubTo] = useState(null); // category name getting new subcat
+  const [addingSubTo, setAddingSubTo] = useState(null);
   const [newSubValue, setNewSubValue] = useState('');
-  const [editingSub, setEditingSub] = useState(null); // { cat, sub } being renamed
+  const [editingSub, setEditingSub] = useState(null);
   const [editSubValue, setEditSubValue] = useState('');
+
+  // Delete confirmation modals
+  const [deleteCatConfirm, setDeleteCatConfirm] = useState(null); // { name, count }
+  const [deleteSubConfirm, setDeleteSubConfirm] = useState(null); // { name, parentName }
+  const [postDeletePrompt, setPostDeletePrompt] = useState(null); // { count }
 
   const toggleExpand = (cat) => {
     setExpandedCats(prev => {
@@ -47,7 +52,6 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
     if (error) { showToast('Failed to add subcategory'); console.error(error); }
     else {
       showToast(`Added subcategory: ${name}`);
-      // Background reload — don't block UI
       reload();
     }
     setNewSubValue('');
@@ -67,17 +71,21 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
     setEditSubValue('');
   }, [editSubValue, user, dbSubcategories, reload]);
 
-  // ── Delete subcategory ──────────────────────────
-  const handleDeleteSub = useCallback(async (subName) => {
-    if (!user) return;
-    const dbSub = dbSubcategories.find(s => s.name === subName);
+  // ── Delete subcategory (with modal) ─────────────
+  const confirmDeleteSub = useCallback((subName, parentName) => {
+    setDeleteSubConfirm({ name: subName, parentName });
+  }, []);
+
+  const executeDeleteSub = useCallback(async () => {
+    if (!user || !deleteSubConfirm) return;
+    const dbSub = dbSubcategories.find(s => s.name === deleteSubConfirm.name);
     if (!dbSub) return;
-    if (!confirm(`Delete subcategory "${subName}"?`)) return;
 
     const { error } = await supabase.from('subcategories').delete().eq('id', dbSub.id);
     if (error) { showToast('Failed to delete subcategory'); console.error(error); }
-    else { showToast(`Deleted: ${subName}`); reload(); }
-  }, [user, dbSubcategories, reload]);
+    else { showToast(`Deleted: ${deleteSubConfirm.name}`); reload(); }
+    setDeleteSubConfirm(null);
+  }, [user, dbSubcategories, deleteSubConfirm, reload]);
 
   // ── Rename category ──────────────────────────────
   const handleRename = useCallback(async (oldName) => {
@@ -95,22 +103,32 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
     setEditValue('');
   }, [editValue, user, dbCategories, reload]);
 
-  // ── Delete category ──────────────────────────────
-  const handleDelete = useCallback(async (catName) => {
-    if (!user) return;
-    const dbCat = dbCategories.find(c => c.name === catName);
+  // ── Delete category (with modal) ─────────────────
+  const confirmDeleteCat = useCallback((catName) => {
+    const count = getCatCount(catName);
+    setDeleteCatConfirm({ name: catName, count });
+  }, [channels, chHasCat]);
+
+  const executeDeleteCat = useCallback(async () => {
+    if (!user || !deleteCatConfirm) return;
+    const dbCat = dbCategories.find(c => c.name === deleteCatConfirm.name);
     if (!dbCat) return;
-    if (!confirm(`Delete "${catName}"? All channels in this category will become uncategorised.`)) return;
+    const affectedCount = deleteCatConfirm.count;
 
     await supabase.from('channel_categories').delete().eq('category_id', dbCat.id);
     await supabase.from('subcategories').delete().eq('category_id', dbCat.id);
     const { error } = await supabase.from('categories').delete().eq('id', dbCat.id);
     if (error) { showToast('Failed to delete'); console.error(error); }
     else {
-      showToast(`Deleted: ${catName}`);
       reload();
+      setDeleteCatConfirm(null);
+      if (affectedCount > 0) {
+        setPostDeletePrompt({ count: affectedCount });
+      }
+      return;
     }
-  }, [user, dbCategories, reload]);
+    setDeleteCatConfirm(null);
+  }, [user, dbCategories, deleteCatConfirm, reload]);
 
   return (
     <div className="cp-panel">
@@ -196,7 +214,7 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
                       <button className="cp-action-btn" title="Edit" onClick={e => { e.stopPropagation(); setEditingCat(cat); setEditValue(cat); }}>
                         <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M7 2.5l2.5 2.5M3 7l-1 3 3-1 5.5-5.5-2.5-2.5z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </button>
-                      <button className="cp-action-btn cp-action-del" title="Delete" onClick={e => { e.stopPropagation(); handleDelete(cat); }}>
+                      <button className="cp-action-btn cp-action-del" title="Delete" onClick={e => { e.stopPropagation(); confirmDeleteCat(cat); }}>
                         <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4.5 3V2h3v1M3 3v7a1 1 0 001 1h4a1 1 0 001-1V3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </button>
                     </div>
@@ -248,7 +266,7 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
                                 <button className="cp-action-btn" title="Edit" onClick={e => { e.stopPropagation(); setEditingSub({ cat, sub }); setEditSubValue(sub); }}>
                                   <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M7 2.5l2.5 2.5M3 7l-1 3 3-1 5.5-5.5-2.5-2.5z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 </button>
-                                <button className="cp-action-btn cp-action-del" title="Delete" onClick={e => { e.stopPropagation(); handleDeleteSub(sub); }}>
+                                <button className="cp-action-btn cp-action-del" title="Delete" onClick={e => { e.stopPropagation(); confirmDeleteSub(sub, cat); }}>
                                   <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4.5 3V2h3v1M3 3v7a1 1 0 001 1h4a1 1 0 001-1V3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 </button>
                               </div>
@@ -296,6 +314,56 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose }) {
           Add category
         </button>
       </div>
+
+      {/* ── Delete category confirmation modal ── */}
+      {deleteCatConfirm && (
+        <div className="modal-overlay open" onClick={() => setDeleteCatConfirm(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Delete &ldquo;{deleteCatConfirm.name}&rdquo;?</h2>
+            <p className="subtitle">
+              {deleteCatConfirm.count} channel{deleteCatConfirm.count !== 1 ? 's are' : ' is'} assigned to this category.
+              They&rsquo;ll be uncategorised until you reassign them.
+            </p>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setDeleteCatConfirm(null)}>Cancel</button>
+              <button className="btn-danger" onClick={executeDeleteCat}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Post-delete auto-sort prompt ── */}
+      {postDeletePrompt && (
+        <div className="modal-overlay open" onClick={() => setPostDeletePrompt(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Gone.</h2>
+            <p className="subtitle">
+              {postDeletePrompt.count} channel{postDeletePrompt.count !== 1 ? 's are' : ' is'} now homeless.
+              Want me to auto-sort them?
+            </p>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setPostDeletePrompt(null)}>Not now</button>
+              <button className="btn-save" onClick={() => { setPostDeletePrompt(null); onAutoSort?.(); }}>Auto-sort</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Delete subcategory confirmation modal ── */}
+      {deleteSubConfirm && (
+        <div className="modal-overlay open" onClick={() => setDeleteSubConfirm(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Delete &ldquo;{deleteSubConfirm.name}&rdquo;?</h2>
+            <p className="subtitle">
+              {getSubCount(deleteSubConfirm.parentName, deleteSubConfirm.name)} channel{getSubCount(deleteSubConfirm.parentName, deleteSubConfirm.name) !== 1 ? 's' : ''} will move back to {deleteSubConfirm.parentName}.
+            </p>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setDeleteSubConfirm(null)}>Cancel</button>
+              <button className="btn-danger" onClick={executeDeleteSub}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
