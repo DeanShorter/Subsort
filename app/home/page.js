@@ -574,7 +574,10 @@ export default function Home2Page() {
           <div className="h2-section">
             <div className="tl-card">
               <div className="tl-card-header">
-                <div className="tl-card-title">Your subscription journey</div>
+                <div>
+                  <div className="tl-card-title">Your subscription journey</div>
+                  <div className="tl-card-note">Quick heads up — this only shows channels you&rsquo;re still subscribed to. Anything you&rsquo;ve already scrubbed won&rsquo;t appear. But from now on, I&rsquo;m keeping track.</div>
+                </div>
                 <div className="tl-card-meta">Since {years[0]}</div>
               </div>
               <div className="tl-card-body">

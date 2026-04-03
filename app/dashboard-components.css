@@ -4662,7 +4662,8 @@ input[type=range]::-webkit-slider-thumb{
 .tl-card{background:var(--bg-card);border:2px solid var(--text-primary);border-radius:16px;box-shadow:4px 4px 0px var(--text-primary);overflow:hidden}
 .tl-card-header{padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
 .tl-card-title{font-size:16px;font-weight:500}
-.tl-card-meta{font-size:13px;color:var(--text-muted)}
+.tl-card-meta{font-size:13px;color:var(--text-muted);flex-shrink:0}
+.tl-card-note{font-size:12px;color:var(--text-muted);font-style:italic;line-height:1.5;margin-top:4px;max-width:500px}
 .tl-card-body{padding:8px 24px 24px}
 .tl-stats{display:flex;gap:16px;margin-bottom:24px}
 .tl-stat{padding:12px 18px;border-radius:12px;flex:1}
