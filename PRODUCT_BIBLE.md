@@ -260,6 +260,18 @@ All of these use subscription dates, channel metadata, or subscrub's own data:
 | **Duplicate/related channel detection** | Detect multiple channels from same creator and group them. | Free | Low |
 | **"If you're leaving" suggestions** | When unsubscribing, suggest creator's other channels or formats. | Free | Low |
 | **Notification management** | Per-category notification preferences: immediate for favourites, daily digest, weekly summary. Subscrub's own layer. | Pro | Low |
+| **"On This Day" memories** | Daily Critic observation: "3 years ago today you subscribed to X. They've uploaded 247 videos since." Zero API cost — uses stored subscription dates. | Free | High |
+| **Subscription velocity tracker** | Track subscription pace over time. Critic flags sprees: "12 channels in 3 days. Are you actually going to watch all of these?" Uses subscrub's own database only. | Free | Medium |
+| **Channel upload calendar** | Weekly view of which subscribed channels upload on which days. Helps users understand content flow. Cached from recent video publish dates. | Free | Medium |
+| **Abandoned category detection** | Flag categories where all channels have gone inactive or been moved out. "Your Fitness category has 2 channels left, both inactive. Time to retire it?" | Free | Medium |
+| **Channel growth alerts** | Monitor subscriber growth rate. Flag channels crossing milestones or losing significant subscribers. Entirely API-driven, low cost. | Free | Medium |
+| **The Critic's weekly digest** | Weekly summary: channels that returned from hiatus, favourite milestones, uncategorised count, Critic recommendations. Email or in-app card. | Free | High |
+| **Subscription age tiers** | Auto-tag channels by tenure: OG (5+ years), Veteran (2-5), Recent (under 1 year), New (under 1 month). Filterable in table. | Free | Low |
+| **Upload gap detector** | Track channels breaking their usual upload pattern. "This channel usually uploads every Tuesday. It's been 4 weeks." Uses cached upload history. | Free | Medium |
+| **Category health dashboard** | Aggregate view per category: active %, avg upload frequency, newest/oldest subscription. Derived from API data + category assignments. | Free | Medium |
+| **"Rising star" detection** | Identify channels growing significantly faster than average. "You subscribed at 5K. They just hit 200K. You were early." One channels.list call per sync. | Free | High |
+| **Unsubscribe impact preview** | Before unsubscribing, show what the user loses: upload frequency, % of Feed content, active days. Calculated from upload data, no watch history. | Free | Medium |
+| **Subscription overlap (social)** | Opt-in comparison between subscrub users. "You and Jake share 47 subscriptions. Here are 12 channels Jake follows that you don't." | Pro | Low |
 
 ### Features requiring watch history
 

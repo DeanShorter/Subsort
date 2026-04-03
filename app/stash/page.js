@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useStash } from '../../hooks/useStash';
 import { timeAgo } from '../../lib/youtube';
@@ -11,12 +11,79 @@ function CollectionIcon({ icon, color }) {
   return <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3l2.2 4.5 5 .7-3.6 3.5.8 5L10 14l-4.4 2.7.8-5L3 8.2l5-.7z" fill={color} /></svg>;
 }
 
+function StashVideoCard({ item, collections, onRemove, onMoveToCollection, onCreateAndMove }) {
+  const [colOpen, setColOpen] = useState(false);
+  const initials = (item.channel_name || '??').substring(0, 2).toUpperCase();
+  const currentCol = collections.find(c => c.id === item.collection_id);
+
+  return (
+    <div
+      className="stash-video-card"
+      draggable
+      onDragStart={e => {
+        e.dataTransfer.setData('text/plain', item.id);
+        e.dataTransfer.effectAllowed = 'move';
+      }}
+    >
+      <div className="stash-video-thumb">
+        {item.thumbnail
+          ? <img src={item.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : <span className="stash-video-thumb-text">Thumbnail</span>
+        }
+        {item.duration && <span className="stash-video-duration">{item.duration}</span>}
+      </div>
+      <div className="stash-video-info">
+        <div className="stash-video-title">{item.title}</div>
+        <div className="stash-video-channel">
+          <div className="stash-video-avatar" style={{ background: 'var(--accent)' }}>{initials}</div>
+          {item.channel_name}
+        </div>
+        <div className="stash-video-meta">{item.saved_at ? timeAgo(item.saved_at) : ''}</div>
+        <div className="stash-video-actions">
+          <a className="stash-video-btn-watch" href={`https://www.youtube.com/watch?v=${item.video_id}`} target="_blank" rel="noopener noreferrer">Watch</a>
+          <div className="stash-col-wrap">
+            <button className="stash-video-btn-collect" onClick={() => setColOpen(!colOpen)}>
+              {currentCol ? currentCol.name : 'Add to collection'}
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 4l2 2 2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            {colOpen && (
+              <div className="stash-col-dropdown">
+                {item.collection_id && (
+                  <div className="stash-col-dropdown-item" onClick={() => { onMoveToCollection(item.id, null); setColOpen(false); }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Remove from collection</span>
+                  </div>
+                )}
+                {collections.filter(c => c.id !== item.collection_id).map(col => (
+                  <div key={col.id} className="stash-col-dropdown-item" onClick={() => { onMoveToCollection(item.id, col.id); setColOpen(false); }}>
+                    {col.name}
+                  </div>
+                ))}
+                {collections.length > 0 && <div className="stash-col-dropdown-divider" />}
+                <div className="stash-col-dropdown-item" onClick={() => {
+                  const name = prompt('Collection name:');
+                  if (name?.trim()) { onCreateAndMove(item.id, name.trim()); }
+                  setColOpen(false);
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v6M2 5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                  New collection
+                </div>
+              </div>
+            )}
+          </div>
+          <button className="stash-video-btn-collect" onClick={() => onRemove(item.video_id)} style={{ marginLeft: 4 }}>Remove</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function StashPage() {
   const { user, signIn } = useAuth();
-  const { collections, items, loading, removeFromStash, createCollection, deleteCollection } = useStash(user);
+  const { collections, items, loading, removeFromStash, moveToCollection, createCollection, deleteCollection } = useStash(user);
   const [criticDismissed, setCriticDismissed] = useState(false);
   const [newColName, setNewColName] = useState('');
   const [showNewCol, setShowNewCol] = useState(false);
+  const [dragOverCol, setDragOverCol] = useState(null);
 
   const collectionCounts = useMemo(() => {
     const counts = {};
@@ -31,6 +98,24 @@ export default function StashPage() {
 
   const colColors = ['var(--accent-soft)', 'var(--orange-soft)', 'var(--iris-soft)', 'var(--ocean-soft)'];
   const colIconColors = ['var(--accent)', 'var(--orange)', 'var(--iris)', 'var(--ocean)'];
+
+  const handleCreateAndMove = useCallback(async (itemId, colName) => {
+    const col = await createCollection(colName);
+    if (col) moveToCollection(itemId, col.id);
+  }, [createCollection, moveToCollection]);
+
+  const handleDrop = useCallback((e, collectionId) => {
+    e.preventDefault();
+    setDragOverCol(null);
+    const itemId = e.dataTransfer.getData('text/plain');
+    if (itemId) moveToCollection(itemId, collectionId);
+  }, [moveToCollection]);
+
+  const handleDragOver = useCallback((e, colId) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverCol(colId);
+  }, []);
 
   if (loading) return <div className="home-feed-loading"><span className="spinner" /> Loading stash...</div>;
 
@@ -106,7 +191,15 @@ export default function StashPage() {
 
         <div className="stash-collections-row">
           {collections.map((col, i) => (
-            <Link key={col.id} href={`/stash/collection/${encodeURIComponent(col.name)}`} className="stash-collection-card" style={{ background: colColors[i % colColors.length], textDecoration: 'none', color: 'inherit' }}>
+            <Link
+              key={col.id}
+              href={`/stash/collection/${encodeURIComponent(col.name)}`}
+              className={`stash-collection-card${dragOverCol === col.id ? ' drag-over' : ''}`}
+              style={{ background: colColors[i % colColors.length], textDecoration: 'none', color: 'inherit' }}
+              onDragOver={e => handleDragOver(e, col.id)}
+              onDragLeave={() => setDragOverCol(null)}
+              onDrop={e => { e.preventDefault(); handleDrop(e, col.id); }}
+            >
               <div className="stash-collection-card-icon">
                 <CollectionIcon icon={col.icon || 'star'} color={colIconColors[i % colIconColors.length]} />
               </div>
@@ -149,32 +242,16 @@ export default function StashPage() {
 
         {recentItems.length > 0 ? (
           <div className="stash-video-grid">
-            {recentItems.map(item => {
-              const initials = (item.channel_name || '??').substring(0, 2).toUpperCase();
-              return (
-                <div key={item.id} className="stash-video-card">
-                  <div className="stash-video-thumb">
-                    {item.thumbnail
-                      ? <img src={item.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : <span className="stash-video-thumb-text">Thumbnail</span>
-                    }
-                    {item.duration && <span className="stash-video-duration">{item.duration}</span>}
-                  </div>
-                  <div className="stash-video-info">
-                    <div className="stash-video-title">{item.title}</div>
-                    <div className="stash-video-channel">
-                      <div className="stash-video-avatar" style={{ background: 'var(--accent)' }}>{initials}</div>
-                      {item.channel_name}
-                    </div>
-                    <div className="stash-video-meta">{item.saved_at ? timeAgo(item.saved_at) : ''}</div>
-                    <div className="stash-video-actions">
-                      <a className="stash-video-btn-watch" href={`https://www.youtube.com/watch?v=${item.video_id}`} target="_blank" rel="noopener noreferrer">Watch</a>
-                      <button className="stash-video-btn-collect" onClick={() => removeFromStash(item.video_id)}>Remove</button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {recentItems.map(item => (
+              <StashVideoCard
+                key={item.id}
+                item={item}
+                collections={collections}
+                onRemove={removeFromStash}
+                onMoveToCollection={moveToCollection}
+                onCreateAndMove={handleCreateAndMove}
+              />
+            ))}
           </div>
         ) : (
           <div className="stash-empty">
