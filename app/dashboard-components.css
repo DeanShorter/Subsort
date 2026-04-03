@@ -4810,7 +4810,8 @@ input[type=range]::-webkit-slider-thumb{
 @media(max-width:600px){.tl-stats{flex-direction:column;gap:8px}.tl-notable-row{flex-direction:column}.tl-phase{flex-direction:column;gap:4px}}
 
 /* Home 2 responsive */
-@media(max-width:900px){.h2-fav-grid{grid-template-columns:repeat(2,1fr)}.h2-secondary-grid{grid-template-columns:1fr}.critic-banner{flex-wrap:wrap;gap:10px}.cb-stats{gap:12px}.cb-actions{width:100%;justify-content:flex-end;margin-top:4px}}
+@media(max-width:900px){.h2-fav-grid{grid-template-columns:repeat(2,1fr)}.h2-secondary-grid{grid-template-columns:1fr}.critic-banner{flex-wrap:wrap;gap:10px}.cb-stats{gap:12px}.cb-actions{width:100%;justify-content:flex-end;margin-top:4px}.db-header-bar{flex-direction:column;gap:.5rem}.db-greeting h1{font-size:1.25rem}}
+@media(max-width:480px){.db-greeting h1{font-size:1.1rem}.h2-fav-grid{grid-template-columns:1fr}}
 @media(max-width:480px){.h2-fav-grid{grid-template-columns:1fr}.cb-stats{display:none}.h2-disc-row{flex-direction:column}.h2-content{padding:16px 16px 48px}}
 
 /* ─── Feeds 2 (experimental layout) ─── */
