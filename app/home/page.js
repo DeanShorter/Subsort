@@ -511,6 +511,158 @@ export default function Home2Page() {
         </div>
       </div>
 
+      {/* Subscription Timeline */}
+      {channels.length > 0 && (() => {
+        // Group channels by year
+        const yearCounts = {};
+        const oldest = { year: 9999 };
+        channels.forEach(ch => {
+          if (!ch.subscribedAt) return;
+          const y = new Date(ch.subscribedAt).getFullYear();
+          if (isNaN(y) || y < 2005) return;
+          yearCounts[y] = (yearCounts[y] || 0) + 1;
+          if (y < oldest.year) oldest.year = y;
+        });
+
+        const years = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
+        if (!years.length) return null;
+
+        const maxCount = Math.max(...Object.values(yearCounts));
+        const busiestYear = years.reduce((a, b) => (yearCounts[a] || 0) >= (yearCounts[b] || 0) ? a : b, years[0]);
+        const currentYear = new Date().getFullYear();
+
+        // Avg years subscribed
+        const now = Date.now();
+        const ages = channels.filter(c => c.subscribedAt).map(c => (now - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        const avgAge = ages.length ? (ages.reduce((a, b) => a + b, 0) / ages.length).toFixed(1) : '—';
+
+        // Find phases
+        const phases = [];
+        if (yearCounts[busiestYear] >= 20) {
+          // Check if adjacent year is also high
+          const adj = [busiestYear - 1, busiestYear + 1].filter(y => yearCounts[y] && yearCounts[y] >= yearCounts[busiestYear] * 0.6);
+          if (adj.length) {
+            const range = [Math.min(busiestYear, ...adj), Math.max(busiestYear, ...adj)];
+            const total = years.filter(y => y >= range[0] && y <= range[1]).reduce((s, y) => s + yearCounts[y], 0);
+            phases.push({ range: `${range[0]}-${range[1]}`, text: `Your biggest growth period. ${total} new subscriptions in ${range[1] - range[0] + 1} years.`, color: 'orange', tag: 'Peak discovery' });
+          }
+        }
+        if (yearCounts[currentYear] && yearCounts[currentYear] < 20) {
+          phases.push({ range: `${currentYear}`, text: `Just getting started this year. ${yearCounts[currentYear]} new subscriptions so far.`, color: 'iris', tag: 'Curator era' });
+        }
+
+        // Longest subscriptions
+        const longestSubs = channels
+          .filter(c => c.subscribedAt)
+          .sort((a, b) => new Date(a.subscribedAt) - new Date(b.subscribedAt))
+          .slice(0, 4);
+
+        const yearsSince = (d) => {
+          const diff = (now - new Date(d).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+          return Math.floor(diff);
+        };
+        const fmtSubDate = (d) => new Date(d).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+        const avatarColors = ['var(--orange)', 'var(--accent)', 'var(--iris)', 'var(--ocean)'];
+
+        // Critic quote
+        const criticQuote = yearCounts[busiestYear] >= 50
+          ? `"${busiestYear} was wild — ${yearCounts[busiestYear]} subscriptions in one year. Those channels are now ${currentYear - busiestYear}+ years old in your list. Might be worth a review."`
+          : yearCounts[busiestYear] >= 20
+          ? `"${busiestYear} was your busiest year with ${yearCounts[busiestYear]} new subscriptions. Are you still watching all of them?"`
+          : `"${channels.length} subscriptions spread across ${years.length} years. That's a steady drip of commitment."`;
+
+        return (
+          <div className="h2-section">
+            <div className="tl-card">
+              <div className="tl-card-header">
+                <div className="tl-card-title">Your subscription journey</div>
+                <div className="tl-card-meta">Since {years[0]}</div>
+              </div>
+              <div className="tl-card-body">
+                <div className="tl-stats">
+                  <div className="tl-stat" style={{ background: 'var(--accent-soft)' }}>
+                    <div className="tl-stat-value" style={{ color: 'var(--accent)' }}>{channels.length}</div>
+                    <div className="tl-stat-label" style={{ color: 'var(--accent-text)' }}>total subscriptions</div>
+                  </div>
+                  <div className="tl-stat" style={{ background: 'var(--orange-soft)' }}>
+                    <div className="tl-stat-value" style={{ color: 'var(--orange)' }}>{busiestYear}</div>
+                    <div className="tl-stat-label" style={{ color: 'var(--orange-text)' }}>busiest year</div>
+                  </div>
+                  <div className="tl-stat" style={{ background: 'var(--iris-soft)' }}>
+                    <div className="tl-stat-value" style={{ color: 'var(--iris)' }}>{avgAge}</div>
+                    <div className="tl-stat-label" style={{ color: 'var(--iris-text)' }}>avg years subscribed</div>
+                  </div>
+                </div>
+
+                <div className="tl-chart">
+                  {years.map(y => {
+                    const count = yearCounts[y];
+                    const pct = Math.max(4, (count / maxCount) * 100);
+                    const isBusiest = y === busiestYear;
+                    const isCurrent = y === currentYear;
+                    const barColor = isBusiest ? 'var(--orange)' : isCurrent ? 'var(--iris)' : 'var(--accent)';
+                    return (
+                      <div key={y} className="tl-year-row">
+                        <div className="tl-year-label">{y}</div>
+                        <div className="tl-bar-track">
+                          <div className="tl-bar-fill" style={{ width: `${pct}%`, background: barColor }}>
+                            {pct > 8 && <span className="tl-bar-count">{count}</span>}
+                          </div>
+                        </div>
+                        <div className="tl-year-total">{count}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {phases.length > 0 && (
+                  <div className="tl-phases">
+                    {phases.map((p, i) => (
+                      <div key={i} className="tl-phase" style={{ background: `var(--${p.color}-soft)` }}>
+                        <div className="tl-phase-year" style={{ color: `var(--${p.color}-text)` }}>{p.range}</div>
+                        <div className="tl-phase-text">
+                          {p.text}
+                          {p.tag && <span className="tl-phase-tag" style={{ background: `var(--${p.color})`, color: '#fff' }}>{p.tag}</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {longestSubs.length > 0 && (
+                  <div className="tl-notable">
+                    <div className="tl-notable-title">Longest subscriptions</div>
+                    <div className="tl-notable-row">
+                      {longestSubs.map((ch, i) => (
+                        <div key={ch.id} className="tl-notable-chip">
+                          <div className="tl-notable-av" style={{ background: avatarColors[i % avatarColors.length] }}>
+                            {ch.thumbnail ? <img src={ch.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : (ch.name || '??').substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="tl-notable-name">{ch.name}</div>
+                            <div className="tl-notable-date">{fmtSubDate(ch.subscribedAt)} — {yearsSince(ch.subscribedAt)} years</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="tl-critic">
+                  <div className="tl-critic-icon" style={{ background: 'var(--accent)' }}>
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3 .4-2.2 2.1.5 3L6 8l-2.8 1.5.5-3L1.5 4.4l3-.4z" fill="#fff" /></svg>
+                  </div>
+                  <div className="tl-critic-body">
+                    <div className="tl-critic-label">The Critic</div>
+                    <div className="tl-critic-text">{criticQuote}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Video modal */}
       {playingVideo && (
         <VideoModal video={playingVideo} onClose={() => setPlayingVideo(null)} />

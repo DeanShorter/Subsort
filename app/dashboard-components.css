@@ -4658,6 +4658,44 @@ input[type=range]::-webkit-slider-thumb{
 .h2-disc-name{font-size:10px;font-weight:500;color:var(--text);text-align:center}
 .h2-disc-subs{font-size:9px;color:var(--text-dim)}
 
+/* Subscription Timeline */
+.tl-card{background:var(--bg-card);border:2px solid var(--text-primary);border-radius:16px;box-shadow:4px 4px 0px var(--text-primary);overflow:hidden}
+.tl-card-header{padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
+.tl-card-title{font-size:16px;font-weight:500}
+.tl-card-meta{font-size:13px;color:var(--text-muted)}
+.tl-card-body{padding:8px 24px 24px}
+.tl-stats{display:flex;gap:16px;margin-bottom:24px}
+.tl-stat{padding:12px 18px;border-radius:12px;flex:1}
+.tl-stat-value{font-family:'Outfit',var(--font-display);font-size:24px;font-weight:700;margin-bottom:2px}
+.tl-stat-label{font-size:12px}
+.tl-chart{margin-bottom:20px}
+.tl-year-row{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.tl-year-label{font-size:13px;font-weight:500;color:var(--text-secondary);width:40px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.tl-bar-track{flex:1;height:28px;background:var(--bg-primary);border-radius:6px;overflow:hidden;position:relative;cursor:pointer}
+.tl-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;transition:width .3s}
+.tl-bar-track:hover .tl-bar-fill{opacity:.85}
+.tl-bar-count{font-size:12px;font-weight:500;color:#fff}
+.tl-year-total{font-size:12px;color:var(--text-muted);width:30px;flex-shrink:0;font-variant-numeric:tabular-nums}
+.tl-phases{margin-bottom:24px}
+.tl-phase{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:12px;margin-bottom:6px}
+.tl-phase-year{font-size:12px;font-weight:500;width:70px;flex-shrink:0;padding-top:1px}
+.tl-phase-text{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.tl-phase-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;margin-left:4px}
+.tl-notable{margin-top:20px;margin-bottom:4px}
+.tl-notable-title{font-size:14px;font-weight:500;margin-bottom:12px}
+.tl-notable-row{display:flex;gap:10px;flex-wrap:wrap}
+.tl-notable-chip{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:20px;background:var(--bg-primary);cursor:pointer}
+.tl-notable-chip:hover{background:#eaeaea}
+.tl-notable-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:#fff;overflow:hidden;flex-shrink:0}
+.tl-notable-name{font-size:13px;font-weight:500}
+.tl-notable-date{font-size:11px;color:var(--text-muted)}
+.tl-critic{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;border-radius:12px;background:var(--accent-soft);margin-top:20px}
+.tl-critic-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tl-critic-body{flex:1}
+.tl-critic-label{font-size:11px;font-weight:500;color:var(--accent-text);margin-bottom:2px}
+.tl-critic-text{font-size:13px;font-style:italic;color:var(--accent-text);line-height:1.5}
+@media(max-width:600px){.tl-stats{flex-direction:column;gap:8px}.tl-notable-row{flex-direction:column}.tl-phase{flex-direction:column;gap:4px}}
+
 /* Home 2 responsive */
 @media(max-width:900px){.h2-fav-grid{grid-template-columns:repeat(2,1fr)}.h2-secondary-grid{grid-template-columns:1fr}.critic-banner{flex-wrap:wrap;gap:10px}.cb-stats{gap:12px}.cb-actions{width:100%;justify-content:flex-end;margin-top:4px}}
 @media(max-width:480px){.h2-fav-grid{grid-template-columns:1fr}.cb-stats{display:none}.h2-disc-row{flex-direction:column}.h2-content{padding:16px 16px 48px}}
@@ -4890,7 +4928,7 @@ input[type=range]::-webkit-slider-thumb{
 @media(max-width:900px){.split-view{flex-direction:column}.split-handle{width:100%;height:8px;cursor:row-resize}.split-handle-dots{flex-direction:row}.split-view.layout-primary .split-panel,.split-view.layout-secondary .split-panel{flex:1!important}.split-minibar{left:0!important}}
 
 /* ═══ Hover-to-Preview Video Cards ═══ */
-.vcard{border:2px solid var(--text-primary);border-radius:var(--radius-lg);box-shadow:3px 3px 0px var(--text-primary);background:var(--bg-card);position:relative;transition:transform .3s ease,box-shadow .3s ease;overflow:hidden}
+.vcard{border:2px solid var(--text-primary);border-radius:var(--radius-lg);box-shadow:3px 3px 0px var(--text-primary);background:var(--bg-card);position:relative;transition:transform .3s ease,box-shadow .3s ease}
 .vcard:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .vc-thumb{aspect-ratio:16/9;border-radius:var(--radius-lg);overflow:hidden;position:relative;background:var(--surface-2);cursor:pointer;transition:box-shadow .5s ease}
 .vc-thumb-bg{width:100%;height:100%;position:absolute;inset:0;transition:opacity .6s ease;z-index:1}
