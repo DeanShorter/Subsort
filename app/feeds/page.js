@@ -4,10 +4,8 @@ import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
-import { trackEvent } from '../../lib/track';
 import { useDragScroll } from '../../hooks/useDragScroll';
 import VideoCardPreview from '../components/VideoCardPreview';
-import SplitView, { SplitMinibar } from '../components/SplitView';
 
 export default function Feeds2Page() {
   const { user, signIn } = useAuth();
@@ -30,55 +28,15 @@ export default function Feeds2Page() {
   const [typeFilter, setTypeFilter] = useState('videos');
   const [feedView, setFeedView] = useState('grid');
   const [visibleCount, setVisibleCount] = useState(60);
-  const [splitPanels, setSplitPanels] = useState([]);
-  const [splitToast, setSplitToast] = useState('');
-  const [minibarVisible, setMinibarVisible] = useState(false);
   const contentRef = useRef(null);
-  const splitRef = useRef(null);
   const catRowRef = useRef(null);
 
-  // Get the scrollable container and track split view visibility
+  // Get the scrollable container
   useEffect(() => {
     contentRef.current = document.getElementById('appContent');
   }, []);
 
-  useEffect(() => {
-    const scrollEl = contentRef.current;
-    if (!scrollEl || splitPanels.length === 0) { setMinibarVisible(false); return; }
-
-    const onScroll = () => {
-      if (!splitRef.current) return;
-      const rect = splitRef.current.getBoundingClientRect();
-      setMinibarVisible(rect.bottom < 120);
-    };
-
-    scrollEl.addEventListener('scroll', onScroll);
-    return () => scrollEl.removeEventListener('scroll', onScroll);
-  }, [splitPanels.length]);
-
-  const scrollToSplit = useCallback(() => {
-    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
   useDragScroll(catRowRef);
-
-  const addToSplit = useCallback((video) => {
-    setSplitPanels(prev => {
-      if (prev.length >= 2) return prev;
-      if (prev.some(v => v.id === video.id)) return prev;
-      return [...prev, video];
-    });
-    setSplitToast(`Added to split view: ${video.title}`);
-    setTimeout(() => setSplitToast(''), 2500);
-    trackEvent('split_view_add', { video_id: video.id });
-  }, []);
-
-  const removeFromSplit = useCallback((index) => {
-    setSplitPanels(prev => prev.filter((_, i) => i !== index));
-  }, []);
-
-  const swapSplitPanels = useCallback(() => {
-    setSplitPanels(prev => prev.length === 2 ? [prev[1], prev[0]] : prev);
-  }, []);
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -312,28 +270,6 @@ export default function Feeds2Page() {
             </div>
           )}
         </div>
-        {/* Split minibar — inside header so it sticks with it */}
-        <SplitMinibar
-          panels={splitPanels}
-          visible={minibarVisible}
-          onScrollToSplit={scrollToSplit}
-          scrollContainerRef={contentRef}
-        />
-      </div>
-
-      {/* Split view */}
-      <div ref={splitRef}>
-        <SplitView
-          panels={splitPanels}
-          onRemovePanel={removeFromSplit}
-          onSwapPanels={swapSplitPanels}
-        />
-      </div>
-
-      {/* Split toast */}
-      <div className={`split-toast${splitToast ? ' show' : ''}`}>
-        <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="12" rx="1" /><rect x="8" y="1" width="5" height="12" rx="1" /></svg>
-        <span>{splitToast}</span>
       </div>
 
       {/* Video grid — 3 columns, full width */}
@@ -343,16 +279,12 @@ export default function Feeds2Page() {
           const cats = ch ? (ch.categories || []) : [];
           const catLabel = cats[0] || '';
           const catCol = catLabel ? categoryColours[catLabel] : null;
-          const isNew = v.publishedAt && (Date.now() - new Date(v.publishedAt).getTime()) < 24 * 60 * 60 * 1000;
 
           return (
             <div key={v.id} style={{ animationDelay: `${Math.min(idx * 50, 400)}ms`, opacity: 0, animation: `f2CardIn 0.3s ease forwards ${Math.min(idx * 50, 400)}ms` }}>
               <VideoCardPreview
                 video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '' }}
                 categoryColour={catCol}
-                isNew={isNew}
-                onAddToSplit={addToSplit}
-                splitFull={splitPanels.length >= 2}
               />
             </div>
           );
