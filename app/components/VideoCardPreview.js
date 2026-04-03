@@ -24,22 +24,29 @@ export default function VideoCardPreview({ video, categoryColour, onStash, stash
   }, [video.id]);
 
   const startVideo = useCallback(() => {
-    if (!iframeRef.current || loaded) return;
+    if (!iframeRef.current) return;
     iframeRef.current.src = buildSrc(true);
     setPlaying(true);
     setMuted(true);
     setLoaded(true);
     trackEvent(video.type === 'short' ? 'video_preview_short' : 'video_preview_video', { video_id: video.id });
-  }, [video.id, video.type, buildSrc, loaded]);
+  }, [video.id, video.type, buildSrc]);
+
+  const stopVideo = useCallback(() => {
+    if (!iframeRef.current) return;
+    iframeRef.current.src = '';
+    setPlaying(false);
+    setLoaded(false);
+  }, []);
 
   const handleMouseEnter = useCallback(() => {
-    if (loaded) return;
     hoverTimer.current = setTimeout(startVideo, 400);
-  }, [startVideo, loaded]);
+  }, [startVideo]);
 
   const handleMouseLeave = useCallback(() => {
     clearTimeout(hoverTimer.current);
-  }, []);
+    stopVideo();
+  }, [stopVideo]);
 
   const toggleMute = useCallback((e) => {
     e.stopPropagation();
@@ -54,20 +61,12 @@ export default function VideoCardPreview({ video, categoryColour, onStash, stash
     }
   }, [muted, playing, buildSrc]);
 
-  const handlePlayClick = useCallback(() => {
-    if (loaded) return;
-    if (iframeRef.current) iframeRef.current.src = buildSrc(true);
-    setPlaying(true);
-    setMuted(true);
-    setLoaded(true);
-    trackEvent(video.type === 'short' ? 'video_preview_short' : 'video_preview_video', { video_id: video.id });
-  }, [loaded, buildSrc, video.id, video.type]);
 
   const catCol = categoryColour || 'var(--accent)';
 
   return (
     <div className="vcard" ref={cardRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-video-id={video.id}>
-      <div className={`vc-thumb${playing ? ' playing' : ''}`} onClick={!loaded ? handlePlayClick : undefined}>
+      <div className={`vc-thumb${playing ? ' playing' : ''}`}>
         <div className="vc-thumb-bg">
           <img src={video.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.style.opacity = '1'} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0, transition: 'opacity 0.3s' }} />
         </div>
@@ -95,16 +94,16 @@ export default function VideoCardPreview({ video, categoryColour, onStash, stash
           <div className="vc-title">{video.title}</div>
           <div className="vc-channel">
             <div className="vc-channel-avatar" style={{ background: catCol }}>{(video.channel || '??').substring(0, 2).toUpperCase()}</div>
-            {video.channel}
+            {video.channel} <span className="vc-meta-inline">{video.timeAgo}</span>
           </div>
-          <div className="vc-meta">{video.timeAgo}</div>
-          <div className="vc-actions">
-            <a className="vc-btn-watch" href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Watch</a>
-            <div className="vc-stash-wrap" ref={stashRef}>
-              <button className="vc-btn-stash" onClick={e => { e.stopPropagation(); onStash?.(video); }}>Add to Stash</button>
-              <button className="vc-btn-stash-chevron" onClick={e => { e.stopPropagation(); setStashOpen(!stashOpen); }}>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 4l2 2 2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </button>
+        </div>
+        <div className="vc-actions">
+          <a className="vc-btn-watch" href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Watch</a>
+          <div className="vc-stash-wrap" ref={stashRef}>
+            <button className="vc-btn-stash" onClick={e => { e.stopPropagation(); onStash?.(video); }}>Add to Stash</button>
+            <button className="vc-btn-stash-chevron" onClick={e => { e.stopPropagation(); setStashOpen(!stashOpen); }}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 4l2 2 2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
               {stashOpen && (
                 <div className="vc-stash-dropdown" onClick={e => e.stopPropagation()}>
                   {stashCollections.map(col => (
@@ -123,7 +122,6 @@ export default function VideoCardPreview({ video, categoryColour, onStash, stash
               )}
             </div>
           </div>
-        </div>
         {playing && (
           <div className="vc-now">
             <div className="vc-now-bars"><div className="vc-now-bar" /><div className="vc-now-bar" /><div className="vc-now-bar" /></div>
