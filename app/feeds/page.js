@@ -287,6 +287,7 @@ export default function Feeds2Page() {
               <VideoCardPreview
                 video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '' }}
                 categoryColour={catCol}
+                categoryName={catLabel}
                 onStash={addToStash}
                 stashCollections={stashCollections}
               />

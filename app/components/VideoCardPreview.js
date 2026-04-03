@@ -2,7 +2,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { trackEvent } from '../../lib/track';
 
-export default function VideoCardPreview({ video, categoryColour, onStash, stashCollections = [] }) {
+export default function VideoCardPreview({ video, categoryColour, categoryName, onStash, stashCollections = [] }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [loaded, setLoaded] = useState(false);
@@ -61,73 +61,67 @@ export default function VideoCardPreview({ video, categoryColour, onStash, stash
     }
   }, [muted, playing, buildSrc]);
 
-
   const catCol = categoryColour || 'var(--accent)';
+  const initials = (video.channel || '??').substring(0, 2).toUpperCase();
 
   return (
-    <div className="vcard" ref={cardRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-video-id={video.id}>
-      <div className={`vc-thumb${playing ? ' playing' : ''}`}>
-        <div className="vc-thumb-bg">
+    <div className="feed-card" ref={cardRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-video-id={video.id}>
+      <div className={`feed-thumb${playing ? ' playing' : ''}`}>
+        <div className="feed-thumb-bg">
           <img src={video.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.style.opacity = '1'} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0, transition: 'opacity 0.3s' }} />
         </div>
-        <div className="vc-iframe-wrap">
+        <div className="feed-iframe-wrap">
           <iframe ref={iframeRef} src="" allow="autoplay; encrypted-media; fullscreen" allowFullScreen />
         </div>
-        {!loaded && (
-          <div className="vc-overlay">
-            <div className="vc-play">
-              <svg viewBox="0 0 16 16"><polygon points="5,3 13,8 5,13" fill="#111" /></svg>
-            </div>
-          </div>
-        )}
-        {video.type === 'short' && <span className="feed-shorts-badge" style={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}>SHORT</span>}
-        <button className="vc-unmute" onClick={toggleMute}>
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 2L4 6H1v4h3l4 4V2z" />
-            {muted ? <line x1="12" y1="6" x2="12" y2="10" /> : <><path d="M12 5.5a4 4 0 010 5" /><path d="M14 3.5a7 7 0 010 9" /></>}
-          </svg>
-          <span>{muted ? 'Unmute' : 'Mute'}</span>
-        </button>
-      </div>
-      <div className="vc-info">
-        <div className="vc-info-text">
-          <div className="vc-title">{video.title}</div>
-          <div className="vc-channel">
-            <div className="vc-channel-avatar" style={{ background: catCol }}>{(video.channel || '??').substring(0, 2).toUpperCase()}</div>
-            {video.channel} <span className="vc-meta-inline">{video.timeAgo}</span>
-          </div>
-        </div>
-        <div className="vc-actions">
-          <a className="vc-btn-watch" href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Watch</a>
-          <div className="vc-stash-wrap" ref={stashRef}>
-            <button className="vc-btn-stash" onClick={e => { e.stopPropagation(); onStash?.(video); }}>Add to Stash</button>
-            <button className="vc-btn-stash-chevron" onClick={e => { e.stopPropagation(); setStashOpen(!stashOpen); }}>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 4l2 2 2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </button>
-              {stashOpen && (
-                <div className="vc-stash-dropdown" onClick={e => e.stopPropagation()}>
-                  {stashCollections.map(col => (
-                    <div key={col.id || col.name} className="vc-stash-dropdown-item" onClick={() => { onStash?.(video, col.name); setStashOpen(false); }}>{col.name}</div>
-                  ))}
-                  {stashCollections.length > 0 && <div className="vc-stash-dropdown-divider" />}
-                  <div className="vc-stash-dropdown-item" onClick={() => {
-                    const name = prompt('Collection name:');
-                    if (name?.trim()) { onStash?.(video, name.trim()); }
-                    setStashOpen(false);
-                  }}>
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v6M2 5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                    New collection
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+        {video.duration && <div className="feed-duration">{video.duration}</div>}
+        {categoryName && <div className="feed-category">{categoryName}</div>}
+        {video.type === 'short' && <div className="feed-category">SHORT</div>}
         {playing && (
-          <div className="vc-now">
-            <div className="vc-now-bars"><div className="vc-now-bar" /><div className="vc-now-bar" /><div className="vc-now-bar" /></div>
-            <span className="vc-now-text">Playing</span>
-          </div>
+          <button className="feed-unmute" onClick={toggleMute}>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 2L4 6H1v4h3l4 4V2z" />
+              {muted ? <line x1="12" y1="6" x2="12" y2="10" /> : <><path d="M12 5.5a4 4 0 010 5" /><path d="M14 3.5a7 7 0 010 9" /></>}
+            </svg>
+          </button>
         )}
+      </div>
+
+      <div className="feed-info">
+        <div className="feed-title">{video.title}</div>
+        <div className="feed-channel-row">
+          <div className="feed-avatar" style={{ background: catCol }}>{initials}</div>
+          <span className="feed-channel-name">{video.channel}</span>
+          <span className="feed-channel-dot">&middot;</span>
+          <span className="feed-channel-time">{video.timeAgo}</span>
+        </div>
+        <div className="feed-actions">
+          <a className="feed-btn-watch" href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Watch</a>
+          <div className="feed-stash-wrap" ref={stashRef}>
+            <button className="feed-btn-stash" onClick={e => { e.stopPropagation(); onStash?.(video); }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg>
+              Stash
+            </button>
+            {stashOpen && (
+              <div className="feed-stash-dropdown" onClick={e => e.stopPropagation()}>
+                {stashCollections.map(col => (
+                  <div key={col.id || col.name} className="feed-stash-dropdown-item" onClick={() => { onStash?.(video, col.name); setStashOpen(false); }}>{col.name}</div>
+                ))}
+                {stashCollections.length > 0 && <div className="feed-stash-dropdown-divider" />}
+                <div className="feed-stash-dropdown-item" onClick={() => {
+                  const name = prompt('Collection name:');
+                  if (name?.trim()) { onStash?.(video, name.trim()); }
+                  setStashOpen(false);
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v6M2 5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                  New collection
+                </div>
+              </div>
+            )}
+          </div>
+          <button className="feed-btn-more" onClick={e => { e.stopPropagation(); setStashOpen(!stashOpen); }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="3" cy="7" r="1.2" fill="#999" /><circle cx="7" cy="7" r="1.2" fill="#999" /><circle cx="11" cy="7" r="1.2" fill="#999" /></svg>
+          </button>
+        </div>
       </div>
     </div>
   );
