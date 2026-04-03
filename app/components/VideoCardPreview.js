@@ -2,10 +2,11 @@
 import { useRef, useState, useCallback } from 'react';
 import { trackEvent } from '../../lib/track';
 
-export default function VideoCardPreview({ video, categoryColour, onAddToSplit, splitFull }) {
+export default function VideoCardPreview({ video, categoryColour, onStash }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
-  const [loaded, setLoaded] = useState(false); // once loaded, never reset
+  const [loaded, setLoaded] = useState(false);
+  const [stashOpen, setStashOpen] = useState(false);
   const iframeRef = useRef(null);
   const hoverTimer = useRef(null);
   const cardRef = useRef(null);
@@ -15,7 +16,7 @@ export default function VideoCardPreview({ video, categoryColour, onAddToSplit, 
   }, [video.id]);
 
   const startVideo = useCallback(() => {
-    if (!iframeRef.current || loaded) return; // don't restart if already loaded
+    if (!iframeRef.current || loaded) return;
     iframeRef.current.src = buildSrc(true);
     setPlaying(true);
     setMuted(true);
@@ -24,23 +25,20 @@ export default function VideoCardPreview({ video, categoryColour, onAddToSplit, 
   }, [video.id, video.type, buildSrc, loaded]);
 
   const handleMouseEnter = useCallback(() => {
-    if (loaded) return; // already loaded — don't restart
+    if (loaded) return;
     hoverTimer.current = setTimeout(startVideo, 400);
   }, [startVideo, loaded]);
 
   const handleMouseLeave = useCallback(() => {
     clearTimeout(hoverTimer.current);
-    // Don't stop if unmuted or already loaded with interaction
-    // Only stop auto-preview (muted, no explicit play)
   }, []);
 
   const toggleMute = useCallback((e) => {
     e.stopPropagation();
     const newMuted = !muted;
     setMuted(newMuted);
-    setLoaded(true); // mark as loaded on any interaction
+    setLoaded(true);
     if (!playing) {
-      // Start playing if not already
       if (iframeRef.current) iframeRef.current.src = buildSrc(newMuted);
       setPlaying(true);
     } else if (iframeRef.current) {
@@ -49,7 +47,7 @@ export default function VideoCardPreview({ video, categoryColour, onAddToSplit, 
   }, [muted, playing, buildSrc]);
 
   const handlePlayClick = useCallback(() => {
-    if (loaded) return; // already playing
+    if (loaded) return;
     if (iframeRef.current) iframeRef.current.src = buildSrc(true);
     setPlaying(true);
     setMuted(true);
@@ -83,19 +81,35 @@ export default function VideoCardPreview({ video, categoryColour, onAddToSplit, 
           </svg>
           <span>{muted ? 'Unmute' : 'Mute'}</span>
         </button>
-        {onAddToSplit && !splitFull && (
-          <button className="vc-split-btn" onClick={e => { e.stopPropagation(); onAddToSplit(video); }}>
-            <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="12" rx="1" /><rect x="8" y="1" width="5" height="12" rx="1" /></svg>
-            Split
-          </button>
-        )}
       </div>
       <div className="vc-info">
         <div className="vc-info-text">
           <div className="vc-title">{video.title}</div>
           <div className="vc-channel">
-            <span className="vc-cat-dot" style={{ background: catCol }} />
-            {video.channel} · {video.timeAgo}
+            <div className="vc-channel-avatar" style={{ background: catCol }}>{(video.channel || '??').substring(0, 2).toUpperCase()}</div>
+            {video.channel}
+          </div>
+          <div className="vc-meta">{video.timeAgo}</div>
+          <div className="vc-actions">
+            <a className="vc-btn-watch" href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Watch</a>
+            <div className="vc-stash-wrap">
+              <button className="vc-btn-stash" onClick={e => { e.stopPropagation(); onStash?.(video); }}>Add to Stash</button>
+              <button className="vc-btn-stash-chevron" onClick={e => { e.stopPropagation(); setStashOpen(!stashOpen); }}>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 4l2 2 2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+              {stashOpen && (
+                <div className="vc-stash-dropdown" onClick={e => e.stopPropagation()}>
+                  <div className="vc-stash-dropdown-item" onClick={() => { onStash?.(video, 'Learn later'); setStashOpen(false); }}>Learn later</div>
+                  <div className="vc-stash-dropdown-item" onClick={() => { onStash?.(video, 'Weekend binge'); setStashOpen(false); }}>Weekend binge</div>
+                  <div className="vc-stash-dropdown-item" onClick={() => { onStash?.(video, 'Music production'); setStashOpen(false); }}>Music production</div>
+                  <div className="vc-stash-dropdown-divider" />
+                  <div className="vc-stash-dropdown-item" onClick={() => { onStash?.(video); setStashOpen(false); }}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v6M2 5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                    New collection
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         {playing && (
