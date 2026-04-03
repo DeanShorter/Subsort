@@ -84,11 +84,13 @@ export function useStash(user) {
     load();
   }, [load]);
 
-  // Create collection
-  const createCollection = useCallback(async (name) => {
+  // Create collection (type: 'simple' or 'curated')
+  const createCollection = useCallback(async (name, type = 'simple', description = '') => {
     if (!user || !name.trim()) return null;
+    const row = { name: name.trim(), user_id: user.id, sort_order: collections.length, collection_type: type };
+    if (description) row.description = description;
     const { data, error } = await supabase.from('stash_collections')
-      .insert({ name: name.trim(), user_id: user.id, sort_order: collections.length })
+      .insert(row)
       .select()
       .single();
     if (error) { showToast('Failed to create collection'); return null; }
@@ -96,6 +98,12 @@ export function useStash(user) {
     showToast(`Created: ${name}`);
     return data;
   }, [user, collections]);
+
+  // Update collection details
+  const updateCollection = useCallback(async (id, updates) => {
+    await supabase.from('stash_collections').update(updates).eq('id', id);
+    load();
+  }, [load]);
 
   // Delete collection
   const deleteCollection = useCallback(async (id) => {
@@ -111,10 +119,24 @@ export function useStash(user) {
     setItems(prev => prev.map(i => i.id === itemId ? { ...i, watched } : i));
   }, []);
 
+  // Update item (context note, notes, sort_order)
+  const updateItem = useCallback(async (itemId, updates) => {
+    await supabase.from('stash_items').update(updates).eq('id', itemId);
+    setItems(prev => prev.map(i => i.id === itemId ? { ...i, ...updates } : i));
+  }, []);
+
+  // Reorder items in a collection
+  const reorderItems = useCallback(async (orderedIds) => {
+    const updates = orderedIds.map((id, i) => supabase.from('stash_items').update({ sort_order: i }).eq('id', id));
+    await Promise.all(updates);
+    load();
+  }, [load]);
+
   return {
     collections, items, loading,
     addToStash, removeFromStash, moveToCollection,
-    createCollection, deleteCollection, toggleWatched,
+    createCollection, updateCollection, deleteCollection,
+    toggleWatched, updateItem, reorderItems,
     reload: load,
   };
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { trackEvent } from '../../lib/track';
 
 export default function VideoCardPreview({ video, categoryColour, onStash, stashCollections = [] }) {
@@ -10,6 +10,14 @@ export default function VideoCardPreview({ video, categoryColour, onStash, stash
   const iframeRef = useRef(null);
   const hoverTimer = useRef(null);
   const cardRef = useRef(null);
+  const stashRef = useRef(null);
+
+  useEffect(() => {
+    if (!stashOpen) return;
+    const handleClick = (e) => { if (stashRef.current && !stashRef.current.contains(e.target)) setStashOpen(false); };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [stashOpen]);
 
   const buildSrc = useCallback((isMuted) => {
     return `https://www.youtube.com/embed/${video.id}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1&controls=1&mute=${isMuted ? 1 : 0}`;
@@ -92,7 +100,7 @@ export default function VideoCardPreview({ video, categoryColour, onStash, stash
           <div className="vc-meta">{video.timeAgo}</div>
           <div className="vc-actions">
             <a className="vc-btn-watch" href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Watch</a>
-            <div className="vc-stash-wrap">
+            <div className="vc-stash-wrap" ref={stashRef}>
               <button className="vc-btn-stash" onClick={e => { e.stopPropagation(); onStash?.(video); }}>Add to Stash</button>
               <button className="vc-btn-stash-chevron" onClick={e => { e.stopPropagation(); setStashOpen(!stashOpen); }}>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 4l2 2 2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>

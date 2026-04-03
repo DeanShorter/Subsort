@@ -1,8 +1,9 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useStash } from '../../hooks/useStash';
 import { timeAgo } from '../../lib/youtube';
+import NewCollectionModal from '../components/NewCollectionModal';
 import Link from 'next/link';
 
 function CollectionIcon({ icon, color }) {
@@ -13,8 +14,16 @@ function CollectionIcon({ icon, color }) {
 
 function StashVideoCard({ item, collections, onRemove, onMoveToCollection, onCreateAndMove }) {
   const [colOpen, setColOpen] = useState(false);
+  const colRef = useRef(null);
   const initials = (item.channel_name || '??').substring(0, 2).toUpperCase();
   const currentCol = collections.find(c => c.id === item.collection_id);
+
+  useEffect(() => {
+    if (!colOpen) return;
+    const handleClick = (e) => { if (colRef.current && !colRef.current.contains(e.target)) setColOpen(false); };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [colOpen]);
 
   return (
     <div
@@ -41,7 +50,7 @@ function StashVideoCard({ item, collections, onRemove, onMoveToCollection, onCre
         <div className="stash-video-meta">{item.saved_at ? timeAgo(item.saved_at) : ''}</div>
         <div className="stash-video-actions">
           <a className="stash-video-btn-watch" href={`https://www.youtube.com/watch?v=${item.video_id}`} target="_blank" rel="noopener noreferrer">Watch</a>
-          <div className="stash-col-wrap">
+          <div className="stash-col-wrap" ref={colRef}>
             <button className="stash-video-btn-collect" onClick={() => setColOpen(!colOpen)}>
               {currentCol ? currentCol.name : 'Add to collection'}
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 4l2 2 2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -81,7 +90,6 @@ export default function StashPage() {
   const { user, signIn } = useAuth();
   const { collections, items, loading, removeFromStash, moveToCollection, createCollection, deleteCollection } = useStash(user);
   const [criticDismissed, setCriticDismissed] = useState(false);
-  const [newColName, setNewColName] = useState('');
   const [showNewCol, setShowNewCol] = useState(false);
   const [dragOverCol, setDragOverCol] = useState(null);
 
@@ -189,6 +197,11 @@ export default function StashPage() {
           </div>
         </div>
 
+        <NewCollectionModal
+          visible={showNewCol}
+          onClose={() => setShowNewCol(false)}
+          onCreate={(name, type, desc) => createCollection(name, type, desc)}
+        />
         <div className="stash-collections-row">
           {collections.map((col, i) => (
             <Link
@@ -204,31 +217,18 @@ export default function StashPage() {
                 <CollectionIcon icon={col.icon || 'star'} color={colIconColors[i % colIconColors.length]} />
               </div>
               <div className="stash-collection-card-name">{col.name}</div>
-              <div className="stash-collection-card-count">{collectionCounts[col.id] || 0} videos</div>
+              <div className="stash-collection-card-count">
+                {col.collection_type === 'curated' && <span className="stash-collection-type-badge">Curated</span>}
+                {collectionCounts[col.id] || 0} videos
+              </div>
             </Link>
           ))}
-          {showNewCol ? (
-            <div className="stash-collection-add" style={{ justifyContent: 'center', gap: 8 }}>
-              <input
-                className="cp-add-input"
-                placeholder="Collection name..."
-                value={newColName}
-                onChange={e => setNewColName(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && newColName.trim()) { createCollection(newColName.trim()); setNewColName(''); setShowNewCol(false); }
-                  if (e.key === 'Escape') { setShowNewCol(false); setNewColName(''); }
-                }}
-                autoFocus
-                style={{ width: '140px' }}
-              />
+          <div className="stash-collection-add" onClick={() => setShowNewCol(true)}>
+            <div className="stash-collection-add-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="var(--ocean)" strokeWidth="1.5" strokeLinecap="round" /></svg>
             </div>
-          ) : (
-            <div className="stash-collection-add" onClick={() => setShowNewCol(true)}>
-              <div className="stash-collection-add-icon">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="var(--ocean)" strokeWidth="1.5" strokeLinecap="round" /></svg>
-              </div>
-              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>New collection</span>
-            </div>
+            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>New collection</span>
+          </div>
           )}
         </div>
 

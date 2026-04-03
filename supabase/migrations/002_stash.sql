@@ -3,6 +3,8 @@ create table if not exists public.stash_collections (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   name text not null,
+  description text,
+  collection_type text default 'simple' check (collection_type in ('simple', 'curated')),
   icon text default 'star',
   colour text default 'var(--accent)',
   sort_order int default 0,
@@ -30,6 +32,9 @@ create table if not exists public.stash_items (
   published_at timestamptz,
   saved_at timestamptz default now(),
   watched boolean default false,
+  sort_order int default 0,
+  context_note text,
+  notes text,
   unique(user_id, video_id)
 );
 
