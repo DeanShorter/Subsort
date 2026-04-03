@@ -99,10 +99,19 @@ export default function ChannelPanel({ channelId, onClose }) {
       }).filter(Boolean);
       if (inserts.length) await supabase.from('channel_categories').insert(inserts);
     }
+    // If the channel's subcategory belongs to a removed category, clear it
+    if (ch.subcategory) {
+      const removedCats = (ch.categories || []).filter(c => !selectedCats.includes(c));
+      const subBelongsToRemoved = removedCats.some(cat => (subcategories[cat] || []).includes(ch.subcategory));
+      if (subBelongsToRemoved) {
+        await supabase.from('channels').update({ subcategory_id: null }).eq('id', ch.id);
+        setSelectedSub('');
+      }
+    }
     showToast('Categories updated');
     setEditingCat(false);
     await reload();
-  }, [ch, user, selectedCats, dbCategories, reload]);
+  }, [ch, user, selectedCats, dbCategories, subcategories, reload]);
 
   // Save subcategory
   const saveSub = useCallback(async () => {

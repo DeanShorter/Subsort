@@ -149,7 +149,7 @@ export function ChannelDataProvider({ children, user }) {
       (ccRows || []).forEach(cc => {
         if (!ccMap[cc.channel_id]) ccMap[cc.channel_id] = [];
         const cat = cats.find(c => c.id === cc.category_id);
-        if (cat) ccMap[cc.channel_id].push(cat.name);
+        if (cat && !ccMap[cc.channel_id].includes(cat.name)) ccMap[cc.channel_id].push(cat.name);
       });
 
       const mappedChannels = (chRows || []).map(ch => ({
