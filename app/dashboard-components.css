@@ -4059,7 +4059,7 @@ input[type=range]::-webkit-slider-thumb{
 /* Insights row */
 .s2-insights{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:20px 40px;background:var(--bg-primary);border-bottom:1px solid var(--border-subtle)}
 .s2-insight{border:2px solid var(--text-primary);border-radius:var(--radius-lg);box-shadow:3px 3px 0px var(--text-primary);overflow:hidden;background:var(--bg-card)}
-.s2-insight-header{padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.s2-insight-header{padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;background-image:repeating-linear-gradient(135deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 4px,rgba(0,0,0,.03) 4px,rgba(0,0,0,.03) 6px)}
 .s2-insight-header > div:first-child{display:flex;align-items:baseline;gap:8px}
 .s2-insight-stat{font-size:28px;font-weight:500;letter-spacing:-.5px;line-height:1}
 .s2-insight-label{font-size:12px}
@@ -4238,7 +4238,7 @@ input[type=range]::-webkit-slider-thumb{
 .s2-sort-pill svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.2;stroke-linecap:round}
 
 /* ═══ Stash Page ═══ */
-.stash-header{background:var(--ocean-soft);padding:28px 40px 20px;border-bottom:var(--border-thick);flex-shrink:0}
+.stash-header{background:var(--ocean-soft);padding:28px 40px 20px;border-bottom:var(--border-thick);flex-shrink:0;background-image:repeating-linear-gradient(135deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 4px,rgba(0,0,0,.03) 4px,rgba(0,0,0,.03) 6px)}
 .stash-header-row{display:flex;align-items:center;justify-content:space-between}
 .stash-title{font-size:22px;font-weight:500;color:var(--ocean-text);letter-spacing:-.3px}
 .stash-title span{font-weight:400;font-size:15px;opacity:.5;margin-left:8px}
@@ -4568,7 +4568,7 @@ input[type=range]::-webkit-slider-thumb{
 .h2-critic-card::after{content:'';position:absolute;inset:0;border-radius:var(--radius-lg);pointer-events:none}
 
 /* Critic header — solid green bar */
-.h2-critic-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;background:var(--accent);position:relative;z-index:1}
+.h2-critic-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;background:var(--accent);position:relative;z-index:1;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0) 4px,rgba(255,255,255,.08) 4px,rgba(255,255,255,.08) 6px)}
 .h2-critic-identity{display:flex;align-items:center;gap:8px}
 .h2-critic-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:rgba(255,255,255,.2)}
 .h2-critic-title{font-family:var(--font-display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#fff}
@@ -4652,7 +4652,7 @@ input[type=range]::-webkit-slider-thumb{
 .obs-section-title svg{flex-shrink:0}
 .obs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .obs-card{border:2px solid var(--text-primary);border-radius:var(--radius-lg);box-shadow:3px 3px 0px var(--text-primary);overflow:hidden;background:var(--bg-card);display:flex;flex-direction:column}
-.obs-header{padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.obs-header{padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;background-image:repeating-linear-gradient(135deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 4px,rgba(0,0,0,.03) 4px,rgba(0,0,0,.03) 6px)}
 .obs-type{font-size:10px;font-weight:600;letter-spacing:.5px}
 .obs-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .obs-body{padding:0 16px 14px;flex:1;display:flex;flex-direction:column;justify-content:center}
@@ -5177,6 +5177,26 @@ input[type=range]::-webkit-slider-thumb{
   .f2-header-right::-webkit-scrollbar{display:none}
   .f2-cat-row{padding:0 16px 10px;padding-top:8px}
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   TEXTURE UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+/* White stripes — for solid/dark backgrounds */
+.tex-pinstripe{background-image:repeating-linear-gradient(
+  135deg,
+  rgba(255,255,255,0) 0px,
+  rgba(255,255,255,0) 4px,
+  rgba(255,255,255,.08) 4px,
+  rgba(255,255,255,.08) 6px
+)}
+/* Dark stripes — for soft/light backgrounds */
+.tex-pinstripe-light{background-image:repeating-linear-gradient(
+  135deg,
+  rgba(0,0,0,0) 0px,
+  rgba(0,0,0,0) 4px,
+  rgba(0,0,0,.03) 4px,
+  rgba(0,0,0,.03) 6px
+)}
 
 /* ═══════════════════════════════════════════════════════════════
    ONBOARDING FLOW
