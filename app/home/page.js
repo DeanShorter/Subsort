@@ -509,7 +509,6 @@ export default function Home2Page() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Subscription Timeline */}
       {channels.length > 0 && (() => {
@@ -662,6 +661,7 @@ export default function Home2Page() {
           </div>
         );
       })()}
+      </div>
 
       {/* Video modal */}
       {playingVideo && (
