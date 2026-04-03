@@ -229,7 +229,6 @@ export default function StashPage() {
             </div>
             <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>New collection</span>
           </div>
-          )}
         </div>
 
         {/* Recently saved */}
