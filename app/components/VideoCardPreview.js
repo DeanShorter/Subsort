@@ -2,7 +2,7 @@
 import { useRef, useState, useCallback } from 'react';
 import { trackEvent } from '../../lib/track';
 
-export default function VideoCardPreview({ video, categoryColour, onStash }) {
+export default function VideoCardPreview({ video, categoryColour, onStash, stashCollections = [] }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [loaded, setLoaded] = useState(false);
@@ -99,11 +99,15 @@ export default function VideoCardPreview({ video, categoryColour, onStash }) {
               </button>
               {stashOpen && (
                 <div className="vc-stash-dropdown" onClick={e => e.stopPropagation()}>
-                  <div className="vc-stash-dropdown-item" onClick={() => { onStash?.(video, 'Learn later'); setStashOpen(false); }}>Learn later</div>
-                  <div className="vc-stash-dropdown-item" onClick={() => { onStash?.(video, 'Weekend binge'); setStashOpen(false); }}>Weekend binge</div>
-                  <div className="vc-stash-dropdown-item" onClick={() => { onStash?.(video, 'Music production'); setStashOpen(false); }}>Music production</div>
-                  <div className="vc-stash-dropdown-divider" />
-                  <div className="vc-stash-dropdown-item" onClick={() => { onStash?.(video); setStashOpen(false); }}>
+                  {stashCollections.map(col => (
+                    <div key={col.id || col.name} className="vc-stash-dropdown-item" onClick={() => { onStash?.(video, col.name); setStashOpen(false); }}>{col.name}</div>
+                  ))}
+                  {stashCollections.length > 0 && <div className="vc-stash-dropdown-divider" />}
+                  <div className="vc-stash-dropdown-item" onClick={() => {
+                    const name = prompt('Collection name:');
+                    if (name?.trim()) { onStash?.(video, name.trim()); }
+                    setStashOpen(false);
+                  }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v6M2 5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
                     New collection
                   </div>

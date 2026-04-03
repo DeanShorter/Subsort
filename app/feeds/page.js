@@ -5,6 +5,7 @@ import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
 import { useDragScroll } from '../../hooks/useDragScroll';
+import { useStash } from '../../hooks/useStash';
 import VideoCardPreview from '../components/VideoCardPreview';
 
 export default function Feeds2Page() {
@@ -28,6 +29,7 @@ export default function Feeds2Page() {
   const [typeFilter, setTypeFilter] = useState('videos');
   const [feedView, setFeedView] = useState('grid');
   const [visibleCount, setVisibleCount] = useState(60);
+  const { collections: stashCollections, addToStash } = useStash(user);
   const contentRef = useRef(null);
   const catRowRef = useRef(null);
 
@@ -285,6 +287,8 @@ export default function Feeds2Page() {
               <VideoCardPreview
                 video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '' }}
                 categoryColour={catCol}
+                onStash={addToStash}
+                stashCollections={stashCollections}
               />
             </div>
           );
