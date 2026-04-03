@@ -234,6 +234,8 @@ export default function Subscriptions2Page() {
         onToggleCat={handleToggleCat}
         onClose={() => setShowCatPanel(false)}
         onAutoSort={handleAutoSort}
+        activeSub={activeSubcategory}
+        onToggleSub={(sub) => setActiveSubcategory(prev => prev === sub ? null : sub)}
       />
     ) : (
       <div className="cp-collapsed" onClick={() => setShowCatPanel(true)}>

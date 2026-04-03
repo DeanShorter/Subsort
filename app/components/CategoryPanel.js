@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import { supabase } from '../../lib/supabase';
 import { showToast } from './Toast';
 
-export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAutoSort }) {
+export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAutoSort, activeSub, onToggleSub }) {
   const { categories, subcategories, categoryColours, channels, chCats, chHasCat, dbCategories, dbSubcategories, reload } = useChannelData();
   const { user } = useAuth();
   const [searchQ, setSearchQ] = useState('');
@@ -16,6 +16,9 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
   const [newSubValue, setNewSubValue] = useState('');
   const [editingSub, setEditingSub] = useState(null);
   const [editSubValue, setEditSubValue] = useState('');
+
+  const [addingCat, setAddingCat] = useState(false);
+  const [newCatValue, setNewCatValue] = useState('');
 
   // Delete confirmation modals
   const [deleteCatConfirm, setDeleteCatConfirm] = useState(null); // { name, count }
@@ -33,8 +36,11 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
   const filteredCats = useMemo(() => {
     if (!searchQ.trim()) return categories;
     const q = searchQ.toLowerCase();
-    return categories.filter(c => c.toLowerCase().includes(q));
-  }, [categories, searchQ]);
+    return categories.filter(c =>
+      c.toLowerCase().includes(q) ||
+      (subcategories[c] || []).some(sub => sub.toLowerCase().includes(q))
+    );
+  }, [categories, subcategories, searchQ]);
 
   const getCatCount = (cat) => channels.filter(c => chHasCat(c, cat)).length;
   const getSubCount = (cat, sub) => channels.filter(c => chHasCat(c, cat) && c.subcategory === sub).length;
@@ -102,6 +108,20 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
     setEditingCat(null);
     setEditValue('');
   }, [editValue, user, dbCategories, reload]);
+
+  // ── Add category ─────────────────────────────────
+  const handleAddCat = useCallback(async () => {
+    if (!newCatValue.trim() || !user) return;
+    const name = newCatValue.trim();
+    if (categories.includes(name)) { showToast('Category already exists'); return; }
+
+    const { error } = await supabase.from('categories')
+      .insert({ name, user_id: user.id, sort_order: dbCategories.length });
+    if (error) { showToast('Failed to add category'); console.error(error); }
+    else { showToast(`Added: ${name}`); reload(); }
+    setNewCatValue('');
+    setAddingCat(false);
+  }, [newCatValue, user, categories, dbCategories, reload]);
 
   // ── Delete category (with modal) ─────────────────
   const confirmDeleteCat = useCallback((catName) => {
@@ -178,8 +198,8 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
 
           return (
             <div key={cat}>
-              <div className={`cp-item${isOn ? ' on' : ''}`}>
-                <div className="cp-item-left" onClick={() => !isEditing && onToggleCat(cat)}>
+              <div className={`cp-item${isOn ? ' on' : ''}`} onClick={() => !isEditing && onToggleCat(cat)}>
+                <div className="cp-item-left">
                   <div className={`cp-check${isOn ? ' on' : ''}`}>
                     {isOn && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 5.5l2 2 3.5-3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                   </div>
@@ -234,7 +254,7 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
                   {subs.map(sub => {
                     const isEditingSub = editingSub?.cat === cat && editingSub?.sub === sub;
                     return (
-                      <div key={sub} className="cp-sub-item">
+                      <div key={sub} className={`cp-sub-item${activeSub === sub ? ' on' : ''}`} onClick={() => !isEditingSub && onToggleSub?.(sub)}>
                         <div className="cp-sub-left">
                           <div className="cp-sub-dash" />
                           {isEditingSub ? (
@@ -309,10 +329,29 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
       </div>
 
       <div className="cp-foot">
-        <button className="cp-add-btn">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 3v8M3 7h8" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" /></svg>
-          Add category
-        </button>
+        {addingCat ? (
+          <div className="cp-add-row">
+            <input
+              className="cp-add-input"
+              placeholder="Category name..."
+              value={newCatValue}
+              onChange={e => setNewCatValue(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleAddCat(); if (e.key === 'Escape') { setAddingCat(false); setNewCatValue(''); } }}
+              autoFocus
+            />
+            <button className="cp-action-btn cp-action-confirm" onClick={handleAddCat} title="Add">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="#00A651" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <button className="cp-action-btn" onClick={() => { setAddingCat(false); setNewCatValue(''); }} title="Cancel">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="var(--text-muted)" strokeWidth="1.2" strokeLinecap="round" /></svg>
+            </button>
+          </div>
+        ) : (
+          <button className="cp-add-btn" onClick={() => setAddingCat(true)}>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 3v8M3 7h8" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            Add category
+          </button>
+        )}
       </div>
 
       {/* ── Delete category confirmation modal ── */}
