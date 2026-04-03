@@ -971,7 +971,7 @@ input[type=range]::-webkit-slider-thumb{
 .page-header{background:var(--bg-card);border:2px solid var(--border-subtle);border-radius:12px;overflow:hidden;position:sticky;top:0;z-index:50}
 
 /* Row 1: Title bar */
-.ph-title-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;min-height:52px}
+.ph-title-bar{display:flex;align-items:center;justify-content:space-between;padding:28px 40px 20px;min-height:52px}
 .ph-left{display:flex;align-items:center;gap:10px;min-width:0}
 .ph-title{font-family:var(--font-display);font-size:16px;font-weight:600;letter-spacing:-.3px;white-space:nowrap;color:var(--text-primary)}
 .ph-title em{color:var(--accent);font-style:normal}
@@ -3860,7 +3860,7 @@ input[type=range]::-webkit-slider-thumb{
   .sidebar{position:static;flex:none}
   /* Page header */
   .ph-title{font-size:1.125rem}
-  .ph-title-bar{padding:10px 16px}
+  .ph-title-bar{padding:20px 16px 14px}
   /* sticky-bar removed */
   /* Controls: wrap */
   .ct-controls-row{flex-wrap:wrap;gap:6px}
@@ -4075,7 +4075,7 @@ input[type=range]::-webkit-slider-thumb{
 .s2-search-pill:focus{border-color:var(--accent)}
 .s2-icon-btn{width:34px;height:34px;border-radius:50%;background:var(--bg-primary);border:1.5px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;cursor:pointer}
 .s2-icon-btn:hover{border-color:var(--border-hover);background:var(--bg-card-hover)}
-.s2-topbar-row{display:flex;align-items:center;justify-content:space-between;height:52px}
+.s2-topbar-row{display:flex;align-items:center;justify-content:space-between;padding:28px 0 20px}
 .s2-topbar-left{display:flex;align-items:center;gap:10px}
 .s2-topbar-right{display:flex;align-items:center;gap:6px}
 .s2-btn-ghost{background:transparent;border:none;color:var(--text-dim);padding:6px 10px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
@@ -4627,7 +4627,7 @@ input[type=range]::-webkit-slider-thumb{
 }
 .f2-header-top{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 24px;min-height:52px;
+  padding:28px 40px 20px;min-height:52px;
 }
 .f2-header-left{display:flex;align-items:center;gap:10px}
 .f2-title{font-family:var(--font-display);font-size:16px;font-weight:600;letter-spacing:-0.3px}
