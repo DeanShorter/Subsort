@@ -4,6 +4,7 @@ import { useChannelData } from './ChannelDataContext';
 import { useAuth } from './AuthContext';
 import { supabase } from '../../lib/supabase';
 import { showToast } from './Toast';
+import Link from 'next/link';
 
 export default function ChannelPanel({ channelId, onClose }) {
   const { channels, categories, subcategories, categoryColours, chCats, formatCount, getChannelState, feedVideos, dbCategories, dbSubcategories, reload, toggleFavourite } = useChannelData();
@@ -12,7 +13,6 @@ export default function ChannelPanel({ channelId, onClose }) {
   const [editingSub, setEditingSub] = useState(false);
   const [selectedCats, setSelectedCats] = useState([]);
   const [selectedSub, setSelectedSub] = useState('');
-  const [showRecent, setShowRecent] = useState(false);
 
   const ch = channels.find(c => c.id === channelId);
 
@@ -62,10 +62,6 @@ export default function ChannelPanel({ channelId, onClose }) {
     return { lastUpload, frequency };
   }, [ch, feedVideos]);
 
-  const recentVids = useMemo(() => {
-    if (!ch) return [];
-    return feedVideos.filter(v => v.channelId === ch.channelId).slice(0, 5);
-  }, [ch, feedVideos]);
 
   // Init edit state when channel changes
   useEffect(() => {
@@ -171,7 +167,7 @@ export default function ChannelPanel({ channelId, onClose }) {
         </div>
       </div>
 
-      {/* Favourite + Recent uploads + YouTube buttons */}
+      {/* Favourite + YouTube buttons */}
       <div className="sp-panel-quick-actions">
         <button className={`sp-panel-qa-btn${ch.favourited ? ' sp-panel-qa-fav-on' : ''}`} onClick={() => toggleFavourite(ch.id)}>
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
@@ -182,15 +178,6 @@ export default function ChannelPanel({ channelId, onClose }) {
           </svg>
           {ch.favourited ? 'Favourited' : 'Favourite'}
         </button>
-        {recentVids.length > 0 && (
-          <button className="sp-panel-qa-btn" onClick={() => setShowRecent(!showRecent)}>
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-              <rect x="1.5" y="2" width="11" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
-              <path d="M5 5.5v3l3.5-1.5z" fill="currentColor" />
-            </svg>
-            Recent uploads
-          </button>
-        )}
         <a className="sp-panel-qa-btn" href={ytUrl} target="_blank" rel="noopener noreferrer">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
             <path d="M7 1L13 7L7 13M13 7H1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
@@ -198,23 +185,6 @@ export default function ChannelPanel({ channelId, onClose }) {
           YouTube
         </a>
       </div>
-
-      {/* Recent uploads expandable */}
-      {showRecent && (
-        <div className="sp-panel-recent">
-          {recentVids.map(v => (
-            <div key={v.id} className="sp-panel-recent-item">
-              <div className="sp-panel-recent-thumb">
-                {v.thumbnail && <img src={v.thumbnail} alt="" />}
-              </div>
-              <div className="sp-panel-recent-info">
-                <div className="sp-panel-recent-title">{v.title}</div>
-                <div className="sp-panel-recent-date">{v.publishedAt ? new Date(v.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* ── Divider 1: after buttons ── */}
       <div className="sp-panel-divider" />
@@ -351,6 +321,14 @@ export default function ChannelPanel({ channelId, onClose }) {
           <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{ch.notes}</div>
         </div>
       )}
+
+      {/* View more */}
+      <div className="sp-panel-more">
+        <Link href={`/subscriptions/${encodeURIComponent(ch.customUrl?.replace(/^@/, '') || ch.channelId || ch.id)}`} className="sp-panel-more-link">
+          View more channel details
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 3l3 3-3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </Link>
+      </div>
     </div>
   );
 }
