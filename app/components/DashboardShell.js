@@ -83,10 +83,7 @@ function DashboardInner({ children }) {
               </svg>
             </button>
             <Link href="/dashboard" className="mobile-topbar-brand" style={{ textDecoration: 'none' }}>
-              <img src="/icon.svg" alt="Subscrub" style={{ width: 24, height: 24 }} />
-              <span className="home-nav-brand-wordmark" style={{ marginLeft: 6 }}>
-                <span className="hnp-wordmark">sub</span><span>scrub</span>
-              </span>
+              <img src="/icon.svg" alt="Subscrub" style={{ width: 28, height: 28 }} />
             </Link>
           </div>
         )}
