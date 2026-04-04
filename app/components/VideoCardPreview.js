@@ -74,8 +74,10 @@ export default function VideoCardPreview({ video, categoryColour, categoryName, 
           <iframe ref={iframeRef} src="" allow="autoplay; encrypted-media; fullscreen" allowFullScreen />
         </div>
         {video.duration && <div className="feed-duration">{video.duration}</div>}
-        {categoryName && <div className="feed-category">{categoryName}</div>}
-        {video.type === 'short' && <div className="feed-category">SHORT</div>}
+        <div className="feed-thumb-tags">
+          {categoryName && <div className="feed-category">{categoryName}</div>}
+          {video.type === 'short' && <div className="feed-short-badge">S</div>}
+        </div>
         {playing && (
           <button className="feed-unmute" onClick={toggleMute}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

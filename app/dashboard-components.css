@@ -5051,7 +5051,9 @@ input[type=range]::-webkit-slider-thumb{
 .feed-iframe-wrap iframe{width:100%;height:100%;border:none}
 .feed-duration{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;z-index:3}
 .feed-thumb.playing .feed-duration{opacity:0}
-.feed-category{position:absolute;top:8px;left:8px;padding:3px 9px;border-radius:10px;font-size:10px;font-weight:500;background:rgba(0,0,0,.6);color:#fff;backdrop-filter:blur(4px);z-index:3}
+.feed-thumb-tags{position:absolute;top:8px;left:8px;right:8px;display:flex;align-items:center;justify-content:space-between;z-index:3;pointer-events:none}
+.feed-category{padding:3px 9px;border-radius:10px;font-size:10px;font-weight:500;background:rgba(0,0,0,.6);color:#fff;backdrop-filter:blur(4px)}
+.feed-short-badge{width:20px;height:20px;border-radius:5px;background:#FF0000;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:auto}
 .feed-unmute{position:absolute;bottom:8px;left:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.15);color:#fff;cursor:pointer;z-index:4;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .feed-unmute:hover{background:rgba(0,0,0,.9)}
 .feed-unmute svg{width:12px;height:12px}
