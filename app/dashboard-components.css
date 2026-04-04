@@ -5250,6 +5250,8 @@ input[type=range]::-webkit-slider-thumb{
 .chd-rel-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
 .chd-rel-label{font-size:13px;color:var(--text-secondary)}
 .chd-rel-value{font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
+.chd-rel-bar{height:5px;border-radius:3px;background:var(--bg-primary);overflow:hidden;margin:6px 0 2px}
+.chd-rel-bar-fill{height:100%;border-radius:3px}
 
 /* Category tags */
 .chd-cat-tags{display:flex;gap:6px;flex-wrap:wrap}

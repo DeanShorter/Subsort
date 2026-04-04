@@ -125,8 +125,27 @@ export default function ChannelDetailPage() {
     : null;
   const subLabel = subAge === null ? 'Unknown' : subAge >= 5 ? 'OG' : subAge >= 2 ? 'Veteran' : subAge >= 1 ? 'Regular' : 'Newcomer';
 
+  // Watch activity from localStorage
+  const watchActivity = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const wh = JSON.parse(localStorage.getItem('subsort_watchhistory'));
+      if (!wh?.topChannels) return null;
+      const ids = new Set([ch.channelId, ch.id, ch.customUrl?.replace(/^@/, ''), ch.name?.toLowerCase()].filter(Boolean));
+      const match = wh.topChannels.find(tc => {
+        const tcUrlId = tc.channelUrl?.replace(/\/$/, '').split('/').pop();
+        const tcHandle = tc.channelUrl?.match(/@([^/]+)/)?.[1];
+        return (tcUrlId && ids.has(tcUrlId)) || (tcHandle && ids.has(tcHandle.toLowerCase())) || (tc.channelName && ids.has(tc.channelName.toLowerCase()));
+      });
+      if (!match) return { watched: 0, pct: 0, rate: 'None' };
+      const pct = ch.videoCount ? Math.round((match.count / ch.videoCount) * 100) : 0;
+      const rate = pct >= 50 ? 'High' : pct >= 20 ? 'Medium' : pct >= 5 ? 'Low' : 'Minimal';
+      return { watched: match.count, pct, rate };
+    } catch { return null; }
+  }, [ch]);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'auto', background: '#fff' }}>
 
       {/* Breadcrumb */}
       <div className="chd-breadcrumb">
@@ -268,6 +287,31 @@ export default function ChannelDetailPage() {
               <div className="chd-rel-row"><span className="chd-rel-label">Channel created</span><span className="chd-rel-value">{fmtDate(ch.channelCreatedAt)}</span></div>
               <div className="chd-rel-row"><span className="chd-rel-label">Status</span><span className="chd-rel-value" style={{ color: state === 'active' ? 'var(--accent)' : state === 'inactive' ? 'var(--orange)' : 'var(--text-muted)' }}>{state === 'active' ? 'Active' : state === 'inactive' ? 'Inactive' : 'Dead'}</span></div>
             </div>
+            <div className="chd-rel-rows" style={{ marginTop: 16 }}>
+              <div className="chd-rel-row"><span className="chd-rel-label">At subscription</span><span className="chd-rel-value">{formatCount(ch.subscriberCount)} subs</span></div>
+              <div className="chd-rel-row"><span className="chd-rel-label">Now</span><span className="chd-rel-value">{formatCount(ch.subscriberCount)} subs</span></div>
+              <div className="chd-rel-row"><span className="chd-rel-label">Growth since</span><span className="chd-rel-value" style={{ color: 'var(--accent)' }}>—</span></div>
+            </div>
+          </div>
+
+          {/* Your activity */}
+          <div className="chd-sb-section">
+            <div className="chd-sb-title">YOUR ACTIVITY</div>
+            <div className="chd-rel-row">
+              <span className="chd-rel-label">Videos watched</span>
+              <span className="chd-rel-value">{watchActivity ? `${watchActivity.watched} of ${ch.videoCount?.toLocaleString() || '—'}` : `— of ${ch.videoCount?.toLocaleString() || '—'}`}</span>
+            </div>
+            <div className="chd-rel-bar">
+              <div className="chd-rel-bar-fill" style={{ width: `${watchActivity?.pct || 0}%`, background: watchActivity?.pct >= 50 ? 'var(--accent)' : watchActivity?.pct >= 20 ? 'var(--orange)' : 'var(--text-muted)' }} />
+            </div>
+            <div className="chd-rel-row">
+              <span className="chd-rel-label">Watch rate</span>
+              <span className="chd-rel-value" style={{ color: watchActivity?.rate === 'High' ? 'var(--accent)' : watchActivity?.rate === 'Medium' ? 'var(--orange)' : 'var(--text-muted)' }}>{watchActivity?.rate || 'Upload watch history'}</span>
+            </div>
+            <div className="chd-rel-row">
+              <span className="chd-rel-label">Last watched</span>
+              <span className="chd-rel-value">—</span>
+            </div>
           </div>
 
           {/* Category */}
@@ -280,14 +324,24 @@ export default function ChannelDetailPage() {
                 <span className="chd-cat-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>Unsorted</span>
               )}
             </div>
-            {ch.subcategory && (
-              <>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 10 }}>Subcategory</div>
-                <div className="chd-cat-tags" style={{ marginTop: 6 }}>
-                  <span className="chd-cat-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>{ch.subcategory}</span>
-                </div>
-              </>
+            {ch.subcategory ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Subcategory</span>
+                <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500, cursor: 'pointer' }}>Edit</span>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Subcategory</span>
+                <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500, cursor: 'pointer' }}>Edit</span>
+              </div>
             )}
+            <div className="chd-cat-tags" style={{ marginTop: 6 }}>
+              {ch.subcategory ? (
+                <span className="chd-cat-tag" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>{ch.subcategory}</span>
+              ) : (
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>None</span>
+              )}
+            </div>
           </div>
 
           {/* Related channels */}
@@ -316,12 +370,24 @@ export default function ChannelDetailPage() {
           <div className="chd-sb-section">
             <div className="chd-sb-title">ACTIONS</div>
             <div className="chd-action-list">
-              <a className="chd-action-item" href={ytUrl} target="_blank" rel="noopener noreferrer">
+              <button className="chd-action-item">
+                <div className="chd-action-icon" style={{ background: 'var(--ocean-soft)' }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4" stroke="var(--ocean)" strokeWidth="1.2" /><path d="M4 6h4" stroke="var(--ocean)" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                </div>
+                Take a sabbatical
+              </button>
+              <button className="chd-action-item">
                 <div className="chd-action-icon" style={{ background: 'var(--bg-primary)' }}>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M3 6h6M4 9h4" stroke="var(--text-muted)" strokeWidth="1.2" strokeLinecap="round" /></svg>
                 </div>
-                View on YouTube
-              </a>
+                Recategorise
+              </button>
+              <button className="chd-action-item">
+                <div className="chd-action-icon" style={{ background: 'var(--bg-primary)' }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 8l3-6h2l3 6M3.5 6h5" stroke="var(--text-muted)" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+                Export channel data
+              </button>
               <button className="chd-action-item destructive">
                 <div className="chd-action-icon" style={{ background: '#FCEBEB' }}>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="#E24B4A" strokeWidth="1.2" strokeLinecap="round" /></svg>
