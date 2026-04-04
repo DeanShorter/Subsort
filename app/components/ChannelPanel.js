@@ -70,7 +70,6 @@ export default function ChannelPanel({ channelId, onClose }) {
     setSelectedSub(ch.subcategory || '');
     setEditingCat(false);
     setEditingSub(false);
-    setShowRecent(false);
   }, [channelId, ch]);
 
   // Available subcategories for selected categories
