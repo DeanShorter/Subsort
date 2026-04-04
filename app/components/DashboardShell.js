@@ -82,7 +82,7 @@ function DashboardInner({ children }) {
                 <path d="M3 6h18M3 12h18M3 18h18" />
               </svg>
             </button>
-            <Link href="/dashboard" className="mobile-topbar-brand" style={{ textDecoration: 'none' }}>
+            <Link href="/home" className="mobile-topbar-brand" style={{ textDecoration: 'none' }}>
               <img src="/icon.svg" alt="Subscrub" style={{ width: 28, height: 28 }} />
             </Link>
           </div>
