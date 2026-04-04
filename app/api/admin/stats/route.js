@@ -39,22 +39,31 @@ export async function GET(req) {
   // Fetch all data in parallel
   const [usersRes, channelsRes, eventsRes, recentEventsRes, healthRes] = await Promise.all([
     supabase.from('profiles').select('*'),
-    supabase.from('channels').select('id', { count: 'exact', head: true }),
-    supabase.from('events').select('event_name, user_id, metadata, created_at').gte('created_at', weekAgo).order('created_at', { ascending: false }),
-    supabase.from('events').select('event_name, user_id, metadata, created_at').order('created_at', { ascending: false }).limit(50),
-    supabase.from('health_score_snapshots').select('score, mood').eq('snapshot_date', now.toISOString().split('T')[0]),
+    supabase.from('channels').select('user_id, channel_id'),
+    supabase.from('events').select('event_name, user_id, metadata, created_at').gte('created_at', weekAgo).neq('event_name', 'session_start').order('created_at', { ascending: false }),
+    supabase.from('events').select('event_name, user_id, metadata, created_at').neq('event_name', 'session_start').order('created_at', { ascending: false }).limit(50),
+    supabase.from('health_score_snapshots').select('user_id, score, mood, snapshot_date').order('snapshot_date', { ascending: false }).limit(50),
   ]);
 
   const users = usersRes.data || [];
+  const allChannels = channelsRes.data || [];
   const events = eventsRes.data || [];
   const recentEvents = recentEventsRes.data || [];
   const healthScores = healthRes.data || [];
+
+  // Deduplicated channel count (distinct channel_id per user)
+  const uniqueChannels = new Set(allChannels.map(c => `${c.user_id}_${c.channel_id}`)).size;
 
   // Vital signs
   const activeToday = new Set(events.filter(e => new Date(e.created_at) >= new Date(dayAgo)).map(e => e.user_id)).size;
   const activeWeek = new Set(events.map(e => e.user_id)).size;
   const proCount = users.filter(u => u.tier === 'pro').length;
-  const avgHealth = healthScores.length ? Math.round(healthScores.reduce((s, h) => s + h.score, 0) / healthScores.length) : null;
+
+  // Avg health score — use most recent snapshot per user
+  const latestScorePerUser = {};
+  healthScores.forEach(h => { if (!latestScorePerUser[h.user_id]) latestScorePerUser[h.user_id] = h.score; });
+  const scoreValues = Object.values(latestScorePerUser);
+  const avgHealth = scoreValues.length ? Math.round(scoreValues.reduce((s, v) => s + v, 0) / scoreValues.length) : null;
 
   // Feature usage
   const featureMap = {
@@ -98,7 +107,7 @@ export async function GET(req) {
 
   return NextResponse.json({
     users,
-    totalChannels: channelsRes.count || 0,
+    totalChannels: uniqueChannels,
     vitals: {
       totalUsers: users.length,
       activeToday,

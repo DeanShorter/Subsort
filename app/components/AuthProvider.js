@@ -32,8 +32,11 @@ export function AuthProvider({ children }) {
         localStorage.setItem('subsort_yt_token', session.provider_token);
       }
 
-      // Track session start (fire-and-forget)
-      trackEvent('session_start');
+      // Track session start once per browser session
+      if (!sessionStorage.getItem('subsnub_session_tracked')) {
+        sessionStorage.setItem('subsnub_session_tracked', '1');
+        trackEvent('session_start');
+      }
 
       // Fetch user tier (non-blocking for loading state)
       setLoading(false);
