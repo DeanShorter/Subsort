@@ -180,7 +180,7 @@ export default function SettingsPage() {
       {/* Theme */}
       <section className="settings-section">
         <h3 className="settings-section-title">Theme</h3>
-        <p className="settings-desc">Choose how Subscrub looks to you.</p>
+        <p className="settings-desc">Choose how Subsnub looks to you.</p>
         <div className="settings-theme-row">
           <button
             className={`settings-theme-btn${activeTheme === 'dark' ? ' active' : ''}`}

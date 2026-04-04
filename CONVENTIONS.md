@@ -33,8 +33,8 @@ Next.js App Router, Supabase, TypeScript, Vercel hosting
 
 ## Logo
 - Outfit 700, 22px, -0.5px letter-spacing
-- "sub" in var(--mint), "scrub" in var(--text)
-- HTML: <a class="logo"><span>sub</span>scrub</a>
+- "sub" in var(--mint), "snub" in var(--text)
+- HTML: <a class="logo"><span>sub</span>snub</a>
 
 ## Tone of voice
 - Cheeky, observational, warm
@@ -58,7 +58,7 @@ Next.js App Router, Supabase, TypeScript, Vercel hosting
 - Production DB on main branch, test DB on dev branch and local
 
 ## Git workflow
-- main = production (auto-deploys to getsubscrub.com)
+- main = production (auto-deploys to getsubsnub.com)
 - dev = working branch (preview URLs)
 - Never commit directly to main
 - .env.local points to test database only

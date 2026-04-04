@@ -38,7 +38,7 @@ export function useRSSRefresh() {
           channelsChecked: data.channelsChecked || 0,
           newVideos: data.newVideos || 0,
         });
-        window.dispatchEvent(new Event('subscrub:rss-refreshed'));
+        window.dispatchEvent(new Event('subsnub:rss-refreshed'));
       } else {
         console.error('[RSS] Refresh failed:', data.error);
       }

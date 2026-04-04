@@ -81,7 +81,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
 
   // Helper to dispatch sync modal state
   const emitSync = useCallback((state) => {
-    window.dispatchEvent(new CustomEvent('subscrub:sync-state', { detail: state }));
+    window.dispatchEvent(new CustomEvent('subsnub:sync-state', { detail: state }));
   }, []);
 
   // Auto-sync on login: full modal if 24h+ since last sync, silent RSS otherwise
@@ -101,7 +101,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
 
     (async () => {
       setSyncing(true);
-      window.dispatchEvent(new Event('subscrub:sync-modal-show'));
+      window.dispatchEvent(new Event('subsnub:sync-modal-show'));
 
       // Step 0: Connecting
       emitSync({ action: 'activate', step: 0, pct: 8 });
@@ -125,7 +125,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
         } catch (e) {
           if (e.message === 'SESSION_EXPIRED') {
             console.warn('[AutoSync] YouTube token expired — prompting re-auth');
-            window.dispatchEvent(new Event('subscrub:sync-modal-hide'));
+            window.dispatchEvent(new Event('subsnub:sync-modal-hide'));
             setSyncProgress(null);
             setSyncing(false);
             showToast('YouTube session expired — please sign in again to sync.', 5000);
@@ -214,7 +214,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
       });
 
       // Fire RSS refresh event and save timestamps
-      window.dispatchEvent(new Event('subscrub:rss-refreshed'));
+      window.dispatchEvent(new Event('subsnub:rss-refreshed'));
       localStorage.setItem('subsort_sync_ts', String(Date.now()));
       localStorage.setItem('subsort_rss_ts', String(Date.now()));
       console.log('[AutoSync] Complete');
@@ -321,9 +321,9 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
 
     // Directly invoke the same auto-sync flow
     setSyncing(true);
-    window.dispatchEvent(new Event('subscrub:sync-modal-show'));
+    window.dispatchEvent(new Event('subsnub:sync-modal-show'));
 
-    const emitSync = (d) => window.dispatchEvent(new CustomEvent('subscrub:sync-state', { detail: d }));
+    const emitSync = (d) => window.dispatchEvent(new CustomEvent('subsnub:sync-state', { detail: d }));
 
     emitSync({ action: 'activate', step: 0, pct: 8 });
     await new Promise(r => setTimeout(r, 800));
@@ -376,7 +376,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
     localStorage.setItem('subsort_sync_ts', String(Date.now()));
     localStorage.setItem('subsort_rss_ts', String(Date.now()));
 
-    window.dispatchEvent(new Event('subscrub:rss-refreshed'));
+    window.dispatchEvent(new Event('subsnub:rss-refreshed'));
     await reload();
     setSyncing(false);
   }, [user, syncing, userTier, accessToken, channels, categories, reload]);
@@ -398,7 +398,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
       <div className="hnp-header">
         <div className="hnp-brand-group">
           <Link href="/home" className="home-nav-brand" style={{ textDecoration: 'none' }}>
-            <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-logo" />
+            <img src="/icon.svg" alt="Subsnub" className="home-nav-brand-logo" />
           </Link>
           {user && <span className={`tier-badge ${userTier}`}>{userTier}</span>}
         </div>

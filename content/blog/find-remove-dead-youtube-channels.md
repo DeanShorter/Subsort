@@ -29,7 +29,7 @@ More importantly, when you're trying to organise your subscriptions, dead channe
 
 Manually checking each subscription is impractical if you have hundreds. The fastest approach is to use a tool that checks each channel's last upload date automatically.
 
-Subscrub flags channels as inactive based on their upload frequency and last video date. You can filter your entire subscription list to show only dead channels, then decide what to do with them.
+Subsnub flags channels as inactive based on their upload frequency and last video date. You can filter your entire subscription list to show only dead channels, then decide what to do with them.
 
 ## What To Do With Dead Channels
 

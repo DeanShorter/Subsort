@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
     id: 'add-to-split-view',
-    title: 'Add to Subscrub Split View',
+    title: 'Add to Subsnub Split View',
     contexts: ['link'],
     targetUrlPatterns: [
       '*://*.youtube.com/watch*',
@@ -21,7 +21,7 @@ chrome.runtime.onInstalled.addListener(() => {
   // Right-click anywhere on a YouTube watch/shorts page
   chrome.contextMenus.create({
     id: 'add-to-split-view-page',
-    title: 'Add to Subscrub Split View',
+    title: 'Add to Subsnub Split View',
     contexts: ['page', 'video', 'frame', 'image'],
     documentUrlPatterns: [
       '*://*.youtube.com/watch*',
@@ -31,7 +31,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
   chrome.contextMenus.create({
     id: 'add-to-split-view-subsort',
-    title: 'Add to Subscrub Split View',
+    title: 'Add to Subsnub Split View',
     contexts: ['all'],
     documentUrlPatterns: [
       'http://localhost:3000/*',

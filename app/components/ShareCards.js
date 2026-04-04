@@ -42,7 +42,7 @@ function getBadge(channels, deadChannels, favCount) {
   if (deadChannels.length === 0 && channels.length > 20) return { name: 'Clean sweep', desc: 'Zero inactive channels detected. Your feed is pristine.', icon: 'check', colour: 'var(--accent)' };
   if (channels.length >= 300) return { name: 'Collector', desc: `${channels.length} subscriptions. You subscribe to everything.`, icon: 'layers', colour: '#B07CED' };
   if (deadChannels.length >= 50) return { name: 'Ghost hunter needed', desc: `${deadChannels.length} inactive channels haunting your feed.`, icon: 'ghost', colour: '#E85D50' };
-  return { name: 'Getting started', desc: 'Keep organising — badges unlock as you use Subscrub.', icon: 'zap', colour: 'var(--accent)' };
+  return { name: 'Getting started', desc: 'Keep organising — badges unlock as you use Subsnub.', icon: 'zap', colour: 'var(--accent)' };
 }
 
 function BadgeIcon({ icon, colour }) {
@@ -58,7 +58,7 @@ function BadgeIcon({ icon, colour }) {
 
 function CompareCard({ channels, deadChannels, score, colour }) {
   const baseline = useMemo(() => {
-    const KEY = 'subscrub_first_score';
+    const KEY = 'subsnub_first_score';
     try {
       const stored = JSON.parse(localStorage.getItem(KEY));
       if (stored) return stored;
@@ -80,7 +80,7 @@ function CompareCard({ channels, deadChannels, score, colour }) {
     <div className="compare-card">
       <div className="compare-header">
         <span className="compare-title">Since you started</span>
-        <span className="compare-logo"><span>sub</span>scrub</span>
+        <span className="compare-logo"><span>sub</span>snub</span>
       </div>
       <div className="compare-bars">
         <div className="compare-row">
@@ -162,7 +162,7 @@ export default function ShareCards({ channels, deadChannels, favCount, uncatCoun
                 <div className="share-verdict-sub">{channels.length} channels. {activeCount} active. {deadChannels.length} need attention.</div>
               </div>
             </div>
-            <div className="share-logo"><span>sub</span>scrub</div>
+            <div className="share-logo"><span>sub</span>snub</div>
           </div>
           <div className="share-bottom">
             <div className="share-stats">
@@ -183,7 +183,7 @@ export default function ShareCards({ channels, deadChannels, favCount, uncatCoun
                 <div className="share-stat-label">Favourites</div>
               </div>
             </div>
-            <div className="share-cta">Get your score at <span className="share-cta-url">getsubscrub.com</span></div>
+            <div className="share-cta">Get your score at <span className="share-cta-url">getsubsnub.com</span></div>
           </div>
         </div>
 
@@ -201,9 +201,9 @@ export default function ShareCards({ channels, deadChannels, favCount, uncatCoun
             <span className="sq-pill"><span className="num" style={{ color: 'var(--accent)' }}>{favCount}</span> favourites</span>
           </div>
           <div className="sq-footer">
-            <span className="sq-logo"><span>sub</span>scrub</span>
+            <span className="sq-logo"><span>sub</span>snub</span>
             <span className="sq-dot" />
-            <span className="sq-url">getsubscrub.com</span>
+            <span className="sq-url">getsubsnub.com</span>
           </div>
         </div>
 
@@ -218,8 +218,8 @@ export default function ShareCards({ channels, deadChannels, favCount, uncatCoun
             <div className="badge-share-desc">{badge.desc}</div>
           </div>
           <div className="badge-share-logo">
-            <div className="logo-text"><span>sub</span>scrub</div>
-            <div className="url">getsubscrub.com</div>
+            <div className="logo-text"><span>sub</span>snub</div>
+            <div className="url">getsubsnub.com</div>
           </div>
         </div>
 

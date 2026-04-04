@@ -1,12 +1,14 @@
-# Subscrub — Product Bible
+# Subsnub — Product Bible
 
-*Last updated: 3 April 2026*
+*Last updated: 4 April 2026*
 
 ---
 
 ## 1. Product Overview
 
-**Subscrub** is a YouTube subscription organiser built as a solo product. The core philosophy is selling convenience rather than running a traditional business — lean and focused over feature-heavy. Success looks like a tight, polished product that drives upgrades through genuine utility, not bloat.
+**Subsnub** (subsnub.com) is a YouTube subscription organiser built as a solo product. The core philosophy is selling convenience rather than running a traditional business — lean and focused over feature-heavy. Success looks like a tight, polished product that drives upgrades through genuine utility, not bloat.
+
+**Name origin**: "Sub" (subscription) + "snub" (to appraise and dismiss). The name reflects The Critic's personality — it judges your subscriptions and snubs the ones that aren't pulling their weight.
 
 ### Monetisation
 
@@ -26,18 +28,24 @@
 
 ### The Critic
 
-The Critic is subscrub's in-product personality — an opinionated, observant subscription advisor who watches your habits, spots patterns, and tells you what you need to hear. With a smile.
+The Critic is subsnub's in-product personality — an opinionated, observant subscription advisor who watches your habits, spots patterns, and tells you what you need to hear. With a cheeky grin.
 
-**Voice**: "Cheeky smile" — enjoys the roast, playful rather than burdened. Opens up humour without edge.
+**Character**: A snub-nosed monkey. The name connection is built in — "snub" is literally in the animal's name. Snub-nosed monkeys have expressive, slightly grumpy faces with upturned noses that look permanently unimpressed. They look like they're judging you. That's The Critic. "Cheeky monkey" is also inherently British, matching the product's voice.
 
-**Visual identity**: Emoji-style face with monocle and wink on a rounded square background. Minimal enough to work as favicon, app icon, toast header, and social avatar. The face is graphically simple — two strokes (wink + smile) plus a monocle circle with lens reflection. The monocle breaking the boundary of the square gives it energy.
+**Voice**: "Cheeky monkey" — enjoys the roast, playful rather than burdened. Opens up humour without edge. Mischievous but helpful.
+
+**Visual identity**: Two-tier mark system:
+- **App/brand mark**: Geometric blocky "S" on green (#00A651) rounded square. White S with dark offset detail that mirrors the shadow-bordered card style used throughout the product. Works at all sizes from favicon to app icon.
+- **The Critic character**: Stylised snub-nosed monkey face. Key features: flat upturned nose, round face, heavy-lidded judgmental eyes. Professional designer brief: "A stylised snub-nosed monkey that looks like it's judging you." At favicon size, simplified to key shapes. At larger sizes (social avatar, onboarding, landing page), full expression and detail. Can optionally wear a monocle as an accessory to reinforce the "discerning critic" angle.
+
+**Signature texture**: Angled pinstripe (82-degree tilt, white at 8% opacity). The Critic's "suit" — appears on Critic card headers and mood-coloured surfaces. The slight tilt gives it swagger without being full diagonal.
 
 **Mood system**: The Critic's background colour shifts based on mood:
 - **Green (#00A651)** — impressed, positive, approval
 - **Orange (#FF8C42)** — fired up, concerned, nudging action
 - **Iris (#8B6FE8)** — curious, suggesting, discovery-oriented
 
-At small sizes (favicon, toast icon, nav), can crop to just the monocle. At larger sizes (social, landing page, onboarding), the full wink + smile + monocle plays.
+**Card texture tiers**: Shadow-bordered cards (Critic observations, insight cards, feature cards) use the pinstripe header texture. Feed cards and content cards stay clean — no shadow, no texture. The distinction separates "subsnub speaking" from "content flowing through subsnub."
 
 **FYI / disclaimer approach**: The Critic handles caveats and data limitations inline within existing observations rather than as separate disclaimer components. Honesty is embedded in the commentary, not bolted on. Example: "97 subscriptions in 2019 — at least, that's what survived. The real number was probably higher."
 
@@ -66,8 +74,8 @@ The Critic travels the full colour spectrum based on mood (green = impressed, ir
 
 - **Headings**: Outfit 700
 - **Body**: DM Sans 400/500
-- **Wordmark**: Dark pill (#1a1a1a background), Outfit 700, 14px, tight tracking (-0.3px), "SUB" in green + "SCRUB" in white, border-radius: 20px, capitalised
-- **In-sentence usage**: Capitalised "Subscrub" (logo stays as designed element)
+- **Wordmark**: Dark pill (#1a1a1a background), Outfit 700, 14px, tight tracking (-0.3px), "SUB" in green + "SNUB" in white, border-radius: 20px, capitalised
+- **In-sentence usage**: Capitalised "Subsnub" (logo stays as designed element)
 
 ### Design System
 
@@ -107,7 +115,7 @@ Sidebar nav with colour dots for core pages, divider, then utility pages:
 
 **Critic observations**: 3 shadow-bordered cards (On This Day/green, Pattern/orange, Milestone/iris) with quirky personalised insights. Free-tier feature that teases the paid Insights page.
 
-**Subscription age timeline**: Free tier visual showing subscription history over time. Yearly bar chart with phase annotations and Critic commentary. Data source: subscription dates from API only (no watch history needed). Timeline note: only shows channels currently subscribed to — channels previously unsubscribed from are not included. Subscrub tracks unsubscriptions going forward from the moment of connection.
+**Subscription age timeline**: Free tier visual showing subscription history over time. Yearly bar chart with phase annotations and Critic commentary. Data source: subscription dates from API only (no watch history needed). Timeline note: only shows channels currently subscribed to — channels previously unsubscribed from are not included. Subsnub tracks unsubscriptions going forward from the moment of connection.
 
 ### 4.2 Subscriptions Page
 
@@ -150,7 +158,7 @@ Sidebar nav with colour dots for core pages, divider, then utility pages:
 
 ### 4.4 Stash Page
 
-**Named**: "Subscrub Stash" — alliterative, memorable, extensible.
+**Named**: "Stash" — clean, functional. Accessed as a core nav item.
 
 **Colour**: Ocean (#2D9CDB)
 
@@ -158,7 +166,7 @@ Sidebar nav with colour dots for core pages, divider, then utility pages:
 - Collections (user-created groups)
 - Recently saved video grid
 - Critic commentary on saved content
-- Chrome extension right-click "Add to Stash" (from YouTube or subscrub Feed)
+- Chrome extension right-click "Add to Stash" (from YouTube or subsnub Feed)
 - Seasons: automated Stash collections based on category filters that auto-populate with recent uploads
 
 **YouTube playlist sync** (Pro feature):
@@ -234,7 +242,7 @@ Sorting progress screen with live counter → completion screen showing stat pil
 - Pro-only perk (not standalone product)
 - Uses Side Panel API to persist across tabs
 - Does NOT consume YouTube API quota (uses standard iframes)
-- Right-click "Add to Stash" from YouTube or subscrub Feed
+- Right-click "Add to Stash" from YouTube or subsnub Feed
 - Can read Watch Later page DOM as workaround for deprecated API
 
 ---
@@ -243,15 +251,15 @@ Sorting progress screen with live counter → completion screen showing stat pil
 
 ### Features NOT requiring watch history
 
-All of these use subscription dates, channel metadata, or subscrub's own data:
+All of these use subscription dates, channel metadata, or subsnub's own data:
 
 | Feature | Description | Tier | Priority |
 |---------|-------------|------|----------|
 | **Pure chronological feed** | No-algorithm feed from subscriptions only. Solves YouTube's "Most relevant" injection frustration. | Free | High |
 | **Subscription age timeline** | Visual history of subscription dates over time. Bar chart with phase annotations. | Free | High |
 | **Dead channel detection** | Track channels with no uploads in X months, reduced upload frequency, or content direction changes. | Free | High |
-| **Channel sabbatical** | Mute a channel from all subscrub surfaces for 30/60/90 days. Critic check-in when it ends: "Did you miss it?" | Free | Medium |
-| **Scrub streaks & achievements** | Gamified cleanup. "First Purge", "Tidy Shelf", "The Minimalist". Critic awards with personality. | Free | Medium |
+| **Channel sabbatical** | Mute a channel from all subsnub surfaces for 30/60/90 days. Critic check-in when it ends: "Did you miss it?" | Free | Medium |
+| **Snub streaks & achievements** | Gamified cleanup. "First Purge", "Tidy Shelf", "The Minimalist". Critic awards with personality. | Free | Medium |
 | **Creator milestones feed** | Track and surface milestones for subscribed channels (subscriber counts, upload counts, channel anniversaries). | Free | Medium |
 | **Subscription export/backup** | Download full subscription list with categories, notes, metadata as JSON/CSV. | Free | Medium |
 | **Seasons (Stash collections)** | Automated Stash collections based on category filters. Auto-populate with recent uploads. Archive when done. | Pro | Medium |
@@ -259,9 +267,9 @@ All of these use subscription dates, channel metadata, or subscrub's own data:
 | **Subscription sharing/gifting** | Share curated lists of subscriptions as links. Recipients preview and subscribe to all or some. | Pro | Low |
 | **Duplicate/related channel detection** | Detect multiple channels from same creator and group them. | Free | Low |
 | **"If you're leaving" suggestions** | When unsubscribing, suggest creator's other channels or formats. | Free | Low |
-| **Notification management** | Per-category notification preferences: immediate for favourites, daily digest, weekly summary. Subscrub's own layer. | Pro | Low |
+| **Notification management** | Per-category notification preferences: immediate for favourites, daily digest, weekly summary. Subsnub's own layer. | Pro | Low |
 | **"On This Day" memories** | Daily Critic observation: "3 years ago today you subscribed to X. They've uploaded 247 videos since." Zero API cost — uses stored subscription dates. | Free | High |
-| **Subscription velocity tracker** | Track subscription pace over time. Critic flags sprees: "12 channels in 3 days. Are you actually going to watch all of these?" Uses subscrub's own database only. | Free | Medium |
+| **Subscription velocity tracker** | Track subscription pace over time. Critic flags sprees: "12 channels in 3 days. Are you actually going to watch all of these?" Uses subsnub's own database only. | Free | Medium |
 | **Channel upload calendar** | Weekly view of which subscribed channels upload on which days. Helps users understand content flow. Cached from recent video publish dates. | Free | Medium |
 | **Abandoned category detection** | Flag categories where all channels have gone inactive or been moved out. "Your Fitness category has 2 channels left, both inactive. Time to retire it?" | Free | Medium |
 | **Channel growth alerts** | Monitor subscriber growth rate. Flag channels crossing milestones or losing significant subscribers. Entirely API-driven, low cost. | Free | Medium |
@@ -271,7 +279,7 @@ All of these use subscription dates, channel metadata, or subscrub's own data:
 | **Category health dashboard** | Aggregate view per category: active %, avg upload frequency, newest/oldest subscription. Derived from API data + category assignments. | Free | Medium |
 | **"Rising star" detection** | Identify channels growing significantly faster than average. "You subscribed at 5K. They just hit 200K. You were early." One channels.list call per sync. | Free | High |
 | **Unsubscribe impact preview** | Before unsubscribing, show what the user loses: upload frequency, % of Feed content, active days. Calculated from upload data, no watch history. | Free | Medium |
-| **Subscription overlap (social)** | Opt-in comparison between subscrub users. "You and Jake share 47 subscriptions. Here are 12 channels Jake follows that you don't." | Pro | Low |
+| **Subscription overlap (social)** | Opt-in comparison between subsnub users. "You and Jake share 47 subscriptions. Here are 12 channels Jake follows that you don't." | Pro | Low |
 
 ### Features requiring watch history
 
@@ -281,7 +289,7 @@ These need Takeout data and are lower priority given data accuracy concerns:
 |---------|-------------|------|
 | Content diet tracker | Weekly/monthly breakdown of viewing by category with trends | Pro |
 | Watch pace insights | Binge vs drip-feed patterns per channel | Pro |
-| Scrub score | Composite relevance metric per channel | Pro |
+| Snub score | Composite relevance metric per channel | Pro |
 | "Why did I subscribe?" | Cross-reference subscription date with channel's uploads around that time | Pro |
 
 ### Playlist sync (Pro)
@@ -343,16 +351,16 @@ All HTML mockups created during design sessions:
 
 | File | Description |
 |------|-------------|
-| `subscrub_subscriptions_complete_reference.html` | Complete subscriptions page with all panels |
-| `subscrub_channel_panel_compact.html` | Compact channel detail panels (3 mood states) |
-| `subscrub_category_panel_v3.html` | Category panel with right-aligned chevrons and counts |
-| `subscrub_category_panel_states.html` | Open vs collapsed panel states |
-| `subscrub_dashboard_with_observations.html` | Dashboard with Critic observation cards |
-| `subscrub_stash_page.html` | Full Stash page mockup |
-| `subscrub_landing_page.html` | Test group landing page |
-| `subscrub_onboarding_refined.html` | Full onboarding flow (steps 1-3b) |
-| `subscrub_onboarding_autosort_complete.html` | Auto-sort completion screen |
-| `subscrub_settings_data.html` | Settings page with layered update prompts |
-| `subscrub_subscription_timeline.html` | Subscription age timeline (2 options) |
-| `subscrub_control_bar_variations.html` | Category style options for controls row |
-| `subscrub_category_menu_options.html` | Dropdown vs slide-in comparison |
+| `subsnub_subscriptions_complete_reference.html` | Complete subscriptions page with all panels |
+| `subsnub_channel_panel_compact.html` | Compact channel detail panels (3 mood states) |
+| `subsnub_category_panel_v3.html` | Category panel with right-aligned chevrons and counts |
+| `subsnub_category_panel_states.html` | Open vs collapsed panel states |
+| `subsnub_dashboard_with_observations.html` | Dashboard with Critic observation cards |
+| `subsnub_stash_page.html` | Full Stash page mockup |
+| `subsnub_landing_page.html` | Test group landing page |
+| `subsnub_onboarding_refined.html` | Full onboarding flow (steps 1-3b) |
+| `subsnub_onboarding_autosort_complete.html` | Auto-sort completion screen |
+| `subsnub_settings_data.html` | Settings page with layered update prompts |
+| `subsnub_subscription_timeline.html` | Subscription age timeline (2 options) |
+| `subsnub_control_bar_variations.html` | Category style options for controls row |
+| `subsnub_category_menu_options.html` | Dropdown vs slide-in comparison |

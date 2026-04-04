@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 
 export default function SignIn() {
   useEffect(() => {
-    document.title = 'Subscrub - Sign in';
+    document.title = 'Subsnub - Sign in';
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

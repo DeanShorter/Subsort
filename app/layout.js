@@ -7,22 +7,22 @@ import Script from 'next/script';
 
 export const metadata = {
   title: {
-    default: 'Subscrub',
-    template: 'Subscrub - %s',
+    default: 'Subsnub',
+    template: 'Subsnub - %s',
   },
   description: 'Automatically categorise your YouTube subscriptions, discover quality creators, and keep your feed clean. Free forever.',
   keywords: ['YouTube', 'subscriptions', 'organise', 'categorise', 'channels', 'discover', 'feed management'],
-  authors: [{ name: 'Subscrub' }],
+  authors: [{ name: 'Subsnub' }],
   openGraph: {
-    title: 'Subscrub — Organise & Discover the Best YouTube Channels',
+    title: 'Subsnub — Organise & Discover the Best YouTube Channels',
     description: 'Automatically categorise your YouTube subscriptions, discover quality creators, and keep your feed clean.',
-    url: 'https://getsubscrub.com',
-    siteName: 'Subscrub',
+    url: 'https://getsubsnub.com',
+    siteName: 'Subsnub',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Subscrub — Organise & Discover the Best YouTube Channels',
+    title: 'Subsnub — Organise & Discover the Best YouTube Channels',
     description: 'Automatically categorise your YouTube subscriptions and discover quality creators.',
   },
   robots: { index: true, follow: true },

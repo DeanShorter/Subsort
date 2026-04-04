@@ -1,23 +1,23 @@
 import LegalPage from '../components/LegalPage';
 
-export const metadata = { title: 'Subscrub — Terms of Service' };
+export const metadata = { title: 'Subsnub — Terms of Service' };
 
 export default function TermsPage() {
   return (
     <LegalPage>
       <h1>Terms of service</h1>
       <p><strong>Last updated:</strong> March 2026</p>
-      <p>These terms govern your use of Subscrub (&ldquo;the service&rdquo;), operated through the website getsubscrub.com. By creating an account or using the service, you agree to these terms.</p>
+      <p>These terms govern your use of Subsnub (&ldquo;the service&rdquo;), operated through the website getsubsnub.com. By creating an account or using the service, you agree to these terms.</p>
 
       <h2>The service</h2>
-      <p>Subscrub is a tool that helps you organise and browse your YouTube subscriptions. We access your YouTube data through the YouTube Data API with your explicit permission. Subscrub is not affiliated with, endorsed by, or connected to YouTube or Google.</p>
+      <p>Subsnub is a tool that helps you organise and browse your YouTube subscriptions. We access your YouTube data through the YouTube Data API with your explicit permission. Subsnub is not affiliated with, endorsed by, or connected to YouTube or Google.</p>
 
       <h2>Your account</h2>
-      <p>You must sign in with a valid Google account to use Subscrub. You are responsible for maintaining the security of your account. You must be at least 13 years old to use the service.</p>
+      <p>You must sign in with a valid Google account to use Subsnub. You are responsible for maintaining the security of your account. You must be at least 13 years old to use the service.</p>
       <p>You agree to provide accurate information and to keep your account details current. You may not create accounts on behalf of others or use the service for any purpose that is unlawful or prohibited by these terms.</p>
 
       <h2>What you can do</h2>
-      <p>With a Subscrub account, you can:</p>
+      <p>With a Subsnub account, you can:</p>
       <ul>
         <li>View and organise your YouTube subscriptions into categories and feeds</li>
         <li>Favourite channels, add notes, and customise your experience</li>
@@ -38,29 +38,29 @@ export default function TermsPage() {
       </ul>
 
       <h2>Free and paid plans</h2>
-      <p>Subscrub offers a free plan and a paid Pro plan. Features available on each plan may change over time. We will notify existing users before removing features from a plan they are currently using.</p>
+      <p>Subsnub offers a free plan and a paid Pro plan. Features available on each plan may change over time. We will notify existing users before removing features from a plan they are currently using.</p>
       <p>Pro subscriptions are billed monthly. You can cancel at any time, and your Pro access will continue until the end of the current billing period. We do not offer refunds for partial months.</p>
       <p>We reserve the right to change pricing with 30 days notice to existing subscribers.</p>
 
       <h2>Your data</h2>
-      <p>You retain ownership of your data. By using Subscrub, you grant us a limited licence to store, process, and display your data solely for the purpose of providing the service. This licence ends when you delete your account.</p>
+      <p>You retain ownership of your data. By using Subsnub, you grant us a limited licence to store, process, and display your data solely for the purpose of providing the service. This licence ends when you delete your account.</p>
       <p>You can delete your account at any time through the settings page. When you delete your account, we will remove your personal data within 30 days, as described in our <a href="/privacy">privacy policy</a>.</p>
       <p>For full details on how we handle your data, see our <a href="/privacy">privacy policy</a>.</p>
 
       <h2>YouTube API compliance</h2>
-      <p>Subscrub uses the YouTube Data API. By using Subscrub, you also agree to be bound by the YouTube Terms of Service (https://www.youtube.com/t/terms) and Google&rsquo;s Privacy Policy (https://policies.google.com/privacy).</p>
-      <p>You can revoke Subscrub&rsquo;s access to your YouTube data at any time through your Google account permissions page (https://myaccount.google.com/permissions).</p>
+      <p>Subsnub uses the YouTube Data API. By using Subsnub, you also agree to be bound by the YouTube Terms of Service (https://www.youtube.com/t/terms) and Google&rsquo;s Privacy Policy (https://policies.google.com/privacy).</p>
+      <p>You can revoke Subsnub&rsquo;s access to your YouTube data at any time through your Google account permissions page (https://myaccount.google.com/permissions).</p>
 
       <h2>Intellectual property</h2>
-      <p>The Subscrub name, logo, design, and original content are owned by us. You may not use our branding without written permission.</p>
-      <p>Content from YouTube (channel names, video titles, thumbnails, statistics) is owned by the respective creators and YouTube. Subscrub displays this content under the terms of the YouTube Data API and does not claim ownership of it.</p>
+      <p>The Subsnub name, logo, design, and original content are owned by us. You may not use our branding without written permission.</p>
+      <p>Content from YouTube (channel names, video titles, thumbnails, statistics) is owned by the respective creators and YouTube. Subsnub displays this content under the terms of the YouTube Data API and does not claim ownership of it.</p>
 
       <h2>Availability and changes</h2>
-      <p>We aim to keep Subscrub available and reliable, but we do not guarantee uninterrupted access. The service may be temporarily unavailable for maintenance, updates, or reasons beyond our control.</p>
+      <p>We aim to keep Subsnub available and reliable, but we do not guarantee uninterrupted access. The service may be temporarily unavailable for maintenance, updates, or reasons beyond our control.</p>
       <p>We may modify, suspend, or discontinue any part of the service at any time. If we discontinue the service entirely, we will provide reasonable notice and an opportunity to export your data.</p>
 
       <h2>Limitation of liability</h2>
-      <p>Subscrub is provided &ldquo;as is&rdquo; without warranties of any kind, whether express or implied. To the maximum extent permitted by law:</p>
+      <p>Subsnub is provided &ldquo;as is&rdquo; without warranties of any kind, whether express or implied. To the maximum extent permitted by law:</p>
       <ul>
         <li>We are not liable for any indirect, incidental, or consequential damages arising from your use of the service</li>
         <li>Our total liability to you for any claims related to the service is limited to the amount you have paid us in the 12 months preceding the claim, or £50, whichever is greater</li>
@@ -79,7 +79,7 @@ export default function TermsPage() {
       <p>We may update these terms from time to time. If we make material changes, we will notify you by email or through a notice on the website at least 14 days before the changes take effect. Continued use of the service after changes take effect constitutes acceptance of the updated terms.</p>
 
       <h2>Contact</h2>
-      <p>If you have questions about these terms, contact us at hello@getsubscrub.com.</p>
+      <p>If you have questions about these terms, contact us at hello@getsubsnub.com.</p>
     </LegalPage>
   );
 }

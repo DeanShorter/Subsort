@@ -7,6 +7,6 @@ export default function robots() {
         disallow: '/home/',  // Don't index the app
       },
     ],
-    sitemap: 'https://getsubscrub.com/sitemap.xml',
+    sitemap: 'https://getsubsnub.com/sitemap.xml',
   };
 }

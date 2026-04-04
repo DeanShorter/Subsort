@@ -84,13 +84,13 @@ export async function POST(request) {
 
       await resend.batch.send(
         batch.map(email => ({
-          from: 'Subscrub <hello@getsubscrub.com>',
+          from: 'Subsnub <hello@getsubsnub.com>',
           replyTo: 'deanage95@gmail.com',
           to: email,
           subject,
           html: wrapInTemplate(htmlContent, previewText, email),
           headers: {
-            'List-Unsubscribe': `<https://getsubscrub.com/unsubscribe?email=${encodeURIComponent(email)}>`,
+            'List-Unsubscribe': `<https://getsubsnub.com/unsubscribe?email=${encodeURIComponent(email)}>`,
             'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
           },
         }))
@@ -115,7 +115,7 @@ export async function POST(request) {
 }
 
 function wrapInTemplate(content, previewText, email) {
-  const unsubscribeUrl = `https://getsubscrub.com/unsubscribe?email=${encodeURIComponent(email)}`;
+  const unsubscribeUrl = `https://getsubsnub.com/unsubscribe?email=${encodeURIComponent(email)}`;
 
   return `
 <!DOCTYPE html>
@@ -123,7 +123,7 @@ function wrapInTemplate(content, previewText, email) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subscrub</title>
+  <title>Subsnub</title>
   <!--[if !mso]><!-->
   <style>
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F8F7F4; color: #1A1A18; }
@@ -144,14 +144,14 @@ function wrapInTemplate(content, previewText, email) {
   <span style="display:none;max-height:0;overflow:hidden;">${previewText}</span>
   <div class="wrapper">
     <div class="header">
-      <a href="https://getsubscrub.com" style="font-size:22px;font-weight:700;color:#1A1A18;text-decoration:none;">sub<span style="color:#2EB88A;">scrub</span></a>
+      <a href="https://getsubsnub.com" style="font-size:22px;font-weight:700;color:#1A1A18;text-decoration:none;">sub<span style="color:#2EB88A;">snub</span></a>
     </div>
     <div class="content">
       ${content}
     </div>
     <div class="footer">
-      <p>You're receiving this because you signed up for Subscrub.</p>
-      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://getsubscrub.com">Visit Subscrub</a></p>
+      <p>You're receiving this because you signed up for Subsnub.</p>
+      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://getsubsnub.com">Visit Subsnub</a></p>
     </div>
   </div>
 </body>

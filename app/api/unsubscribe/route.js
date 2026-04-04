@@ -13,7 +13,7 @@ export async function GET(request) {
   const email = searchParams.get('email');
 
   if (!email) {
-    return NextResponse.redirect('https://getsubscrub.com');
+    return NextResponse.redirect('https://getsubsnub.com');
   }
 
   const supabase = getSupabaseAdmin();
@@ -23,5 +23,5 @@ export async function GET(request) {
     .update({ newsletter_opt_in: false })
     .eq('email', email);
 
-  return NextResponse.redirect('https://getsubscrub.com/unsubscribed');
+  return NextResponse.redirect('https://getsubsnub.com/unsubscribed');
 }

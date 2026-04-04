@@ -11,9 +11,9 @@ export default function BlogNav({ styles }) {
   return (
     <nav className={styles.nav}>
       <Link href="/" className={`home-nav-brand ${styles.navBrand}`}>
-        <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-icon" />
+        <img src="/icon.svg" alt="Subsnub" className="home-nav-brand-icon" />
         <span className="home-nav-brand-wordmark">
-          <span className="hnp-wordmark">sub</span><span>scrub</span>
+          <span className="hnp-wordmark">sub</span><span>snub</span>
         </span>
       </Link>
       <div className={styles.navLinks}>

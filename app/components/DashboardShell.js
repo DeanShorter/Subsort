@@ -51,13 +51,13 @@ function DashboardInner({ children }) {
     const handleHide = () => setSyncModalVisible(false);
     const handleState = (e) => setSyncState(e.detail);
 
-    window.addEventListener('subscrub:sync-modal-show', handleShow);
-    window.addEventListener('subscrub:sync-modal-hide', handleHide);
-    window.addEventListener('subscrub:sync-state', handleState);
+    window.addEventListener('subsnub:sync-modal-show', handleShow);
+    window.addEventListener('subsnub:sync-modal-hide', handleHide);
+    window.addEventListener('subsnub:sync-state', handleState);
     return () => {
-      window.removeEventListener('subscrub:sync-modal-show', handleShow);
-      window.removeEventListener('subscrub:sync-modal-hide', handleHide);
-      window.removeEventListener('subscrub:sync-state', handleState);
+      window.removeEventListener('subsnub:sync-modal-show', handleShow);
+      window.removeEventListener('subsnub:sync-modal-hide', handleHide);
+      window.removeEventListener('subsnub:sync-state', handleState);
     };
   }, []);
 
@@ -83,7 +83,7 @@ function DashboardInner({ children }) {
               </svg>
             </button>
             <Link href="/home" className="mobile-topbar-brand" style={{ textDecoration: 'none' }}>
-              <img src="/icon.svg" alt="Subscrub" style={{ width: 28, height: 28 }} />
+              <img src="/icon.svg" alt="Subsnub" style={{ width: 28, height: 28 }} />
             </Link>
           </div>
         )}

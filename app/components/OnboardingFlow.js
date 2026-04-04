@@ -276,10 +276,10 @@ export default function OnboardingFlow({ visible, onComplete }) {
         {step === 'welcome' && (
           <div className="ob-body">
             <div className="ob-logo-icon">
-              <span style={{ color: '#00A651' }}>SUB</span><span style={{ color: '#fff' }}>SCRUB</span>
+              <span style={{ color: '#00A651' }}>SUB</span><span style={{ color: '#fff' }}>SNUB</span>
             </div>
             <h2 className="ob-title">Your subscriptions, organised.</h2>
-            <p className="ob-text">Subscrub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.</p>
+            <p className="ob-text">Subsnub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.</p>
             <button className="ob-btn-primary" onClick={() => setStep('connect')}>
               Let&rsquo;s go
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -291,7 +291,7 @@ export default function OnboardingFlow({ visible, onComplete }) {
         {step === 'connect' && (
           <div className="ob-body">
             <h2 className="ob-title">Import your subscriptions</h2>
-            <p className="ob-text">Connect your YouTube account so Subscrub can see your subscriptions. We only need read access — we&rsquo;ll never modify anything.</p>
+            <p className="ob-text">Connect your YouTube account so Subsnub can see your subscriptions. We only need read access — we&rsquo;ll never modify anything.</p>
             <div className="ob-connect-card">
               <div className="ob-connect-row">
                 <div className="ob-connect-icon" style={{ background: '#FF0000' }}>

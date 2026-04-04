@@ -13,7 +13,7 @@ export default function LegalPage({ children }) {
         {children}
       </main>
       <footer className="legal-footer">
-        <span>© 2026 Subscrub</span>
+        <span>© 2026 Subsnub</span>
         <div className="legal-footer-links">
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>

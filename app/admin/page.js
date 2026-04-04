@@ -523,7 +523,7 @@ export default function AdminPage() {
         <div className="hnp-header">
           <Link href="/home" className="home-nav-brand" style={{ textDecoration: 'none' }}>
             <span className="home-nav-brand-wordmark">
-              <span className="hnp-wordmark">sub</span><span>scrub</span>
+              <span className="hnp-wordmark">sub</span><span>snub</span>
             </span>
           </Link>
           <span className="tier-badge admin">Admin</span>
@@ -554,7 +554,7 @@ export default function AdminPage() {
           <div className="hnp-section">
             <Link href="/home" className="home-nav-item" style={{ textDecoration: 'none' }}>
               <svg viewBox="0 0 16 16"><path d="M6 14V8h4v6"/><path d="M2 6l6-4 6 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z"/></svg>
-              <span className="home-nav-item-label">Back to Subscrub</span>
+              <span className="home-nav-item-label">Back to Subsnub</span>
             </Link>
           </div>
         </div>

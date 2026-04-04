@@ -40,14 +40,14 @@ export async function POST(request) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const unsubscribeUrl = `https://getsubscrub.com/unsubscribe?email=${encodeURIComponent(to)}`;
+    const unsubscribeUrl = `https://getsubsnub.com/unsubscribe?email=${encodeURIComponent(to)}`;
     const html = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subscrub</title>
+  <title>Subsnub</title>
   <style>
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F8F7F4; color: #1A1A18; }
     .wrapper { max-width: 560px; margin: 0 auto; padding: 40px 20px; }
@@ -66,27 +66,27 @@ export async function POST(request) {
   <span style="display:none;max-height:0;overflow:hidden;">${previewText || ''}</span>
   <div class="wrapper">
     <div class="header">
-      <a href="https://getsubscrub.com" style="font-size:22px;font-weight:700;color:#1A1A18;text-decoration:none;">sub<span style="color:#2EB88A;">scrub</span></a>
+      <a href="https://getsubsnub.com" style="font-size:22px;font-weight:700;color:#1A1A18;text-decoration:none;">sub<span style="color:#2EB88A;">snub</span></a>
     </div>
     <div class="content">
       ${htmlContent || ''}
     </div>
     <div class="footer">
-      <p>You're receiving this because you signed up for Subscrub.</p>
-      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://getsubscrub.com">Visit Subscrub</a></p>
+      <p>You're receiving this because you signed up for Subsnub.</p>
+      <p><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="https://getsubsnub.com">Visit Subsnub</a></p>
     </div>
   </div>
 </body>
 </html>`;
 
     await resend.emails.send({
-      from: 'Subscrub <hello@getsubscrub.com>',
+      from: 'Subsnub <hello@getsubsnub.com>',
       replyTo: 'deanage95@gmail.com',
       to,
       subject: `[TEST] ${subject || 'No subject'}`,
       html,
       headers: {
-        'List-Unsubscribe': `<https://getsubscrub.com/unsubscribe?email=${encodeURIComponent(to)}>`,
+        'List-Unsubscribe': `<https://getsubsnub.com/unsubscribe?email=${encodeURIComponent(to)}>`,
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
       },
     });

@@ -2,8 +2,8 @@ import Link from 'next/link';
 import SessionRedirect from './components/SessionRedirect';
 
 export const metadata = {
-  title: 'Subscrub — Your YouTube subscriptions, organised',
-  description: 'Subscrub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.',
+  title: 'Subsnub — Your YouTube subscriptions, organised',
+  description: 'Subsnub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.',
 };
 
 export default function HomePage() {
@@ -13,7 +13,7 @@ export default function HomePage() {
 
       {/* NAV */}
       <nav className="lp-nav">
-        <div className="lp-nav-logo"><span style={{ color: '#00A651' }}>SUB</span><span style={{ color: '#fff' }}>SCRUB</span></div>
+        <div className="lp-nav-logo"><span style={{ color: '#00A651' }}>SUB</span><span style={{ color: '#fff' }}>SNUB</span></div>
         <div className="lp-nav-right">
           <a href="#features" className="lp-nav-link">Features</a>
           <a href="#critic" className="lp-nav-link">The Critic</a>
@@ -27,7 +27,7 @@ export default function HomePage() {
       <section className="lp-hero">
         <div className="lp-hero-badge"><div className="lp-hero-badge-dot" /> Coming soon</div>
         <h1>Your YouTube subscriptions, <em>organised.</em></h1>
-        <p>Subscrub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.</p>
+        <p>Subsnub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.</p>
         <div className="lp-hero-actions">
           <a href="#join" className="lp-btn-primary">
             Join the waitlist
@@ -49,7 +49,7 @@ export default function HomePage() {
             <div className="lp-preview-sidebar">
               <div style={{ marginBottom: 16 }}>
                 <div className="lp-nav-logo" style={{ transform: 'scale(0.85)', transformOrigin: 'left' }}>
-                  <span style={{ color: '#00A651' }}>SUB</span><span style={{ color: '#fff' }}>SCRUB</span>
+                  <span style={{ color: '#00A651' }}>SUB</span><span style={{ color: '#fff' }}>SNUB</span>
                 </div>
               </div>
               <div className="lp-preview-nav-item active"><div className="lp-preview-nav-dot" style={{ background: '#fff' }} /> Home</div>
@@ -189,7 +189,7 @@ export default function HomePage() {
             <ul className="lp-pricing-list">
               <li>Unlimited subscriptions</li>
               <li>Chrome extension</li>
-              <li>Subscrub Stash</li>
+              <li>Subsnub Stash</li>
               <li>Priority support</li>
             </ul>
             <button className="lp-pricing-btn" style={{ background: 'var(--lp-green)', color: '#fff' }}>Upgrade to Pro</button>
@@ -201,7 +201,7 @@ export default function HomePage() {
       <section className="lp-cta-section" id="join">
         <div className="lp-cta-inner">
           <h2>Get early access</h2>
-          <p>Join the waitlist and be one of the first to try Subscrub. The Critic is already judging your subscriptions.</p>
+          <p>Join the waitlist and be one of the first to try Subsnub. The Critic is already judging your subscriptions.</p>
           <div className="lp-cta-email">
             <input type="email" placeholder="Your email address" />
             <button>Join waitlist</button>
@@ -211,7 +211,7 @@ export default function HomePage() {
 
       {/* FOOTER */}
       <footer className="lp-footer">
-        <div className="lp-footer-logo"><span style={{ color: '#00A651' }}>SUB</span><span style={{ color: '#fff' }}>SCRUB</span></div>
+        <div className="lp-footer-logo"><span style={{ color: '#00A651' }}>SUB</span><span style={{ color: '#fff' }}>SNUB</span></div>
         <div className="lp-footer-text">Built in Stockport. For YouTube addicts everywhere.</div>
       </footer>
     </div>
