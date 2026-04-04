@@ -168,6 +168,8 @@ export function ChannelDataProvider({ children, user }) {
         channelCreatedAt: ch.channel_created_at || '',
         uploadsPlaylistId: ch.uploads_playlist_id || '',
         topics: ch.topics || [],
+        topicUrls: ch.topic_urls || [],
+        topicIds: ch.topic_ids || [],
         keywords: ch.keywords || '',
         country: ch.country || '',
         notes: ch.notes || '',

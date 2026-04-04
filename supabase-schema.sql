@@ -129,7 +129,9 @@ create table public.channels (
   subscribed_at timestamptz,
   channel_created_at timestamptz,
   uploads_playlist_id text,
-  topics text[],                        -- Array of topic strings
+  topics text[],                        -- Array of topic strings (decoded wiki names)
+  topic_urls text[],                    -- Raw Wikipedia URLs from topicCategories
+  topic_ids text[],                     -- Freebase topic IDs from topicIds
   keywords text,
   country text,
   notes text,

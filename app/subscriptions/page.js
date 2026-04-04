@@ -173,9 +173,10 @@ export default function Subscriptions2Page() {
       if (!assigned && !unmatched.length) { showToast('No unsorted channels to sort'); setSorting(false); return; }
 
       if (assigned > 0) {
-        await persistAutoSort(supabase, user, assignments, dbCategories);
+        const result = await persistAutoSort(supabase, user, assignments, dbCategories);
         await reload();
-        showToast(`Sorted ${assigned} channel${assigned !== 1 ? 's' : ''}`);
+        const subMsg = result.subcategoriesAssigned > 0 ? ` (${result.subcategoriesAssigned} with subcategories)` : '';
+        showToast(`Sorted ${assigned} channel${assigned !== 1 ? 's' : ''}${subMsg}`);
       }
 
       if (unmatched.length > 0) {
