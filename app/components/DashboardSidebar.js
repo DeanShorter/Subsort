@@ -110,8 +110,10 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
           console.log(`[AutoSync] Synced: ${subResult.newCount} new, ${subResult.channels.length} total`);
         } catch (e) {
           if (e.message === 'SESSION_EXPIRED') {
-            console.warn('[AutoSync] YouTube token expired');
+            console.warn('[AutoSync] YouTube token expired — signing out');
             setSyncing(false);
+            showToast('Session expired — please sign in again.', 3000);
+            setTimeout(() => signOut(), 1500);
             return;
           }
           console.warn('[AutoSync] Sync failed:', e.message);
@@ -177,8 +179,8 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
       setTimeout(() => { setSyncProgress(null); setSyncing(false); }, 1500);
     } catch (e) {
       if (e.message === 'SESSION_EXPIRED') {
-        showToast('YouTube session expired — please sign in again.');
-        signIn();
+        showToast('Session expired — please sign in again.', 3000);
+        setTimeout(() => signOut(), 1500);
       } else if (e.message?.includes('quota')) {
         showToast('YouTube API quota exceeded — resets at midnight PT.', 5000);
       } else {
@@ -241,8 +243,8 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
       } catch (e) {
         if (e.message === 'SESSION_EXPIRED') {
           setSyncing(false);
-          showToast('YouTube token expired — please sign in again.', 5000);
-          signIn();
+          showToast('Session expired — please sign in again.', 3000);
+          setTimeout(() => signOut(), 1500);
           return;
         }
         console.warn('[Sync] Failed:', e.message);
