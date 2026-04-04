@@ -35,6 +35,11 @@ const PAGE_ITEMS = [
     dot: '#2D9CDB',
   },
   {
+    href: '/critic', label: 'The Critic',
+    svg: <path d="M8 1.5l2 4 4.5.6-3.2 3.2.7 4.4L8 11.5l-4 2.2.7-4.4L1.5 6.1l4.5-.6z"/>,
+    dotColor: '#00A651',
+  },
+  {
     href: '/analytics', label: 'Insights',
     svg: <><path d="M2 12l3-4 3 2 4-6 2 2"/><rect x="2" y="2" width="12" height="12" rx="1.5"/></>,
   },

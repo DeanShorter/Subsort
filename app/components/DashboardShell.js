@@ -15,6 +15,7 @@ const DASHBOARD_ROUTES = [
   '/feeds',
   '/discover',
   '/stash',
+  '/critic',
   '/analytics',
   '/settings',
   '/blog',
@@ -22,7 +23,7 @@ const DASHBOARD_ROUTES = [
 
 // Routes that show the sidebar even without auth
 const ALWAYS_SIDEBAR = [
-  '/home', '/subscriptions', '/feeds', '/discover', '/stash', '/analytics', '/settings',
+  '/home', '/subscriptions', '/feeds', '/discover', '/stash', '/critic', '/analytics', '/settings',
 ];
 
 function DashboardInner({ children }) {
