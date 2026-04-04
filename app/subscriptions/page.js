@@ -342,11 +342,11 @@ export default function Subscriptions2Page() {
                 <span style={{ fontSize: 12, color: 'var(--text-muted)', marginRight: 4 }}>Showing:</span>
                 {[...selectedCatFilters].map(f => (
                   <span key={f} className="s2-filter-tag">
-                    {f === '__favs__' ? 'Favourites' : f}
+                    {f === '__favs__' ? 'Favourites' : f === '__uncat__' ? 'Unsorted' : f}
                     <span className="s2-filter-tag-x" onClick={() => handleToggleCat(f)}>&times;</span>
                   </span>
                 ))}
-                <span style={{ fontSize: 12, color: 'var(--text-muted)', cursor: 'pointer', marginLeft: 4 }} onClick={() => setSelectedCatFilters(new Set())}>Clear all</span>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', cursor: 'pointer', marginLeft: 4 }} onClick={() => { setSelectedCatFilters(new Set()); setActiveCategory('all'); setActiveSubcategory(null); }}>Clear all</span>
               </>
             )}
           </div>
