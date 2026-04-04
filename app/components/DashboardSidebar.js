@@ -398,10 +398,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
       <div className="hnp-header">
         <div className="hnp-brand-group">
           <Link href="/dashboard" className="home-nav-brand" style={{ textDecoration: 'none' }}>
-            <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-icon" />
-            <span className="home-nav-brand-wordmark">
-              <span className="hnp-wordmark">sub</span><span>scrub</span>
-            </span>
+            <img src="/icon.svg" alt="Subscrub" className="home-nav-brand-logo" />
           </Link>
           {user && <span className={`tier-badge ${userTier}`}>{userTier}</span>}
         </div>

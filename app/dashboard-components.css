@@ -1470,6 +1470,7 @@ input[type=range]::-webkit-slider-thumb{
 .home-nav-brand-wordmark span{color:#fff;text-transform:uppercase}
 .home-nav-brand-wordmark .hnp-wordmark{color:var(--accent);text-transform:uppercase}
 .home-nav-brand-icon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:none}
+.home-nav-brand-logo{width:36px;height:36px;border-radius:8px;flex-shrink:0}
 /* Tier badge below logo */
 .hnp-brand-group .tier-badge{align-self:flex-start;margin-right:0}
 /* Collapsed nav */
