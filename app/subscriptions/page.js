@@ -76,7 +76,8 @@ export default function Subscriptions2Page() {
       result = result.filter(c => {
         for (const f of selectedCatFilters) {
           if (f === '__favs__' && c.favourited) return true;
-          if (chHasCat(c, f)) return true;
+          if (f === '__uncat__' && chIsUncategorised(c)) return true;
+          if (f !== '__favs__' && f !== '__uncat__' && chHasCat(c, f)) return true;
         }
         return false;
       });
@@ -127,6 +128,14 @@ export default function Subscriptions2Page() {
         return next;
       });
       setActiveCategory(prev => prev === '__favs__' ? 'all' : '__favs__');
+    } else if (cat === '__uncat__') {
+      setSelectedCatFilters(prev => {
+        const next = new Set(prev);
+        next.has('__uncat__') ? next.delete('__uncat__') : next.add('__uncat__');
+        return next;
+      });
+      setActiveCategory(prev => prev === '__uncat__' ? 'all' : '__uncat__');
+      setActiveSubcategory(null);
     } else {
       setSelectedCatFilters(prev => {
         const next = new Set(prev);
@@ -240,7 +249,7 @@ export default function Subscriptions2Page() {
     ) : (
       <div className="cp-collapsed" onClick={() => setShowCatPanel(true)}>
         <button className="cp-expand-btn">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--text-secondary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <span className="cp-collapsed-label">Categories</span>
         {selectedCatFilters.size > 0 && (
@@ -264,7 +273,7 @@ export default function Subscriptions2Page() {
           <div className="s2-insight-header" style={{ background: 'var(--accent-soft)' }}>
             <div>
               <div className="s2-insight-stat" style={{ color: 'var(--accent)' }}>{channels.filter(c => chIsUncategorised(c)).length}</div>
-              <div className="s2-insight-label" style={{ color: 'var(--accent-text)' }}>uncategorised</div>
+              <div className="s2-insight-label" style={{ color: 'var(--accent-text)' }}>unsorted</div>
             </div>
             <div className="s2-insight-icon" style={{ background: 'var(--accent)' }}>
               <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
@@ -272,10 +281,13 @@ export default function Subscriptions2Page() {
           </div>
           <div className="s2-insight-body">
             <div className="s2-insight-quote">"{channels.filter(c => chIsUncategorised(c)).length} channels with no category. That's a messy drawer. Let me sort it."</div>
-            <button className="s2-insight-cta" style={{ background: 'var(--accent)' }} onClick={() => setShowSortConfirm(true)} disabled={sorting}>
-              {sorting ? 'Sorting...' : 'Auto-sort'}
-              <svg viewBox="0 0 14 14"><path d="M5 3l4.5 4-4.5 4" /></svg>
-            </button>
+            <div className="s2-insight-actions">
+              <button className="s2-insight-cta" style={{ background: 'var(--accent)' }} onClick={() => setShowSortConfirm(true)} disabled={sorting}>
+                {sorting ? 'Sorting...' : 'Auto-sort'}
+                <svg viewBox="0 0 14 14"><path d="M5 3l4.5 4-4.5 4" /></svg>
+              </button>
+              <span className="s2-insight-link" onClick={() => handleToggleCat('__uncat__')}>view unsorted channels &rsaquo;</span>
+            </div>
           </div>
         </div>
 

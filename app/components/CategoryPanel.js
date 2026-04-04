@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { showToast } from './Toast';
 
 export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAutoSort, activeSub, onToggleSub }) {
-  const { categories, subcategories, categoryColours, channels, chCats, chHasCat, dbCategories, dbSubcategories, reload } = useChannelData();
+  const { categories, subcategories, categoryColours, channels, chCats, chHasCat, chIsUncategorised, dbCategories, dbSubcategories, reload } = useChannelData();
   const { user } = useAuth();
   const [searchQ, setSearchQ] = useState('');
   const [expandedCats, setExpandedCats] = useState(new Set());
@@ -189,6 +189,17 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
             <span className="cp-name">Favourites</span>
           </div>
           <span className="cp-count">{favCount}</span>
+        </div>
+
+        {/* Unsorted */}
+        <div className={`cp-item${selectedCats.has('__uncat__') ? ' on' : ''}`} onClick={() => onToggleCat('__uncat__')}>
+          <div className="cp-item-left">
+            <div className={`cp-check${selectedCats.has('__uncat__') ? ' on' : ''}`}>
+              {selectedCats.has('__uncat__') && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 5.5l2 2 3.5-3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+            </div>
+            <span className="cp-name">Unsorted</span>
+          </div>
+          <span className="cp-count">{channels.filter(c => chIsUncategorised(c)).length}</span>
         </div>
 
         <div className="cp-divider" />
