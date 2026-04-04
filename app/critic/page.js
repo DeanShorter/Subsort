@@ -84,7 +84,7 @@ export default function CriticPage() {
     const uncatCount = channels.filter(c => chIsUncategorised(c)).length;
     if (uncatCount > 0) {
       actions.push({
-        domain: 'categories', priority: 'high',
+        domain: 'categories', priority: 'high', affectedCount: uncatCount,
         title: `"${uncatCount} channel${uncatCount !== 1 ? 's' : ''} with no category. That's a messy drawer. Let me sort ${uncatCount === 1 ? 'it' : 'them'}."`,
         cta: 'Auto-sort', ctaHref: '/subscriptions',
       });
@@ -92,7 +92,7 @@ export default function CriticPage() {
     const emptyCats = categories.filter(cat => !channels.some(c => (c.categories || []).includes(cat)));
     if (emptyCats.length > 0) {
       suggestions.push({
-        domain: 'categories', priority: 'medium',
+        domain: 'categories', priority: 'medium', affectedCount: emptyCats.length,
         title: `"${emptyCats.length} empty categor${emptyCats.length !== 1 ? 'ies' : 'y'}: ${emptyCats.slice(0, 3).join(', ')}${emptyCats.length > 3 ? '...' : ''}. Either fill them or delete them."`,
         cta: 'Manage categories', ctaHref: '/subscriptions',
       });
@@ -102,7 +102,7 @@ export default function CriticPage() {
     const deadChannels = channels.filter(c => getChannelState(c) === 'dead');
     if (deadChannels.length > 0) {
       actions.push({
-        domain: 'channel_health', priority: 'high',
+        domain: 'channel_health', priority: 'high', affectedCount: deadChannels.length,
         title: `"${deadChannels.length} dead channel${deadChannels.length !== 1 ? 's' : ''} in your list. No uploads, low activity. Dead weight."`,
         cta: 'Review', ctaHref: '/subscriptions',
         channels: deadChannels.slice(0, 5),
@@ -111,7 +111,7 @@ export default function CriticPage() {
     const inactiveChannels = channels.filter(c => getChannelState(c) === 'inactive');
     if (inactiveChannels.length > 0) {
       suggestions.push({
-        domain: 'channel_health', priority: 'medium',
+        domain: 'channel_health', priority: 'medium', affectedCount: inactiveChannels.length,
         title: `"${inactiveChannels.length} channel${inactiveChannels.length !== 1 ? 's have' : ' has'} gone quiet. No recent uploads. Worth checking in on."`,
         cta: 'Review', ctaHref: '/subscriptions',
         channels: inactiveChannels.slice(0, 5),
@@ -125,7 +125,7 @@ export default function CriticPage() {
     });
     if (longSubs.length > 0) {
       observations.push({
-        domain: 'behaviour', priority: 'low',
+        domain: 'behaviour', priority: 'low', affectedCount: longSubs.length,
         title: `"${longSubs.length} channel${longSubs.length !== 1 ? 's' : ''} subscribed for 7+ years. That's loyalty. But do you still watch them?"`,
         cta: 'Review', ctaHref: '/subscriptions',
       });
@@ -135,7 +135,7 @@ export default function CriticPage() {
     const inactiveFavs = channels.filter(c => c.favourited && getChannelState(c) !== 'active');
     if (inactiveFavs.length > 0) {
       suggestions.push({
-        domain: 'behaviour', priority: 'medium',
+        domain: 'behaviour', priority: 'medium', affectedCount: inactiveFavs.length,
         title: `"${inactiveFavs.length} of your favourites ${inactiveFavs.length !== 1 ? 'are' : 'is'} inactive or dead. Still deserving of that star?"`,
         cta: 'Review favourites', ctaHref: '/subscriptions',
       });
@@ -145,7 +145,7 @@ export default function CriticPage() {
     const hasWatchHistory = typeof window !== 'undefined' && !!localStorage.getItem('subsort_watchhistory');
     if (!hasWatchHistory) {
       suggestions.push({
-        domain: 'data', priority: 'medium',
+        domain: 'data', priority: 'medium', affectedCount: 1,
         title: '"Upload your watch history and I can tell you which channels you actually watch. Right now I\'m just guessing."',
         cta: 'Upload in Settings', ctaHref: '/settings',
       });
@@ -170,6 +170,18 @@ export default function CriticPage() {
   const mood = getScoreMood(healthScore);
   const activeCount = channels.filter(c => getChannelState(c) === 'active').length;
   const totalRecs = recs.actions.length + recs.suggestions.length + recs.observations.length;
+
+  // Deduplicated "need attention" count — channels with at least one issue
+  const needAttentionCount = useMemo(() => {
+    const flagged = new Set();
+    channels.forEach(c => {
+      if (chIsUncategorised(c)) flagged.add(c.id);
+      if (getChannelState(c) === 'dead') flagged.add(c.id);
+      if (getChannelState(c) === 'inactive') flagged.add(c.id);
+      if (c.favourited && getChannelState(c) !== 'active') flagged.add(c.id);
+    });
+    return flagged.size;
+  }, [channels, chIsUncategorised, getChannelState]);
 
   if (loading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
 
@@ -297,7 +309,7 @@ export default function CriticPage() {
                       <span className="cr-health-stat-lbl" style={{ color: 'var(--accent-text)' }}>active</span>
                     </div>
                     <div className="cr-health-stat" style={{ background: 'var(--orange-soft)' }}>
-                      <span className="cr-health-stat-val" style={{ color: 'var(--orange)' }}>{recs.actions.length}</span>
+                      <span className="cr-health-stat-val" style={{ color: 'var(--orange)' }}>{needAttentionCount}</span>
                       <span className="cr-health-stat-lbl" style={{ color: 'var(--orange-text)' }}>need attention</span>
                     </div>
                     <div className="cr-health-stat" style={{ background: 'var(--iris-soft)' }}>
@@ -318,6 +330,7 @@ export default function CriticPage() {
                 {DOMAINS.map(d => {
                   const items = recs.byDomain[d.key] || [];
                   const topItem = items[0];
+                  const totalAffected = items.reduce((sum, r) => sum + (r.affectedCount || 0), 0);
                   const domainColor = topItem
                     ? (topItem.priority === 'high' ? 'var(--orange)' : topItem.priority === 'medium' ? 'var(--accent)' : 'var(--iris)')
                     : 'var(--accent)';
@@ -332,15 +345,16 @@ export default function CriticPage() {
                           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={domainColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">{d.icon}</svg>
                         </div>
                       </div>
-                      <div className="cr-domain-count" style={{ color: items.length ? domainColor : 'var(--accent)' }}>{items.length}</div>
-                      <div className="cr-domain-label">{items.length ? 'items to review' : 'all clear'}</div>
+                      <div className="cr-domain-count" style={{ color: totalAffected ? domainColor : 'var(--accent)' }}>{totalAffected}</div>
+                      <div className="cr-domain-label">{totalAffected ? 'items to review' : 'all clear'}</div>
                       <div className="cr-domain-items">
                         {items.length > 0 ? items.slice(0, 3).map((r, i) => {
                           const dotCol = r.priority === 'high' ? 'var(--orange)' : r.priority === 'medium' ? 'var(--accent)' : 'var(--iris)';
-                          return <div key={i} className="cr-domain-item"><div className="cr-domain-item-dot" style={{ background: dotCol }} />{r.title.replace(/"/g, '').substring(0, 60)}{r.title.length > 62 ? '...' : ''}</div>;
+                          return <div key={i} className="cr-domain-item"><div className="cr-domain-item-dot" style={{ background: dotCol }} /><span className="cr-domain-item-text">{r.title.replace(/"/g, '')}</span></div>;
                         }) : (
-                          <div className="cr-domain-item"><div className="cr-domain-item-dot" style={{ background: 'var(--accent)' }} />{d.label} is healthy</div>
+                          <div className="cr-domain-item"><div className="cr-domain-item-dot" style={{ background: 'var(--accent)' }} /><span className="cr-domain-item-text">{d.label} is healthy</span></div>
                         )}
+                        {items.length > 3 && <span className="cr-domain-see-more">see more</span>}
                       </div>
                     </div>
                   );
