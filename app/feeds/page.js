@@ -188,9 +188,9 @@ export default function Feeds2Page() {
             <span className="ph-count">{filteredVideos.length} videos</span>
           </div>
           <div className="f2-header-right">
-            <button className={`s2-sort-pill${typeFilter === 'all' ? ' s2-sort-active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
-            <button className={`s2-sort-pill${typeFilter === 'videos' ? ' s2-sort-active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
-            <button className={`s2-sort-pill${typeFilter === 'shorts' ? ' s2-sort-active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
+            <button className="s2-sort-pill" onClick={() => setTypeFilter(f => f === 'all' ? 'videos' : f === 'videos' ? 'shorts' : 'all')}>
+              Content Type: {typeFilter === 'all' ? 'All' : typeFilter === 'videos' ? 'Videos' : 'Shorts'}
+            </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <button className="s2-ctrl-icon" onClick={() => setSearch(s => s ? '' : ' ')}>
                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#999" strokeWidth="1.3" /><path d="M10.5 10.5l3 3" stroke="#999" strokeWidth="1.3" strokeLinecap="round" /></svg>
