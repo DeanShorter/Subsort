@@ -27,7 +27,6 @@ export default function Feeds2Page() {
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('videos');
-  const [feedView, setFeedView] = useState('grid');
   const [visibleCount, setVisibleCount] = useState(60);
   const { collections: stashCollections, addToStash } = useStash(user);
   const contentRef = useRef(null);
@@ -189,22 +188,23 @@ export default function Feeds2Page() {
             <span className="ph-count">{filteredVideos.length} videos</span>
           </div>
           <div className="f2-header-right">
-            <div className="ph-view-toggles">
-              <button className={`ph-view-btn f2-type-btn${typeFilter === 'all' ? ' active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
-              <button className={`ph-view-btn f2-type-btn${typeFilter === 'videos' ? ' active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
-              <button className={`ph-view-btn f2-type-btn${typeFilter === 'shorts' ? ' active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
-            </div>
-            <div className="ph-view-toggles">
-              <button className={`ph-view-btn${feedView === 'list' ? ' active' : ''}`} title="List" onClick={() => setFeedView('list')}>
-                <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h12" /></svg>
+            <button className={`s2-sort-pill${typeFilter === 'all' ? ' s2-sort-active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
+            <button className={`s2-sort-pill${typeFilter === 'videos' ? ' s2-sort-active' : ''}`} onClick={() => setTypeFilter('videos')}>Videos</button>
+            <button className={`s2-sort-pill${typeFilter === 'shorts' ? ' s2-sort-active' : ''}`} onClick={() => setTypeFilter('shorts')}>Shorts</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button className="s2-ctrl-icon" onClick={() => setSearch(s => s ? '' : ' ')}>
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#999" strokeWidth="1.3" /><path d="M10.5 10.5l3 3" stroke="#999" strokeWidth="1.3" strokeLinecap="round" /></svg>
               </button>
-              <button className={`ph-view-btn${feedView === 'grid' ? ' active' : ''}`} title="Grid" onClick={() => setFeedView('grid')}>
-                <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" /><rect x="8" y="1" width="5" height="5" rx="1" /><rect x="1" y="8" width="5" height="5" rx="1" /><rect x="8" y="8" width="5" height="5" rx="1" /></svg>
-              </button>
-            </div>
-            <div className="ph-search-wrap">
-              <svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4.5" fill="none" /><path d="M9.5 9.5L13 13" /></svg>
-              <input className="ph-search" type="text" placeholder="Search videos..." value={search} onChange={e => setSearch(e.target.value)} />
+              {search !== '' && (
+                <>
+                  <input className="s2-search-pill" type="text" placeholder="Search..." value={search === ' ' ? '' : search} onChange={e => setSearch(e.target.value)} autoFocus style={{ width: 160 }} />
+                  {search.trim() && (
+                    <button className="s2-ctrl-icon" onClick={() => setSearch('')} style={{ marginLeft: -4 }}>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="#999" strokeWidth="1.3" strokeLinecap="round" /></svg>
+                    </button>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -275,7 +275,7 @@ export default function Feeds2Page() {
       </div>
 
       {/* Video grid — 3 columns, full width */}
-      <div className={`f2-grid${feedView === 'list' ? ' f2-grid-list' : ''}`} key={`${activeCategory}-${activeSubcategory}-${typeFilter}`}>
+      <div className="f2-grid" key={`${activeCategory}-${activeSubcategory}-${typeFilter}`}>
         {visibleVideos.length > 0 ? visibleVideos.map((v, idx) => {
           const ch = channelMap[v.channelId];
           const cats = ch ? (ch.categories || []) : [];

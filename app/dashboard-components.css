@@ -4236,6 +4236,7 @@ input[type=range]::-webkit-slider-thumb{
 /* Sort pill */
 .s2-sort-pill{display:flex;align-items:center;gap:5px;padding:5px 13px;border-radius:20px;font-size:13px;background:var(--bg-primary);color:var(--text-secondary);cursor:pointer;border:none;font-family:var(--font-body);transition:all .15s}
 .s2-sort-pill:hover{background:var(--bg-surface-raised);color:var(--text-primary)}
+.s2-sort-pill.s2-sort-active{background:var(--accent);color:#fff}
 .s2-sort-pill svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.2;stroke-linecap:round}
 
 /* ═══ Stash Page ═══ */
