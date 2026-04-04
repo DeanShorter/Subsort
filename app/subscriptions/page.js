@@ -42,6 +42,7 @@ export default function Subscriptions2Page() {
     return localStorage.getItem('subsnub_actionbar_collapsed') === '1';
   });
   const [cleanDismissed, setCleanDismissed] = useState(false);
+  const [recentlySorted, setRecentlySorted] = useState(null); // Set<id> or null
   useEffect(() => { localStorage.setItem('subsnub_actionbar_collapsed', abCollapsed ? '1' : '0'); }, [abCollapsed]);
   const [showManageCats, setShowManageCats] = useState(false);
   const [showBulkEdit, setShowBulkEdit] = useState(false);
@@ -98,7 +99,8 @@ export default function Subscriptions2Page() {
     }
     if (activeSubcategory) result = result.filter(c => c.subcategory === activeSubcategory);
     if (search) { const q = search.toLowerCase(); result = result.filter(c => (c.name || '').toLowerCase().includes(q)); }
-    if (filterStatus === 'uncategorised') result = result.filter(c => chIsUncategorised(c));
+    if (recentlySorted) result = result.filter(c => recentlySorted.has(c.id));
+    else if (filterStatus === 'uncategorised') result = result.filter(c => chIsUncategorised(c));
     else if (filterStatus !== 'all') result = result.filter(c => getChannelState(c) === filterStatus);
 
     const dir = sortDir === 'asc' ? 1 : -1;
@@ -122,7 +124,7 @@ export default function Subscriptions2Page() {
       return cmp * dir;
     });
     return result;
-  }, [channels, activeCategory, activeSubcategory, selectedCatFilters, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterStatus, getChannelState]);
+  }, [channels, activeCategory, activeSubcategory, selectedCatFilters, search, sortKey, sortDir, chCats, chHasCat, chIsUncategorised, filterStatus, getChannelState, recentlySorted]);
 
   // ── Category panel toggle ──────────────────────────
   const handleToggleCat = useCallback((cat) => {
@@ -181,10 +183,12 @@ export default function Subscriptions2Page() {
       if (!assigned && !unmatched.length) { showToast('No unsorted channels to sort'); setSorting(false); return; }
 
       if (assigned > 0) {
+        const sortedIds = new Set(assignments.map(a => a.channel.id));
         const result = await persistAutoSort(supabase, user, assignments, dbCategories);
         await reload();
+        setRecentlySorted(sortedIds);
         const subMsg = result.subcategoriesAssigned > 0 ? ` (${result.subcategoriesAssigned} with subcategories)` : '';
-        showToast(`Sorted ${assigned} channel${assigned !== 1 ? 's' : ''}${subMsg}`);
+        showToast(`Sorted ${assigned} channel${assigned !== 1 ? 's' : ''} — review below${subMsg}`);
       }
 
       if (unmatched.length > 0) {
@@ -404,7 +408,16 @@ export default function Subscriptions2Page() {
         {/* CONTROL ROW */}
         <div className="s2-ctrl-row">
           <div className="s2-ctrl-left">
-            {selectedCatFilters.size > 0 && (
+            {recentlySorted && (
+              <>
+                <span className="s2-filter-tag" style={{ background: 'var(--accent-soft)', color: 'var(--accent-text)' }}>
+                  Recently sorted ({recentlySorted.size})
+                  <span className="s2-filter-tag-x" onClick={() => setRecentlySorted(null)}>&times;</span>
+                </span>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', cursor: 'pointer', marginLeft: 4 }} onClick={() => setRecentlySorted(null)}>Show all channels</span>
+              </>
+            )}
+            {!recentlySorted && selectedCatFilters.size > 0 && (
               <>
                 <span style={{ fontSize: 12, color: 'var(--text-muted)', marginRight: 4 }}>Showing:</span>
                 {[...selectedCatFilters].map(f => (
