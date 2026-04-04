@@ -297,6 +297,78 @@ create policy "Users can insert own stash items" on public.stash_items for inser
 create policy "Users can update own stash items" on public.stash_items for update using (auth.uid() = user_id);
 create policy "Users can delete own stash items" on public.stash_items for delete using (auth.uid() = user_id);
 
+-- ─── HEALTH SCORE SNAPSHOTS ───
+create table public.health_score_snapshots (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  score integer not null,
+  category_coverage_score numeric(4,1) not null,
+  subcategory_coverage_score numeric(4,1) not null,
+  category_hygiene_score numeric(4,1) not null,
+  channel_health_score numeric(4,1) not null,
+  feed_health_score numeric(4,1) not null,
+  stash_health_score numeric(4,1) not null,
+  data_freshness_score numeric(4,1) not null,
+  total_channels integer not null,
+  categorised_channels integer not null,
+  subcategorised_channels integer not null,
+  active_channels integer not null,
+  dead_channels integer not null,
+  inactive_channels integer not null,
+  mood text not null,
+  snapshot_date date not null default current_date,
+  created_at timestamptz default now(),
+  unique(user_id, snapshot_date)
+);
+
+create index idx_health_snapshots_user_date on public.health_score_snapshots(user_id, snapshot_date desc);
+
+alter table public.health_score_snapshots enable row level security;
+create policy "Users can view own snapshots" on public.health_score_snapshots for select using (auth.uid() = user_id);
+create policy "Users can insert own snapshots" on public.health_score_snapshots for insert with check (auth.uid() = user_id);
+
+-- ─── CLEANUP SETTINGS ───
+create table public.cleanup_settings (
+  user_id uuid references public.profiles(id) on delete cascade primary key,
+  dead_threshold_days int default 365,
+  inactive_threshold_days int default 90,
+  frequency_sensitivity int default 50,
+  stale_watch_later_days int default 30,
+  stale_collection_days int default 60,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table public.cleanup_settings enable row level security;
+create policy "Users can view own settings" on public.cleanup_settings for select using (auth.uid() = user_id);
+create policy "Users can upsert own settings" on public.cleanup_settings for insert with check (auth.uid() = user_id);
+create policy "Users can update own settings" on public.cleanup_settings for update using (auth.uid() = user_id);
+
+-- ─── RECOMMENDATIONS ───
+create table public.recommendations (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  type text not null,
+  domain text not null,
+  priority text not null,
+  status text not null default 'active',
+  title text not null,
+  metadata jsonb default '{}',
+  snoozed_until timestamptz,
+  dismiss_count int default 0,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create index idx_recommendations_user_status on public.recommendations(user_id, status);
+create index idx_recommendations_user_domain on public.recommendations(user_id, domain);
+
+alter table public.recommendations enable row level security;
+create policy "Users can view own recommendations" on public.recommendations for select using (auth.uid() = user_id);
+create policy "Users can insert own recommendations" on public.recommendations for insert with check (auth.uid() = user_id);
+create policy "Users can update own recommendations" on public.recommendations for update using (auth.uid() = user_id);
+create policy "Users can delete own recommendations" on public.recommendations for delete using (auth.uid() = user_id);
+
 -- ─── INDEXES ───
 -- Performance indexes for common queries
 create index idx_channels_user_id on public.channels(user_id);

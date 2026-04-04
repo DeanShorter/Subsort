@@ -2,47 +2,9 @@
 import { useState, useMemo } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
+import { useStash } from '../../hooks/useStash';
+import { calculateHealthScore, buildHealthScoreInput } from '../../lib/health-score';
 import Link from 'next/link';
-
-// ── Health score calculation ──
-function calcHealthScore(channels, categories, chIsUncategorised, getChannelState) {
-  let score = 100;
-  const uncatCount = channels.filter(c => chIsUncategorised(c)).length;
-  const deadCount = channels.filter(c => getChannelState(c) === 'dead').length;
-  const inactiveCount = channels.filter(c => getChannelState(c) === 'inactive').length;
-  const emptyCategories = categories.filter(cat => !channels.some(c => (c.categories || []).includes(cat))).length;
-  const inactiveFavs = channels.filter(c => c.favourited && getChannelState(c) !== 'active').length;
-
-  score -= Math.min(uncatCount * 2, 20);
-  score -= Math.min(deadCount * 3, 15);
-  score -= Math.min(inactiveCount * 1, 10);
-  score -= Math.min(emptyCategories * 2, 10);
-  score -= Math.min(inactiveFavs * 1, 5);
-
-  return Math.max(0, score);
-}
-
-function getScoreMood(score) {
-  if (score >= 80) return { color: 'var(--accent)', soft: 'var(--accent-soft)', text: 'var(--accent-text)', label: 'green' };
-  if (score >= 50) return { color: 'var(--orange)', soft: 'var(--orange-soft)', text: 'var(--orange-text)', label: 'orange' };
-  return { color: 'var(--iris)', soft: 'var(--iris-soft)', text: 'var(--iris-text)', label: 'iris' };
-}
-
-function getScoreTitle(score, name) {
-  if (score >= 95) return `Impeccable, ${name}.`;
-  if (score >= 85) return `Looking good, ${name}.`;
-  if (score >= 70) return `Not bad, ${name}.`;
-  if (score >= 50) return `We need to talk, ${name}.`;
-  return `Where do I start, ${name}.`;
-}
-
-function getScoreQuote(score, actionCount) {
-  if (score >= 95) return "Nothing to complain about. I'm almost disappointed.";
-  if (score >= 85) return `${score} out of 100. A few things to tidy, but nothing I'd lose sleep over.`;
-  if (score >= 70) return "Room for improvement, but you're ahead of most. Let's clean up.";
-  if (score >= 50) return `Your subscriptions need attention. I've got ${actionCount} things to go through.`;
-  return "This is going to take a minute. Let's work through it together.";
-}
 
 // ── Domain definitions ──
 const DOMAINS = [
@@ -67,7 +29,8 @@ const MENU_ITEMS = [
 
 export default function CriticPage() {
   const { user } = useAuth();
-  const { channels, categories, chIsUncategorised, getChannelState, loading } = useChannelData();
+  const { channels, categories, subcategories, chIsUncategorised, getChannelState, feedVideos, loading } = useChannelData();
+  const { items: stashItems, collections: stashCollections } = useStash(user);
   const [activeView, setActiveView] = useState('overview');
 
   const userName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
@@ -162,26 +125,30 @@ export default function CriticPage() {
     return { actions, suggestions, observations, byDomain };
   }, [channels, categories, chIsUncategorised, getChannelState]);
 
-  const healthScore = useMemo(() => {
-    if (!channels.length) return 100;
-    return calcHealthScore(channels, categories, chIsUncategorised, getChannelState);
-  }, [channels, categories, chIsUncategorised, getChannelState]);
+  // Health score from shared utility
+  const healthResult = useMemo(() => {
+    if (!channels.length) return calculateHealthScore({
+      totalChannels: 0, categorisedChannels: 0, subcategorisedChannels: 0, eligibleForSubcategory: 0,
+      activeChannels: 0, deadChannels: 0, inactiveChannels: 0, hasEmptyCategories: false,
+      maxCategoryPercentage: 0, feedDominanceExceeded: false, feedCategoryRatio: 1,
+      hasSufficientFeedData: false, totalWatchLaterItems: 0, staleWatchLaterItems: 0,
+      hasEmptyCollections: false, hasStaleCollections: false, hasUsedStash: false,
+      watchDataAgeDays: null,
+    }, userName, 0);
+    const { input, needAttentionCount } = buildHealthScoreInput(
+      channels, categories, subcategories, chIsUncategorised, getChannelState,
+      feedVideos, stashItems, stashCollections
+    );
+    return calculateHealthScore(input, userName, needAttentionCount);
+  }, [channels, categories, subcategories, chIsUncategorised, getChannelState, feedVideos, stashItems, stashCollections, userName]);
 
-  const mood = getScoreMood(healthScore);
-  const activeCount = channels.filter(c => getChannelState(c) === 'active').length;
+  const healthScore = healthResult.total;
+  const mood = healthResult.mood === 'green'
+    ? { color: 'var(--accent)', soft: 'var(--accent-soft)', text: 'var(--accent-text)' }
+    : { color: 'var(--orange)', soft: 'var(--orange-soft)', text: 'var(--orange-text)' };
+  const activeCount = healthResult.counts.activeChannels;
+  const needAttentionCount = healthResult.counts.needAttention;
   const totalRecs = recs.actions.length + recs.suggestions.length + recs.observations.length;
-
-  // Deduplicated "need attention" count — channels with at least one issue
-  const needAttentionCount = useMemo(() => {
-    const flagged = new Set();
-    channels.forEach(c => {
-      if (chIsUncategorised(c)) flagged.add(c.id);
-      if (getChannelState(c) === 'dead') flagged.add(c.id);
-      if (getChannelState(c) === 'inactive') flagged.add(c.id);
-      if (c.favourited && getChannelState(c) !== 'active') flagged.add(c.id);
-    });
-    return flagged.size;
-  }, [channels, chIsUncategorised, getChannelState]);
 
   if (loading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
 
@@ -298,8 +265,8 @@ export default function CriticPage() {
                   </div>
                   <div className="cr-health-head-text">
                     <div className="cr-health-label">SUBSCRIPTION HEALTH</div>
-                    <div className="cr-health-title">{getScoreTitle(healthScore, userName)}</div>
-                    <div className="cr-health-quote">{getScoreQuote(healthScore, recs.actions.length)}</div>
+                    <div className="cr-health-title">{healthResult.title}</div>
+                    <div className="cr-health-quote">{healthResult.quote}</div>
                   </div>
                 </div>
                 <div className="cr-health-body">
