@@ -35,6 +35,7 @@ export default function Subscriptions2Page() {
   const [selectedChannels, setSelectedChannels] = useState(new Set());
   const [sorting, setSorting] = useState(false);
   const [showSortConfirm, setShowSortConfirm] = useState(false);
+  const [unmatchedChannels, setUnmatchedChannels] = useState([]);
   const [showManageCats, setShowManageCats] = useState(false);
   const [showBulkEdit, setShowBulkEdit] = useState(false);
   const catTabsRef = useRef(null);
@@ -168,13 +169,19 @@ export default function Subscriptions2Page() {
     setSorting(true);
     setShowSortConfirm(false);
     try {
-      const { assignments, assigned } = autoCategoriseAll(channels, chIsUncategorised);
-      if (!assigned) { setSorting(false); return; }
+      const { assignments, assigned, unmatched } = autoCategoriseAll(channels, chIsUncategorised);
+      if (!assigned && !unmatched.length) { showToast('No unsorted channels to sort'); setSorting(false); return; }
 
-      await persistAutoSort(supabase, user, assignments, dbCategories);
-      await reload();
-      showToast(`Sorted ${assigned} channels`);
-    } catch (e) { console.error('Auto-sort failed:', e); showToast('Auto-sort failed'); }
+      if (assigned > 0) {
+        await persistAutoSort(supabase, user, assignments, dbCategories);
+        await reload();
+        showToast(`Sorted ${assigned} channel${assigned !== 1 ? 's' : ''}`);
+      }
+
+      if (unmatched.length > 0) {
+        setUnmatchedChannels(unmatched);
+      }
+    } catch (e) { console.error('Auto-sort failed:', e); showToast(`Auto-sort failed: ${e.message}`); }
     finally { setSorting(false); }
   }, [user, channels, sorting, reload, dbCategories, chIsUncategorised]);
 
@@ -554,11 +561,57 @@ export default function Subscriptions2Page() {
           <div className="h2-panel" style={{ maxWidth: 400, padding: 24 }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Auto-sort channels?</h3>
             <p style={{ fontSize: 13, color: 'var(--text-mid)', marginBottom: 16, lineHeight: 1.5 }}>
-              This will automatically categorise your {channels.filter(c => chIsUncategorised(c)).length} uncategorised channels using AI.
+              This will automatically categorise your {channels.filter(c => chIsUncategorised(c)).length} unsorted channels.
             </p>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button className="s2-btn-ghost" onClick={() => setShowSortConfirm(false)}>Cancel</button>
               <button className="s2-btn-primary" onClick={handleAutoSort}>Sort now</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Unmatched channels modal */}
+      {unmatchedChannels.length > 0 && (
+        <div className="modal-overlay open" onClick={() => setUnmatchedChannels([])}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
+            <h2>{unmatchedChannels.length} channel{unmatchedChannels.length !== 1 ? 's' : ''} couldn&rsquo;t be sorted</h2>
+            <p className="subtitle">These channels don&rsquo;t have enough data to suggest a category. You can assign them manually or leave them unsorted.</p>
+            <div style={{ maxHeight: 360, overflowY: 'auto', margin: '16px 0' }}>
+              {unmatchedChannels.map(ch => (
+                <div key={ch.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 500, flexShrink: 0, overflow: 'hidden' }}>
+                    {ch.thumbnail ? <img src={ch.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : (ch.name || '??').substring(0, 2).toUpperCase()}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ch.name}</div>
+                  </div>
+                  <select
+                    style={{ padding: '5px 10px', borderRadius: 8, border: '1.5px solid var(--border-subtle)', fontSize: 12, fontFamily: 'var(--font-body)', background: 'var(--bg-primary)', cursor: 'pointer' }}
+                    defaultValue=""
+                    onChange={async (e) => {
+                      const catName = e.target.value;
+                      if (!catName) return;
+                      const cat = dbCategories.find(c => c.name === catName);
+                      if (cat) {
+                        await supabase.from('channel_categories').upsert(
+                          { channel_id: ch.id, category_id: cat.id, user_id: user.id },
+                          { onConflict: 'channel_id,category_id', ignoreDuplicates: true }
+                        );
+                        setUnmatchedChannels(prev => prev.filter(c => c.id !== ch.id));
+                        reload();
+                        showToast(`${ch.name} → ${catName}`);
+                      }
+                    }}
+                  >
+                    <option value="">Assign category...</option>
+                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+              ))}
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setUnmatchedChannels([])}>Leave unsorted</button>
             </div>
           </div>
         </div>
