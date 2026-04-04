@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { AuthContext } from './AuthContext';
+import { trackEvent } from '../../lib/track';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -30,6 +31,9 @@ export function AuthProvider({ children }) {
         setAccessToken(session.provider_token);
         localStorage.setItem('subsort_yt_token', session.provider_token);
       }
+
+      // Track session start (fire-and-forget)
+      trackEvent('session_start');
 
       // Fetch user tier (non-blocking for loading state)
       setLoading(false);

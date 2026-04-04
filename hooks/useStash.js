@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { showToast } from '../app/components/Toast';
+import { trackEvent } from '../lib/track';
 
 export function useStash(user) {
   const [collections, setCollections] = useState([]);
@@ -66,6 +67,7 @@ export function useStash(user) {
       showToast('Failed to save video');
     } else {
       showToast(collectionName ? `Saved to ${collectionName}` : 'Added to Stash');
+      trackEvent('stash_video_added', { video_id: video.id, collection: collectionName || 'none' });
       load();
     }
   }, [user, collections, load]);
@@ -96,6 +98,7 @@ export function useStash(user) {
     if (error) { showToast('Failed to create collection'); return null; }
     setCollections(prev => [...prev, data]);
     showToast(`Created: ${name}`);
+    trackEvent('collection_created', { type: type || 'simple' });
     return data;
   }, [user, collections]);
 

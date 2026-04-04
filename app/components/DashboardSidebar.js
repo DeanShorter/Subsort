@@ -136,6 +136,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
       localStorage.setItem('subsort_rss_ts', String(Date.now()));
       await reload();
       setSyncing(false);
+      trackEvent('sync', { source: 'auto' });
       console.log('[AutoSync] Complete');
     })();
   }, [accessToken, user]);
@@ -274,6 +275,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
     window.dispatchEvent(new Event('subsnub:rss-refreshed'));
     await reload();
     setSyncing(false);
+    trackEvent('sync', { source: 'manual' });
   }, [user, syncing, userTier, accessToken, channels, reload]);
 
   useEffect(() => {

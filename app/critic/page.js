@@ -1,9 +1,10 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { useStash } from '../../hooks/useStash';
 import { calculateHealthScore, buildHealthScoreInput } from '../../lib/health-score';
+import { trackEvent } from '../../lib/track';
 import Link from 'next/link';
 
 // ── Domain definitions ──
@@ -149,6 +150,14 @@ export default function CriticPage() {
   const activeCount = healthResult.counts.activeChannels;
   const needAttentionCount = healthResult.counts.needAttention;
   const totalRecs = recs.actions.length + recs.suggestions.length + recs.observations.length;
+
+  // Track page visit once
+  const tracked = useRef(false);
+  useEffect(() => {
+    if (tracked.current || !channels.length) return;
+    tracked.current = true;
+    trackEvent('critic_page_visited', { health_score: healthScore, active_recommendations: totalRecs });
+  }, [channels.length, healthScore, totalRecs]);
 
   if (loading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
 

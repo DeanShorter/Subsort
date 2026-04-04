@@ -65,7 +65,7 @@ export function ChannelDataProvider({ children, user }) {
     // Persist to DB
     try {
       await supabase.from('channels').update({ favourited: newVal }).eq('id', channelId);
-      trackEvent(newVal ? 'favourite_add' : 'favourite_remove');
+      trackEvent(newVal ? 'channel_favourited' : 'channel_unfavourited', { channel_id: channelId });
     } catch (e) {
       console.error('[ChannelData] Toggle favourite failed:', e);
       ch.favourited = !newVal;

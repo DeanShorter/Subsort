@@ -5,6 +5,7 @@ import { useChannelData } from '../components/ChannelDataContext';
 import { timeAgo } from '../../lib/youtube';
 import { supabase } from '../../lib/supabase';
 import { useDragScroll } from '../../hooks/useDragScroll';
+import { trackEvent } from '../../lib/track';
 import { useStash } from '../../hooks/useStash';
 import VideoCardPreview from '../components/VideoCardPreview';
 
@@ -49,6 +50,7 @@ export default function Feeds2Page() {
   // ── Hide sidebar categories on feeds ────────────────
   useEffect(() => {
     window.__subsortHideSidebarCats?.('/feeds');
+    trackEvent('feed_viewed', { video_count: feedVideos.length });
     return () => { window.__subsortHideSidebarCats?.(null); };
   }, []);
 
