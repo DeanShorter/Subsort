@@ -409,7 +409,7 @@ export default function Subscriptions2Page() {
           </div>
         </div>
         {filtered.length === 0 ? (
-          <div className="h2-empty-state" style={{ margin: '40px 0' }}>
+          <div className="h2-empty-state" style={{ margin: '40px' }}>
             <span className="h2-empty-emoji">🤷</span>
             <span className="h2-empty-text">No channels match your filters</span>
           </div>
