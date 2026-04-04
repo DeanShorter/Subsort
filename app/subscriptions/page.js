@@ -248,9 +248,11 @@ export default function Subscriptions2Page() {
       />
     ) : (
       <div className="cp-collapsed" onClick={() => setShowCatPanel(true)}>
-        <button className="cp-expand-btn">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </button>
+        <div className="cp-collapsed-header">
+          <button className="cp-expand-btn">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+        </div>
         <span className="cp-collapsed-label">Categories</span>
         {selectedCatFilters.size > 0 && (
           <span className="cp-collapsed-badge">{selectedCatFilters.size}</span>
