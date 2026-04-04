@@ -206,8 +206,9 @@ export default function CategoryPanel({ selectedCats, onToggleCat, onClose, onAu
 
         {/* Categories */}
         {filteredCats.map(cat => {
-          const isOn = selectedCats.has(cat);
           const subs = subcategories[cat] || [];
+          const hasActiveSub = activeSub && subs.includes(activeSub);
+          const isOn = selectedCats.has(cat) || hasActiveSub;
           const isExpanded = expandedCats.has(cat) || addingSubTo === cat;
           const count = getCatCount(cat);
           const isEditing = editingCat === cat;
