@@ -5398,6 +5398,54 @@ input[type=range]::-webkit-slider-thumb{
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   ADMIN PAGE
+   ═══════════════════════════════════════════════════════════════ */
+.adm-page{padding:32px 40px 60px;max-width:1200px;margin:0 auto;background:#fff;min-height:100%}
+.adm-loading{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:14px;color:var(--text-muted)}
+.adm-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px}
+.adm-h1{font-family:'DM Sans',var(--font-body);font-size:20px;font-weight:500;margin-bottom:4px}
+.adm-refresh-time{font-size:12px;color:var(--text-muted)}
+.adm-refresh-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;background:var(--bg-primary);color:var(--text-secondary);border:none;cursor:pointer;font-family:var(--font-body)}
+.adm-refresh-btn:hover{background:#eaeaea}
+.adm-section-title{font-size:14px;font-weight:500;margin-bottom:12px;margin-top:28px;color:var(--text-primary)}
+.adm-section-title:first-of-type{margin-top:0}
+
+/* Vital signs */
+.adm-vitals{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.adm-vital-card{background:var(--bg-primary);border-radius:12px;padding:16px;text-align:center}
+.adm-vital-val{font-family:'DM Sans',var(--font-body);font-size:28px;font-weight:700;margin-bottom:4px}
+.adm-vital-lbl{font-size:13px;color:var(--text-muted)}
+
+/* Activity feed */
+.adm-activity{background:var(--bg-primary);border-radius:12px;padding:4px 0;max-height:400px;overflow-y:auto}
+.adm-activity-item{display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:13px;border-bottom:1px solid rgba(0,0,0,.03)}
+.adm-activity-item:last-child{border-bottom:none}
+.adm-activity-time{font-size:11px;color:var(--text-muted);width:60px;flex-shrink:0;font-variant-numeric:tabular-nums}
+.adm-activity-user{font-weight:500;color:var(--accent);flex-shrink:0;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-activity-desc{color:var(--text-secondary);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-empty{padding:24px;text-align:center;font-size:13px;color:var(--text-muted);font-style:italic}
+
+/* Tables */
+.adm-table-wrap{background:var(--bg-primary);border-radius:12px;overflow:hidden}
+.adm-table{width:100%;border-collapse:collapse;font-size:13px}
+.adm-table th{text-align:left;padding:10px 16px;font-weight:500;color:var(--text-muted);font-size:12px;border-bottom:1px solid rgba(0,0,0,.06)}
+.adm-table td{padding:10px 16px;border-bottom:1px solid rgba(0,0,0,.03)}
+.adm-table tr:last-child td{border-bottom:none}
+.adm-table tr:nth-child(even){background:rgba(0,0,0,.01)}
+.adm-tier{padding:2px 8px;border-radius:8px;font-size:11px;font-weight:500}
+.adm-tier.free{background:var(--bg-primary);color:var(--text-muted)}
+.adm-tier.pro{background:var(--accent-soft);color:var(--accent-text)}
+.adm-tier.admin{background:var(--orange-soft);color:var(--orange-text)}
+
+@media(max-width:900px){
+  .adm-page{padding:20px 16px 40px}
+  .adm-vitals{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){
+  .adm-vitals{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ═══════════════════════════════════════════════════════════════
    TEXTURE UTILITIES
    ═══════════════════════════════════════════════════════════════ */
 /* White stripes — for solid/dark backgrounds */

@@ -369,6 +369,23 @@ create policy "Users can insert own recommendations" on public.recommendations f
 create policy "Users can update own recommendations" on public.recommendations for update using (auth.uid() = user_id);
 create policy "Users can delete own recommendations" on public.recommendations for delete using (auth.uid() = user_id);
 
+-- ─── EVENTS (Analytics) ───
+create table public.events (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  event_name text not null,
+  metadata jsonb default '{}',
+  created_at timestamptz default now()
+);
+
+create index idx_events_name_created on public.events(event_name, created_at desc);
+create index idx_events_user_created on public.events(user_id, created_at desc);
+create index idx_events_created on public.events(created_at desc);
+
+alter table public.events enable row level security;
+create policy "Users can insert own events" on public.events for insert with check (auth.uid() = user_id);
+create policy "Users can view own events" on public.events for select using (auth.uid() = user_id);
+
 -- ─── INDEXES ───
 -- Performance indexes for common queries
 create index idx_channels_user_id on public.channels(user_id);
