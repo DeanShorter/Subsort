@@ -7,6 +7,7 @@ import { useAuth } from './AuthContext';
 import { ChannelDataProvider } from './ChannelDataProvider';
 import DashboardSidebar from './DashboardSidebar';
 import OnboardingFlow from './OnboardingFlow';
+import HealthSnapshotManager from './HealthSnapshotManager';
 import Toast from './Toast';
 
 const DASHBOARD_ROUTES = [
@@ -45,6 +46,7 @@ function DashboardInner({ children }) {
 
   return (
     <ChannelDataProvider user={user}>
+      <HealthSnapshotManager />
       <div className="app-shell">
         <OnboardingFlow
           visible={showOnboarding && !!user}
