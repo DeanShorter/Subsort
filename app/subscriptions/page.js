@@ -3,6 +3,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
 import { supabase } from '../../lib/supabase';
+import Link from 'next/link';
 import { showToast } from '../components/Toast';
 import { autoCategoriseAll, persistAutoSort } from '../../lib/auto-categorise';
 import EditChannelModal from '../components/EditChannelModal';
@@ -36,6 +37,12 @@ export default function Subscriptions2Page() {
   const [sorting, setSorting] = useState(false);
   const [showSortConfirm, setShowSortConfirm] = useState(false);
   const [unmatchedChannels, setUnmatchedChannels] = useState([]);
+  const [abCollapsed, setAbCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('subsnub_actionbar_collapsed') === '1';
+  });
+  const [cleanDismissed, setCleanDismissed] = useState(false);
+  useEffect(() => { localStorage.setItem('subsnub_actionbar_collapsed', abCollapsed ? '1' : '0'); }, [abCollapsed]);
   const [showManageCats, setShowManageCats] = useState(false);
   const [showBulkEdit, setShowBulkEdit] = useState(false);
   const catTabsRef = useRef(null);
@@ -91,7 +98,8 @@ export default function Subscriptions2Page() {
     }
     if (activeSubcategory) result = result.filter(c => c.subcategory === activeSubcategory);
     if (search) { const q = search.toLowerCase(); result = result.filter(c => (c.name || '').toLowerCase().includes(q)); }
-    if (filterStatus !== 'all') result = result.filter(c => getChannelState(c) === filterStatus);
+    if (filterStatus === 'uncategorised') result = result.filter(c => chIsUncategorised(c));
+    else if (filterStatus !== 'all') result = result.filter(c => getChannelState(c) === filterStatus);
 
     const dir = sortDir === 'asc' ? 1 : -1;
     result.sort((a, b) => {
@@ -277,68 +285,119 @@ export default function Subscriptions2Page() {
         </div>
       </div>
 
-      {/* INSIGHTS ROW */}
-      <div className="s2-insights">
-        <div className="s2-insight">
-          <div className="s2-insight-header" style={{ background: 'var(--accent-soft)' }}>
-            <div>
-              <div className="s2-insight-stat" style={{ color: 'var(--accent)' }}>{channels.filter(c => chIsUncategorised(c)).length}</div>
-              <div className="s2-insight-label" style={{ color: 'var(--accent-text)' }}>unsorted</div>
+      {/* ACTION BAR */}
+      {channels.length > 0 && (() => {
+        const uncatCount = channels.filter(c => chIsUncategorised(c)).length;
+        const deadCount = channels.filter(c => getChannelState(c) === 'dead').length;
+        const inactiveCount = channels.filter(c => getChannelState(c) === 'inactive').length;
+        const activeCount = channels.filter(c => getChannelState(c) === 'active').length;
+        const isClean = uncatCount === 0 && deadCount === 0;
+
+        // Inline Critic prompt — highest priority recommendation
+        let criticCopy = null;
+        let criticCta = null;
+        let criticCtaAction = null;
+        let criticSecondary = null;
+        let criticColor = 'var(--orange)';
+        if (uncatCount > 0) {
+          criticCopy = `"${uncatCount} unsorted channel${uncatCount !== 1 ? 's' : ''}. That's a messy drawer."`;
+          criticCta = 'Auto-sort';
+          criticCtaAction = () => setShowSortConfirm(true);
+          criticSecondary = { label: 'view unsorted', action: () => handleToggleCat('__uncat__') };
+        } else if (deadCount > 0) {
+          criticCopy = `"${deadCount} dead channel${deadCount !== 1 ? 's' : ''} taking up space. Time to scrub."`;
+          criticCta = 'Review';
+          criticCtaAction = () => setFilterStatus('dead');
+        } else if (inactiveCount > 0) {
+          criticCopy = `"${inactiveCount} channel${inactiveCount !== 1 ? 's have' : ' has'} gone quiet. Worth checking."`;
+          criticCta = 'Review';
+          criticCtaAction = () => setFilterStatus('inactive');
+          criticColor = 'var(--accent)';
+        }
+
+        if (isClean && !cleanDismissed) {
+          return (
+            <div className="ab-clean">
+              <div className="ab-clean-check">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 5.5l2 2 3.5-3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+              <span className="ab-clean-text">{channels.length} channels &middot; all categorised &middot; all active</span>
+              <div style={{ flex: 1 }} />
+              <Link href="/critic" className="ab-critic-link">The Critic <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 2l3 3-3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg></Link>
+              <div className="ab-thin-divider" />
+              <button className="ab-clean-dismiss" onClick={() => setCleanDismissed(true)}>Dismiss</button>
             </div>
-            <div className="s2-insight-icon" style={{ background: 'var(--accent)' }}>
-              <svg viewBox="0 0 14 14"><path d="M2 4h10M4 7h6M6 10h2" /></svg>
-            </div>
-          </div>
-          <div className="s2-insight-body">
-            <div className="s2-insight-quote">"{channels.filter(c => chIsUncategorised(c)).length} channels with no category. That's a messy drawer. Let me sort it."</div>
-            <div className="s2-insight-actions">
-              <button className="s2-insight-cta" style={{ background: 'var(--accent)' }} onClick={() => setShowSortConfirm(true)} disabled={sorting}>
-                {sorting ? 'Sorting...' : 'Auto-sort'}
-                <svg viewBox="0 0 14 14"><path d="M5 3l4.5 4-4.5 4" /></svg>
+          );
+        }
+
+        return (
+          <div className={`ab-bar${abCollapsed ? ' collapsed' : ''}`}>
+            {abCollapsed ? (
+              <div className="ab-collapsed-summary" onClick={() => setAbCollapsed(false)}>
+                {uncatCount > 0 && <span><strong style={{ color: 'var(--orange)' }}>{uncatCount}</strong> unsorted</span>}
+                {uncatCount > 0 && deadCount > 0 && <span className="ab-mid-dot">&middot;</span>}
+                {deadCount > 0 && <span><strong style={{ color: 'var(--orange)' }}>{deadCount}</strong> dead</span>}
+                {(uncatCount > 0 || deadCount > 0) && <span className="ab-mid-dot">&middot;</span>}
+                <span><strong>{inactiveCount}</strong> inactive</span>
+                <span className="ab-mid-dot">&middot;</span>
+                <span><strong>{activeCount}</strong> active</span>
+              </div>
+            ) : (
+              <>
+                <div className="ab-stats">
+                  {uncatCount > 0 && (
+                    <button className={`ab-stat${filterStatus === 'uncategorised' ? ' active' : ''}`} onClick={() => setFilterStatus(f => f === 'uncategorised' ? 'all' : 'uncategorised')}>
+                      <span className="ab-stat-dot" style={{ background: 'var(--orange)' }} />
+                      <span className="ab-stat-num" style={{ color: 'var(--orange)' }}>{uncatCount}</span>
+                      <span className="ab-stat-lbl">Unsorted</span>
+                    </button>
+                  )}
+                  {deadCount > 0 && (
+                    <button className={`ab-stat${filterStatus === 'dead' ? ' active' : ''}`} onClick={() => setFilterStatus(f => f === 'dead' ? 'all' : 'dead')}>
+                      <span className="ab-stat-dot" style={{ background: 'var(--orange)' }} />
+                      <span className="ab-stat-num" style={{ color: 'var(--orange)' }}>{deadCount}</span>
+                      <span className="ab-stat-lbl">Dead</span>
+                    </button>
+                  )}
+                  <button className={`ab-stat${filterStatus === 'inactive' ? ' active' : ''}`} onClick={() => setFilterStatus(f => f === 'inactive' ? 'all' : 'inactive')}>
+                    <span className="ab-stat-dot" style={{ background: 'var(--accent)' }} />
+                    <span className="ab-stat-num">{inactiveCount}</span>
+                    <span className="ab-stat-lbl">Inactive</span>
+                  </button>
+                  <button className={`ab-stat${filterStatus === 'active' ? ' active' : ''}`} onClick={() => setFilterStatus(f => f === 'active' ? 'all' : 'active')}>
+                    <span className="ab-stat-dot" style={{ background: 'var(--accent)' }} />
+                    <span className="ab-stat-num">{activeCount}</span>
+                    <span className="ab-stat-lbl">Active</span>
+                  </button>
+                </div>
+                {criticCopy && (
+                  <>
+                    <div className="ab-divider" />
+                    <div className="ab-critic">
+                      <div className="ab-critic-icon tex-pinstripe" style={{ background: criticColor }}>
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3 .4-2.2 2.1.5 3L6 8l-2.8 1.5.5-3L1.5 4.4l3-.4z" fill="#fff" /></svg>
+                      </div>
+                      <span className="ab-critic-copy">{criticCopy}</span>
+                      <button className="ab-critic-cta" style={{ background: criticColor }} onClick={criticCtaAction}>{criticCta}</button>
+                      {criticSecondary && <span className="ab-critic-secondary" onClick={criticSecondary.action}>{criticSecondary.label}</span>}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+            <div style={{ flex: 1 }} />
+            <div className="ab-end">
+              <div className="ab-thin-divider" />
+              <Link href="/critic" className="ab-critic-link">The Critic <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 2l3 3-3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg></Link>
+              <button className="ab-collapse-btn" onClick={() => setAbCollapsed(c => !c)}>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: abCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
+                  <path d="M3 7.5L6 4.5 9 7.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
-              <span className="s2-insight-link" onClick={() => handleToggleCat('__uncat__')}>view unsorted channels &rsaquo;</span>
             </div>
           </div>
-        </div>
-
-        <div className="s2-insight">
-          <div className="s2-insight-header" style={{ background: 'var(--orange-soft)' }}>
-            <div>
-              <div className="s2-insight-stat" style={{ color: 'var(--orange)' }}>{channels.filter(c => { const d = c.subscribedAt; return d && (Date.now() - new Date(d).getTime()) > 7 * 365 * 24 * 60 * 60 * 1000; }).length}</div>
-              <div className="s2-insight-label" style={{ color: 'var(--orange-text)' }}>7+ year subs</div>
-            </div>
-            <div className="s2-insight-icon" style={{ background: 'var(--orange)' }}>
-              <svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" /><path d="M7 4.5v3l2 1.5" /></svg>
-            </div>
-          </div>
-          <div className="s2-insight-body">
-            <div className="s2-insight-quote">"Long-term loyalty. But maybe it's time to check if you still watch them?"</div>
-            <button className="s2-insight-cta" style={{ background: 'var(--orange)' }} onClick={() => { setSortKey('subDate'); setSortDir('asc'); }}>
-              Review
-              <svg viewBox="0 0 14 14"><path d="M5 3l4.5 4-4.5 4" /></svg>
-            </button>
-          </div>
-        </div>
-
-        <div className="s2-insight">
-          <div className="s2-insight-header" style={{ background: 'var(--iris-soft)' }}>
-            <div>
-              <div className="s2-insight-stat" style={{ color: 'var(--iris)' }}>{channels.filter(c => c.favourited).length}</div>
-              <div className="s2-insight-label" style={{ color: 'var(--iris-text)' }}>favourites</div>
-            </div>
-            <div className="s2-insight-icon" style={{ background: 'var(--iris)' }}>
-              <svg viewBox="0 0 14 14"><path d="M7 1.5l1.5 3 3.5.4-2.5 2.5.5 3.3L7 9.2l-3 1.5.5-3.3L2 5l3.5-.5z" fill="#fff" stroke="none" /></svg>
-            </div>
-          </div>
-          <div className="s2-insight-body">
-            <div className="s2-insight-quote">"Found channels similar to your favourites. Worth a look?"</div>
-            <button className="s2-insight-cta" style={{ background: 'var(--iris)' }} onClick={() => { setActiveCategory('__favs__'); setActiveSubcategory(null); }}>
-              Discover
-              <svg viewBox="0 0 14 14"><path d="M5 3l4.5 4-4.5 4" /></svg>
-            </button>
-          </div>
-        </div>
-      </div>
+        );
+      })()}
 
       {/* CONTENT */}
       <div className="s2-content">
