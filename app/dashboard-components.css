@@ -5199,14 +5199,16 @@ input[type=range]::-webkit-slider-thumb{
 .cr-breadcrumb{font-size:16px;font-weight:500}
 .cr-content{padding:24px 40px 48px;flex:1}
 .cr-health-card{border:2px solid var(--text-primary);border-radius:16px;box-shadow:4px 4px 0px var(--text-primary);overflow:hidden;margin-bottom:28px}
-.cr-health-head{padding:28px 28px 24px;display:flex;align-items:center;gap:24px;position:relative}
+.cr-health-head{padding:28px 28px 24px;display:flex;align-items:center;gap:24px;position:relative;overflow:hidden}
+.cr-health-head::before{content:'';position:absolute;inset:-20px;background-image:repeating-linear-gradient(82deg,transparent,transparent 11px,rgba(255,255,255,.08) 11px,rgba(255,255,255,.08) 12px);pointer-events:none}
+.cr-health-head>*{position:relative;z-index:1}
 .cr-health-score-ring{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cr-health-score-ring span{font-family:'Outfit',var(--font-display);font-size:24px;font-weight:700;color:#fff}
 .cr-health-head-text{flex:1}
 .cr-health-label{font-size:12px;color:rgba(255,255,255,.7);letter-spacing:.4px;margin-bottom:4px}
 .cr-health-title{font-family:'Outfit',var(--font-display);font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
 .cr-health-quote{font-size:14px;font-style:italic;color:rgba(255,255,255,.85);line-height:1.6}
-.cr-health-body{padding:20px 28px}
+.cr-health-body{padding:20px 28px;background:#fff}
 .cr-health-stats{display:flex;gap:12px}
 .cr-health-stat{flex:1;padding:10px 14px;border-radius:12px;text-align:center}
 .cr-health-stat-val{font-family:'Outfit',var(--font-display);font-size:20px;font-weight:700;display:block}
