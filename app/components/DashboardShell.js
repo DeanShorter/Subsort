@@ -6,7 +6,6 @@ import { AuthProvider } from './AuthProvider';
 import { useAuth } from './AuthContext';
 import { ChannelDataProvider } from './ChannelDataProvider';
 import DashboardSidebar from './DashboardSidebar';
-import SyncModal from './SyncModal';
 import OnboardingFlow from './OnboardingFlow';
 import Toast from './Toast';
 
@@ -31,8 +30,6 @@ function DashboardInner({ children }) {
   const pathname = usePathname();
   const showSidebar = user || ALWAYS_SIDEBAR.some(r => pathname === r || pathname.startsWith(r + '/'));
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [syncModalVisible, setSyncModalVisible] = useState(false);
-  const [syncState, setSyncState] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window === 'undefined') return false;
     // Check if there's a pending onboarding step (returning from OAuth)
@@ -43,23 +40,7 @@ function DashboardInner({ children }) {
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
-  const userName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
 
-  // Listen for sync modal events from the sidebar
-  useEffect(() => {
-    const handleShow = () => setSyncModalVisible(true);
-    const handleHide = () => setSyncModalVisible(false);
-    const handleState = (e) => setSyncState(e.detail);
-
-    window.addEventListener('subsnub:sync-modal-show', handleShow);
-    window.addEventListener('subsnub:sync-modal-hide', handleHide);
-    window.addEventListener('subsnub:sync-state', handleState);
-    return () => {
-      window.removeEventListener('subsnub:sync-modal-show', handleShow);
-      window.removeEventListener('subsnub:sync-modal-hide', handleHide);
-      window.removeEventListener('subsnub:sync-state', handleState);
-    };
-  }, []);
 
   return (
     <ChannelDataProvider user={user}>
@@ -67,12 +48,6 @@ function DashboardInner({ children }) {
         <OnboardingFlow
           visible={showOnboarding && !!user}
           onComplete={() => setShowOnboarding(false)}
-        />
-        <SyncModal
-          visible={syncModalVisible && !showOnboarding}
-          onClose={() => setSyncModalVisible(false)}
-          userName={userName}
-          syncState={syncState}
         />
         {/* Mobile topbar — only visible at ≤640px */}
         {showSidebar && (

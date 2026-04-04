@@ -74,155 +74,64 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
   const [activeSub, setActiveSub] = useState(null);
   const [feedCounts, setFeedCounts] = useState(null); // { all, favs, cats: { catName: count }, subs: { 'cat|sub': count } }
   const [syncing, setSyncing] = useState(false);
-  const [syncProgress, setSyncProgress] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
   const [catsCollapsed, setCatsCollapsed] = useState(false);
   const autoSyncDone = useRef(false);
 
-  // Helper to dispatch sync modal state
-  const emitSync = useCallback((state) => {
-    window.dispatchEvent(new CustomEvent('subsnub:sync-state', { detail: state }));
-  }, []);
 
-  // Auto-sync on login: full modal if 24h+ since last sync, silent RSS otherwise
+  // Auto-sync on login: silent background sync, no modal
   useEffect(() => {
     if (!user || autoSyncDone.current || syncing || suppressAutoSync) return;
     autoSyncDone.current = true;
 
-    const FULL_SYNC_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
+    const FULL_SYNC_INTERVAL = 24 * 60 * 60 * 1000;
     const lastSync = parseInt(localStorage.getItem('subsort_sync_ts') || '0');
     const elapsed = Date.now() - lastSync;
 
-    // Less than 24h — skip full sync entirely (feeds page handles silent RSS refresh)
     if (lastSync && elapsed < FULL_SYNC_INTERVAL) {
-      console.log('[AutoSync] Last sync was', Math.round(elapsed / 60000), 'min ago — skipping full sync');
+      console.log('[AutoSync] Last sync was', Math.round(elapsed / 60000), 'min ago — skipping');
       return;
     }
 
     (async () => {
       setSyncing(true);
-      window.dispatchEvent(new Event('subsnub:sync-modal-show'));
+      console.log('[AutoSync] Starting background sync…');
 
-      // Step 0: Connecting
-      emitSync({ action: 'activate', step: 0, pct: 8 });
-      console.log('[AutoSync] Step 0: Connecting…');
-      await new Promise(r => setTimeout(r, 800));
-      emitSync({ action: 'complete', step: 0, detail: '✓', pct: 15 });
-
-      // Step 1: Sync subscriptions via YouTube API
-      emitSync({ action: 'activate', step: 1, pct: 22 });
-      console.log('[AutoSync] Step 1: Syncing subscriptions via YouTube API…');
-
-      let subResult = null;
+      // Step 1: Sync subscriptions
       if (accessToken) {
         try {
-          subResult = await syncYouTubeSubscriptions(
-            accessToken, user.id, channels,
-            (label, detail, pct) => setSyncProgress({ label, detail, pct })
-          );
+          const subResult = await syncYouTubeSubscriptions(accessToken, user.id, channels, () => {});
           await reload();
-          console.log(`[AutoSync] Subscriptions synced: ${subResult.newCount} new, ${subResult.channels.length} total`);
+          console.log(`[AutoSync] Synced: ${subResult.newCount} new, ${subResult.channels.length} total`);
         } catch (e) {
           if (e.message === 'SESSION_EXPIRED') {
-            console.warn('[AutoSync] YouTube token expired — prompting re-auth');
-            window.dispatchEvent(new Event('subsnub:sync-modal-hide'));
-            setSyncProgress(null);
+            console.warn('[AutoSync] YouTube token expired');
             setSyncing(false);
-            showToast('YouTube session expired — please sign in again to sync.', 5000);
-            signIn();
             return;
           }
-          console.warn('[AutoSync] Subscription sync failed:', e.message);
+          console.warn('[AutoSync] Sync failed:', e.message);
         }
-      } else {
-        console.log('[AutoSync] No YouTube token — skipping to RSS');
       }
 
-      emitSync({ action: 'complete', step: 1, detail: subResult ? `${subResult.channels.length} found` : 'skipped', pct: 35 });
-
-      // Step 2: RSS refresh for videos
-      emitSync({ action: 'activate', step: 2, pct: 42 });
-      console.log('[AutoSync] Step 2: Refreshing video feeds via RSS…');
-
-      let rssData = null;
+      // Step 2: RSS refresh
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.access_token) {
-          const rssRes = await fetch('/api/refresh', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${session.access_token}` },
-          });
-          rssData = await rssRes.json();
-          console.log(`[AutoSync] RSS complete: ${rssData.channelsChecked || 0} channels checked, ${rssData.newVideos || 0} new videos`);
+          await fetch('/api/refresh', { method: 'POST', headers: { 'Authorization': `Bearer ${session.access_token}` } });
         }
-      } catch (rssErr) {
-        console.error('[AutoSync] RSS refresh failed:', rssErr);
+      } catch (e) {
+        console.warn('[AutoSync] RSS refresh failed:', e.message);
       }
 
-      const newVideoCount = rssData?.newVideos || 0;
-      emitSync({ action: 'complete', step: 2, detail: `${newVideoCount} new`, pct: 58 });
-
-      // Step 3: Preparing feeds — count total cached videos
-      emitSync({ action: 'activate', step: 3, pct: 65 });
-      console.log('[AutoSync] Step 3: Preparing feeds…');
-
-      const updatedChannels = channels.length ? channels : [];
-      let totalFeedVideos = newVideoCount;
-      try {
-        const chIds = updatedChannels.map(c => c.channelId).filter(Boolean);
-        if (chIds.length) {
-          const { count } = await supabase
-            .from('cached_videos')
-            .select('*', { count: 'exact', head: true })
-            .in('channel_id', chIds.slice(0, 300));
-          totalFeedVideos = count || newVideoCount;
-        }
-      } catch (e) {}
-      await new Promise(r => setTimeout(r, 800));
-
-      emitSync({ action: 'complete', step: 3, detail: `${totalFeedVideos} videos`, pct: 75 });
-
-      // Step 4: Scrutinising the mess — 1 second delay
-      emitSync({ action: 'activate', step: 4, pct: 82 });
-      console.log('[AutoSync] Step 4: Scrutinising…');
-      await new Promise(r => setTimeout(r, 1000));
-
-      const deadChannels = updatedChannels.filter(ch =>
-        ch.videoCount === 0 || (ch.subscriberCount < 100 && ch.videoCount < 5) || (ch.subscriberCount > 0 && ch.subscriberCount < 500)
-      );
-      emitSync({ action: 'complete', step: 4, detail: `${deadChannels.length} issues`, pct: 90 });
-
-      // Step 5: Judging [name] — 3 second delay
-      emitSync({ action: 'activate', step: 5, pct: 95 });
-      console.log('[AutoSync] Step 5: Judging…');
-      await new Promise(r => setTimeout(r, 3000));
-
-      const favCount = updatedChannels.filter(c => c.favourited).length;
-      const categories = [...new Set(updatedChannels.flatMap(c => c.categories || []))];
-      const score = updatedChannels.length > 0
-        ? Math.round(((updatedChannels.length - deadChannels.length) / updatedChannels.length) * 100)
-        : 0;
-
-      emitSync({ action: 'complete', step: 5, detail: `${score}%`, pct: 100 });
-      emitSync({
-        pct: 100,
-        done: true,
-        channels: updatedChannels,
-        deadChannels,
-        favCount,
-        categories,
-      });
-
-      // Fire RSS refresh event and save timestamps
+      // Save timestamps
       window.dispatchEvent(new Event('subsnub:rss-refreshed'));
       localStorage.setItem('subsort_sync_ts', String(Date.now()));
       localStorage.setItem('subsort_rss_ts', String(Date.now()));
+      await reload();
+      setSyncing(false);
       console.log('[AutoSync] Complete');
-
-      setSyncProgress({ label: 'Done!', detail: '', pct: 100 });
-      setTimeout(() => { setSyncProgress(null); setSyncing(false); }, 1500);
     })();
-  }, [accessToken, user, emitSync]);
+  }, [accessToken, user]);
 
   const handleSync = useCallback(async () => {
     if (!accessToken || !user || syncing) return;
@@ -315,59 +224,38 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
       return;
     }
 
-    // Clear timestamp so auto-sync logic runs with modal
-    localStorage.removeItem('subsort_sync_ts');
-    autoSyncDone.current = false;
-
-    // Directly invoke the same auto-sync flow
     setSyncing(true);
-    window.dispatchEvent(new Event('subsnub:sync-modal-show'));
-
-    const emitSync = (d) => window.dispatchEvent(new CustomEvent('subsnub:sync-state', { detail: d }));
-
-    emitSync({ action: 'activate', step: 0, pct: 8 });
-    await new Promise(r => setTimeout(r, 800));
-    emitSync({ action: 'complete', step: 0, detail: '✓', pct: 15 });
+    showToast('Syncing subscriptions…');
 
     // Step 1: Sync subscriptions
-    emitSync({ action: 'activate', step: 1, pct: 22 });
-    let subResult = null;
-    try {
-      subResult = await syncYouTubeSubscriptions(accessToken, user.id, channels, () => {});
-      emitSync({ action: 'complete', step: 1, detail: `${subResult.newCount} new`, pct: 35 });
-    } catch (e) {
-      emitSync({ action: 'complete', step: 1, detail: 'skipped', pct: 35 });
+    if (accessToken) {
+      try {
+        const subResult = await syncYouTubeSubscriptions(accessToken, user.id, channels, () => {});
+        await reload();
+        showToast(`Synced: ${subResult.newCount} new channel${subResult.newCount !== 1 ? 's' : ''}`);
+      } catch (e) {
+        if (e.message === 'SESSION_EXPIRED') {
+          setSyncing(false);
+          showToast('YouTube token expired — please sign in again.', 5000);
+          signIn();
+          return;
+        }
+        console.warn('[Sync] Failed:', e.message);
+        showToast('Sync failed — try signing out and back in.', 5000);
+      }
+    } else {
+      showToast('No YouTube token — sign out and sign in again to sync.', 5000);
+      setSyncing(false);
+      return;
     }
 
     // Step 2: RSS refresh
-    emitSync({ action: 'activate', step: 2, pct: 42 });
-    let rssData = null;
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.access_token) {
-        const rssRes = await fetch('/api/refresh', { method: 'POST', headers: { 'Authorization': `Bearer ${session.access_token}` } });
-        rssData = await rssRes.json();
+        await fetch('/api/refresh', { method: 'POST', headers: { 'Authorization': `Bearer ${session.access_token}` } });
       }
     } catch (e) {}
-    emitSync({ action: 'complete', step: 2, detail: `${rssData?.newVideos || 0} new`, pct: 58 });
-
-    // Step 3: Preparing feeds
-    emitSync({ action: 'activate', step: 3, pct: 65 });
-    await new Promise(r => setTimeout(r, 600));
-    emitSync({ action: 'complete', step: 3, detail: `${rssData?.channelsChecked || channels.length} checked`, pct: 75 });
-
-    // Step 4: Scrutinising
-    emitSync({ action: 'activate', step: 4, pct: 82 });
-    await new Promise(r => setTimeout(r, 1000));
-    emitSync({ action: 'complete', step: 4, detail: '✓', pct: 90 });
-
-    // Step 5: Judging
-    emitSync({ action: 'activate', step: 5, pct: 95 });
-    await new Promise(r => setTimeout(r, 2000));
-    const score = channels.length ? Math.round(((channels.length - (channels.filter(c => !c.videoCount || c.subscriberCount < 500).length)) / channels.length) * 100) : 50;
-    emitSync({ action: 'complete', step: 5, detail: `${score}%`, pct: 100 });
-
-    emitSync({ pct: 100, done: true, channels, deadChannels: [], favCount: channels.filter(c => c.favourited).length, categories });
 
     // Save timestamps and daily count
     const logAfter = JSON.parse(localStorage.getItem('subsort_sync_log') || '{}');
@@ -379,7 +267,7 @@ export default function DashboardSidebar({ mobileOpen = false, onMobileClose, su
     window.dispatchEvent(new Event('subsnub:rss-refreshed'));
     await reload();
     setSyncing(false);
-  }, [user, syncing, userTier, accessToken, channels, categories, reload]);
+  }, [user, syncing, userTier, accessToken, channels, reload]);
 
   useEffect(() => {
     window.__subsortTriggerSync = triggerFullSync;
