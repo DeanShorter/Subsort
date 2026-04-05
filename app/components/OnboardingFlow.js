@@ -223,7 +223,23 @@ export default function OnboardingFlow({ visible, onComplete }) {
   const handleAutoSort = useCallback(async () => {
     setStep('sorting');
     try {
-      const currentChannels = channels.length ? channels : [];
+      // Fetch channels directly from DB to avoid stale context state
+      let currentChannels = channels;
+      if (!currentChannels.length) {
+        const { data: chRows } = await supabase.from('channels').select('*');
+        currentChannels = (chRows || []).map(ch => ({
+          id: ch.id,
+          channelId: ch.channel_id,
+          name: ch.name,
+          description: ch.description || '',
+          keywords: ch.keywords || '',
+          topics: ch.topics || [],
+          topicUrls: ch.topic_urls || [],
+          topicIds: ch.topic_ids || [],
+          categories: [],
+        }));
+      }
+
       const { assignments, assigned } = autoCategoriseAll(currentChannels, () => true); // all channels for new user
       if (!assigned) {
         setSortResult({ sorted: 0, cats: 0, catNames: [] });
