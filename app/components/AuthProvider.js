@@ -54,24 +54,27 @@ export function AuthProvider({ children }) {
         }
 
         if (!profile) {
-          // Profile doesn't exist — create via API route (uses service role, bypasses RLS)
-          const meta = session.user.user_metadata || {};
-          try {
-            const res = await fetch('/api/ensure-profile', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                user_id: session.user.id,
-                email: session.user.email || '',
-                display_name: meta.full_name || meta.name || session.user.email?.split('@')[0] || '',
-                avatar_url: meta.avatar_url || meta.picture || '',
-              }),
-            });
-            const result = await res.json();
-            if (result.created) console.log('[Auth] Profile created for', session.user.email);
-            else if (result.error) console.error('[Auth] Profile creation failed:', result.error);
-          } catch (e) {
-            console.error('[Auth] Profile creation request failed:', e);
+          // Profile doesn't exist — only create if user has a provider_token
+          // (means they just completed OAuth, not a stale session from the account picker)
+          if (session.provider_token) {
+            const meta = session.user.user_metadata || {};
+            try {
+              const res = await fetch('/api/ensure-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  user_id: session.user.id,
+                  email: session.user.email || '',
+                  display_name: meta.full_name || meta.name || session.user.email?.split('@')[0] || '',
+                  avatar_url: meta.avatar_url || meta.picture || '',
+                }),
+              });
+              const result = await res.json();
+              if (result.created) console.log('[Auth] Profile created for', session.user.email);
+              else if (result.error) console.error('[Auth] Profile creation failed:', result.error);
+            } catch (e) {
+              console.error('[Auth] Profile creation request failed:', e);
+            }
           }
         }
       } catch (e) {
