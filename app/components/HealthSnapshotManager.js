@@ -54,16 +54,18 @@ export default function HealthSnapshotManager() {
     const lastSnapshotDate = localStorage.getItem('subsnub_last_snapshot_date');
 
     if (lastScore === result.total && lastSnapshotDate === today) {
-      // Already snapshotted today with same score — skip
       console.log(`[HealthSnapshot] Score unchanged (${result.total}), already saved today`);
       return;
     }
 
-    // Save snapshot (upsert on user_id + date)
-    saveHealthSnapshot(supabase, user.id, result);
-    localStorage.setItem('subsnub_last_health_score', String(result.total));
-    localStorage.setItem('subsnub_last_snapshot_date', today);
-    lastSavedScore.current = result.total;
+    // Save snapshot — only update localStorage on success
+    saveHealthSnapshot(supabase, user.id, result).then(ok => {
+      if (ok) {
+        localStorage.setItem('subsnub_last_health_score', String(result.total));
+        localStorage.setItem('subsnub_last_snapshot_date', today);
+        lastSavedScore.current = result.total;
+      }
+    });
   }, [user, loading, channels, computeScore]);
 
   // Track score changes during session

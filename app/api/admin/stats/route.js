@@ -37,10 +37,9 @@ export async function GET(req) {
   const dayAgo = new Date(now - 24 * 60 * 60 * 1000).toISOString();
 
   // Fetch all data in parallel
-  const [usersRes, channelsRes, catAssignRes, eventsRes, recentEventsRes, healthRes] = await Promise.all([
+  const [usersRes, channelsRes, eventsRes, recentEventsRes, healthRes] = await Promise.all([
     supabase.from('profiles').select('*'),
-    supabase.from('channels').select('channel_id, user_id, subscriber_count, video_count'),
-    supabase.from('channel_categories').select('channel_id'),
+    supabase.from('channels').select('channel_id'),
     supabase.from('events').select('event_name, user_id, metadata, created_at').gte('created_at', weekAgo).order('created_at', { ascending: false }),
     supabase.from('events').select('event_name, user_id, metadata, created_at').order('created_at', { ascending: false }).limit(100),
     supabase.from('health_score_snapshots').select('user_id, score, mood, snapshot_date').order('snapshot_date', { ascending: false }).limit(50),
@@ -48,7 +47,6 @@ export async function GET(req) {
 
   const users = usersRes.data || [];
   const allChannels = channelsRes.data || [];
-  const catAssignments = catAssignRes.data || [];
   const events = eventsRes.data || [];
   const recentEvents = recentEventsRes.data || [];
   const healthScores = healthRes.data || [];
@@ -56,22 +54,16 @@ export async function GET(req) {
   // Deduplicated channel count (distinct channel_id)
   const uniqueChannels = new Set(allChannels.map(c => c.channel_id)).size;
 
-  // Categorised channel count
-  const categorisedIds = new Set(catAssignments.map(c => c.channel_id));
-  const categorisedCount = allChannels.filter(c => categorisedIds.has(c.channel_id)).length;
-
   // Vital signs
   const activeToday = new Set(events.filter(e => new Date(e.created_at) >= new Date(dayAgo)).map(e => e.user_id)).size;
   const activeWeek = new Set(events.map(e => e.user_id)).size;
   const proCount = users.filter(u => u.tier === 'pro').length;
 
-  // Live health score — compute from channel data
-  const totalCh = uniqueChannels;
-  const catCoverage = totalCh > 0 ? Math.round(25 * (categorisedCount / totalCh) * 10) / 10 : 25;
-  const activeCh = allChannels.filter(c => c.video_count > 0 && c.subscriber_count >= 500).length;
-  const chHealth = totalCh > 0 ? Math.round(20 * (activeCh / totalCh) * 10) / 10 : 20;
-  const liveScore = Math.round(Math.min(100, Math.max(0, catCoverage + 0 + 5 + chHealth + 10 + 10 + 0)));
-  const avgHealth = liveScore;
+  // Avg health score — most recent snapshot per user
+  const latestScorePerUser = {};
+  healthScores.forEach(h => { if (!latestScorePerUser[h.user_id]) latestScorePerUser[h.user_id] = h.score; });
+  const scoreValues = Object.values(latestScorePerUser);
+  const avgHealth = scoreValues.length ? Math.round(scoreValues.reduce((s, v) => s + v, 0) / scoreValues.length) : null;
 
   // Feature usage
   const featureMap = {
