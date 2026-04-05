@@ -60,14 +60,18 @@ export async function POST(req) {
     const isUncategorised = (ch) => !categorisedIds.has(ch.id);
 
     // Run auto-categorise
+    console.log(`[AutoSort API] User ${user.id}: ${channels.length} channels, ${categorisedIds.size} already categorised`);
     const { assignments, assigned, unmatched } = autoCategoriseAll(channels, isUncategorised);
+    console.log(`[AutoSort API] Result: ${assigned} assigned, ${unmatched.length} unmatched`);
 
     if (!assigned) {
       return NextResponse.json({ assigned: 0, unmatched: unmatched.length, catNames: [] });
     }
 
     // Persist using service role (bypasses RLS)
+    console.log(`[AutoSort API] Persisting ${assigned} assignments for user ${user.id}`);
     const result = await persistAutoSort(supabase, user, assignments, dbCategories || []);
+    console.log(`[AutoSort API] Persist result:`, JSON.stringify(result));
 
     // Build category breakdown
     const catCounts = {};
