@@ -50,8 +50,9 @@ export default function HomePage() {
 
   // Today's feed by category
   const feedSummary = useMemo(() => {
-    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-    const todayVids = feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt) >= todayStart);
+    // Show last 24 hours of videos (not just since midnight)
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const todayVids = feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt) >= cutoff);
     const catCounts = {};
     const channelSet = new Set();
     todayVids.forEach(v => {
@@ -183,7 +184,7 @@ export default function HomePage() {
             {/* Today's feed */}
             <div className="hp-section">
               <div className="hp-section-head">
-                <span className="hp-section-title">Today&rsquo;s feed</span>
+                <span className="hp-section-title">Recent feed</span>
                 <Link href="/feeds" className="hp-section-link">Open feed <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2l4 3-4 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg></Link>
               </div>
               <div className="hp-feed-card">
