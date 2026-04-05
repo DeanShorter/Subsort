@@ -173,28 +173,35 @@ export default function Subscriptions2Page() {
     if (!bulkMode) setBulkMode(true);
   }, [bulkMode]);
 
-  // ── Auto-sort ──────────────────────────────────────
+  // ── Auto-sort via API ──────────────────────────────
   const handleAutoSort = useCallback(async () => {
     if (!user || sorting) return;
     setSorting(true);
     setShowSortConfirm(false);
     try {
-      const { assignments, assigned, unmatched } = autoCategoriseAll(channels, chIsUncategorised);
-      if (!assigned && !unmatched.length) { showToast('No unsorted channels to sort'); setSorting(false); return; }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) { showToast('Session expired — sign in again'); setSorting(false); return; }
 
-      if (assigned > 0) {
-        const sortedIds = new Set(assignments.map(a => a.channel.id));
-        const result = await persistAutoSort(supabase, user, assignments, dbCategories);
+      const res = await fetch('/api/autosort', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+
+      if (!data.assigned && !data.unmatched) { showToast('No unsorted channels to sort'); setSorting(false); return; }
+
+      if (data.assigned > 0) {
         await reload();
-        setRecentlySorted(sortedIds);
-        const subMsg = result.subcategoriesAssigned > 0 ? ` (${result.subcategoriesAssigned} with subcategories)` : '';
-        showToast(`Sorted ${assigned} channel${assigned !== 1 ? 's' : ''} — review below${subMsg}`);
-        const distinctCats = [...new Set(assignments.map(a => a.category))].length;
-        trackEvent('autosort_run', { channels_sorted: assigned, categories_assigned: distinctCats, subcategories_assigned: result.subcategoriesAssigned });
+        // Get sorted channel IDs from the updated data
+        const subMsg = data.subcategoriesAssigned > 0 ? ` (${data.subcategoriesAssigned} with subcategories)` : '';
+        showToast(`Sorted ${data.assigned} channel${data.assigned !== 1 ? 's' : ''} — review below${subMsg}`);
+        trackEvent('autosort_run', { channels_sorted: data.assigned, categories_assigned: data.catNames?.length || 0, subcategories_assigned: data.subcategoriesAssigned || 0 });
       }
 
-      if (unmatched.length > 0) {
-        setUnmatchedChannels(unmatched);
+      if (data.unmatched > 0) {
+        // Reload to get fresh channel data, then find unmatched
+        const freshChannels = channels.filter(c => chIsUncategorised(c));
+        if (freshChannels.length > 0) setUnmatchedChannels(freshChannels);
       }
     } catch (e) { console.error('Auto-sort failed:', e); showToast(`Auto-sort failed: ${e.message}`); }
     finally { setSorting(false); }

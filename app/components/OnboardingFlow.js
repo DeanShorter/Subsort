@@ -4,7 +4,6 @@ import { useAuth } from './AuthContext';
 import { useChannelData } from './ChannelDataContext';
 import { supabase } from '../../lib/supabase';
 import { syncYouTubeSubscriptions } from '../../lib/sync';
-import { autoCategoriseAll, persistAutoSort } from '../../lib/auto-categorise';
 import { showToast } from './Toast';
 
 const STEPS = ['welcome', 'connect', 'syncing', 'assessment', 'upload', 'autosort', 'sorting', 'complete'];
@@ -219,50 +218,35 @@ export default function OnboardingFlow({ visible, onComplete }) {
     reader.readAsText(file);
   }, [user]);
 
-  // Handle auto-sort
+  // Handle auto-sort via API (uses service role, bypasses RLS)
   const handleAutoSort = useCallback(async () => {
     setStep('sorting');
     try {
-      // Fetch channels directly from DB to avoid stale context state
-      let currentChannels = channels;
-      if (!currentChannels.length) {
-        const { data: chRows } = await supabase.from('channels').select('*');
-        currentChannels = (chRows || []).map(ch => ({
-          id: ch.id,
-          channelId: ch.channel_id,
-          name: ch.name,
-          description: ch.description || '',
-          keywords: ch.keywords || '',
-          topics: ch.topics || [],
-          topicUrls: ch.topic_urls || [],
-          topicIds: ch.topic_ids || [],
-          categories: [],
-        }));
-      }
-
-      const { assignments, assigned } = autoCategoriseAll(currentChannels, () => true); // all channels for new user
-      if (!assigned) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
         setSortResult({ sorted: 0, cats: 0, catNames: [] });
         setStep('complete');
         return;
       }
 
-      setSortProgress({ done: 0, total: assigned });
-      const result = await persistAutoSort(supabase, user, assignments, dbCategories || [], (done, total) => {
-        setSortProgress({ done, total });
+      const res = await fetch('/api/autosort', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
       });
+      const data = await res.json();
+
+      if (!data.assigned) {
+        setSortResult({ sorted: 0, cats: 0, catNames: [] });
+        setStep('complete');
+        return;
+      }
 
       await reload();
 
-      // Get created category names with counts
-      const catCounts = {};
-      assignments.forEach(a => { catCounts[a.category] = (catCounts[a.category] || 0) + 1; });
-      const catNames = Object.entries(catCounts).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name, count }));
-
       setSortResult({
-        sorted: assigned,
-        cats: result.categoriesCreated + (dbCategories?.length || 0),
-        catNames,
+        sorted: data.assigned,
+        cats: data.catNames?.length || 0,
+        catNames: data.catNames || [],
       });
       setStep('complete');
     } catch (e) {
@@ -270,7 +254,7 @@ export default function OnboardingFlow({ visible, onComplete }) {
       showToast('Auto-sort failed');
       setStep('autosort');
     }
-  }, [channels, user, dbCategories, reload]);
+  }, [reload]);
 
   // Complete onboarding
   const finish = useCallback(() => {
