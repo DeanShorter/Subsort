@@ -91,7 +91,7 @@ export default function ChannelPanel({ channelId, onClose }) {
     if (selectedCats.length && dbCategories.length) {
       const inserts = selectedCats.map(catName => {
         const cat = dbCategories.find(c => c.name === catName);
-        return cat ? { channel_id: ch.id, category_id: cat.id, user_id: user.id } : null;
+        return cat ? { channel_id: ch.id, category_id: cat.id, user_id: user.id, youtube_channel_id: ch.channelId || null } : null;
       }).filter(Boolean);
       if (inserts.length) await supabase.from('channel_categories').insert(inserts);
     }
@@ -119,6 +119,9 @@ export default function ChannelPanel({ channelId, onClose }) {
       subId = subRow?.id || null;
     }
     await supabase.from('channels').update({ subcategory_id: subId }).eq('id', ch.id);
+    if (ch.channelId) {
+      await supabase.from('user_channels').update({ subcategory_id: subId }).eq('youtube_channel_id', ch.channelId).eq('user_id', user.id);
+    }
     showToast('Subcategory updated');
     setEditingSub(false);
     await reload();

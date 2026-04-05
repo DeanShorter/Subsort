@@ -111,7 +111,60 @@ create policy "Users can delete their own subcategories"
   using (auth.uid() = user_id);
 
 
--- ─── CHANNELS ───
+-- ─── SHARED CHANNELS ───
+-- One row per YouTube channel, shared across all users
+create table public.shared_channels (
+  youtube_channel_id text primary key,
+  title text,
+  custom_url text,
+  description text,
+  thumbnail_url text,
+  thumbnail_high_url text,
+  banner_url text,
+  subscriber_count bigint default 0,
+  video_count integer default 0,
+  view_count bigint default 0,
+  channel_created_at timestamptz,
+  uploads_playlist_id text,
+  topics text[],
+  topic_urls text[],
+  topic_ids text[],
+  keywords text,
+  country text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table public.shared_channels enable row level security;
+create policy "Anyone can view shared channels" on public.shared_channels for select using (true);
+create policy "Authenticated users can insert shared channels" on public.shared_channels for insert with check (auth.role() = 'authenticated');
+create policy "Authenticated users can update shared channels" on public.shared_channels for update using (auth.role() = 'authenticated');
+
+-- ─── USER CHANNELS ───
+-- Per-user subscription relationships
+create table public.user_channels (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  youtube_channel_id text references public.shared_channels(youtube_channel_id) on delete cascade not null,
+  subcategory_id uuid references public.subcategories(id) on delete set null,
+  favourited boolean default false,
+  notes text,
+  subscribed_at timestamptz,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(user_id, youtube_channel_id)
+);
+
+alter table public.user_channels enable row level security;
+create policy "Users can view own user_channels" on public.user_channels for select using (auth.uid() = user_id);
+create policy "Users can insert own user_channels" on public.user_channels for insert with check (auth.uid() = user_id);
+create policy "Users can update own user_channels" on public.user_channels for update using (auth.uid() = user_id);
+create policy "Users can delete own user_channels" on public.user_channels for delete using (auth.uid() = user_id);
+
+create index idx_user_channels_user on public.user_channels(user_id);
+create index idx_user_channels_channel on public.user_channels(youtube_channel_id);
+
+-- ─── CHANNELS (LEGACY) ───
 -- Stores YouTube channels for each user
 create table public.channels (
   id uuid default gen_random_uuid() primary key,

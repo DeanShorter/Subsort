@@ -5220,6 +5220,70 @@ input[type=range]::-webkit-slider-thumb{
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   DISCOVER PAGE
+   ═══════════════════════════════════════════════════════════════ */
+.dsc-page{background:#fff;min-height:100%;overflow-y:auto}
+.dsc-header{padding:0 32px;height:56px;display:flex;align-items:center;border-bottom:3px solid var(--text-primary)}
+.dsc-title{font-family:'Outfit',var(--font-display);font-size:22px;font-weight:600}
+.dsc-content{padding:24px 32px 48px}
+
+/* Search */
+.dsc-search-wrap{position:relative;display:flex;align-items:center;margin-bottom:20px}
+.dsc-search-wrap svg{position:absolute;left:14px}
+.dsc-search{width:100%;height:44px;padding:0 40px 0 40px;border:1px solid #e0e0e0;border-radius:12px;font-size:16px;font-family:var(--font-body);outline:none;background:var(--bg-card)}
+.dsc-search:focus{border:2px solid var(--iris);padding-left:39px}
+.dsc-search-clear{position:absolute;right:14px;background:none;border:none;cursor:pointer;padding:4px}
+
+/* Category tabs */
+.dsc-cat-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px;padding-bottom:4px}
+.dsc-cat-tabs::-webkit-scrollbar{display:none}
+.dsc-cat-tab{padding:8px 18px;border-radius:20px;font-size:14px;font-weight:500;background:var(--bg-primary);color:var(--text-secondary);border:none;cursor:pointer;font-family:var(--font-body);white-space:nowrap;transition:all .12s}
+.dsc-cat-tab:hover{background:#eaeaea}
+.dsc-cat-tab.active{background:var(--iris);color:#fff}
+.dsc-cat-tab-count{font-size:12px;opacity:.7}
+
+/* Sort row */
+.dsc-sort-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.dsc-result-count{font-size:14px;color:var(--text-muted)}
+
+/* Channel grid */
+.dsc-channel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.dsc-channel-card{background:var(--bg-card);border:.5px solid rgba(0,0,0,.06);border-radius:16px;padding:20px;transition:all .15s}
+.dsc-channel-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.06);transform:translateY(-1px)}
+.dsc-ch-top{display:flex;gap:12px;margin-bottom:12px}
+.dsc-ch-avatar{width:48px;height:48px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:#fff;background:var(--iris);overflow:hidden}
+.dsc-ch-avatar img{width:100%;height:100%;object-fit:cover}
+.dsc-ch-info{flex:1;min-width:0}
+.dsc-ch-name{font-size:15px;font-weight:500;margin-bottom:2px}
+.dsc-ch-handle{font-size:13px;color:var(--text-muted)}
+.dsc-ch-stats{font-size:13px;color:var(--text-secondary);margin-bottom:10px}
+.dsc-ch-meta-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.dsc-ch-cat-badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:500;background:var(--iris-soft);color:var(--iris-text)}
+.dsc-ch-users{font-size:12px;color:var(--text-muted)}
+.dsc-ch-actions{display:flex;gap:8px}
+.dsc-ch-btn-yt{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;background:var(--bg-primary);color:var(--text-secondary);border:none;cursor:pointer;font-family:var(--font-body);text-decoration:none;display:inline-flex;align-items:center}
+.dsc-ch-btn-yt:hover{background:#eaeaea}
+
+/* Load more */
+.dsc-load-more-wrap{display:flex;justify-content:center;margin-top:24px}
+.dsc-load-more{padding:10px 32px;border-radius:24px;font-size:14px;font-weight:500;background:var(--iris);color:#fff;border:none;cursor:pointer;font-family:var(--font-body)}
+.dsc-load-more:hover{filter:brightness(1.05)}
+.dsc-load-more:disabled{opacity:.5;cursor:default}
+
+/* Empty */
+.dsc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;text-align:center}
+.dsc-empty-icon{width:48px;height:48px;border-radius:50%;background:var(--iris-soft);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+
+@media(max-width:900px){
+  .dsc-content{padding:16px}
+  .dsc-channel-grid{grid-template-columns:repeat(2,1fr)}
+  .dsc-header{padding:0 16px}
+}
+@media(max-width:600px){
+  .dsc-channel-grid{grid-template-columns:1fr}
+}
+
+/* ═══════════════════════════════════════════════════════════════
    HOME PAGE (REDESIGNED)
    ═══════════════════════════════════════════════════════════════ */
 .hp-page{background:#fff;min-height:100%;overflow-y:auto}

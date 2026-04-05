@@ -62,9 +62,12 @@ export function ChannelDataProvider({ children, user }) {
     // Optimistic update
     ch.favourited = newVal;
     setChannels([...channels]);
-    // Persist to DB
+    // Persist to DB (both legacy and new tables)
     try {
       await supabase.from('channels').update({ favourited: newVal }).eq('id', channelId);
+      if (ch.channelId) {
+        await supabase.from('user_channels').update({ favourited: newVal }).eq('youtube_channel_id', ch.channelId).eq('user_id', user?.id);
+      }
       trackEvent(newVal ? 'channel_favourited' : 'channel_unfavourited', { channel_id: channelId });
     } catch (e) {
       console.error('[ChannelData] Toggle favourite failed:', e);
@@ -139,45 +142,104 @@ export function ChannelDataProvider({ children, user }) {
       });
       setSubcategories(subMap);
 
-      // Channels
-      const { data: chRows } = await supabase.from('channels').select('*');
+      // Load from new tables (user_channels + shared_channels)
+      const { data: ucRows } = await supabase.from('user_channels').select('*');
+      const { data: scRows } = await supabase.from('shared_channels').select('*');
+
+      // Build shared channel lookup
+      const sharedMap = {};
+      (scRows || []).forEach(sc => { sharedMap[sc.youtube_channel_id] = sc; });
+
+      // Fallback: if new tables are empty, use legacy channels table
+      let chRows;
+      let useLegacy = false;
+      if (!ucRows?.length && !scRows?.length) {
+        const { data: legacyRows } = await supabase.from('channels').select('*');
+        chRows = legacyRows;
+        useLegacy = true;
+      }
 
       // Channel→category assignments
       const { data: ccRows } = await supabase
-        .from('channel_categories').select('channel_id, category_id');
-      const ccMap = {};
+        .from('channel_categories').select('channel_id, category_id, youtube_channel_id');
+      const ccMap = {}; // keyed by legacy channel id
+      const ccMapYt = {}; // keyed by youtube_channel_id
       (ccRows || []).forEach(cc => {
-        if (!ccMap[cc.channel_id]) ccMap[cc.channel_id] = [];
-        const cat = cats.find(c => c.id === cc.category_id);
-        if (cat && !ccMap[cc.channel_id].includes(cat.name)) ccMap[cc.channel_id].push(cat.name);
+        // Legacy mapping
+        if (cc.channel_id) {
+          if (!ccMap[cc.channel_id]) ccMap[cc.channel_id] = [];
+          const cat = cats.find(c => c.id === cc.category_id);
+          if (cat && !ccMap[cc.channel_id].includes(cat.name)) ccMap[cc.channel_id].push(cat.name);
+        }
+        // New mapping
+        if (cc.youtube_channel_id) {
+          if (!ccMapYt[cc.youtube_channel_id]) ccMapYt[cc.youtube_channel_id] = [];
+          const cat = cats.find(c => c.id === cc.category_id);
+          if (cat && !ccMapYt[cc.youtube_channel_id].includes(cat.name)) ccMapYt[cc.youtube_channel_id].push(cat.name);
+        }
       });
 
-      const mappedChannels = (chRows || []).map(ch => ({
-        id: ch.id,
-        channelId: ch.channel_id,
-        name: ch.name,
-        customUrl: ch.custom_url || '',
-        thumbnail: ch.thumbnail || '',
-        thumbnailHigh: ch.thumbnail_high || '',
-        bannerUrl: ch.banner_url || '',
-        description: ch.description || '',
-        subscriberCount: ch.subscriber_count || 0,
-        videoCount: ch.video_count || 0,
-        viewCount: ch.view_count || 0,
-        subscribedAt: ch.subscribed_at || '',
-        channelCreatedAt: ch.channel_created_at || '',
-        uploadsPlaylistId: ch.uploads_playlist_id || '',
-        topics: ch.topics || [],
-        topicUrls: ch.topic_urls || [],
-        topicIds: ch.topic_ids || [],
-        keywords: ch.keywords || '',
-        country: ch.country || '',
-        notes: ch.notes || '',
-        favourited: ch.favourited || false,
-        subcategory: subs.find(s => s.id === ch.subcategory_id)?.name || '',
-        categories: ccMap[ch.id] || [],
-        channelUrl: `https://www.youtube.com/channel/${ch.channel_id}`,
-      }));
+      let mappedChannels;
+      if (useLegacy) {
+        // Legacy path
+        mappedChannels = (chRows || []).map(ch => ({
+          id: ch.id,
+          channelId: ch.channel_id,
+          name: ch.name,
+          customUrl: ch.custom_url || '',
+          thumbnail: ch.thumbnail || '',
+          thumbnailHigh: ch.thumbnail_high || '',
+          bannerUrl: ch.banner_url || '',
+          description: ch.description || '',
+          subscriberCount: ch.subscriber_count || 0,
+          videoCount: ch.video_count || 0,
+          viewCount: ch.view_count || 0,
+          subscribedAt: ch.subscribed_at || '',
+          channelCreatedAt: ch.channel_created_at || '',
+          uploadsPlaylistId: ch.uploads_playlist_id || '',
+          topics: ch.topics || [],
+          topicUrls: ch.topic_urls || [],
+          topicIds: ch.topic_ids || [],
+          keywords: ch.keywords || '',
+          country: ch.country || '',
+          notes: ch.notes || '',
+          favourited: ch.favourited || false,
+          subcategory: subs.find(s => s.id === ch.subcategory_id)?.name || '',
+          categories: ccMap[ch.id] || [],
+          channelUrl: `https://www.youtube.com/channel/${ch.channel_id}`,
+        }));
+      } else {
+        // New path: join user_channels + shared_channels
+        mappedChannels = (ucRows || []).map(uc => {
+          const sc = sharedMap[uc.youtube_channel_id] || {};
+          return {
+            id: uc.id,
+            channelId: uc.youtube_channel_id,
+            name: sc.title || '',
+            customUrl: sc.custom_url || '',
+            thumbnail: sc.thumbnail_url || '',
+            thumbnailHigh: sc.thumbnail_high_url || '',
+            bannerUrl: sc.banner_url || '',
+            description: sc.description || '',
+            subscriberCount: sc.subscriber_count || 0,
+            videoCount: sc.video_count || 0,
+            viewCount: sc.view_count || 0,
+            subscribedAt: uc.subscribed_at || '',
+            channelCreatedAt: sc.channel_created_at || '',
+            uploadsPlaylistId: sc.uploads_playlist_id || '',
+            topics: sc.topics || [],
+            topicUrls: sc.topic_urls || [],
+            topicIds: sc.topic_ids || [],
+            keywords: sc.keywords || '',
+            country: sc.country || '',
+            notes: uc.notes || '',
+            favourited: uc.favourited || false,
+            subcategory: subs.find(s => s.id === uc.subcategory_id)?.name || '',
+            categories: ccMapYt[uc.youtube_channel_id] || ccMap[uc.id] || [],
+            channelUrl: `https://www.youtube.com/channel/${uc.youtube_channel_id}`,
+          };
+        });
+      }
 
       setChannels(mappedChannels);
 
