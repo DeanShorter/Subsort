@@ -112,6 +112,7 @@ export function AuthProvider({ children }) {
       options: {
         redirectTo,
         scopes: 'https://www.googleapis.com/auth/youtube.readonly',
+        queryParams: { prompt: 'select_account' },
       },
     });
     if (error) console.error('Sign in failed:', error.message);
