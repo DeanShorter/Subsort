@@ -88,7 +88,7 @@ function StashVideoCard({ item, collections, onRemove, onMoveToCollection, onCre
 
 export default function StashPage() {
   const { user, signIn } = useAuth();
-  const { collections, items, loading, removeFromStash, moveToCollection, createCollection, deleteCollection } = useStash(user);
+  const { collections, items, loading, removeFromStash, moveToCollection, createCollection, updateCollection, deleteCollection } = useStash(user);
   const [criticDismissed, setCriticDismissed] = useState(false);
   const [showNewCol, setShowNewCol] = useState(false);
   const [dragOverCol, setDragOverCol] = useState(null);
@@ -213,6 +213,25 @@ export default function StashPage() {
               onDragLeave={() => setDragOverCol(null)}
               onDrop={e => { e.preventDefault(); handleDrop(e, col.id); }}
             >
+              <div className="stash-collection-card-actions">
+                <button className="stash-col-action-btn" title="Edit" onClick={e => {
+                  e.preventDefault(); e.stopPropagation();
+                  const newName = prompt('Rename collection:', col.name);
+                  if (newName?.trim() && newName.trim() !== col.name) {
+                    updateCollection(col.id, { name: newName.trim() });
+                  }
+                }}>
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M7 2.5l2.5 2.5M3 7l-1 3 3-1 5.5-5.5-2.5-2.5z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+                <button className="stash-col-action-btn stash-col-action-del" title="Delete" onClick={e => {
+                  e.preventDefault(); e.stopPropagation();
+                  if (confirm(`Delete "${col.name}"? Videos will be moved back to your stash.`)) {
+                    deleteCollection(col.id);
+                  }
+                }}>
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4.5 3V2h3v1M3 3v7a1 1 0 001 1h4a1 1 0 001-1V3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+              </div>
               <div className="stash-collection-card-icon">
                 <CollectionIcon icon={col.icon || 'star'} color={colIconColors[i % colIconColors.length]} />
               </div>
