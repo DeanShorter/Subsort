@@ -39,17 +39,32 @@ export function AuthProvider({ children }) {
         trackEvent('session_start');
       }
 
-      // Fetch user tier (non-blocking for loading state)
+      // Ensure profile exists (replaces DB trigger — only creates when user actually loads the app)
       setLoading(false);
       try {
-        const { data: profile } = await supabase
+        const { data: profile, error: profileErr } = await supabase
           .from('profiles')
           .select('tier')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
+
         if (profile?.tier) {
           setUserTier(profile.tier);
           localStorage.setItem('subsort_user_tier', profile.tier);
+        }
+
+        if (!profile) {
+          // Profile doesn't exist — create it now
+          const meta = session.user.user_metadata || {};
+          const { error: insertErr } = await supabase.from('profiles').insert({
+            id: session.user.id,
+            email: session.user.email || '',
+            display_name: meta.full_name || meta.name || session.user.email?.split('@')[0] || '',
+            avatar_url: meta.avatar_url || meta.picture || '',
+          });
+          if (insertErr) console.error('[Auth] Profile creation failed:', insertErr);
+          else console.log('[Auth] Profile created for', session.user.email);
+        }
         }
       } catch (e) {
         // Non-fatal — falls back to cached value
