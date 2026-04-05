@@ -4,6 +4,7 @@ import { useChannelData } from './ChannelDataContext';
 import { useAuth } from './AuthContext';
 import { supabase } from '../../lib/supabase';
 import { showToast } from './Toast';
+import { trackEvent } from '../../lib/track';
 import Link from 'next/link';
 
 export default function ChannelPanel({ channelId, onClose }) {
@@ -104,6 +105,7 @@ export default function ChannelPanel({ channelId, onClose }) {
       }
     }
     showToast('Categories updated');
+    trackEvent('channel_categorised', { channel_id: ch.id, source: 'manual', categories: selectedCats });
     setEditingCat(false);
     await reload();
   }, [ch, user, selectedCats, dbCategories, subcategories, reload]);

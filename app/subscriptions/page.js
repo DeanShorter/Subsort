@@ -189,7 +189,8 @@ export default function Subscriptions2Page() {
         setRecentlySorted(sortedIds);
         const subMsg = result.subcategoriesAssigned > 0 ? ` (${result.subcategoriesAssigned} with subcategories)` : '';
         showToast(`Sorted ${assigned} channel${assigned !== 1 ? 's' : ''} — review below${subMsg}`);
-        trackEvent('autosort_run', { channels_sorted: assigned, categories_assigned: result.categoriesCreated, subcategories_assigned: result.subcategoriesAssigned });
+        const distinctCats = [...new Set(assignments.map(a => a.category))].length;
+        trackEvent('autosort_run', { channels_sorted: assigned, categories_assigned: distinctCats, subcategories_assigned: result.subcategoriesAssigned });
       }
 
       if (unmatched.length > 0) {

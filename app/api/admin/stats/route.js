@@ -39,7 +39,7 @@ export async function GET(req) {
   // Fetch all data in parallel
   const [usersRes, channelsRes, eventsRes, recentEventsRes, healthRes] = await Promise.all([
     supabase.from('profiles').select('*'),
-    supabase.from('channels').select('user_id, channel_id'),
+    supabase.from('channels').select('channel_id'),
     supabase.from('events').select('event_name, user_id, metadata, created_at').gte('created_at', weekAgo).neq('event_name', 'session_start').order('created_at', { ascending: false }),
     supabase.from('events').select('event_name, user_id, metadata, created_at').neq('event_name', 'session_start').order('created_at', { ascending: false }).limit(50),
     supabase.from('health_score_snapshots').select('user_id, score, mood, snapshot_date').order('snapshot_date', { ascending: false }).limit(50),
@@ -51,8 +51,8 @@ export async function GET(req) {
   const recentEvents = recentEventsRes.data || [];
   const healthScores = healthRes.data || [];
 
-  // Deduplicated channel count (distinct channel_id per user)
-  const uniqueChannels = new Set(allChannels.map(c => `${c.user_id}_${c.channel_id}`)).size;
+  // Deduplicated channel count (distinct channel_id)
+  const uniqueChannels = new Set(allChannels.map(c => c.channel_id)).size;
 
   // Vital signs
   const activeToday = new Set(events.filter(e => new Date(e.created_at) >= new Date(dayAgo)).map(e => e.user_id)).size;
@@ -97,7 +97,8 @@ export async function GET(req) {
       'onboarding_completed', 'autosort_run', 'channel_unsubscribed',
       'upgrade_completed', 'downgrade_completed', 'free_cap_hit',
       'sabbatical_started', 'recommendation_acted', 'collection_created',
-      'session_start', 'channel_categorised',
+      'channel_favourited', 'channel_unfavourited', 'channel_categorised',
+      'sync',
     ].includes(e.event_name))
     .slice(0, 50)
     .map(e => ({

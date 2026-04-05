@@ -19,6 +19,9 @@ function formatEventDescription(e) {
     case 'autosort_run': return `ran auto-sort — ${m.channels_sorted || '?'} channels into ${m.categories_assigned || '?'} categories`;
     case 'channel_unsubscribed': return `unsubscribed from a channel${m.was_critic_flagged ? ' (critic-flagged)' : ''}`;
     case 'channel_categorised': return `categorised a channel (${m.source || 'manual'})`;
+    case 'channel_favourited': return 'favourited a channel';
+    case 'channel_unfavourited': return 'unfavourited a channel';
+    case 'sync': return `synced subscriptions (${m.source || 'manual'})`;
     case 'upgrade_completed': return `upgraded to Pro (${m.plan || 'monthly'})`;
     case 'downgrade_completed': return `cancelled Pro after ${m.months_subscribed || '?'} months`;
     case 'free_cap_hit': return `hit the 50-sub cap (${m.total_channels || '?'} channels)`;
