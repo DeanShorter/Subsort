@@ -2,6 +2,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { useChannelData } from './ChannelDataContext';
+import { useStash } from '../../hooks/useStash';
 import { supabase } from '../../lib/supabase';
 import { calculateHealthScore, buildHealthScoreInput, saveHealthSnapshot } from '../../lib/health-score';
 
@@ -23,6 +24,7 @@ export default function HealthSnapshotManager() {
     chIsUncategorised, getChannelState, feedVideos,
     loading,
   } = useChannelData();
+  const { items: stashItems, collections: stashCollections } = useStash(user);
 
   const sessionStartSaved = useRef(false);
   const lastSavedScore = useRef(null);
@@ -31,10 +33,9 @@ export default function HealthSnapshotManager() {
   // Compute current score
   const computeScore = useCallback(() => {
     if (!channels.length) return null;
-    // No stash data here — pass empty arrays (stash doesn't change between page loads without user action)
     const { input, needAttentionCount } = buildHealthScoreInput(
       channels, categories, subcategories, chIsUncategorised, getChannelState,
-      feedVideos, [], []
+      feedVideos, stashItems, stashCollections
     );
     const userName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
     return calculateHealthScore(input, userName, needAttentionCount);
