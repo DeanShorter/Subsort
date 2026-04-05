@@ -32,9 +32,10 @@ export function AuthProvider({ children }) {
         localStorage.setItem('subsort_yt_token', session.provider_token);
       }
 
-      // Track session start once per browser session
-      if (!sessionStorage.getItem('subsnub_session_tracked')) {
-        sessionStorage.setItem('subsnub_session_tracked', '1');
+      // Track session start (debounced — max once per 5 minutes)
+      const lastSession = parseInt(localStorage.getItem('subsnub_last_session_ts') || '0');
+      if (Date.now() - lastSession > 5 * 60 * 1000) {
+        localStorage.setItem('subsnub_last_session_ts', String(Date.now()));
         trackEvent('session_start');
       }
 
@@ -117,10 +118,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    trackEvent('session_end');
+    // Use sendBeacon so the event survives the redirect
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        navigator.sendBeacon('/api/track', new Blob([JSON.stringify({
+          user_id: session.user.id,
+          event_name: 'session_end',
+        })], { type: 'application/json' }));
+      }
+    } catch {}
     localStorage.removeItem('subsort_yt_token');
     localStorage.removeItem('subsort_user_tier');
-    sessionStorage.removeItem('subsnub_session_tracked');
+    localStorage.removeItem('subsnub_last_session_ts');
     try {
       await supabase.auth.signOut();
     } catch (e) {}
