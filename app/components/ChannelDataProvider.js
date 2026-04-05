@@ -150,10 +150,10 @@ export function ChannelDataProvider({ children, user }) {
       const sharedMap = {};
       (scRows || []).forEach(sc => { sharedMap[sc.youtube_channel_id] = sc; });
 
-      // Fallback: if new tables are empty, use legacy channels table
+      // Fallback: if current user has no rows in user_channels, use legacy channels table
       let chRows;
       let useLegacy = false;
-      if (!ucRows?.length && !scRows?.length) {
+      if (!ucRows?.length) {
         const { data: legacyRows } = await supabase.from('channels').select('*');
         chRows = legacyRows;
         useLegacy = true;

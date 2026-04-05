@@ -53,11 +53,11 @@ export function AuthProvider({ children }) {
           localStorage.setItem('subsort_user_tier', profile.tier);
         }
 
-        if (!profile) {
-          // Profile doesn't exist — only create if user has a provider_token
-          // (means they just completed OAuth, not a stale session from the account picker)
-          if (session.provider_token) {
-            const meta = session.user.user_metadata || {};
+        if (!profile && session.provider_token) {
+          // Profile doesn't exist and user just completed OAuth — create profile
+          const meta = session.user.user_metadata || {};
+          // Small delay to ensure auth.users row is fully committed
+          setTimeout(async () => {
             try {
               const res = await fetch('/api/ensure-profile', {
                 method: 'POST',
@@ -69,13 +69,16 @@ export function AuthProvider({ children }) {
                   avatar_url: meta.avatar_url || meta.picture || '',
                 }),
               });
-              const result = await res.json();
-              if (result.created) console.log('[Auth] Profile created for', session.user.email);
-              else if (result.error) console.error('[Auth] Profile creation failed:', result.error);
+              if (res.ok) {
+                const result = await res.json();
+                if (result.created) console.log('[Auth] Profile created for', session.user.email);
+              } else {
+                console.error('[Auth] Profile creation failed:', res.status);
+              }
             } catch (e) {
               console.error('[Auth] Profile creation request failed:', e);
             }
-          }
+          }, 500);
         }
       } catch (e) {
         // Non-fatal — falls back to cached value
