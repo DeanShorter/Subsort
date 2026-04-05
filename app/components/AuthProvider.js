@@ -74,7 +74,6 @@ export function AuthProvider({ children }) {
             console.error('[Auth] Profile creation request failed:', e);
           }
         }
-        }
       } catch (e) {
         // Non-fatal — falls back to cached value
       }
