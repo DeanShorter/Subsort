@@ -19,20 +19,20 @@ export default function HomePage() {
           <a href="#critic" className="lp-nav-link">The Critic</a>
           <a href="#pricing" className="lp-nav-link">Pricing</a>
           <Link href="/signin" className="lp-nav-link">Sign in</Link>
-          <a href="#join" className="lp-nav-cta">Join the waitlist</a>
+          <Link href="/signin" className="lp-nav-cta">Sign up free</Link>
         </div>
       </nav>
 
       {/* HERO */}
       <section className="lp-hero">
-        <div className="lp-hero-badge"><div className="lp-hero-badge-dot" /> Coming soon</div>
+        <div className="lp-hero-badge"><div className="lp-hero-badge-dot" /> Free to use</div>
         <h1>Your YouTube subscriptions, <em>organised.</em></h1>
         <p>Subsnub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.</p>
         <div className="lp-hero-actions">
-          <a href="#join" className="lp-btn-primary">
-            Join the waitlist
+          <Link href="/signin" className="lp-btn-primary">
+            Sign up free
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </a>
+          </Link>
           <a href="#features" className="lp-btn-secondary">See features</a>
         </div>
       </section>
@@ -200,12 +200,12 @@ export default function HomePage() {
       {/* CTA */}
       <section className="lp-cta-section" id="join">
         <div className="lp-cta-inner">
-          <h2>Get early access</h2>
-          <p>Join the waitlist and be one of the first to try Subsnub. The Critic is already judging your subscriptions.</p>
-          <div className="lp-cta-email">
-            <input type="email" placeholder="Your email address" />
-            <button>Join waitlist</button>
-          </div>
+          <h2>Ready to organise your subscriptions?</h2>
+          <p>Free to start. Set up in 2 minutes. The Critic is already waiting.</p>
+          <Link href="/signin" className="lp-btn-primary" style={{ marginTop: 8 }}>
+            Sign up free
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </Link>
         </div>
       </section>
 

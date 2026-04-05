@@ -258,8 +258,8 @@ export default function OnboardingFlow({ visible, onComplete }) {
 
   // Complete onboarding
   const finish = useCallback(() => {
-    localStorage.setItem('subsort_onboarding_done', '1');
     if (user) {
+      localStorage.setItem(`subsort_onboarding_done_${user.id}`, '1');
       supabase.from('profiles').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', user.id);
     }
     onComplete();

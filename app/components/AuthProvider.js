@@ -131,7 +131,6 @@ export function AuthProvider({ children }) {
     } catch {}
     localStorage.removeItem('subsort_yt_token');
     localStorage.removeItem('subsort_user_tier');
-    localStorage.removeItem('subsort_onboarding_done');
     localStorage.removeItem('subsort_channels');
     localStorage.removeItem('subsort_categories');
     localStorage.removeItem('subsort_subcategories');

@@ -35,14 +35,25 @@ function DashboardInner({ children }) {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window === 'undefined') return false;
     if (localStorage.getItem('subsort_onboarding_step')) return true;
-    return !localStorage.getItem('subsort_onboarding_done');
+    return false; // default hidden, useEffect determines if needed
   });
 
-  // Check if user actually has channels in DB — if yes, skip onboarding even without localStorage flag
+  // Determine onboarding state based on user ID + DB check
   useEffect(() => {
     if (!user) return;
-    if (localStorage.getItem('subsort_onboarding_done')) return;
-    if (localStorage.getItem('subsort_onboarding_step')) return;
+
+    // Resuming OAuth flow
+    if (localStorage.getItem('subsort_onboarding_step')) {
+      setShowOnboarding(true);
+      return;
+    }
+
+    // Check if THIS user completed onboarding
+    const doneKey = `subsort_onboarding_done_${user.id}`;
+    if (localStorage.getItem(doneKey)) {
+      setShowOnboarding(false);
+      return;
+    }
 
     // Check DB for existing channels
     (async () => {
@@ -50,10 +61,10 @@ function DashboardInner({ children }) {
         .from('channels').select('id', { count: 'exact', head: true });
       if (count > 0) {
         // Existing user on new device — skip onboarding
-        localStorage.setItem('subsort_onboarding_done', '1');
+        localStorage.setItem(doneKey, '1');
         setShowOnboarding(false);
       } else {
-        // Truly new user — show onboarding
+        // New user — show onboarding
         setShowOnboarding(true);
       }
     })();
