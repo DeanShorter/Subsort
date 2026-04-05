@@ -41,8 +41,8 @@ export async function GET(req) {
     supabase.from('profiles').select('*'),
     supabase.from('channels').select('channel_id, user_id, subscriber_count, video_count'),
     supabase.from('channel_categories').select('channel_id'),
-    supabase.from('events').select('event_name, user_id, metadata, created_at').gte('created_at', weekAgo).neq('event_name', 'session_start').order('created_at', { ascending: false }),
-    supabase.from('events').select('event_name, user_id, metadata, created_at').neq('event_name', 'session_start').order('created_at', { ascending: false }).limit(50),
+    supabase.from('events').select('event_name, user_id, metadata, created_at').gte('created_at', weekAgo).order('created_at', { ascending: false }),
+    supabase.from('events').select('event_name, user_id, metadata, created_at').order('created_at', { ascending: false }).limit(100),
     supabase.from('health_score_snapshots').select('user_id, score, mood, snapshot_date').order('snapshot_date', { ascending: false }).limit(50),
   ]);
 
