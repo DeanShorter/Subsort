@@ -1,7 +1,8 @@
 'use client';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
+import { supabase } from '../../lib/supabase';
 import { useStash } from '../../hooks/useStash';
 import { calculateHealthScore, buildHealthScoreInput } from '../../lib/health-score';
 import { timeAgo } from '../../lib/youtube';
@@ -12,9 +13,35 @@ export default function HomePage() {
   const {
     channels, categories, subcategories, categoryColours,
     chCats, chIsUncategorised, getChannelState, formatCount,
-    feedVideos, feedVideosLoaded, loading,
+    feedVideos, feedVideosLoaded, setFeedVideos, loading,
   } = useChannelData();
   const { items: stashItems, collections: stashCollections } = useStash(user);
+
+  // Load feed videos from cache if not already loaded
+  useEffect(() => {
+    if (!channels.length || feedVideosLoaded) return;
+    (async () => {
+      const channelIds = channels.map(c => c.channelId).filter(Boolean);
+      if (!channelIds.length) return;
+      const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const allCached = [];
+      for (let i = 0; i < channelIds.length; i += 300) {
+        const batch = channelIds.slice(i, i + 300);
+        const { data } = await supabase.from('cached_videos').select('*').in('channel_id', batch).gte('published_at', since).order('published_at', { ascending: false }).limit(2000);
+        if (data) allCached.push(...data);
+      }
+      const vids = allCached.map(row => ({
+        id: row.video_id,
+        title: row.title || '',
+        channel: '',
+        channelId: row.channel_id,
+        thumbnail: row.thumbnail || `https://i.ytimg.com/vi/${row.video_id}/mqdefault.jpg`,
+        publishedAt: row.published_at,
+        type: row.video_type || 'video',
+      }));
+      setFeedVideos(vids);
+    })();
+  }, [channels, feedVideosLoaded, setFeedVideos]);
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
