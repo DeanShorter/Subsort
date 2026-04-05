@@ -34,9 +34,12 @@ export function AuthProvider({ children }) {
 
       // Track session start (debounced — max once per 5 minutes)
       const lastSession = parseInt(localStorage.getItem('subsnub_last_session_ts') || '0');
-      if (Date.now() - lastSession > 5 * 60 * 1000) {
+      const elapsed = Date.now() - lastSession;
+      console.log('[Auth] handleSession called, elapsed since last session_start:', Math.round(elapsed / 1000), 's');
+      if (elapsed > 5 * 60 * 1000) {
         localStorage.setItem('subsnub_last_session_ts', String(Date.now()));
         trackEvent('session_start');
+        console.log('[Auth] session_start tracked');
       }
 
       // Fetch user tier (non-blocking for loading state)
