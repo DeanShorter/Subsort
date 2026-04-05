@@ -34,11 +34,30 @@ function DashboardInner({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window === 'undefined') return false;
-    // Check if there's a pending onboarding step (returning from OAuth)
     if (localStorage.getItem('subsort_onboarding_step')) return true;
-    // Check if onboarding was already completed
     return !localStorage.getItem('subsort_onboarding_done');
   });
+
+  // Check if user actually has channels in DB — if yes, skip onboarding even without localStorage flag
+  useEffect(() => {
+    if (!user) return;
+    if (localStorage.getItem('subsort_onboarding_done')) return;
+    if (localStorage.getItem('subsort_onboarding_step')) return;
+
+    // Check DB for existing channels
+    (async () => {
+      const { count } = await (await import('../../lib/supabase')).supabase
+        .from('channels').select('id', { count: 'exact', head: true });
+      if (count > 0) {
+        // Existing user on new device — skip onboarding
+        localStorage.setItem('subsort_onboarding_done', '1');
+        setShowOnboarding(false);
+      } else {
+        // Truly new user — show onboarding
+        setShowOnboarding(true);
+      }
+    })();
+  }, [user]);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
