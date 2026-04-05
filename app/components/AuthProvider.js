@@ -117,8 +117,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    trackEvent('session_end');
     localStorage.removeItem('subsort_yt_token');
     localStorage.removeItem('subsort_user_tier');
+    sessionStorage.removeItem('subsnub_session_tracked');
     try {
       await supabase.auth.signOut();
     } catch (e) {}

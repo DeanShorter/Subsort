@@ -28,7 +28,8 @@ function formatEventDescription(e) {
     case 'sabbatical_started': return `started a sabbatical (${m.duration_days || '?'} days)`;
     case 'recommendation_acted': return `acted on ${m.type || 'a'} recommendation`;
     case 'collection_created': return `created a ${m.type || 'simple'} collection`;
-    case 'session_start': return `started a session (score: ${m.health_score || '?'})`;
+    case 'session_start': return 'started a session';
+    case 'session_end': return 'ended session';
     default: return e.event_name.replace(/_/g, ' ');
   }
 }
