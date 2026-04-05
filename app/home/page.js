@@ -1,678 +1,293 @@
 'use client';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useMemo } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
+import { useStash } from '../../hooks/useStash';
+import { calculateHealthScore, buildHealthScoreInput } from '../../lib/health-score';
 import { timeAgo } from '../../lib/youtube';
-import { supabase } from '../../lib/supabase';
-import { trackEvent } from '../../lib/track';
 import Link from 'next/link';
-import VideoModal from '../components/VideoModal';
 
-function TypedText({ text, speed = 18 }) {
-  const [displayed, setDisplayed] = useState('');
-  const [showCursor, setShowCursor] = useState(true);
-  const textRef = useRef(text);
-
-  useEffect(() => {
-    textRef.current = text;
-    setDisplayed('');
-    setShowCursor(true);
-    let i = 0;
-    const plain = text.replace(/<[^>]+>/g, ''); // strip HTML for typing
-    const interval = setInterval(() => {
-      if (i < plain.length) {
-        setDisplayed(plain.substring(0, i + 1));
-        i++;
-      } else {
-        clearInterval(interval);
-        setTimeout(() => setShowCursor(false), 500);
-      }
-    }, speed + Math.random() * speed * 0.5);
-    return () => clearInterval(interval);
-  }, [text, speed]);
-
-  return (
-    <span>
-      {displayed}
-      {showCursor && <span className="h2-cursor" />}
-    </span>
-  );
-}
-
-function Sparkline({ trend = 'flat', scoreColor = 'var(--amber)' }) {
-  const heights = trend === 'up' ? [35,40,38,42,50,48,55,60,65,72]
-    : trend === 'flat' ? [60,58,62,60,63,61,64,62,65,65]
-    : [72,68,70,65,63,60,62,58,55,52];
-  return (
-    <div className="h2-spark">
-      {heights.map((h, i) => (
-        <div key={i} className="h2-spark-dot" style={{
-          height: `${(h / 72) * 100}%`,
-          background: scoreColor,
-          opacity: i === heights.length - 1 ? 1 : 0.4,
-        }} />
-      ))}
-    </div>
-  );
-}
-
-export default function Home2Page() {
+export default function HomePage() {
   const { user, signIn } = useAuth();
   const {
-    channels, categories, categoryColours, loading: dataLoading,
-    chCats, formatCount, findDeadChannels,
-    feedVideos, feedVideosLoaded, setFeedVideos,
+    channels, categories, subcategories, categoryColours,
+    chCats, chIsUncategorised, getChannelState, formatCount,
+    feedVideos, feedVideosLoaded, loading,
   } = useChannelData();
+  const { items: stashItems, collections: stashCollections } = useStash(user);
 
-  const [loadingVideos, setLoadingVideos] = useState(false);
-  const [playingVideo, setPlayingVideo] = useState(null);
-  const [actionDismissed, setActionDismissed] = useState(false);
-  const [completedTasks, setCompletedTasks] = useState(new Set());
-
-  const channelMap = useMemo(() => {
-    const map = {};
-    channels.forEach(ch => { map[ch.channelId] = ch; });
-    return map;
-  }, [channels]);
-
-  // Load videos from cache
-  useEffect(() => {
-    if (!channels.length || feedVideosLoaded) return;
-    let cancelled = false;
-    setLoadingVideos(true);
-    async function loadFromCache() {
-      try {
-        const channelIds = channels.map(c => c.channelId).filter(Boolean);
-        if (!channelIds.length) { setLoadingVideos(false); return; }
-        const BATCH = 300;
-        const allCached = [];
-        const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        for (let i = 0; i < channelIds.length; i += BATCH) {
-          const batch = channelIds.slice(i, i + BATCH);
-          const { data } = await supabase.from('cached_videos').select('*').in('channel_id', batch).gte('published_at', since).order('published_at', { ascending: false }).limit(2000);
-          if (data) allCached.push(...data);
-        }
-        if (!cancelled) {
-          const vids = allCached.map(row => ({
-            id: row.video_id, title: row.title || '', channel: channelMap[row.channel_id]?.name || '',
-            channelId: row.channel_id, thumbnail: row.thumbnail || `https://i.ytimg.com/vi/${row.video_id}/mqdefault.jpg`,
-            publishedAt: row.published_at, type: row.video_type || 'video',
-          }));
-          setFeedVideos(vids);
-          setLoadingVideos(false);
-        }
-      } catch (e) { if (!cancelled) setLoadingVideos(false); }
-    }
-    loadFromCache();
-    return () => { cancelled = true; };
-  }, [channels, feedVideosLoaded, setFeedVideos, channelMap]);
-
-  // Computed
-  const deadChannels = useMemo(() => findDeadChannels(), [findDeadChannels]);
-  const favCount = channels.filter(c => c.favourited).length;
-  const inactiveCount = deadChannels.length;
-  const uncatCount = channels.filter(c => !chCats(c).length).length;
-
-  const score = useMemo(() => {
-    if (!channels.length) return 0;
-    return Math.round(((channels.length - inactiveCount) / channels.length) * 100);
-  }, [channels, inactiveCount]);
-
-  // Mood system based on score and last scrub
-  const mood = useMemo(() => {
-    if (score >= 80) return 'encouraging';
-    if (score >= 65) return 'nudging';
-    if (score >= 50) return 'impatient';
-    if (score >= 35) return 'annoyed';
-    return 'giving_up';
-  }, [score]);
-
-  const scoreColour = mood === 'encouraging' ? 'var(--accent)' : mood === 'nudging' ? 'var(--amber)' : mood === 'impatient' ? 'var(--amber)' : mood === 'annoyed' ? 'var(--red)' : 'var(--text-dim)';
-  const sparkTrend = mood === 'encouraging' ? 'up' : mood === 'nudging' ? 'flat' : 'down';
-
-  const userName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const greeting = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
+  const userName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
+  const dateStr = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-  const moodEmoji = { encouraging: '😎', nudging: '😐', impatient: '😤', annoyed: '😡', giving_up: '💀' };
-  const moodGreeting = { encouraging: 'Not bad', nudging: 'Getting there', impatient: 'Still here?', annoyed: 'We need to talk', giving_up: 'Fine. Whatever.' };
-  const moodBtnText = { encouraging: 'Keep scrubbing', nudging: 'Scrub now', impatient: 'Scrub now', annoyed: 'Fix this mess', giving_up: 'Prove me wrong' };
-  const moodAttrib = { encouraging: 'reluctantly impressed', nudging: `based on ${channels.length} subscriptions`, impatient: 'losing patience', annoyed: 'visibly frustrated', giving_up: 'emotionally checked out' };
-  const moodActionSince = { encouraging: 'Last scrub: yesterday', nudging: 'Last scrub: 5 days ago', impatient: 'Last scrub: 12 days ago', annoyed: 'Last scrub: 23 days ago', giving_up: 'Last scrub: 38 days ago' };
+  // Health score
+  const healthResult = useMemo(() => {
+    if (!channels.length) return null;
+    const { input, needAttentionCount } = buildHealthScoreInput(
+      channels, categories, subcategories, chIsUncategorised, getChannelState,
+      feedVideos, stashItems, stashCollections
+    );
+    return calculateHealthScore(input, userName, needAttentionCount);
+  }, [channels, categories, subcategories, chIsUncategorised, getChannelState, feedVideos, stashItems, stashCollections, userName]);
 
-  // Task list quips based on completion
-  const taskQuip = useMemo(() => {
-    const done = completedTasks.size;
-    if (done === 3) return "Wait. You actually did it? All of them? I... don't know what to say.";
-    if (done === 2) return `${done} down, 1 to go. I'm starting to believe in you. Don't make me regret it.`;
-    if (done === 1) return "One down. That's a start. A slow start, but technically a start.";
-    if (mood === 'encouraging') return "You've been doing well. Just a few loose ends.";
-    if (mood === 'impatient') return "I gave you 3 things to do. They're still here. Staring at me.";
-    if (mood === 'annoyed') return "At this point the tasks are going to outlive us both.";
-    if (mood === 'giving_up') return "The tasks are still here. I'm barely here.";
-    return "I've made this very easy for you. You just have to click the buttons.";
-  }, [completedTasks, mood]);
+  // Quick stats
+  const stats = useMemo(() => {
+    if (!channels.length) return null;
+    const sorted = [...channels].filter(c => c.subscribedAt).sort((a, b) => new Date(a.subscribedAt) - new Date(b.subscribedAt));
+    const oldest = sorted[0];
+    const newest = sorted[sorted.length - 1];
+    const oldestAge = oldest ? Math.floor((Date.now() - new Date(oldest.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000)) : 0;
+    const newestAgo = newest ? timeAgo(newest.subscribedAt) : '';
 
-  const taskProgressPct = Math.round((completedTasks.size / 3) * 100);
-  const taskProgressColor = completedTasks.size >= 2 ? 'var(--accent)' : 'var(--amber)';
-  const taskProgressLabel = completedTasks.size === 3 ? '100% complete — The Critic is speechless. Almost.'
-    : completedTasks.size >= 2 ? `${taskProgressPct}% complete — The Critic is cautiously optimistic.`
-    : completedTasks.size === 1 ? `${taskProgressPct}% complete — The Critic acknowledges your effort.`
-    : '0% complete — The Critic is watching.';
+    // This week's uploads
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const weeklyVids = feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt).getTime() >= weekAgo);
+    const weeklyChannels = new Set(weeklyVids.map(v => v.channelId)).size;
 
-  const toggleTask = (id) => setCompletedTasks(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+    return { oldest, newest, oldestAge, newestAgo, weeklyVids: weeklyVids.length, weeklyChannels };
+  }, [channels, feedVideos]);
 
-  const tasks = [
-    { id: 'inactive', label: 'Review inactive channels', sub: "Haven't uploaded in 6+ months", count: inactiveCount, color: 'var(--red)' },
-    { id: 'uncat', label: 'Categorise uncategorised channels', sub: 'No category assigned yet', count: uncatCount, color: 'var(--amber)' },
-    { id: 'favs', label: 'Add more favourites', sub: 'Star your must-watch channels', count: `${favCount} selected`, color: 'var(--accent)' },
-  ];
+  // Today's feed by category
+  const feedSummary = useMemo(() => {
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+    const todayVids = feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt) >= todayStart);
+    const catCounts = {};
+    const channelSet = new Set();
+    todayVids.forEach(v => {
+      channelSet.add(v.channelId);
+      const ch = channels.find(c => c.channelId === v.channelId);
+      if (ch) {
+        const cats = chCats(ch);
+        const cat = cats[0] || 'Unsorted';
+        catCounts[cat] = (catCounts[cat] || 0) + 1;
+      }
+    });
+    const sorted = Object.entries(catCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const max = sorted[0]?.[1] || 1;
+    const catColors = ['var(--accent)', 'var(--orange)', 'var(--iris)', 'var(--ocean)', '#888'];
+    return {
+      total: todayVids.length,
+      channelCount: channelSet.size,
+      catCount: Object.keys(catCounts).length,
+      rows: sorted.map(([name, count], i) => ({ name, count, pct: (count / max) * 100, color: categoryColours[name] || catColors[i] || '#888' })),
+    };
+  }, [feedVideos, channels, chCats, categoryColours]);
 
-  const roastText = useMemo(() => {
-    const active = channels.length - inactiveCount;
-    if (!channels.length) return '';
-    if (mood === 'encouraging') return `You scrubbed recently and your score is solid. <strong>${active} active channels</strong> out of ${channels.length}. Keep going.`;
-    if (mood === 'nudging') return `<strong>${channels.length} subscriptions</strong> and you engage with ${active} of them. The other ${inactiveCount} are just paying emotional rent in your feed.`;
-    if (mood === 'impatient') return `Your score dropped. Those dead channels are multiplying. <strong>${inactiveCount} inactive</strong> and counting.`;
-    if (mood === 'annoyed') return `Remember when you said you'd fix your feed? You've got <strong>${inactiveCount} channels</strong> you've never watched. Just sitting there. Judging you.`;
-    return `At this point I think you and your <strong>${inactiveCount} dead channels</strong> deserve each other. I'm not angry, I'm just disappointed.`;
-  }, [channels, inactiveCount, mood]);
+  // Favourites with latest video
+  const favourites = useMemo(() => {
+    const favChannels = channels.filter(c => c.favourited).slice(0, 4);
+    return favChannels.map(ch => {
+      const latestVid = feedVideos.find(v => v.channelId === ch.channelId);
+      return { ...ch, latestVid };
+    });
+  }, [channels, feedVideos]);
 
-  const actionLabel = useMemo(() => {
-    if (mood === 'encouraging') return "A few loose ends to tidy up when you're ready.";
-    if (mood === 'nudging') return `Those ${inactiveCount} inactive channels aren't going to scrub themselves.`;
-    if (mood === 'impatient') return "Your feed is getting worse, not better. Fix it.";
-    if (mood === 'annoyed') return `Seriously. ${inactiveCount} channels you've never watched. Just sitting there.`;
-    return "I'll be here when you're ready. If you're ever ready.";
-  }, [mood, inactiveCount]);
+  // On This Day — subscription anniversaries
+  const onThisDay = useMemo(() => {
+    const today = new Date();
+    const m = today.getMonth();
+    const d = today.getDate();
+    return channels.filter(ch => {
+      if (!ch.subscribedAt) return false;
+      const sub = new Date(ch.subscribedAt);
+      return sub.getMonth() === m && sub.getDate() === d && sub.getFullYear() < today.getFullYear();
+    }).map(ch => {
+      const years = today.getFullYear() - new Date(ch.subscribedAt).getFullYear();
+      const vidsSince = feedVideos.filter(v => v.channelId === ch.channelId).length;
+      return { ...ch, years, vidsSince };
+    })[0] || null;
+  }, [channels, feedVideos]);
 
-  // Favourite videos
-  const favVideos = useMemo(() => {
-    const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
-    return feedVideos.filter(v => favIds.has(v.channelId) && v.type !== 'short')
-      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 8);
+  // Latest uploads
+  const latestUploads = useMemo(() => {
+    return feedVideos
+      .filter(v => v.publishedAt)
+      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
+      .slice(0, 5)
+      .map(v => {
+        const ch = channels.find(c => c.channelId === v.channelId);
+        return { ...v, channelName: ch?.name || v.channel || '' };
+      });
   }, [feedVideos, channels]);
 
-  const todayVideos = useMemo(() => {
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    return feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt) >= today);
-  }, [feedVideos]);
-
-  const todayCatDots = useMemo(() => {
-    const cats = new Set();
-    todayVideos.forEach(v => { const ch = channelMap[v.channelId]; if (ch) (ch.categories || []).forEach(c => cats.add(c)); });
-    return [...cats].slice(0, 8);
-  }, [todayVideos, channelMap]);
-
-  const todayChannelCount = useMemo(() => new Set(todayVideos.map(v => v.channelId)).size, [todayVideos]);
-
-  const ringC = 2 * Math.PI * 22;
-  const ringOffset = ringC - (ringC * score / 100);
-
-  if (dataLoading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
-
-  const greetingTime = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
-  const lastRefresh = (() => { try { const ts = localStorage.getItem('subsort_rss_ts'); return ts ? timeAgo(new Date(parseInt(ts)).toISOString()) : 'Never'; } catch { return 'Never'; } })();
-  const subtitle = channels.length ? `${channels.length} subscriptions · ${categories.length} categories` : 'Sync your subscriptions to get started.';
+  if (loading) return <div className="home-feed-loading"><span className="spinner" /> Loading...</div>;
 
   if (!user) {
     return (
-      <main className="home-main">
-        <div className="db-header-bar">
-          <div className="db-greeting"><h1>Good morning, <span>there</span>.</h1><p>Sign in to get started.</p></div>
+      <div className="hp-page">
+        <div className="hp-header">
+          <div className="hp-greeting">Welcome to Subsnub</div>
+          <div className="hp-date">Sign in to get started</div>
         </div>
-        <div className="home-feed-empty"><p className="home-feed-empty-text">Sign in to get started.</p><button className="btn-accent" onClick={signIn}>Sign in with Google</button></div>
-      </main>
+        <div className="home-feed-empty">
+          <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
+        </div>
+      </div>
     );
   }
 
+  const score = healthResult?.total ?? 0;
+  const scoreMood = score >= 70 ? 'var(--accent)' : 'var(--orange)';
+  const scoreQuote = healthResult?.quote || '';
+
   return (
-    <>
-      <div className="h2-content">
-        <div className="db-header-bar">
-          <div className="db-greeting">
-            <h1>Good {greetingTime}, <span>{userName}</span>.</h1>
-          </div>
-          <div className="ph-right">
-            <span className="db-clock">Last refresh: {lastRefresh}</span>
-          </div>
-        </div>
-        {/* ═══ CRITIC CARD ═══ */}
-        <div className={`h2-critic-card mood-${mood}`}>
-          {/* Header: icon + title + sparkline + share */}
-          <div className="h2-critic-header">
-            <div className="h2-critic-identity">
-              <div className={`h2-critic-icon mood-${mood}`}>{moodEmoji[mood]}</div>
-              <span className="h2-critic-title">The Critic</span>
-            </div>
-            <div className="h2-critic-actions">
-              <Sparkline trend={sparkTrend} scoreColor={scoreColour} />
-              <button className="cb-share" title="Share your score">
-                <svg viewBox="0 0 16 16"><path d="M4 8V13a1 1 0 001 1h6a1 1 0 001-1V8" /><polyline points="8 2 8 10" /><polyline points="5 5 8 2 11 5" /></svg>
-              </button>
-            </div>
-          </div>
-          {/* Body: ring + roast */}
-          <div className="h2-critic-body">
-            <div className="h2-critic-ring-wrap">
-              <div className={`h2-critic-pulse mood-${mood}`} />
-              <div className="h2-critic-ring">
-                <svg viewBox="0 0 56 56">
-                  <circle cx="28" cy="28" r="22" fill="none" stroke="var(--surface-3)" strokeWidth="4" />
-                  <circle cx="28" cy="28" r="22" fill="none" stroke={scoreColour} strokeWidth="4" strokeLinecap="round"
-                    strokeDasharray={ringC} strokeDashoffset={ringOffset} transform="rotate(-90 28 28)" />
-                </svg>
-                <span className="h2-critic-val" style={{ color: scoreColour }}>{score}%</span>
-              </div>
-            </div>
-            <div className="h2-critic-content">
-              <div className="h2-critic-greeting">{moodGreeting[mood]}, {userName}.</div>
-              <div className="h2-critic-roast">
-                <TypedText text={roastText.replace(/<[^>]+>/g, '')} speed={18} />
-              </div>
-              <div className="h2-critic-attrib">— The Critic, {moodAttrib[mood]}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══ THE CRITIC NOTICED ═══ */}
-        <div style={{ marginBottom: 20 }}>
-          <div className="obs-section-header">
-            <div className="obs-section-title">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l2 4 4.5.6-3.2 3.2.7 4.4L8 11.5l-4 2.2.7-4.4L1.5 6.1l4.5-.6z" fill="var(--text-dim)" /></svg>
-              The Critic noticed...
-            </div>
-            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Updated today</span>
-          </div>
-          <div className="obs-grid">
-            {/* On This Day */}
-            <div className="obs-card">
-              <div className="obs-header" style={{ background: 'var(--accent-soft)' }}>
-                <span className="obs-type" style={{ color: 'var(--accent-text)' }}>ON THIS DAY</span>
-                <div className="obs-icon" style={{ background: 'var(--accent)' }}>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4" stroke="#fff" strokeWidth="1.2" /><path d="M6 3.5v3l2 1.5" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                </div>
-              </div>
-              <div className="obs-body">
-                <div className="obs-quote">
-                  {(() => {
-                    const today = new Date();
-                    const m = today.getMonth(), d = today.getDate();
-                    const anniversaries = channels.filter(ch => {
-                      if (!ch.subscribedAt) return false;
-                      const s = new Date(ch.subscribedAt);
-                      return s.getMonth() === m && s.getDate() === d && s.getFullYear() < today.getFullYear();
-                    });
-                    if (anniversaries.length > 0) {
-                      const ch = anniversaries[0];
-                      const years = today.getFullYear() - new Date(ch.subscribedAt).getFullYear();
-                      return `"${years} year${years > 1 ? 's' : ''} ago today, you subscribed to ${ch.name}. That's commitment."`;
-                    }
-                    const oldest = [...channels].filter(c => c.subscribedAt).sort((a, b) => new Date(a.subscribedAt) - new Date(b.subscribedAt))[0];
-                    if (oldest) {
-                      const years = Math.floor((Date.now() - new Date(oldest.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-                      return `"Your oldest subscription is ${oldest.name} — ${years} year${years !== 1 ? 's' : ''} and counting."`;
-                    }
-                    return '"No subscription anniversaries today. But The Critic is always watching."';
-                  })()}
-                </div>
-              </div>
-            </div>
-
-            {/* Pattern */}
-            <div className="obs-card">
-              <div className="obs-header" style={{ background: 'var(--orange-soft)' }}>
-                <span className="obs-type" style={{ color: 'var(--orange-text)' }}>PATTERN</span>
-                <div className="obs-icon" style={{ background: 'var(--orange)' }}>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 9l2.5-4 2 3 1.5-2L11 9" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </div>
-              </div>
-              <div className="obs-body">
-                <div className="obs-quote">
-                  {(() => {
-                    const catCounts = {};
-                    channels.forEach(ch => chCats(ch).forEach(c => catCounts[c] = (catCounts[c] || 0) + 1));
-                    const top = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0];
-                    if (top) return `"You subscribe to more ${top[0]} channels than anything else. ${top[1]} and counting."`;
-                    return '"Not enough data to spot patterns yet."';
-                  })()}
-                </div>
-                {(() => {
-                  const catCounts = {};
-                  channels.forEach(ch => chCats(ch).forEach(c => catCounts[c] = (catCounts[c] || 0) + 1));
-                  const top = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0];
-                  if (top) return <div className="obs-detail"><span style={{ fontWeight: 500, color: 'var(--orange)' }}>{top[1]}</span> of {channels.length} channels</div>;
-                  return null;
-                })()}
-              </div>
-            </div>
-
-            {/* Milestone */}
-            <div className="obs-card">
-              <div className="obs-header" style={{ background: 'var(--iris-soft)' }}>
-                <span className="obs-type" style={{ color: 'var(--iris-text)' }}>MILESTONE</span>
-                <div className="obs-icon" style={{ background: 'var(--iris)' }}>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3 .4-2.2 2.1.5 3L6 8l-2.8 1.5.5-3L1.5 4.4l3-.4z" fill="#fff" /></svg>
-                </div>
-              </div>
-              <div className="obs-body">
-                <div className="obs-quote">
-                  {(() => {
-                    const highVid = [...channels].filter(c => c.videoCount > 500).sort((a, b) => b.videoCount - a.videoCount)[0];
-                    if (highVid) return `"${highVid.name} has ${highVid.videoCount.toLocaleString()} videos. That's a library, not a channel."`;
-                    const most = [...channels].sort((a, b) => (b.subscriberCount || 0) - (a.subscriberCount || 0))[0];
-                    if (most) return `"Your most popular subscription is ${most.name} with ${formatCount(most.subscriberCount)} subscribers."`;
-                    return '"No milestones spotted yet. Keep subscribing."';
-                  })()}
-                </div>
-                {(() => {
-                  const highVid = [...channels].filter(c => c.videoCount > 500).sort((a, b) => b.videoCount - a.videoCount)[0];
-                  if (highVid) return (
-                    <div className="obs-channel">
-                      <div className="obs-ch-avatar" style={{ background: categoryColours[chCats(highVid)[0]] || 'var(--iris)' }}>
-                        {(highVid.name || '??').substring(0, 2).toUpperCase()}
-                      </div>
-                      {highVid.name}
-                    </div>
-                  );
-                  return null;
-                })()}
-              </div>
-            </div>
-            {/* Placeholder */}
-            <div className="obs-card" style={{ borderStyle: 'dashed', opacity: 0.5 }}>
-              <div className="obs-header" style={{ background: 'var(--bg-primary)' }}>
-                <span className="obs-type" style={{ color: 'var(--text-muted)' }}>COMING SOON</span>
-              </div>
-              <div className="obs-body">
-                <div className="obs-quote">"The Critic is always watching. More observations will appear as it learns your habits."</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══ CRITIC'S TASK LIST ═══ */}
-        {!actionDismissed && (
-          <div className={`h2-action-card mood-${mood}`}>
-            <div className="h2-action-header">
-              <div className="h2-action-header-left">
-                <span className="h2-action-title">The Critic's recommendations</span>
-                <span className="h2-action-task-count">{completedTasks.size} of {tasks.length}</span>
-              </div>
-              <span className="h2-action-since">{moodActionSince[mood]}</span>
-            </div>
-            <div className="h2-action-quip">"{taskQuip}"</div>
-
-            <div className="h2-task-list">
-              {tasks.map(t => (
-                <div key={t.id} className={`h2-task-row${completedTasks.has(t.id) ? ' done' : ''}`} onClick={() => toggleTask(t.id)}>
-                  <div className="h2-task-check">{completedTasks.has(t.id) && '✓'}</div>
-                  <div className="h2-task-content">
-                    <div className="h2-task-label">{t.label}</div>
-                    <div className="h2-task-sub">{t.sub}</div>
-                  </div>
-                  <div className="h2-task-severity">
-                    <div className="h2-task-dot" style={{ background: t.color }} />
-                    <span className="h2-task-count" style={{ color: t.color }}>{t.count}</span>
-                  </div>
-                  <span className="h2-task-arrow">→</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="h2-action-footer">
-              <div className="h2-action-progress">
-                <div className="h2-action-progress-label">{taskProgressLabel}</div>
-                <div className="h2-action-progress-bar">
-                  <div className="h2-action-progress-fill" style={{ width: `${taskProgressPct}%`, background: taskProgressColor }} />
-                </div>
-              </div>
-              <span className="h2-action-dismiss" onClick={() => setActionDismissed(true)}>Dismiss</span>
-            </div>
-          </div>
-        )}
-
-        {/* ═══ TODAY BAR ═══ */}
-        {todayVideos.length > 0 && (
-          <div className="h2-section">
-            <Link href="/feeds" className="h2-today-bar">
-              <span className="h2-today-icon">📬</span>
-              <div className="h2-today-text">
-                <div className="h2-today-title">{todayVideos.length} new videos today</div>
-                <div className="h2-today-sub">across {todayCatDots.length} categories from {todayChannelCount} channels</div>
-              </div>
-              <div className="h2-today-cats h2-today-cats-overlap">
-                {todayCatDots.map(cat => (<div key={cat} className="h2-today-dot-overlap" style={{ background: categoryColours[cat] || 'var(--accent)' }} />))}
-              </div>
-              <span className="h2-today-arrow">→</span>
-            </Link>
-          </div>
-        )}
-
-        {/* ═══ FAVOURITES ═══ */}
-        <div className="h2-section">
-          <div className="h2-section-header">
-            <div className="section-left">
-              <span className="h2-section-title">⭐ New from your favourites</span>
-              {favVideos.length > 0 && <span className="h2-section-count">{favVideos.length} new</span>}
-            </div>
-            {favVideos.length > 0 && <Link href="/feeds?cat=__favs__" className="h2-section-link">View all →</Link>}
-          </div>
-          {favVideos.length > 0 ? (
-            <div className="h2-fav-grid">
-              {favVideos.map((v, i) => {
-                const isNew = v.publishedAt && (Date.now() - new Date(v.publishedAt).getTime()) < 24 * 60 * 60 * 1000;
-                return (
-                  <div key={v.id} className="h2-fav-card" style={{ animationDelay: `${Math.min(i * 50, 400)}ms` }}
-                    onClick={() => { trackEvent('video_click_home'); setPlayingVideo(v); }}>
-                    <div className="h2-fav-thumb">
-                      <img src={v.thumbnail} alt="" loading="lazy" onLoad={e => e.currentTarget.classList.add('loaded')} />
-                      <div className="h2-fav-overlay" />
-                      {isNew && <span className="h2-fav-new">New</span>}
-                    </div>
-                    <div className="h2-fav-info">
-                      <div className="h2-fav-title">{v.title}</div>
-                      <div className="h2-fav-channel">{v.channel} · {timeAgo(v.publishedAt)}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="h2-empty-state">
-              <span className="h2-empty-emoji">😴</span>
-              <span className="h2-empty-text">{favCount === 0 ? 'No favourites yet — star some channels to see their uploads here' : 'No new uploads from your favourites'}</span>
-            </div>
-          )}
-        </div>
-
-        {/* ═══ ACTIVITY + DISCOVER ═══ */}
-        <div className="h2-section">
-          <div className="h2-secondary-grid">
-            <div className="h2-panel">
-              <div className="h2-panel-header"><span className="h2-panel-title">Recent activity</span></div>
-              <div>
-                {favCount > 0 && <div className="h2-activity-item"><div className="h2-activity-icon" style={{ background: 'rgba(239,159,39,0.08)' }}>⭐</div><div className="h2-activity-text"><strong>{favCount} favourites</strong> selected</div></div>}
-                {inactiveCount > 0 && <div className="h2-activity-item"><div className="h2-activity-icon" style={{ background: 'rgba(232,93,80,0.08)' }}>👻</div><div className="h2-activity-text"><strong>{inactiveCount} inactive channels</strong> detected</div></div>}
-                <div className="h2-activity-item"><div className="h2-activity-icon" style={{ background: 'rgba(55,138,221,0.08)' }}>📂</div><div className="h2-activity-text"><strong>{categories.length} categories</strong> configured</div></div>
-                <div className="h2-activity-item"><div className="h2-activity-icon" style={{ background: 'var(--mint-dim)' }}>🧹</div><div className="h2-activity-text"><strong>{channels.length} channels</strong> synced</div></div>
-              </div>
-            </div>
-            <div className="h2-panel">
-              <div className="h2-panel-header"><span className="h2-panel-title">New in Discover</span><Link href="/discover" className="h2-panel-link">Explore →</Link></div>
-              <div style={{ fontSize: '11px', color: 'var(--text-dim)', marginBottom: '10px' }}>3 new channels in your top categories</div>
-              <div className="h2-disc-row">
-                <div className="h2-disc-card"><div className="h2-disc-avatar" style={{ background: 'rgba(232,135,92,0.15)', color: 'var(--orange)' }}>SS</div><div className="h2-disc-name">Sky Sports F1</div><div className="h2-disc-subs">2.1M subs</div></div>
-                <div className="h2-disc-card"><div className="h2-disc-avatar" style={{ background: 'rgba(62,207,160,0.1)', color: 'var(--accent)' }}>JC</div><div className="h2-disc-name">Jacob Collier</div><div className="h2-disc-subs">4.8M subs</div></div>
-                <div className="h2-disc-card"><div className="h2-disc-avatar" style={{ background: 'rgba(239,159,39,0.08)', color: 'var(--amber)' }}>VX</div><div className="h2-disc-name">Vox</div><div className="h2-disc-subs">12M subs</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      {/* Subscription Timeline */}
-      {channels.length > 0 && (() => {
-        // Group channels by year
-        const yearCounts = {};
-        const oldest = { year: 9999 };
-        channels.forEach(ch => {
-          if (!ch.subscribedAt) return;
-          const y = new Date(ch.subscribedAt).getFullYear();
-          if (isNaN(y) || y < 2005) return;
-          yearCounts[y] = (yearCounts[y] || 0) + 1;
-          if (y < oldest.year) oldest.year = y;
-        });
-
-        const years = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
-        if (!years.length) return null;
-
-        const maxCount = Math.max(...Object.values(yearCounts));
-        const busiestYear = years.reduce((a, b) => (yearCounts[a] || 0) >= (yearCounts[b] || 0) ? a : b, years[0]);
-        const currentYear = new Date().getFullYear();
-
-        // Avg years subscribed
-        const now = Date.now();
-        const ages = channels.filter(c => c.subscribedAt).map(c => (now - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-        const avgAge = ages.length ? (ages.reduce((a, b) => a + b, 0) / ages.length).toFixed(1) : '—';
-
-        // Find phases
-        const phases = [];
-        if (yearCounts[busiestYear] >= 20) {
-          // Check if adjacent year is also high
-          const adj = [busiestYear - 1, busiestYear + 1].filter(y => yearCounts[y] && yearCounts[y] >= yearCounts[busiestYear] * 0.6);
-          if (adj.length) {
-            const range = [Math.min(busiestYear, ...adj), Math.max(busiestYear, ...adj)];
-            const total = years.filter(y => y >= range[0] && y <= range[1]).reduce((s, y) => s + yearCounts[y], 0);
-            phases.push({ range: `${range[0]}-${range[1]}`, text: `Your biggest growth period. ${total} new subscriptions in ${range[1] - range[0] + 1} years.`, color: 'orange', tag: 'Peak discovery' });
-          }
-        }
-        if (yearCounts[currentYear] && yearCounts[currentYear] < 20) {
-          phases.push({ range: `${currentYear}`, text: `Just getting started this year. ${yearCounts[currentYear]} new subscriptions so far.`, color: 'iris', tag: 'Curator era' });
-        }
-
-        // Longest subscriptions
-        const longestSubs = channels
-          .filter(c => c.subscribedAt)
-          .sort((a, b) => new Date(a.subscribedAt) - new Date(b.subscribedAt))
-          .slice(0, 4);
-
-        const yearsSince = (d) => {
-          const diff = (now - new Date(d).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-          return Math.floor(diff);
-        };
-        const fmtSubDate = (d) => new Date(d).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
-        const avatarColors = ['var(--orange)', 'var(--accent)', 'var(--iris)', 'var(--ocean)'];
-
-        // Critic quote
-        const criticQuote = yearCounts[busiestYear] >= 50
-          ? `"${busiestYear} was wild — ${yearCounts[busiestYear]} subscriptions in one year. Those channels are now ${currentYear - busiestYear}+ years old in your list. Might be worth a review."`
-          : yearCounts[busiestYear] >= 20
-          ? `"${busiestYear} was your busiest year with ${yearCounts[busiestYear]} new subscriptions. Are you still watching all of them?"`
-          : `"${channels.length} subscriptions spread across ${years.length} years. That's a steady drip of commitment."`;
-
-        return (
-          <div className="h2-section">
-            <div className="tl-card">
-              <div className="tl-card-header">
-                <div className="tl-card-title">
-                  Your subscription journey
-                  <span className="tl-info-wrap">
-                    <span className="tl-info-icon">i</span>
-                    <span className="tl-info-tooltip">Quick heads up — this only shows channels you&rsquo;re still subscribed to. Anything you&rsquo;ve already scrubbed won&rsquo;t appear. But from now on, I&rsquo;m keeping track.</span>
-                  </span>
-                </div>
-                <div className="tl-card-meta">Since {years[0]}</div>
-              </div>
-              <div className="tl-card-body">
-                <div className="tl-stats">
-                  <div className="tl-stat" style={{ background: 'var(--accent-soft)' }}>
-                    <div className="tl-stat-value" style={{ color: 'var(--accent)' }}>{channels.length}</div>
-                    <div className="tl-stat-label" style={{ color: 'var(--accent-text)' }}>total subscriptions</div>
-                  </div>
-                  <div className="tl-stat" style={{ background: 'var(--orange-soft)' }}>
-                    <div className="tl-stat-value" style={{ color: 'var(--orange)' }}>{busiestYear}</div>
-                    <div className="tl-stat-label" style={{ color: 'var(--orange-text)' }}>busiest year</div>
-                  </div>
-                  <div className="tl-stat" style={{ background: 'var(--iris-soft)' }}>
-                    <div className="tl-stat-value" style={{ color: 'var(--iris)' }}>{avgAge}</div>
-                    <div className="tl-stat-label" style={{ color: 'var(--iris-text)' }}>avg years subscribed</div>
-                  </div>
-                </div>
-
-                <div className="tl-chart">
-                  {years.map(y => {
-                    const count = yearCounts[y];
-                    const pct = Math.max(4, (count / maxCount) * 100);
-                    const isBusiest = y === busiestYear;
-                    const isCurrent = y === currentYear;
-                    const barColor = isBusiest ? 'var(--orange)' : isCurrent ? 'var(--iris)' : 'var(--accent)';
-                    return (
-                      <div key={y} className="tl-year-row">
-                        <div className="tl-year-label">{y}</div>
-                        <div className="tl-bar-track">
-                          <div className="tl-bar-fill" style={{ width: `${pct}%`, background: barColor }}>
-                            {pct > 8 && <span className="tl-bar-count">{count}</span>}
-                          </div>
-                        </div>
-                        <div className="tl-year-total">{count}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {phases.length > 0 && (
-                  <div className="tl-phases">
-                    {phases.map((p, i) => (
-                      <div key={i} className="tl-phase" style={{ background: `var(--${p.color}-soft)` }}>
-                        <div className="tl-phase-year" style={{ color: `var(--${p.color}-text)` }}>{p.range}</div>
-                        <div className="tl-phase-text">
-                          {p.text}
-                          {p.tag && <span className="tl-phase-tag" style={{ background: `var(--${p.color})`, color: '#fff' }}>{p.tag}</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {longestSubs.length > 0 && (
-                  <div className="tl-notable">
-                    <div className="tl-notable-title">Longest subscriptions</div>
-                    <div className="tl-notable-row">
-                      {longestSubs.map((ch, i) => (
-                        <div key={ch.id} className="tl-notable-chip">
-                          <div className="tl-notable-av" style={{ background: avatarColors[i % avatarColors.length] }}>
-                            {ch.thumbnail ? <img src={ch.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : (ch.name || '??').substring(0, 2).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="tl-notable-name">{ch.name}</div>
-                            <div className="tl-notable-date">{fmtSubDate(ch.subscribedAt)} — {yearsSince(ch.subscribedAt)} years</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="tl-critic">
-                  <div className="tl-critic-icon" style={{ background: 'var(--accent)' }}>
-                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3 .4-2.2 2.1.5 3L6 8l-2.8 1.5.5-3L1.5 4.4l3-.4z" fill="#fff" /></svg>
-                  </div>
-                  <div className="tl-critic-body">
-                    <div className="tl-critic-label">The Critic</div>
-                    <div className="tl-critic-text">{criticQuote}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+    <div className="hp-page">
+      {/* Header */}
+      <div className="hp-header">
+        <div className="hp-greeting">{greeting}, {userName}.</div>
+        <div className="hp-date">{dateStr}</div>
       </div>
 
-      {/* Video modal */}
-      {playingVideo && (
-        <VideoModal video={playingVideo} onClose={() => setPlayingVideo(null)} />
+      {/* Critic strip */}
+      {healthResult && (
+        <div className="hp-critic-strip">
+          <div className="hp-critic-score" style={{ background: scoreMood }}>{score}</div>
+          <span className="hp-critic-copy">&ldquo;{scoreQuote}&rdquo;</span>
+          <Link href="/critic" className="hp-critic-link">
+            The Critic
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2l4 3-4 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </Link>
+        </div>
       )}
-    </>
+
+      <div className="hp-content">
+        {/* Quick stats */}
+        {stats && (
+          <div className="hp-quick-stats">
+            <div className="hp-qstat">
+              <div className="hp-qstat-val">{channels.length}</div>
+              <div className="hp-qstat-lbl">subscriptions</div>
+            </div>
+            <div className="hp-qstat">
+              <div className="hp-qstat-val">{stats.weeklyVids}</div>
+              <div className="hp-qstat-lbl">uploaded this week</div>
+              <div className="hp-qstat-detail">from {stats.weeklyChannels} channels</div>
+            </div>
+            <div className="hp-qstat">
+              <div className="hp-qstat-val hp-qstat-val-sm">{stats.oldest?.name || '—'}</div>
+              <div className="hp-qstat-lbl">longest subscription</div>
+              <div className="hp-qstat-detail">{stats.oldest ? `since ${new Date(stats.oldest.subscribedAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })} · ${stats.oldestAge} years` : ''}</div>
+            </div>
+            <div className="hp-qstat">
+              <div className="hp-qstat-val hp-qstat-val-sm">{stats.newest?.name || '—'}</div>
+              <div className="hp-qstat-lbl">newest subscription</div>
+              <div className="hp-qstat-detail">{stats.newestAgo}</div>
+            </div>
+          </div>
+        )}
+
+        <div className="hp-grid">
+          {/* LEFT COLUMN */}
+          <div>
+            {/* Today's feed */}
+            <div className="hp-section">
+              <div className="hp-section-head">
+                <span className="hp-section-title">Today&rsquo;s feed</span>
+                <Link href="/feeds" className="hp-section-link">Open feed <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2l4 3-4 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg></Link>
+              </div>
+              <div className="hp-feed-card">
+                <div className="hp-feed-headline">{feedSummary.total} new videos</div>
+                <div className="hp-feed-sub">from {feedSummary.channelCount} channels across {feedSummary.catCount} categories</div>
+                <div className="hp-feed-cats">
+                  {feedSummary.rows.map(r => (
+                    <div key={r.name} className="hp-feed-cat-row">
+                      <span className="hp-feed-cat-label">{r.name}</span>
+                      <div className="hp-feed-cat-bar-wrap"><div className="hp-feed-cat-bar" style={{ width: `${r.pct}%`, background: r.color }} /></div>
+                      <span className="hp-feed-cat-count">{r.count} video{r.count !== 1 ? 's' : ''}</span>
+                    </div>
+                  ))}
+                  {feedSummary.rows.length === 0 && <div style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>No uploads today yet</div>}
+                </div>
+              </div>
+            </div>
+
+            {/* On This Day */}
+            {onThisDay && (
+              <div className="hp-section">
+                <div className="hp-section-head">
+                  <span className="hp-section-title">On this day</span>
+                </div>
+                <div className="hp-otd-card">
+                  <div className="hp-otd-item">
+                    <div className="hp-otd-icon tex-pinstripe" style={{ background: 'var(--iris)' }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#fff" strokeWidth="1.2" /><path d="M7 4v3.5h2.5" stroke="#fff" strokeWidth="1.1" strokeLinecap="round" /></svg>
+                    </div>
+                    <div className="hp-otd-body">
+                      <div className="hp-otd-label">ON THIS DAY</div>
+                      <div className="hp-otd-text">&ldquo;{onThisDay.years} year{onThisDay.years !== 1 ? 's' : ''} ago today you subscribed to {onThisDay.name}. {onThisDay.vidsSince > 0 ? `They've uploaded ${onThisDay.vidsSince} videos since.` : ''} Still going strong.&rdquo;</div>
+                      <div className="hp-otd-channel">
+                        <div className="hp-otd-ch-av" style={{ background: categoryColours[chCats(onThisDay)[0]] || 'var(--iris)' }}>
+                          {onThisDay.thumbnail ? <img src={onThisDay.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : (onThisDay.name || '??').substring(0, 2).toUpperCase()}
+                        </div>
+                        <span className="hp-otd-ch-name">{onThisDay.name}</span>
+                        <span className="hp-otd-ch-meta">&middot; {formatCount(onThisDay.subscriberCount)} subs</span>
+                      </div>
+                      <Link href={`/subscriptions/${encodeURIComponent(onThisDay.customUrl?.replace(/^@/, '') || onThisDay.channelId || onThisDay.id)}`} className="hp-otd-cta">View channel</Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT COLUMN */}
+          <div>
+            {/* Favourites */}
+            <div className="hp-section">
+              <div className="hp-section-head">
+                <span className="hp-section-title">Your favourites</span>
+                <Link href="/subscriptions" className="hp-section-link">
+                  View all {channels.filter(c => c.favourited).length}
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2l4 3-4 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </Link>
+              </div>
+              <div className="hp-fav-card">
+                {favourites.length > 0 ? favourites.map(ch => (
+                  <Link key={ch.id} href={`/subscriptions/${encodeURIComponent(ch.customUrl?.replace(/^@/, '') || ch.channelId || ch.id)}`} className="hp-fav-item">
+                    <div className="hp-fav-av" style={{ background: categoryColours[chCats(ch)[0]] || 'var(--accent)' }}>
+                      {ch.thumbnail ? <img src={ch.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : (ch.name || '??').substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="hp-fav-info">
+                      <div className="hp-fav-name">{ch.name}</div>
+                      <div className="hp-fav-video">{ch.latestVid?.title || 'No recent uploads'}</div>
+                    </div>
+                    <div className="hp-fav-meta">
+                      <div className="hp-fav-star">&#9733;</div>
+                      <div>{ch.latestVid ? timeAgo(ch.latestVid.publishedAt) : ''}</div>
+                    </div>
+                  </Link>
+                )) : (
+                  <div style={{ padding: 20, fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'center' }}>Star your favourite channels to see them here</div>
+                )}
+              </div>
+            </div>
+
+            {/* Latest uploads */}
+            <div className="hp-section">
+              <div className="hp-section-head">
+                <span className="hp-section-title">Latest uploads</span>
+                <Link href="/feeds" className="hp-section-link">View feed <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2l4 3-4 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg></Link>
+              </div>
+              <div className="hp-uploads-card">
+                {latestUploads.map(v => (
+                  <a key={v.id} href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer" className="hp-upload-row">
+                    <div className="hp-upload-thumb">
+                      {v.thumbnail && <img src={v.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                    </div>
+                    <div className="hp-upload-info">
+                      <div className="hp-upload-title">{v.title}</div>
+                      <div className="hp-upload-channel">{v.channelName}</div>
+                    </div>
+                    <div className="hp-upload-time">{timeAgo(v.publishedAt)}</div>
+                  </a>
+                ))}
+                {latestUploads.length === 0 && <div style={{ padding: 20, fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'center' }}>No uploads yet</div>}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
