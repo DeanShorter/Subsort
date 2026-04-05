@@ -53,10 +53,8 @@ export default function HealthSnapshotManager() {
     const today = new Date().toISOString().split('T')[0];
     const lastSnapshotDate = localStorage.getItem('subsnub_last_snapshot_date');
 
-    if (lastScore === result.total && lastSnapshotDate === today) {
-      console.log(`[HealthSnapshot] Score unchanged (${result.total}), already saved today`);
-      return;
-    }
+    // Always save on session start — dedup handled by DB upsert on (user_id, snapshot_date)
+    // Only skip if we already saved in THIS session (ref check)
 
     // Save snapshot — only update localStorage on success
     saveHealthSnapshot(supabase, user.id, result).then(ok => {
