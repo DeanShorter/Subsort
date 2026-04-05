@@ -1,63 +1,80 @@
-# Subsnub — Product Bible
+# Subscrub — Product Bible
 
-*Last updated: 4 April 2026*
+*Last updated: 5 April 2026*
 
 ---
 
 ## 1. Product Overview
 
-**Subsnub** (subsnub.com) is a YouTube subscription organiser built as a solo product. The core philosophy is selling convenience rather than running a traditional business — lean and focused over feature-heavy. Success looks like a tight, polished product that drives upgrades through genuine utility, not bloat.
+**Subscrub** (subscrub.me) is a YouTube subscription organiser built as a solo product. The core philosophy is selling convenience rather than running a traditional business — lean and focused over feature-heavy. Success looks like a tight, polished product that drives upgrades through genuine utility, not bloat.
 
-**Name origin**: "Sub" (subscription) + "snub" (to appraise and dismiss). The name reflects The Critic's personality — it judges your subscriptions and snubs the ones that aren't pulling their weight.
+**Name origin**: "Sub" (subscription) + "scrub" (to clean up, review, maintain). Mycelium networks are nature's cleanup crew — they decompose, recycle, and redistribute. That's what the product does with subscriptions.
 
 ### Monetisation
 
 - **Free tier**: Capped at 50 subscriptions, all features included — deliberately tight to drive upgrades
-- **Pro tier**: £3/month or £24/year — unlimited subscriptions plus Chrome extension as a perk
+- **Pro tier**: £4.99/month or £39.99/year (33% annual discount) — unlimited subscriptions plus Chrome extension as a perk
+- **50-sub cap logic**: enough to show value, too tight for real use. The upgrade prompt is delivered in the system's direct voice, not a character performance
 
 ### Solo Builder Principles
 
 - Decisions reduce operational complexity and avoid scope creep
 - Product bible maintained as a living document
-- Marketing strategy built around character-first storytelling
-- Iterative brand exploration with rapid concept cycling before locking in
+- Marketing strategy built around product value, not character storytelling
+- The product is the sell — the network concept adds depth without demanding attention
 
 ---
 
 ## 2. Brand Identity
 
-### The Critic
+### Concept: The Mycelium Network
 
-The Critic is subsnub's in-product personality — an opinionated, observant subscription advisor who watches your habits, spots patterns, and tells you what you need to hear. With a cheeky grin.
+Subscrub's identity is built around the concept of a mycelium network — a vast, intelligent system working quietly underneath a simple surface. The user sees a clean, minimal interface. Underneath, the system is monitoring channel health, detecting patterns, tracking relationships, and surfacing what matters.
 
-**Character**: A snub-nosed monkey. The name connection is built in — "snub" is literally in the animal's name. Snub-nosed monkeys have expressive, slightly grumpy faces with upturned noses that look permanently unimpressed. They look like they're judging you. That's The Critic. "Cheeky monkey" is also inherently British, matching the product's voice.
+The network concept influences how features are described on the landing page and how new features are introduced, but it does NOT appear in the in-product UI language. Users see "subscriptions," "categories," and "channels" — not "nodes," "clusters," or "signals."
 
-**Voice**: "Cheeky monkey" — enjoys the roast, playful rather than burdened. Opens up humour without edge. Mischievous but helpful.
+### Logo
 
-**Visual identity**: Two-tier mark system:
-- **App/brand mark**: Geometric blocky "S" on green (#00A651) rounded square. White S with dark offset detail that mirrors the shadow-bordered card style used throughout the product. Works at all sizes from favicon to app icon.
-- **The Critic character**: Stylised snub-nosed monkey face. Key features: flat upturned nose, round face, heavy-lidded judgmental eyes. Professional designer brief: "A stylised snub-nosed monkey that looks like it's judging you." At favicon size, simplified to key shapes. At larger sizes (social avatar, onboarding, landing page), full expression and detail. Can optionally wear a monocle as an accessory to reinforce the "discerning critic" angle.
+**Mark**: Mushroom silhouette. Solid fill, no outline, no face. Clean geometric shape — dome cap with subtle dot detail, simple tapered stem. Works at every size from favicon (16px) to social avatar (400px+).
 
-**Signature texture**: Angled pinstripe (82-degree tilt, white at 8% opacity). The Critic's "suit" — appears on Critic card headers and mood-coloured surfaces. The slight tilt gives it swagger without being full diagonal.
+**Colours**: Default is brand green (#00A651) on white, or white on green. The mushroom cap colour shifts for mood states:
+- **Green (#00A651)** — healthy, positive, all clear
+- **Orange (#FF8C42)** — attention needed, action required
+- **Iris (#8B6FE8)** — discovery, suggestions, observations
 
-**Mood system**: The Critic's background colour shifts based on mood:
-- **Green (#00A651)** — impressed, positive, approval
-- **Orange (#FF8C42)** — fired up, concerned, nudging action
-- **Iris (#8B6FE8)** — curious, suggesting, discovery-oriented
+**Key constraint**: The mushroom must NOT resemble Nintendo's Toad character. No thick black outlines, no cartoon spots, no round body/stem, no face. Keep it geometric, modern, and abstract enough to read as a brand mark rather than a game character.
 
-**Card texture tiers**: Shadow-bordered cards (Critic observations, insight cards, feature cards) use the pinstripe header texture. Feed cards and content cards stay clean — no shadow, no texture. The distinction separates "subsnub speaking" from "content flowing through subsnub."
+### Voice
 
-**FYI / disclaimer approach**: The Critic handles caveats and data limitations inline within existing observations rather than as separate disclaimer components. Honesty is embedded in the commentary, not bolted on. Example: "97 subscriptions in 2019 — at least, that's what survived. The real number was probably higher."
+**Tone**: Informed and direct, with warmth underneath. Not cheeky, not corporate, not performative. The system states facts, explains why they matter, and suggests actions. Personality comes through word choice and brevity, not jokes or catchphrases.
+
+**Principles**:
+- Say what it is, then say why it matters
+- Be specific over clever — numbers and concrete outcomes over quips
+- Warm, not cheeky — helpful and considered, not performing for an audience
+- Use "you" and "your" freely, minimise "I" — the focus is on the user's data, not the system's personality
+- Allow personality in small doses through word choice ("Worth a look," "Your call," "Noted")
+- Reactions are brief acknowledgements, not commentary — most actions get no reaction at all
+
+**Phrases the system uses**: "Noted." / "Worth a look." / "Your call." / "All clear." / "Done." / "Worth reviewing."
+
+**Phrases the system never uses**: "Great job!" / "Awesome!" / "Your funeral." / "I'm almost disappointed." / anything self-referential or performative
+
+**Example copy**:
+- Uncategorised: "7 channels aren't categorised yet. Auto-sort can handle most of these."
+- Dead channels: "4 channels haven't uploaded in over a year. Worth reviewing — they're taking up space without giving anything back."
+- Health score high: "Everything's in good shape. Nothing needs your attention right now."
+- Health score low: "There's a fair bit to work through here. Start with the uncategorised channels — that'll make the biggest difference."
 
 ### Colour System
 
-Colour-as-navigation: each colour maps to a page, not decorative.
+Colour-as-navigation: each colour maps to a page.
 
 | Colour | Hex | Page | Meaning |
 |--------|-----|------|---------|
-| Green | #00A651 | Subscriptions | Chameleon at rest |
+| Green | #00A651 | Subscriptions | Organisation, health |
 | Orange | #FF8C42 | Feed | Incoming content |
-| Iris | #8B6FE8 | Discover | Curiosity |
+| Iris | #8B6FE8 | Discover | Curiosity, exploration |
 | Ocean | #2D9CDB | Stash | Saved for later |
 
 **Soft variants** for backgrounds: green-soft (#E8F8EF), orange-soft (#FFF2E8), iris-soft (#F0ECFD), ocean-soft (#E8F4FC)
@@ -66,23 +83,19 @@ Colour-as-navigation: each colour maps to a page, not decorative.
 
 **Structural colours**: Background #f4f4f5, card #fff, text #1a1a1a, text-mid #555, text-light #999
 
-Categories do NOT need colour coding — they're always visible as text labels.
-
-The Critic travels the full colour spectrum based on mood (green = impressed, iris = curious, orange = fired up).
-
 ### Typography
 
 - **Headings**: Outfit 700
 - **Body**: DM Sans 400/500
-- **Wordmark**: Dark pill (#1a1a1a background), Outfit 700, 14px, tight tracking (-0.3px), "SUB" in green + "SNUB" in white, border-radius: 20px, capitalised
-- **In-sentence usage**: Capitalised "Subsnub" (logo stays as designed element)
+- **Wordmark**: Dark pill (#1a1a1a background), Outfit 700, 14px, tight tracking (-0.3px), "SUB" in green + "SCRUB" in white, border-radius: 20px, capitalised
+- **In-sentence usage**: Capitalised "Subscrub"
 
 ### Design System
 
-- **Card style**: 2px solid #1a1a1a border + 4px 4px 0px box-shadow for feature/insight cards
+- **Card tiers**: Shadow-bordered cards (2px solid #1a1a1a border + 4px box-shadow) for feature/system cards. Clean cards (0.5px border, no shadow) for content cards (feed videos, channel lists, domain summaries). Shadow = system speaking. Clean = content flowing through.
 - **Structural borders**: 3px thick borders separate nav from content and major sections
 - **Border radius**: 16px cards, 12px inner elements
-- **Background**: #f4f4f5 for dashboard, white for page content areas
+- **Background**: #f4f4f5 for dashboard/background areas, white for page content
 
 ---
 
@@ -90,15 +103,18 @@ The Critic travels the full colour spectrum based on mood (green = impressed, ir
 
 Sidebar nav with colour dots for core pages, divider, then utility pages:
 
-1. Home (active = green pill)
+1. Home
 2. Subscriptions (green dot)
 3. Feed (orange dot)
 4. Discover (iris dot)
 5. *divider*
 6. Stash (ocean dot)
-7. Insights (icon)
-8. *spacer*
-9. Settings (icon, bottom)
+7. Insights
+8. The Critic (notification dot when new recommendations)
+9. *spacer*
+10. Settings (bottom)
+
+**Notification icon**: Top nav bar (not sidebar), shows dot when new recommendations land on The Critic page.
 
 ---
 
@@ -106,261 +122,145 @@ Sidebar nav with colour dots for core pages, divider, then utility pages:
 
 ### 4.1 Dashboard (Home)
 
-**Sections in order**:
-1. Critic score card
-2. "The Critic noticed..." observation cards
-3. Insight recommendation cards
-4. Feed summary
-5. Favourites
+The dashboard is the "good morning" screen — what's happening in your subscription world, not what's wrong with it. Cleanup lives on The Critic page.
 
-**Critic observations**: 3 shadow-bordered cards (On This Day/green, Pattern/orange, Milestone/iris) with quirky personalised insights. Free-tier feature that teases the paid Insights page.
-
-**Subscription age timeline**: Free tier visual showing subscription history over time. Yearly bar chart with phase annotations and Critic commentary. Data source: subscription dates from API only (no watch history needed). Timeline note: only shows channels currently subscribed to — channels previously unsubscribed from are not included. Subsnub tracks unsubscriptions going forward from the moment of connection.
+**Structure**:
+1. **Greeting + date** — "Morning, Dean." with today's date
+2. **Critic strip** — single line: health score circle (32px) + system quote + "The Critic →" link
+3. **Quick stats row** — 4 cards: total subs, uploads this week, longest subscription, newest subscription
+4. **Two-column layout**:
+   - Left: Today's feed summary (video count, category breakdown bars) + On This Day (subscription anniversary)
+   - Right: Your favourites (latest uploads from favourited channels) + Latest uploads (5 most recent)
 
 ### 4.2 Subscriptions Page
 
 **Layout**: Nav | Category Panel | Table | Channel Detail Panel (when open)
 
-**Category panel (slide-in, left)**:
-- Open by default on first visit, remembers user preference
-- Collapsed state: 40px thin strip with vertical "Categories" text + green count badge
-- Collapse toggle: chevron in panel header
-- Search field at top
-- "All" and "Favourites" above divider, user categories below
-- Multi-select checkboxes for filtering
-- Per-category hover actions: add subcategory (+), edit (pencil), delete (trashcan with red hover)
-- Always-visible chevrons for categories with subcategories (right-aligned, after count)
-- Chevrons only appear on categories that have subcategories
-- Subcategories show with dash connector, have edit + delete on hover
-- Counts right-aligned in fixed 32px column
-- "Add category" button at footer
+**Action bar** (replaces old observation cards): Compact collapsible bar between page header and controls row.
+- Left: clickable stat pills (uncategorised, dead, inactive, active) — each filters the table
+- Centre: system inline prompt with highest-priority recommendation + CTA
+- Right: "The Critic →" link + collapse chevron
+- Clean state: green success bar with Critic link + dismiss
+- Remembers collapsed/expanded preference in localStorage
 
-**Controls row**: Active filter tags + "Clear all" on left; search icon (expandable) + Status toggle ("Status: All" combined pill) + Sort + Columns on right.
+**Category panel (slide-in, left)**: Multi-select checkboxes, per-category hover actions (add sub, edit, delete), always-visible chevrons for subcategories (right-aligned), collapsible to 40px strip with vertical text + count badge. Open by default on first visit, remembers preference.
 
-**Insight cards**: 3 shadow-bordered cards above the table with actionable recommendations and CTAs (Auto-sort/green, Review/orange, Discover/iris).
+**Controls row**: filter tags + clear all on left; search, status, sort, columns on right.
 
-**Channel detail panel (slide-in, right)**:
-- Compact, no-scroll layout
-- Top zone: avatar + name + handle → Critic toast (mood-coloured) → Favourite + Open on YouTube buttons
-- Stats below: channel stats, your activity with progress bar, category + subcategory with Edit/Add links
-- Critic per-channel opinion shifts colour based on mood
-- Channel name links through to dedicated channel page for deep-dive
+**Channel detail panel (slide-in, right)**: Compact no-scroll layout — identity, system assessment (mood-coloured), stats, activity, category. Links through to channel page.
 
-**Delete modal wording**:
-- Category: "Delete '[name]'? [X] channels are assigned to this category. They'll be uncategorised until you reassign them." Buttons: Cancel / Delete
-- Subcategory: "Delete '[sub name]'? [X] channels will move back to [parent name]." Buttons: Cancel / Delete
+**Feed cards**: No shadow border. Thumbnail with category badge + duration, 2-line title truncation, separated channel row + action row (Watch + Stash + overflow).
 
 ### 4.3 Feed Page
 
-- Pure chronological feed from subscriptions — no algorithm, no "most relevant" injection
-- Scrollable horizontal category tabs (not the slide-in panel — Feed is for browsing, not managing)
-- Single-select categories (multi-select not needed for content browsing)
+- Pure chronological feed — no algorithm
+- Scrollable horizontal category tabs (single-select)
+- Feed observations are passive/informational only — awareness not action
 
 ### 4.4 Stash Page
 
-**Named**: "Stash" — clean, functional. Accessed as a core nav item.
-
 **Colour**: Ocean (#2D9CDB)
 
-**Features**:
-- Collections (user-created groups)
-- Recently saved video grid
-- Critic commentary on saved content
-- Chrome extension right-click "Add to Stash" (from YouTube or subsnub Feed)
-- Seasons: automated Stash collections based on category filters that auto-populate with recent uploads
+**Features**: Collections (simple + curated), recently saved grid, Chrome extension "Add to Stash." Public curated collections as SEO opportunity.
 
-**YouTube playlist sync** (Pro feature):
-- Can pull from regular user-created playlists via API (NOT Watch Later — deprecated since Sept 2016)
-- Cost: 1 quota unit per `playlistItems.list` call, returns 50 items per page
-- Use etag for differential sync — only re-fetch when content changes
-- Sync frequency: once or twice daily is sufficient
+**YouTube playlist sync** (Pro): regular playlists via API with etag differential sync. Watch Later workaround via Chrome extension DOM reading.
 
-**Watch Later workaround**: Chrome extension can read the Watch Later page DOM when user navigates to youtube.com/playlist?list=WL, offering a "Send to Stash" action.
+### 4.5 The Critic Page
 
-### 4.5 Insights Page
+**Dedicated page at `/critic`** — centralised hub for all recommendations.
 
-Aggregate view — trends across all subscriptions, overall content diet, platform-wide observations. Individual channel deep-dives live on their own dedicated channel pages.
+**Side menu**: Overview | divider | Actions (orange) / Suggestions (green) / Observations (iris) | divider | Dismissed / Snoozed | footer: Cleanup settings
+
+**Overview**: Health score card (shadow-bordered, mood-coloured header) + domain summary cards (3×2 grid) + top 3 picks
+
+**Health score** (100 points): Categorisation 50pts (coverage 25 + subcategory 15 + hygiene 10), Channel health 20pts, Feed health 10pts, Stash health 10pts, Data freshness 10pts
+
+**Score snapshots**: HealthSnapshotManager (client-side, session start + sendBeacon on end). `health_score_snapshots` table, 365-day retention.
 
 ### 4.6 Channel Page
 
-Dedicated page for deep-dive into individual channels, accessible from the channel detail panel (click-through from channel name). URL structure: `/channel/[id]`.
-
-Content: subscription age timeline for that channel, upload history, viewing patterns, related channels, The Critic's full assessment with historical mood changes, and future deep-dive features.
+Dedicated deep-dive at `/channel/[id]`. Two-column: left (system assessment, upload activity chart, recent uploads), right (tier badge, relationship stats, growth, category, related channels, actions).
 
 ### 4.7 Settings Page
 
-**YouTube account**: Connected account info with disconnect option.
-
-**Watch history** ("Your data" section):
-- Shadow-bordered card showing: last updated, staleness badge, stats (videos tracked, channels matched, match rate)
-- Upload + delete buttons
-- "How to export from Google Takeout" help link
-- Freshness warning bar colour-coded by staleness
-
-**Layered update prompts by urgency**:
-- Layer 1 (7-14 days): Gentle green Critic observation on dashboard
-- Layer 2 (14-30 days): Orange Critic nudge on dashboard + orange badge on Settings nav
-- Layer 3 (30+ days): Prompts in channel detail panel + persistent orange Critic card on dashboard
+YouTube account, watch history ("Your data"), cleanup thresholds (dead/inactive/frequency), general preferences.
 
 ---
 
-## 5. Onboarding Flow
+## 5. Cleanup & Recommendations System
 
-### Step 1 — Welcome
-Wordmark, one-liner ("Your subscriptions, organised."), brief description mentioning The Critic, "Let's go" button. No skip option.
+5 domains, 23 types. Priority: High (orange) / Medium (green) / Low (iris). User-adjustable thresholds. Back-off rules on dismissal.
 
-### Step 2 — Connect YouTube
-Framed as "Import your subscriptions." Shows read-only permissions (view subscriptions, view channel info, no write/delete). No "do this later" option — connection is mandatory.
+**"Need attention" count**: Deduplicated unique channels with at least one issue (uncategorised OR dead OR inactive OR inactive favourite).
 
-### Step 2b — Loading sequence (after auth)
-Progress steps with personality:
-1. Connecting to YouTube ✓
-2. Pulling subscriptions ✓
-3. Scanning for uploads ✓
-4. Scrutinising the mess (active)
-5. Judging [user's first name]... (pending)
-
-### Step 3 — The Critic's Initial Assessment
-Stat pills (sub count + inactive count), Critic quote with personality, then fork:
-
-**Upload path**: "Want more accurate insights?" → 6-step Google Takeout how-to guide → drag-drop upload zone → "I'll do this later in Settings" escape
-
-**Skip path**: Auto-sort proposition with value explanation ("analyse your [X] subscriptions and organise them into categories") + reassurance ("rename, move, or create your own categories at any time") + "Auto-sort my subscriptions" CTA + "I'll sort manually" escape
-
-### Auto-sort completion
-Sorting progress screen with live counter → completion screen showing stat pills (channels sorted, categories created) + category preview as pills → Critic closing remark: "Done. [X] channels sorted into [Y] categories. Not bad for 30 seconds of work." → "Go to dashboard"
-
-**Tooltips** (shown once, dismissible):
-1. The Critic card — "This is The Critic — your subscription advisor"
-2. Insight cards — "Recommendations based on your subscription data"
-3. Category panel — "Organise your subscriptions into categories"
+Full spec: `subscrub_cleanup_system_spec.md`
 
 ---
 
-## 6. Chrome Extension
+## 6. Auto-Sort System
 
-- Pro-only perk (not standalone product)
-- Uses Side Panel API to persist across tabs
-- Does NOT consume YouTube API quota (uses standard iframes)
-- Right-click "Add to Stash" from YouTube or subsnub Feed
-- Can read Watch Later page DOM as workaround for deprecated API
+YouTube topic IDs → top-level category, then keyword matching → subcategory. 15 categories, 4-6 pre-defined subcategories each. Minimum 2 keyword matches. ~110 API units for 500 channels.
+
+Full spec: `subscrub_autosort_spec.md` + `subscrub_subcategory_tree.md`
 
 ---
 
-## 7. Feature Roadmap
+## 7. Onboarding
 
-### Features NOT requiring watch history
-
-All of these use subscription dates, channel metadata, or subsnub's own data:
-
-| Feature | Description | Tier | Priority |
-|---------|-------------|------|----------|
-| **Pure chronological feed** | No-algorithm feed from subscriptions only. Solves YouTube's "Most relevant" injection frustration. | Free | High |
-| **Subscription age timeline** | Visual history of subscription dates over time. Bar chart with phase annotations. | Free | High |
-| **Dead channel detection** | Track channels with no uploads in X months, reduced upload frequency, or content direction changes. | Free | High |
-| **Channel sabbatical** | Mute a channel from all subsnub surfaces for 30/60/90 days. Critic check-in when it ends: "Did you miss it?" | Free | Medium |
-| **Snub streaks & achievements** | Gamified cleanup. "First Purge", "Tidy Shelf", "The Minimalist". Critic awards with personality. | Free | Medium |
-| **Creator milestones feed** | Track and surface milestones for subscribed channels (subscriber counts, upload counts, channel anniversaries). | Free | Medium |
-| **Subscription export/backup** | Download full subscription list with categories, notes, metadata as JSON/CSV. | Free | Medium |
-| **Seasons (Stash collections)** | Automated Stash collections based on category filters. Auto-populate with recent uploads. Archive when done. | Pro | Medium |
-| **Channel relationship mapping** | Map connections between subscriptions — collaborations, shared audiences, content ecosystems. Network graph. | Pro | Low |
-| **Subscription sharing/gifting** | Share curated lists of subscriptions as links. Recipients preview and subscribe to all or some. | Pro | Low |
-| **Duplicate/related channel detection** | Detect multiple channels from same creator and group them. | Free | Low |
-| **"If you're leaving" suggestions** | When unsubscribing, suggest creator's other channels or formats. | Free | Low |
-| **Notification management** | Per-category notification preferences: immediate for favourites, daily digest, weekly summary. Subsnub's own layer. | Pro | Low |
-| **"On This Day" memories** | Daily Critic observation: "3 years ago today you subscribed to X. They've uploaded 247 videos since." Zero API cost — uses stored subscription dates. | Free | High |
-| **Subscription velocity tracker** | Track subscription pace over time. Critic flags sprees: "12 channels in 3 days. Are you actually going to watch all of these?" Uses subsnub's own database only. | Free | Medium |
-| **Channel upload calendar** | Weekly view of which subscribed channels upload on which days. Helps users understand content flow. Cached from recent video publish dates. | Free | Medium |
-| **Abandoned category detection** | Flag categories where all channels have gone inactive or been moved out. "Your Fitness category has 2 channels left, both inactive. Time to retire it?" | Free | Medium |
-| **Channel growth alerts** | Monitor subscriber growth rate. Flag channels crossing milestones or losing significant subscribers. Entirely API-driven, low cost. | Free | Medium |
-| **The Critic's weekly digest** | Weekly summary: channels that returned from hiatus, favourite milestones, uncategorised count, Critic recommendations. Email or in-app card. | Free | High |
-| **Subscription age tiers** | Auto-tag channels by tenure: OG (5+ years), Veteran (2-5), Recent (under 1 year), New (under 1 month). Filterable in table. | Free | Low |
-| **Upload gap detector** | Track channels breaking their usual upload pattern. "This channel usually uploads every Tuesday. It's been 4 weeks." Uses cached upload history. | Free | Medium |
-| **Category health dashboard** | Aggregate view per category: active %, avg upload frequency, newest/oldest subscription. Derived from API data + category assignments. | Free | Medium |
-| **"Rising star" detection** | Identify channels growing significantly faster than average. "You subscribed at 5K. They just hit 200K. You were early." One channels.list call per sync. | Free | High |
-| **Unsubscribe impact preview** | Before unsubscribing, show what the user loses: upload frequency, % of Feed content, active days. Calculated from upload data, no watch history. | Free | Medium |
-| **Subscription overlap (social)** | Opt-in comparison between subsnub users. "You and Jake share 47 subscriptions. Here are 12 channels Jake follows that you don't." | Pro | Low |
-
-### Features requiring watch history
-
-These need Takeout data and are lower priority given data accuracy concerns:
-
-| Feature | Description | Tier |
-|---------|-------------|------|
-| Content diet tracker | Weekly/monthly breakdown of viewing by category with trends | Pro |
-| Watch pace insights | Binge vs drip-feed patterns per channel | Pro |
-| Snub score | Composite relevance metric per channel | Pro |
-| "Why did I subscribe?" | Cross-reference subscription date with channel's uploads around that time | Pro |
-
-### Playlist sync (Pro)
-
-- Sync regular YouTube playlists to Stash automatically
-- Cost: ~11 quota units per user per sync (for 5 playlists averaging 100 videos)
-- 500 users syncing daily ≈ 5,500 units (55% of 10,000 daily quota)
-- Use etag for differential sync
+1. Welcome — wordmark, one-liner, "Let's go"
+2. Connect YouTube — mandatory, read-only, no skip
+3. Loading sequence — functional steps
+4. Assessment — data-driven summary, then fork: upload watch history OR skip → auto-sort OR manual
+5. Dashboard
 
 ---
 
-## 8. Pre-Launch Marketing
+## 8. Chrome Extension
 
-### @TheCriticYT (Twitter/X)
-
-**Content calendar**:
-- Weeks 1-2: Pure observational Critic posts (no product mention)
-- Weeks 3-5: Gradual tease escalation
-- Launch reveal at end
-
-**Voice**: The Critic's "cheeky smile" personality. Enjoys the roast, playful rather than burdened.
-
-Reply templates and seven repeatable content formats documented separately.
+Pro-only perk. Side Panel API. No API quota consumption. "Add to Stash" + Watch Later DOM reading.
 
 ---
 
-## 9. Technical Considerations
+## 9. Feature Roadmap
 
-### Google OAuth
-- Verification for YouTube readonly scope is longest lead-time item
-- Test users: must add exact Google email (not alias) to OAuth consent screen
-- Users click "Advanced" → "Go to app (unsafe)" during testing
-- Workspace accounts may be blocked by admin policies
-- Refresh tokens expire after 7 days in testing mode
+**High**: chronological feed, dead channel detection, auto-sort with subcategories, The Critic page, On This Day, weekly digest
 
-### YouTube API
-- Default quota: 10,000 units/day
-- `playlistItems.list`: 1 unit per call (50 items per page)
-- `subscriptions.list`: 1 unit per call
-- `channels.list`: 1 unit per call
-- `search.list`: 100 units per call (avoid)
-- `playlistItems.insert`: 50 units per call (avoid for reads)
-- Watch Later playlist: deprecated since Sept 2016, returns empty lists
-- Quota increase application should be submitted before launch
+**Medium**: sabbatical, rising star, velocity tracking, upload gaps, category health, seasons, unsubscribe preview, growth alerts
 
-### Watch History (Google Takeout)
-- JSON format: fields include title, titleUrl, time (ISO 8601), subtitles array (channel name + URL)
-- Known gaps: paused history periods, deleted/privated videos, channel URL format inconsistency (/channel/ vs /c/ vs /@), ads/system plays missing subtitles
-- Matching checks all possible channel ID formats
+**Lower**: relationship mapping, subscription sharing, duplicate detection, notification management, social overlap
 
-### Chrome Web Store
-- Submission requirements to be addressed before launch
+**Requires watch history** (deprioritised): content diet, watch pace, relevance score, "why did I subscribe?"
 
 ---
 
-## 10. Mockup Reference Files
+## 10. Pre-Launch
 
-All HTML mockups created during design sessions:
+- Landing page: consider dark theme with mushroom logo and mycelium network visual
+- SEO: public curated collections targeting long-tail queries
+- Social: approach TBD
+
+---
+
+## 11. Technical
+
+**Stack**: Next.js, Supabase, Vercel. **Email**: Cloudflare Email Routing.
+
+**YouTube API**: 10,000 units/day. Key costs: channels/playlists/subscriptions.list = 1 unit. search.list = 100 (avoid). Watch Later deprecated Sept 2016.
+
+**OAuth**: verification for readonly scope is longest lead-time. Refresh tokens 7-day expiry in testing.
+
+**Admin**: event tracking, retention cohorts, funnel metrics, recommendation effectiveness. Spec: `subscrub_admin_prompt.md`
+
+---
+
+## 12. Spec Files
 
 | File | Description |
 |------|-------------|
-| `subsnub_subscriptions_complete_reference.html` | Complete subscriptions page with all panels |
-| `subsnub_channel_panel_compact.html` | Compact channel detail panels (3 mood states) |
-| `subsnub_category_panel_v3.html` | Category panel with right-aligned chevrons and counts |
-| `subsnub_category_panel_states.html` | Open vs collapsed panel states |
-| `subsnub_dashboard_with_observations.html` | Dashboard with Critic observation cards |
-| `subsnub_stash_page.html` | Full Stash page mockup |
-| `subsnub_landing_page.html` | Test group landing page |
-| `subsnub_onboarding_refined.html` | Full onboarding flow (steps 1-3b) |
-| `subsnub_onboarding_autosort_complete.html` | Auto-sort completion screen |
-| `subsnub_settings_data.html` | Settings page with layered update prompts |
-| `subsnub_subscription_timeline.html` | Subscription age timeline (2 options) |
-| `subsnub_control_bar_variations.html` | Category style options for controls row |
-| `subsnub_category_menu_options.html` | Dropdown vs slide-in comparison |
+| `subscrub_cleanup_system_spec.md` | 23 recommendation types, triggers, priorities, back-off |
+| `subscrub_autosort_spec.md` | Topic mapping + keyword matching |
+| `subscrub_subcategory_tree.md` | 15 categories with pre-defined subcategories |
+| `subscrub_critic_page_prompt.md` | The Critic page implementation |
+| `subscrub_actionbar_prompt.md` | Subscriptions page action bar |
+| `subscrub_health_score_prompt.md` | Health score with snapshots and trends |
+| `subscrub_admin_prompt.md` | Admin dashboard with event tracking |
