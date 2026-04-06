@@ -233,6 +233,48 @@ export default function InsightsPage() {
               <div className="ins-pstat"><div className="ins-pstat-val">{stats.catCount}</div><div className="ins-pstat-lbl">categories</div></div>
             </div>
           )}
+
+          {/* Blurred Pro sections inside personality card */}
+          {!isPro && (
+            <div className="ins-personality-pro-wrap">
+              <div className="ins-personality-pro-blur">
+                <div className="ins-personality-pro-section">
+                  <div className="ins-personality-pro-title">CONTENT DIET</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {composition.slice(0, 5).map(c => (
+                      <div key={c.name} className="ins-comp-row">
+                        <span className="ins-comp-label">{c.name}</span>
+                        <div className="ins-comp-bar-wrap"><div className="ins-comp-bar" style={{ width: `${c.barPct}%`, background: c.color }} /></div>
+                        <span className="ins-comp-pct">{c.pct}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="ins-personality-pro-section">
+                  <div className="ins-personality-pro-title">SUBSCRIPTION BEHAVIOUR</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    You subscribe in steady waves. Your biggest growth period was {timeline.length > 0 ? timeline.reduce((a, b) => a.count > b.count ? a : b).label : '—'} with {timeline.length > 0 ? timeline.reduce((a, b) => a.count > b.count ? a : b).count : 0} new channels. Average tenure: {stats?.avgTenure || '—'} years across your library.
+                  </div>
+                </div>
+                <div className="ins-personality-pro-section">
+                  <div className="ins-personality-pro-title">LOYALTY PROFILE</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    {Object.entries(loyalty.tiers).filter(([,v]) => v > 0).map(([k,v]) => `${v} ${k}`).join(' · ')}. Your longest subscription: {loyalty.longest[0]?.name || '—'} since {fmtDate(loyalty.longest[0]?.subscribedAt)}.
+                  </div>
+                </div>
+              </div>
+              <div className="ins-personality-pro-overlay">
+                <div className="ins-lock-icon">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="#fff" strokeWidth="1.3" /><path d="M6 8V6a3 3 0 016 0v2" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" /></svg>
+                </div>
+                <div className="ins-lock-text-wrap">
+                  <div className="ins-lock-title">Unlock your full personality profile</div>
+                  <div className="ins-lock-sub">Content diet, subscription behaviour, and loyalty insights.</div>
+                </div>
+                <Link href="/settings" className="ins-lock-cta">Upgrade to Pro</Link>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Subscription Composition */}

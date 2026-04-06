@@ -5255,6 +5255,13 @@ input[type=range]::-webkit-slider-thumb{
 .ins-pstat-val{font-family:'Outfit',var(--font-display);font-size:24px;font-weight:700;margin-bottom:2px}
 .ins-pstat-lbl{font-size:12px;color:var(--text-muted)}
 
+/* Pro sections inside personality card */
+.ins-personality-pro-wrap{position:relative;margin-top:24px;padding-top:24px;border-top:1px solid rgba(0,0,0,.06)}
+.ins-personality-pro-blur{filter:blur(6px);user-select:none;pointer-events:none;display:flex;flex-direction:column;gap:20px}
+.ins-personality-pro-section{}
+.ins-personality-pro-title{font-size:11px;font-weight:500;letter-spacing:.4px;color:var(--text-muted);margin-bottom:10px}
+.ins-personality-pro-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;display:flex;align-items:center;gap:16px;padding:16px 24px;background:rgba(255,255,255,.95);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);width:90%;max-width:560px}
+
 /* Sections */
 .ins-section{background:#fff;border-radius:16px;border:.5px solid rgba(0,0,0,.06);padding:24px;margin-bottom:20px;position:relative}
 .ins-section-title{font-family:'Outfit',var(--font-display);font-size:18px;font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:8px}
