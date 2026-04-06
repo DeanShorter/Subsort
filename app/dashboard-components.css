@@ -5245,22 +5245,58 @@ input[type=range]::-webkit-slider-thumb{
 .ins-title{font-family:'Outfit',var(--font-display);font-size:22px;font-weight:600}
 .ins-content{padding:28px 32px 48px;max-width:900px}
 
-/* Personality card */
-.ins-personality{background:linear-gradient(135deg,#f9f5ff 0%,#f0ecfd 50%,#e8f4fc 100%);border-radius:20px;padding:32px;margin-bottom:32px}
-.ins-personality-label{font-size:11px;font-weight:500;letter-spacing:.5px;color:var(--text-muted);margin-bottom:16px}
-.ins-archetype{font-family:'Outfit',var(--font-display);font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:8px}
-.ins-archetype-desc{font-size:16px;font-style:italic;color:var(--text-secondary);line-height:1.6;margin-bottom:24px}
-.ins-personality-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.ins-pstat{background:rgba(255,255,255,.7);border-radius:12px;padding:16px;text-align:center}
-.ins-pstat-val{font-family:'Outfit',var(--font-display);font-size:24px;font-weight:700;margin-bottom:2px}
-.ins-pstat-lbl{font-size:12px;color:var(--text-muted)}
+/* Personality card — two-column */
+.pc-card{background:linear-gradient(135deg,#f9f5ff 0%,#f0ecfd 40%,#e8f4fc 100%);border-radius:20px;overflow:hidden;position:relative;margin-bottom:32px}
+.pc-inner{display:flex;position:relative}
+.pc-left{flex:1;padding:36px;display:flex;flex-direction:column}
+.pc-divider{width:1px;background:rgba(139,111,232,.1);margin:28px 0}
+.pc-right{width:380px;flex-shrink:0;padding:36px;display:flex;flex-direction:column;gap:24px}
+.pc-right-blur{filter:blur(6px);user-select:none;pointer-events:none}
 
-/* Pro sections inside personality card */
-.ins-personality-pro-wrap{position:relative;margin-top:24px;padding-top:24px;border-top:1px solid rgba(0,0,0,.06)}
-.ins-personality-pro-blur{filter:blur(6px);user-select:none;pointer-events:none;display:flex;flex-direction:column;gap:20px}
-.ins-personality-pro-section{}
-.ins-personality-pro-title{font-size:11px;font-weight:500;letter-spacing:.4px;color:var(--text-muted);margin-bottom:10px}
-.ins-personality-pro-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;display:flex;align-items:center;gap:16px;padding:16px 24px;background:rgba(255,255,255,.95);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);width:90%;max-width:560px}
+.pc-label{font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--iris-text);opacity:.5;text-transform:uppercase;margin-bottom:20px}
+.pc-archetype{font-family:'Outfit',var(--font-display);font-size:40px;font-weight:700;letter-spacing:-1.5px;line-height:1.1;margin-bottom:8px}
+.pc-oneliner{font-size:16px;font-style:italic;color:var(--text-secondary);line-height:1.6;margin-bottom:20px}
+.pc-narrative{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:24px;max-width:480px}
+.pc-narrative strong{color:var(--text-primary);font-weight:500}
+.pc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.pc-stat{background:rgba(255,255,255,.6);border-radius:10px;padding:14px 10px;text-align:center;backdrop-filter:blur(8px)}
+.pc-stat-val{font-family:'Outfit',var(--font-display);font-size:20px;font-weight:700;margin-bottom:2px}
+.pc-stat-lbl{font-size:11px;color:var(--text-muted)}
+.pc-share{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;background:rgba(255,255,255,.6);color:var(--iris-text);border:1px solid rgba(139,111,232,.15);cursor:pointer;backdrop-filter:blur(8px);align-self:flex-start;font-family:var(--font-body)}
+.pc-share:hover{background:rgba(255,255,255,.85)}
+
+/* Right side sections */
+.pc-right-section{}
+.pc-right-label{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px}
+.pc-diet-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.pc-diet-name{font-size:12px;color:var(--text-secondary);width:90px;flex-shrink:0}
+.pc-diet-bar-wrap{flex:1;height:6px;background:rgba(0,0,0,.04);border-radius:3px;overflow:hidden}
+.pc-diet-bar{height:100%;border-radius:3px}
+.pc-diet-pct{font-size:11px;color:var(--text-muted);width:32px;text-align:right}
+.pc-tenure-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pc-tenure-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:14px;font-size:12px;background:rgba(255,255,255,.5)}
+.pc-tenure-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.pc-fact{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.pc-fact-val{font-family:'Outfit',var(--font-display);font-size:15px;font-weight:700}
+.pc-fact-lbl{font-size:12px;color:var(--text-secondary)}
+
+/* Pro overlay on right side */
+.pc-pro-overlay{position:absolute;right:0;top:0;bottom:0;width:380px;display:flex;align-items:center;justify-content:center;z-index:5}
+.pc-pro-card{background:rgba(255,255,255,.88);backdrop-filter:blur(12px);border-radius:16px;padding:24px;text-align:center;border:1px solid rgba(139,111,232,.12);box-shadow:0 4px 20px rgba(0,0,0,.05);max-width:280px}
+.pc-pro-icon{width:40px;height:40px;border-radius:12px;background:var(--iris);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.pc-pro-title{font-size:15px;font-weight:500;margin-bottom:4px}
+.pc-pro-sub{font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:14px}
+.pc-pro-cta{display:inline-block;padding:8px 22px;border-radius:20px;font-size:13px;font-weight:600;background:var(--iris);color:#fff;text-decoration:none}
+.pc-pro-cta:hover{background:#7b5fd8}
+
+@media(max-width:900px){
+  .pc-inner{flex-direction:column}
+  .pc-right{width:100%}
+  .pc-divider{width:100%;height:1px;margin:0}
+  .pc-pro-overlay{position:relative;width:100%;padding:20px}
+  .pc-archetype{font-size:28px}
+  .pc-stats{grid-template-columns:repeat(2,1fr)}
+}
 
 /* Sections */
 .ins-section{background:#fff;border-radius:16px;border:.5px solid rgba(0,0,0,.06);padding:24px;margin-bottom:20px;position:relative}
