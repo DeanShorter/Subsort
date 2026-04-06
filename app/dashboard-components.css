@@ -4096,7 +4096,7 @@ input[type=range]::-webkit-slider-thumb{
 .ab-clean-dismiss:hover{opacity:1}
 
 /* Upgrade banner (free tier cap) */
-.s2-upgrade-banner{padding:20px 32px;background:linear-gradient(135deg,#f9f5ff 0%,#f0ecfd 100%);border-top:2px solid #e4dcf7;border-bottom:1px solid #e4dcf7;display:flex;align-items:center;gap:16px}
+.s2-upgrade-banner{padding:20px 28px;background:linear-gradient(135deg,#f9f5ff 0%,#f0ecfd 100%);border-bottom:1px solid #e4dcf7;display:flex;align-items:center;gap:16px}
 .s2-upgrade-icon{width:40px;height:40px;border-radius:12px;background:var(--iris);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .s2-upgrade-text{flex:1;min-width:0}
 .s2-upgrade-title{font-size:15px;font-weight:500;color:var(--iris-text);margin-bottom:3px}
