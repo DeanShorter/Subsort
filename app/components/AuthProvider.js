@@ -151,12 +151,8 @@ export function AuthProvider({ children }) {
         })], { type: 'application/json' }));
       }
     } catch {}
-    localStorage.removeItem('subsort_yt_token');
-    localStorage.removeItem('subsort_user_tier');
-    localStorage.removeItem('subsort_channels');
-    localStorage.removeItem('subsort_categories');
-    localStorage.removeItem('subsort_subcategories');
-    localStorage.removeItem('subsnub_last_session_ts');
+    // Clear all subsort/subsnub localStorage keys
+    Object.keys(localStorage).filter(k => k.startsWith('subsort') || k.startsWith('subsnub')).forEach(k => localStorage.removeItem(k));
     try {
       await supabase.auth.signOut();
     } catch (e) {}
