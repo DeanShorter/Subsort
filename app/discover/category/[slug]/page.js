@@ -6,7 +6,7 @@ import { trackEvent } from '../../../../lib/track';
 import Link from 'next/link';
 
 const SHOW_PROMOTED_SECTION = true;
-const VISIBLE_INCREMENT = 30;
+const CHANNELS_PER_PAGE = 12;
 
 function formatCount(n) {
   if (!n) return '0';
@@ -28,7 +28,7 @@ export default function CategoryDiscoverPage() {
   const [allChannels, setAllChannels] = useState([]); // full grid dataset in memory
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(VISIBLE_INCREMENT);
+  const [displayCounts, setDisplayCounts] = useState({ all: CHANNELS_PER_PAGE });
 
   const activeSub = searchParams.get('subcategory') || null;
 
@@ -83,14 +83,23 @@ export default function CategoryDiscoverPage() {
     return counts;
   }, [allChannels]);
 
-  const visibleChannels = filteredChannels.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredChannels.length;
+  const stateKey = activeSub || 'all';
+  const currentDisplayCount = displayCounts[stateKey] || CHANNELS_PER_PAGE;
+  const visibleChannels = filteredChannels.slice(0, currentDisplayCount);
+  const hasMore = filteredChannels.length > currentDisplayCount;
   const discoverableCount = featured.length + allChannels.length;
 
-  // Reset visible count when filter changes
-  useEffect(() => { setVisibleCount(VISIBLE_INCREMENT); }, [activeSub, search]);
+  // Reset display count for search changes only
+  useEffect(() => {
+    if (search) setDisplayCounts(prev => ({ ...prev, [stateKey]: CHANNELS_PER_PAGE }));
+  }, [search]);
 
   const setActiveSub = (sub) => {
+    const key = sub || 'all';
+    // Initialise display count for this filter if not set
+    if (!(key in displayCounts)) {
+      setDisplayCounts(prev => ({ ...prev, [key]: CHANNELS_PER_PAGE }));
+    }
     const p = new URLSearchParams(searchParams.toString());
     if (sub) { p.set('subcategory', sub); } else { p.delete('subcategory'); }
     router.replace(`/discover/category/${encodeURIComponent(category)}?${p}`, { scroll: false });
@@ -98,8 +107,11 @@ export default function CategoryDiscoverPage() {
   };
 
   const loadMore = () => {
-    setVisibleCount(prev => prev + VISIBLE_INCREMENT);
-    trackEvent('category_channel_list_more_loaded', { category_name: category, offset: visibleCount });
+    setDisplayCounts(prev => ({
+      ...prev,
+      [stateKey]: (prev[stateKey] || CHANNELS_PER_PAGE) + CHANNELS_PER_PAGE,
+    }));
+    trackEvent('category_channel_list_more_loaded', { category_name: category, offset: currentDisplayCount });
   };
 
   if (loading) {
@@ -284,7 +296,7 @@ export default function CategoryDiscoverPage() {
             {hasMore && (
               <div className="dsc-load-more-wrap">
                 <button className="dsc-load-more" onClick={loadMore}>
-                  Load more ({filteredChannels.length - visibleCount} remaining)
+                  Load more channels
                 </button>
               </div>
             )}
