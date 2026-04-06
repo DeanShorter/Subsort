@@ -316,7 +316,7 @@ export default function Feeds2Page() {
           return (
             <div key={v.id} style={{ animationDelay: `${Math.min(idx * 50, 400)}ms`, opacity: 0, animation: `f2CardIn 0.3s ease forwards ${Math.min(idx * 50, 400)}ms` }}>
               <VideoCardPreview
-                video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '', channelThumbnail: ch?.thumbnail || '' }}
+                video={{ ...v, channel: ch?.name || v.channel, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '', channelThumbnail: ch?.thumbnail || '' }}
                 categoryColour={catCol}
                 categoryName={activeCategory === 'all' ? catLabel : null}
                 onStash={addToStash}
