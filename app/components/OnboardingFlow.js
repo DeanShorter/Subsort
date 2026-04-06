@@ -242,11 +242,23 @@ export default function OnboardingFlow({ visible, onComplete }) {
         return;
       }
 
+      // Simulate progress while API runs
+      const total = subCount || channels.length || 100;
+      setSortProgress({ done: 0, total });
+      const progressInterval = setInterval(() => {
+        setSortProgress(prev => {
+          const next = Math.min(prev.done + Math.floor(Math.random() * 15) + 5, Math.floor(total * 0.9));
+          return { ...prev, done: next };
+        });
+      }, 300);
+
       const res = await fetch('/api/autosort', {
         method: 'POST',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       const data = await res.json();
+      clearInterval(progressInterval);
+      setSortProgress({ done: data.assigned || total, total });
 
       if (!data.assigned) {
         setSortResult({ sorted: 0, cats: 0, catNames: [] });
