@@ -35,7 +35,13 @@ function DashboardInner({ children }) {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window === 'undefined') return false;
     if (localStorage.getItem('subsort_onboarding_step')) return true;
-    return false; // default hidden, useEffect determines if needed
+    return false;
+  });
+  const [onboardingChecked, setOnboardingChecked] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    // Fast path: if we know onboarding is done from localStorage, no need to check DB
+    const keys = Object.keys(localStorage);
+    return keys.some(k => k.startsWith('subsort_onboarding_done_'));
   });
 
   // Determine onboarding state based on user ID + DB check
@@ -45,6 +51,7 @@ function DashboardInner({ children }) {
     // Resuming OAuth flow
     if (localStorage.getItem('subsort_onboarding_step')) {
       setShowOnboarding(true);
+      setOnboardingChecked(true);
       return;
     }
 
@@ -52,21 +59,21 @@ function DashboardInner({ children }) {
     const doneKey = `subsort_onboarding_done_${user.id}`;
     if (localStorage.getItem(doneKey)) {
       setShowOnboarding(false);
+      setOnboardingChecked(true);
       return;
     }
 
-    // Check DB for existing profile (not channels — profiles are the source of truth)
+    // Check DB for existing profile
     (async () => {
       const { data: profile } = await (await import('../../lib/supabase')).supabase
         .from('profiles').select('id').eq('id', user.id).maybeSingle();
       if (profile) {
-        // Existing user — skip onboarding
         localStorage.setItem(doneKey, '1');
         setShowOnboarding(false);
       } else {
-        // No profile — show onboarding (profile created at completion)
         setShowOnboarding(true);
       }
+      setOnboardingChecked(true);
     })();
   }, [user]);
 
@@ -74,14 +81,25 @@ function DashboardInner({ children }) {
 
 
 
+  // Show blank screen while checking onboarding state for new users
+  if (user && !onboardingChecked) {
+    return (
+      <ChannelDataProvider user={user}>
+        <div style={{ background: '#fff', minHeight: '100vh' }} />
+      </ChannelDataProvider>
+    );
+  }
+
   return (
     <ChannelDataProvider user={user}>
       <HealthSnapshotManager />
-      <div className="app-shell">
+      {showOnboarding && user ? (
         <OnboardingFlow
-          visible={showOnboarding && !!user}
+          visible={true}
           onComplete={() => setShowOnboarding(false)}
         />
+      ) : (
+      <div className="app-shell">
         {/* Mobile topbar — only visible at ≤640px */}
         {showSidebar && (
           <div className="mobile-topbar">
@@ -116,6 +134,7 @@ function DashboardInner({ children }) {
         </div>
         <Toast />
       </div>
+      )}
     </ChannelDataProvider>
   );
 }
