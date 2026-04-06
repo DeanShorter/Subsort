@@ -77,9 +77,14 @@ export default function Subscriptions2Page() {
     document.addEventListener('mouseup', onUp);
   }, []);
 
-  // ── Filter + sort ──────────────────────────────────
+  // Split into active and locked channels
+  const activeChannels = useMemo(() => channels.filter(c => c.isActive !== false), [channels]);
+  const lockedChannels = useMemo(() => channels.filter(c => c.isActive === false), [channels]);
+  const isFreeCapped = lockedChannels.length > 0;
+
+  // ── Filter + sort (only active channels) ──────────
   const filtered = useMemo(() => {
-    let result = [...channels];
+    let result = [...activeChannels];
     // Multi-select category filtering
     if (selectedCatFilters.size > 0) {
       result = result.filter(c => {
@@ -293,7 +298,7 @@ export default function Subscriptions2Page() {
       <div className="s2-topbar">
         <div className="s2-topbar-row">
           <div className="s2-topbar-left">
-            <span className="page-title" style={{ fontSize: 21, fontWeight: 500, letterSpacing: '-.3px' }}>Subscriptions <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-muted)', marginLeft: 8 }}>{filtered.length} of {channels.length} channels</span></span>
+            <span className="page-title" style={{ fontSize: 21, fontWeight: 500, letterSpacing: '-.3px' }}>Subscriptions <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-muted)', marginLeft: 8 }}>{filtered.length} of {activeChannels.length} channels{isFreeCapped ? ` (${channels.length} total)` : ''}</span></span>
           </div>
         </div>
       </div>
@@ -699,6 +704,35 @@ export default function Subscriptions2Page() {
         </div>
       )}
     </div>
+
+    {/* Locked channels section (free tier cap) */}
+    {isFreeCapped && (
+      <div className="s2-locked-section">
+        <div className="s2-locked-banner">
+          <div className="s2-locked-banner-left">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="var(--orange)" strokeWidth="1.3" /><path d="M5 7V5a3 3 0 016 0v2" stroke="var(--orange)" strokeWidth="1.3" strokeLinecap="round" /></svg>
+            <div>
+              <div className="s2-locked-banner-title">{lockedChannels.length} more subscriptions already categorised</div>
+              <div className="s2-locked-banner-sub">Upgrade to Pro to manage your full library.</div>
+            </div>
+          </div>
+          <Link href="/settings" className="s2-locked-upgrade-btn">Upgrade <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2l4 3-4 3" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg></Link>
+        </div>
+        <div className="s2-locked-rows">
+          {lockedChannels.slice(0, 8).map(ch => (
+            <div key={ch.id} className="s2-locked-row">
+              <div className="s2-locked-avatar">{ch.thumbnail ? <img src={ch.thumbnail} alt="" /> : (ch.name || '??').substring(0, 2).toUpperCase()}</div>
+              <span className="s2-locked-name">{ch.name}</span>
+              <span className="s2-locked-cat">{(ch.categories || [])[0] || '—'}</span>
+            </div>
+          ))}
+          {lockedChannels.length > 8 && (
+            <div className="s2-locked-more">and {lockedChannels.length - 8} more...</div>
+          )}
+        </div>
+      </div>
+    )}
+
     {/* Channel slide panel */}
     {editingId && <ChannelPanel channelId={editingId} onClose={() => setEditingId(null)} />}
     </div>

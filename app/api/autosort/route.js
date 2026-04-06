@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { autoCategoriseAll, persistAutoSort } from '../../../lib/auto-categorise';
+import { activateChannelsForFreeTier } from '../../../lib/free-tier';
 
 function getServiceClient() {
   return createClient(
@@ -80,12 +81,17 @@ export async function POST(req) {
       .sort((a, b) => b[1] - a[1])
       .map(([name, count]) => ({ name, count }));
 
+    // Apply free tier cap after sorting
+    const capResult = await activateChannelsForFreeTier(supabase, user.id);
+    console.log(`[AutoSort API] Cap result:`, JSON.stringify(capResult));
+
     return NextResponse.json({
       assigned,
       unmatched: unmatched.length,
       categoriesCreated: result.categoriesCreated,
       subcategoriesAssigned: result.subcategoriesAssigned,
       catNames,
+      cap: capResult,
     });
   } catch (e) {
     console.error('[AutoSort API] Error:', e);

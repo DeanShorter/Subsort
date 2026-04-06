@@ -111,12 +111,15 @@ export default function Feeds2Page() {
   }, [channels, feedVideosLoaded, setFeedVideos, channelMap]);
 
   // ── Filter pipeline ──────────────────────────────────
+  // Only show videos from active (managed) channels
+  const activeChannelIds = useMemo(() => new Set(channels.filter(c => c.isActive !== false).map(c => c.channelId)), [channels]);
+
   const filteredVideos = useMemo(() => {
-    let result = [...feedVideos];
+    let result = feedVideos.filter(v => activeChannelIds.has(v.channelId));
 
     // Category
     if (activeCategory === '__favs__') {
-      const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
+      const favIds = new Set(channels.filter(c => c.favourited && c.isActive !== false).map(c => c.channelId));
       result = result.filter(v => favIds.has(v.channelId));
     } else if (activeCategory && activeCategory !== 'all') {
       const catIds = new Set(channels.filter(c => {
@@ -201,7 +204,7 @@ export default function Feeds2Page() {
         <div className="f2-header-top">
           <div className="f2-header-left">
             <h1 className="f2-title">Feed</h1>
-            <span className="ph-count">{filteredVideos.length} videos</span>
+            <span className="ph-count">{filteredVideos.length} videos{channels.some(c => c.isActive === false) ? ` · ${channels.filter(c => c.isActive !== false).length} of ${channels.length} subscriptions` : ''}</span>
           </div>
           <div className="f2-header-right">
             <button className="s2-sort-pill" onClick={() => setTypeFilter(f => f === 'all' ? 'videos' : f === 'videos' ? 'shorts' : 'all')}>
