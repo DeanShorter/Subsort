@@ -80,7 +80,7 @@ export default function Subscriptions2Page() {
   // channels = managed only (from context), allChannels = full set
   const activeChannels = channels; // already filtered by provider
   const lockedChannels = useMemo(() => allChannels.filter(c => c.isActive === false), [allChannels]);
-  const isFreeCapped = lockedChannels.length > 0;
+  const isFreeCapped = lockedChannels.length >= 5;
 
   // ── Filter + sort (only active channels) ──────────
   const filtered = useMemo(() => {

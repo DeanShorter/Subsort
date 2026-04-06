@@ -5,7 +5,7 @@ import { useChannelData } from './ChannelDataContext';
 import { supabase } from '../../lib/supabase';
 import { syncYouTubeSubscriptions } from '../../lib/sync';
 import { showToast } from './Toast';
-import { FREE_TIER_LIMIT } from '../../lib/constants';
+import { getChannelCap } from '../../lib/cap';
 
 const STEPS = ['welcome', 'connect', 'syncing', 'assessment', 'upload', 'autosort', 'sorting', 'complete'];
 
@@ -403,7 +403,7 @@ export default function OnboardingFlow({ visible, onComplete }) {
                 <div className="ob-critic-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l2 4 4.5.6-3.2 3.2.7 4.4L8 11.5l-4 2.2.7-4.4L1.5 6.1l4.5-.6z" fill="#fff" /></svg></div>
                 <span className="ob-critic-label">The Critic</span>
               </div>
-              <div className="ob-critic-quote">&ldquo;{subCount} subscriptions imported. {subCount > FREE_TIER_LIMIT ? `We've analysed and categorised all of them. You can manage ${FREE_TIER_LIMIT} on the free tier — upgrade anytime to unlock the rest.` : `I'd better get to work on this asap...`}&rdquo;</div>
+              <div className="ob-critic-quote">&ldquo;{subCount} subscriptions imported. {(() => { const cap = getChannelCap(subCount); return subCount > cap ? `We've analysed and categorised all of them. You can manage ${cap} on the free tier — upgrade anytime to unlock the rest.` : `I'd better get to work on this asap...`; })()}&rdquo;</div>
               <div className="ob-critic-followup">&ldquo;Before I start scrubbing, would you like to upload your watch history so I can get a better idea of how I can be of service?&rdquo;</div>
             </div>
 
