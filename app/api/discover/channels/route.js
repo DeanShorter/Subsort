@@ -96,13 +96,16 @@ export async function GET(req) {
     channels = channels.filter(c => c.category === category);
   }
 
-  // Exclude current user's subscriptions
+  // Exclude current user's subscriptions (check BOTH tables — user_channels and legacy channels)
   if (currentUserId) {
-    const { data: userSubs } = await supabase
-      .from('user_channels')
-      .select('youtube_channel_id')
-      .eq('user_id', currentUserId);
-    const userSubIds = new Set((userSubs || []).map(s => s.youtube_channel_id));
+    const [ucRes, legacyRes] = await Promise.all([
+      supabase.from('user_channels').select('youtube_channel_id').eq('user_id', currentUserId),
+      supabase.from('channels').select('channel_id').eq('user_id', currentUserId),
+    ]);
+    const userSubIds = new Set([
+      ...((ucRes.data || []).map(s => s.youtube_channel_id)),
+      ...((legacyRes.data || []).map(s => s.channel_id)),
+    ]);
     channels = channels.filter(c => !userSubIds.has(c.youtube_channel_id));
   }
 
