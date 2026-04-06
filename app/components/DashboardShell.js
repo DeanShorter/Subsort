@@ -31,11 +31,13 @@ function DashboardInner({ children }) {
   const pathname = usePathname();
   const showSidebar = user || ALWAYS_SIDEBAR.some(r => pathname === r || pathname.startsWith(r + '/'));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { loading: authLoading } = useAuth();
   const [profileChecked, setProfileChecked] = useState(false);
 
   // Redirect users without profiles to onboarding
   useEffect(() => {
-    if (!user) { setProfileChecked(true); return; }
+    if (authLoading) return; // Wait for auth to resolve
+    if (!user) { setProfileChecked(true); return; } // No user = show sign-in prompts
 
     (async () => {
       const { data: profile } = await (await import('../../lib/supabase')).supabase
@@ -47,7 +49,7 @@ function DashboardInner({ children }) {
       }
       setProfileChecked(true);
     })();
-  }, [user]);
+  }, [user, authLoading]);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
