@@ -6,7 +6,6 @@ import { AuthProvider } from './AuthProvider';
 import { useAuth } from './AuthContext';
 import { ChannelDataProvider } from './ChannelDataProvider';
 import DashboardSidebar from './DashboardSidebar';
-import OnboardingFlow from './OnboardingFlow';
 import HealthSnapshotManager from './HealthSnapshotManager';
 import Toast from './Toast';
 
@@ -32,73 +31,34 @@ function DashboardInner({ children }) {
   const pathname = usePathname();
   const showSidebar = user || ALWAYS_SIDEBAR.some(r => pathname === r || pathname.startsWith(r + '/'));
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    if (localStorage.getItem('subsort_onboarding_step')) return true;
-    return false;
-  });
-  const [onboardingChecked, setOnboardingChecked] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    // Fast path: if we know onboarding is done from localStorage, no need to check DB
-    const keys = Object.keys(localStorage);
-    return keys.some(k => k.startsWith('subsort_onboarding_done_'));
-  });
+  const [profileChecked, setProfileChecked] = useState(false);
 
-  // Determine onboarding state based on user ID + DB check
+  // Redirect users without profiles to onboarding
   useEffect(() => {
-    if (!user) return;
+    if (!user) { setProfileChecked(true); return; }
 
-    // Resuming OAuth flow
-    if (localStorage.getItem('subsort_onboarding_step')) {
-      setShowOnboarding(true);
-      setOnboardingChecked(true);
-      return;
-    }
-
-    // Check if THIS user completed onboarding
-    const doneKey = `subsort_onboarding_done_${user.id}`;
-    if (localStorage.getItem(doneKey)) {
-      setShowOnboarding(false);
-      setOnboardingChecked(true);
-      return;
-    }
-
-    // Check DB for existing profile
     (async () => {
       const { data: profile } = await (await import('../../lib/supabase')).supabase
         .from('profiles').select('id').eq('id', user.id).maybeSingle();
-      if (profile) {
-        localStorage.setItem(doneKey, '1');
-        setShowOnboarding(false);
-      } else {
-        setShowOnboarding(true);
+      if (!profile) {
+        // No profile — redirect to onboarding
+        window.location.href = '/onboarding';
+        return;
       }
-      setOnboardingChecked(true);
+      setProfileChecked(true);
     })();
   }, [user]);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
-
-
-  // Show blank screen while checking onboarding state for new users
-  if (user && !onboardingChecked) {
-    return (
-      <ChannelDataProvider user={user}>
-        <div style={{ background: '#fff', minHeight: '100vh' }} />
-      </ChannelDataProvider>
-    );
+  // Show blank screen while checking profile
+  if (!profileChecked) {
+    return <div style={{ background: '#fff', minHeight: '100vh' }} />;
   }
 
   return (
     <ChannelDataProvider user={user}>
       <HealthSnapshotManager />
-      {showOnboarding && user ? (
-        <OnboardingFlow
-          visible={true}
-          onComplete={() => setShowOnboarding(false)}
-        />
-      ) : (
       <div className="app-shell">
         {/* Mobile topbar — only visible at ≤640px */}
         {showSidebar && (
@@ -126,7 +86,6 @@ function DashboardInner({ children }) {
           <DashboardSidebar
             mobileOpen={mobileOpen}
             onMobileClose={closeMobile}
-            suppressAutoSync={showOnboarding}
           />
         )}
         <div className="app-content" id="appContent">
@@ -134,7 +93,6 @@ function DashboardInner({ children }) {
         </div>
         <Toast />
       </div>
-      )}
     </ChannelDataProvider>
   );
 }

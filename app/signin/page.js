@@ -7,12 +7,18 @@ export default function SignIn() {
     const params = new URLSearchParams(window.location.search);
     const action = params.get('action') || 'signin';
     sessionStorage.setItem('subsnub_auth_action', action);
+
+    // Signup goes to /onboarding, signin goes to /home
+    const redirectTo = action === 'signup'
+      ? window.location.origin + '/onboarding'
+      : window.location.origin + '/home';
+
     document.title = action === 'signup' ? 'Subsnub - Sign up' : 'Subsnub - Sign in';
 
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/home',
+        redirectTo,
         scopes: 'https://www.googleapis.com/auth/youtube.readonly',
         queryParams: { prompt: 'select_account' },
       },

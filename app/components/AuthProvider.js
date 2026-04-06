@@ -51,28 +51,30 @@ export function AuthProvider({ children }) {
         const hasProfile = !!profile;
         const authAction = sessionStorage.getItem('subsnub_auth_action');
         sessionStorage.removeItem('subsnub_auth_action');
-        const isOnboarding = !!localStorage.getItem('subsort_onboarding_step');
+        const onOnboardingPage = typeof window !== 'undefined' && window.location.pathname === '/onboarding';
 
         if (profile?.tier) {
           setUserTier(profile.tier);
           localStorage.setItem('subsort_user_tier', profile.tier);
         }
 
-        // Skip routing if mid-onboarding (returning from YouTube OAuth)
-        if (isOnboarding) {
-          // Let DashboardShell/OnboardingFlow handle the flow
-        } else if (authAction === 'signin' && !hasProfile) {
-          // Scenario 2: Sign in but no account — redirect to message page
-          window.location.href = '/auth/no-account';
-          return;
-        } else if (authAction === 'signup' && hasProfile) {
-          // Scenario 4: Sign up but account exists — redirect to message page
-          window.location.href = '/auth/account-exists';
-          return;
+        // Don't redirect if already on the onboarding page
+        if (!onOnboardingPage) {
+          if (authAction === 'signin' && !hasProfile) {
+            // Scenario 2: Sign in but no account
+            window.location.href = '/auth/no-account';
+            return;
+          }
+          if (authAction === 'signup' && hasProfile) {
+            // Scenario 4: Sign up but account exists
+            window.location.href = '/auth/account-exists';
+            return;
+          }
         }
 
-        // Scenario 1 (signin + profile) or Scenario 3 (signup + no profile) or no authAction (returning session)
-        // Profile creation is handled by onboarding completion — not here
+        // Scenario 1 (signin + profile) → normal dashboard
+        // Scenario 3 (signup + no profile) → onboarding page handles it
+        // No authAction (returning session) → normal dashboard
       } catch (e) {
         // Non-fatal — falls back to cached value
       }
