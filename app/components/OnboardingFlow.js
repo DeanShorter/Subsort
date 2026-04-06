@@ -146,10 +146,10 @@ export default function OnboardingFlow({ visible, onComplete }) {
     })();
   }, [step, user, accessToken, channels, reload]);
 
-  // Handle "Connect YouTube" — save step, trigger OAuth
+  // Handle "Connect YouTube" — save step, trigger OAuth as signup
   const handleConnect = useCallback(() => {
     localStorage.setItem('subsort_onboarding_step', 'syncing');
-    signIn();
+    signIn('signup');
   }, [signIn]);
 
   // Handle watch history file upload

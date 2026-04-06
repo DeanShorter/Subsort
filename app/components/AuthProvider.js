@@ -51,20 +51,21 @@ export function AuthProvider({ children }) {
         const hasProfile = !!profile;
         const authAction = sessionStorage.getItem('subsnub_auth_action');
         sessionStorage.removeItem('subsnub_auth_action');
+        const isOnboarding = !!localStorage.getItem('subsort_onboarding_step');
 
         if (profile?.tier) {
           setUserTier(profile.tier);
           localStorage.setItem('subsort_user_tier', profile.tier);
         }
 
-        // Route based on the four scenarios
-        if (authAction === 'signin' && !hasProfile) {
+        // Skip routing if mid-onboarding (returning from YouTube OAuth)
+        if (isOnboarding) {
+          // Let DashboardShell/OnboardingFlow handle the flow
+        } else if (authAction === 'signin' && !hasProfile) {
           // Scenario 2: Sign in but no account — redirect to message page
           window.location.href = '/auth/no-account';
           return;
-        }
-
-        if (authAction === 'signup' && hasProfile) {
+        } else if (authAction === 'signup' && hasProfile) {
           // Scenario 4: Sign up but account exists — redirect to message page
           window.location.href = '/auth/account-exists';
           return;
