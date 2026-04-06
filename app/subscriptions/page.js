@@ -339,7 +339,7 @@ export default function Subscriptions2Page() {
               <div className="ab-clean-check">
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 5.5l2 2 3.5-3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
-              <span className="ab-clean-text">{channels.length} channels &middot; all categorised &middot; all active</span>
+              <span className="ab-clean-text">{activeChannels.length} managed channels &middot; all categorised &middot; all active</span>
               <div style={{ flex: 1 }} />
               <Link href="/critic" className="ab-critic-link">The Critic <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 2l3 3-3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg></Link>
               <div className="ab-thin-divider" />
@@ -703,7 +703,6 @@ export default function Subscriptions2Page() {
           </div>
         </div>
       )}
-    </div>
 
     {/* Locked channels section (free tier cap) */}
     {isFreeCapped && (
@@ -733,6 +732,8 @@ export default function Subscriptions2Page() {
                     <td>{ch.subcategory || '—'}</td>
                     <td className="s2-num">{ch.subscriberCount ? formatCount(ch.subscriberCount) : '—'}</td>
                     <td className="s2-num">{ch.videoCount?.toLocaleString() || '—'}</td>
+                    <td className="s2-num">{ch.subscribedAt ? new Date(ch.subscribedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : '—'}</td>
+                    <td><span className={`s2-status ${getChannelState(ch)}`}>{getChannelState(ch) === 'active' ? 'Active' : getChannelState(ch) === 'inactive' ? 'Inactive' : 'Dead'}</span></td>
                   </tr>
                 );
               })}
@@ -745,6 +746,7 @@ export default function Subscriptions2Page() {
         )}
       </>
     )}
+    </div>
 
     {/* Channel slide panel */}
     {editingId && <ChannelPanel channelId={editingId} onClose={() => setEditingId(null)} />}
