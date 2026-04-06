@@ -87,17 +87,33 @@ export async function GET(req) {
     userCountMap[uc.youtube_channel_id] = (userCountMap[uc.youtube_channel_id] || 0) + 1;
   });
 
-  // Get subcategory assignments for discoverable channels (from all users' user_channels)
-  const { data: subAssignments } = await supabase
-    .from('user_channels')
-    .select('youtube_channel_id, subcategory_id, subcategories!inner(id, name)')
-    .in('youtube_channel_id', discoverableIds.slice(0, 500))
-    .not('subcategory_id', 'is', null);
+  // Get subcategory assignments for discoverable channels from ALL users
+  // (including the current user's assignments — they categorised these channels even though they subscribe to them)
+  const allCategoryChannelIds = [...categoryChannelIds]; // all channels in this category, before exclusion
+  const [subFromUc, subFromLegacy] = await Promise.all([
+    supabase
+      .from('user_channels')
+      .select('youtube_channel_id, subcategory_id, subcategories!inner(id, name)')
+      .in('youtube_channel_id', allCategoryChannelIds.slice(0, 500))
+      .not('subcategory_id', 'is', null),
+    supabase
+      .from('channels')
+      .select('channel_id, subcategory_id, subcategories!inner(id, name)')
+      .in('channel_id', allCategoryChannelIds.slice(0, 500))
+      .not('subcategory_id', 'is', null),
+  ]);
 
-  // Build consensus subcategory per channel (mode)
+  // Build consensus subcategory per channel (mode across all users)
   const channelSubVotes = {};
-  (subAssignments || []).forEach(sa => {
+  (subFromUc.data || []).forEach(sa => {
     const ytId = sa.youtube_channel_id;
+    const subName = sa.subcategories?.name;
+    if (!ytId || !subName) return;
+    if (!channelSubVotes[ytId]) channelSubVotes[ytId] = {};
+    channelSubVotes[ytId][subName] = (channelSubVotes[ytId][subName] || 0) + 1;
+  });
+  (subFromLegacy.data || []).forEach(sa => {
+    const ytId = sa.channel_id;
     const subName = sa.subcategories?.name;
     if (!ytId || !subName) return;
     if (!channelSubVotes[ytId]) channelSubVotes[ytId] = {};
