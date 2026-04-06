@@ -5513,6 +5513,7 @@ input[type=range]::-webkit-slider-thumb{
 .collection-author-avatar{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:#fff;background:var(--iris);overflow:hidden;flex-shrink:0}
 .collection-author-name{font-size:12px;color:var(--text-secondary)}
 .collection-meta{font-size:11px;color:var(--text-muted)}
+.collections-empty{font-size:13px;color:var(--text-muted);padding:32px 0;text-align:center;border:1px dashed var(--border-subtle);border-radius:12px}
 
 /* Ratings */
 .collection-rating{display:flex;align-items:center;gap:6px;margin-bottom:12px}

@@ -56,14 +56,14 @@ export async function GET(req) {
   const topCatIds = topCats.map(c => c.id);
   let results = [];
 
-  const { data: discoverData } = await supabase
+  const { data: discoverData, error: discoverErr } = await supabase
     .from('channel_discover')
     .select('*')
     .in('consensus_category_id', topCatIds)
     .order('subsnub_user_count', { ascending: false })
     .limit(50);
 
-  if (discoverData?.length) {
+  if (!discoverErr && discoverData?.length) {
     // Get category names for these channels
     const catNameMap = {};
     topCats.forEach(c => { catNameMap[c.id] = c.name; });

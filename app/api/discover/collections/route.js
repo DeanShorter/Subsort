@@ -9,6 +9,7 @@ function getServiceClient() {
 }
 
 export async function GET(req) {
+  try {
   const supabase = getServiceClient();
   const { searchParams } = new URL(req.url);
   const type = searchParams.get('type'); // learning, playlist, rabbithole, or null for all types
@@ -17,7 +18,7 @@ export async function GET(req) {
   const result = {};
 
   for (const t of types) {
-    const { data: collections } = await supabase
+    const { data: collections, error } = await supabase
       .from('collections')
       .select('id, slug, title, description, collection_type, video_count, estimated_duration_seconds, tags, user_id, created_at')
       .eq('collection_type', t)
@@ -25,7 +26,7 @@ export async function GET(req) {
       .order('created_at', { ascending: false })
       .limit(3);
 
-    if (!collections?.length) {
+    if (error || !collections?.length) {
       result[t] = [];
       continue;
     }
@@ -71,4 +72,8 @@ export async function GET(req) {
   }
 
   return NextResponse.json(result);
+  } catch (e) {
+    console.error('[Collections] Error:', e);
+    return NextResponse.json({ learning: [], playlist: [], rabbithole: [] });
+  }
 }

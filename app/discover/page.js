@@ -200,7 +200,7 @@ export default function DiscoverPage() {
   }, []);
 
   const showForYou = !forYouLoading && forYou.length > 0;
-  const showForYouEmpty = !forYouLoading && forYou.length === 0 && forYouReason === 'insufficient_categories' && user;
+  const showForYouEmpty = !forYouLoading && forYou.length === 0 && user;
 
   return (
     <div className="dsc-page">
@@ -286,7 +286,6 @@ export default function DiscoverPage() {
       <div className="collections-wrapper">
         {COLLECTION_TYPES.map(type => {
           const items = collections[type.key] || [];
-          if (!items.length && !collectionsLoading) return null;
           return (
             <div key={type.key} className="collections-subsection">
               <div className="dsc-section-header">
@@ -294,17 +293,21 @@ export default function DiscoverPage() {
                   <div className="dsc-section-title">{type.title}</div>
                   <div className="dsc-section-subtitle">{type.subtitle}</div>
                 </div>
-                <Link href={type.link} className="dsc-section-link">View all &rarr;</Link>
+                {items.length > 0 && <Link href={type.link} className="dsc-section-link">View all &rarr;</Link>}
               </div>
-              {collectionsLoading && !items.length ? (
+              {collectionsLoading ? (
                 <div className="home-feed-loading"><span className="spinner" /></div>
-              ) : (
+              ) : items.length > 0 ? (
                 <div className="collections-grid">
                   {items.map((c, idx) => (
                     <div key={c.id} onClick={() => trackEvent('collection_viewed', { collection_id: c.id, type: c.collection_type, position: idx })}>
                       <CollectionCard collection={c} />
                     </div>
                   ))}
+                </div>
+              ) : (
+                <div className="collections-empty">
+                  No {type.title.toLowerCase()} yet. Be the first to create one.
                 </div>
               )}
             </div>
