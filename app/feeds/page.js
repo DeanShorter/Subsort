@@ -232,6 +232,7 @@ export default function Feeds2Page() {
                 const ch = channelMap[v.channelId];
                 return ch && (ch.categories || []).includes(cat);
               }).length;
+              if (count === 0) return null;
               return (
                 <button
                   key={cat}
@@ -287,7 +288,7 @@ export default function Feeds2Page() {
           return (
             <div key={v.id} style={{ animationDelay: `${Math.min(idx * 50, 400)}ms`, opacity: 0, animation: `f2CardIn 0.3s ease forwards ${Math.min(idx * 50, 400)}ms` }}>
               <VideoCardPreview
-                video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '' }}
+                video={{ ...v, timeAgo: v.publishedAt ? timeAgo(v.publishedAt) : '', channelThumbnail: ch?.thumbnail || '' }}
                 categoryColour={catCol}
                 categoryName={catLabel}
                 onStash={addToStash}

@@ -62,7 +62,10 @@ export default function VideoCardPreview({ video, categoryColour, categoryName, 
   }, [muted, playing, buildSrc]);
 
   const catCol = categoryColour || 'var(--accent)';
-  const initials = (video.channel || '??').substring(0, 2).toUpperCase();
+  const channelName = video.channel || '??';
+  const initials = channelName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+  const avatarColors = ['#2D8C5E', '#E85D30', '#8B6FE8', '#FF8C42', '#2D9CDB', '#1a1a1a'];
+  const avatarColor = avatarColors[channelName.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % avatarColors.length];
 
   return (
     <div className="feed-card" ref={cardRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-video-id={video.id}>
@@ -91,7 +94,9 @@ export default function VideoCardPreview({ video, categoryColour, categoryName, 
       <div className="feed-info">
         <div className="feed-title">{video.title}</div>
         <div className="feed-channel-row">
-          <div className="feed-avatar" style={{ background: catCol }}>{initials}</div>
+          <div className="feed-avatar" style={{ background: video.channelThumbnail ? 'transparent' : avatarColor }}>
+            {video.channelThumbnail ? <img src={video.channelThumbnail} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : initials}
+          </div>
           <span className="feed-channel-name">{video.channel}</span>
           <span className="feed-channel-dot">&middot;</span>
           <span className="feed-channel-time">{video.timeAgo}</span>
