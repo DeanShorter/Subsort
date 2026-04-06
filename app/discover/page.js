@@ -1,75 +1,206 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
+import { trackEvent } from '../../lib/track';
 import Link from 'next/link';
+
+const CATEGORY_KEYWORDS = {
+  Music: 'Production, performance, analysis, composition, gear reviews, covers',
+  Sports: 'Football, basketball, combat sports, fitness, analysis, highlights',
+  Entertainment: 'Comedy, commentary, drama, reaction, pop culture, creators',
+  Lifestyle: 'Fashion, travel, home, wellness, self-improvement, vlogs',
+  Technology: 'Gadgets, programming, AI, reviews, tutorials, startups',
+  'Science & Education': 'Physics, biology, history, mathematics, explainers, research',
+  'News & Politics': 'Current events, journalism, policy, debate, geopolitics, media',
+  Gaming: 'Gameplay, reviews, esports, retro, strategy, walkthroughs',
+  Food: 'Cooking, recipes, reviews, baking, street food, kitchen gear',
+};
+
+const CATEGORY_CLASSES = {
+  Music: 'cat-music',
+  Sports: 'cat-sports',
+  Entertainment: 'cat-entertainment',
+  Lifestyle: 'cat-lifestyle',
+  Technology: 'cat-technology',
+  'Science & Education': 'cat-science',
+  'News & Politics': 'cat-news',
+  Gaming: 'cat-gaming',
+  Food: 'cat-food',
+};
+
+const COLLECTION_TYPES = [
+  {
+    key: 'learning',
+    title: 'Learning paths',
+    subtitle: 'Structured courses built from free YouTube content. Start at video one and work through.',
+    link: '/discover/collections?type=learning',
+  },
+  {
+    key: 'playlist',
+    title: 'Playlists',
+    subtitle: 'Casual channel and video lists. Browse, fork, or build your own.',
+    link: '/discover/collections?type=playlist',
+  },
+  {
+    key: 'rabbithole',
+    title: 'Rabbit holes',
+    subtitle: 'Themed deep-dives for when you want to disappear into one specific niche for hours.',
+    link: '/discover/collections?type=rabbithole',
+  },
+];
+
+function formatCount(n) {
+  if (!n) return '0';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toLocaleString();
+}
+
+function formatDuration(seconds) {
+  if (!seconds) return '';
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.round((seconds % 3600) / 60);
+  if (hrs > 0) return `~${hrs} hr${hrs > 1 ? 's' : ''}`;
+  return `~${mins} min`;
+}
+
+function RatingStars({ rating, collectionId }) {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (i <= Math.floor(rating)) {
+      stars.push(
+        <svg key={i} className="rating-star" viewBox="0 0 14 14">
+          <path d="M7 1l1.8 4 4.2.6-3 3 .8 4.2L7 11l-3.8 1.8.8-4.2-3-3 4.2-.6z" fill="#FF8C42" />
+        </svg>
+      );
+    } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+      const pct = Math.round((rating % 1) * 100);
+      const gradId = `half-star-${collectionId}-${i}`;
+      stars.push(
+        <svg key={i} className="rating-star" viewBox="0 0 14 14">
+          <defs>
+            <linearGradient id={gradId}>
+              <stop offset={`${pct}%`} stopColor="#FF8C42" />
+              <stop offset={`${pct}%`} stopColor="#e0e0e0" />
+            </linearGradient>
+          </defs>
+          <path d="M7 1l1.8 4 4.2.6-3 3 .8 4.2L7 11l-3.8 1.8.8-4.2-3-3 4.2-.6z" fill={`url(#${gradId})`} />
+        </svg>
+      );
+    } else {
+      stars.push(
+        <svg key={i} className="rating-star" viewBox="0 0 14 14">
+          <path d="M7 1l1.8 4 4.2.6-3 3 .8 4.2L7 11l-3.8 1.8.8-4.2-3-3 4.2-.6z" fill="#e0e0e0" />
+        </svg>
+      );
+    }
+  }
+  return <div className="rating-stars">{stars}</div>;
+}
+
+function CollectionCard({ collection }) {
+  const initials = (collection.author_name || '??').substring(0, 2).toUpperCase();
+  return (
+    <Link href={`/discover/collections/${collection.slug}`} className={`collection-card type-${collection.collection_type}`}>
+      <div className="collection-card-header" />
+      <div className="collection-card-body">
+        {collection.tags?.length > 0 && (
+          <div className="collection-tags">
+            {collection.tags.slice(0, 3).map(tag => (
+              <span key={tag} className="collection-tag">{tag}</span>
+            ))}
+          </div>
+        )}
+        <div className="collection-title">{collection.title}</div>
+        <div className="collection-description">{collection.description}</div>
+        {collection.average_rating > 0 && (
+          <div className="collection-rating">
+            <RatingStars rating={collection.average_rating} collectionId={collection.id} />
+            <span className="rating-value">{collection.average_rating}</span>
+            <span className="rating-count">({collection.review_count} review{collection.review_count !== 1 ? 's' : ''})</span>
+          </div>
+        )}
+        <div className="collection-footer">
+          <div className="collection-author">
+            <div className="collection-author-avatar">
+              {collection.author_avatar
+                ? <img src={collection.author_avatar} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                : initials
+              }
+            </div>
+            <span className="collection-author-name">{collection.author_name}</span>
+            <span className="collection-meta">
+              {collection.video_count ? `\u00b7 ${collection.video_count} vids` : ''}
+              {collection.estimated_duration_seconds ? ` \u00b7 ${formatDuration(collection.estimated_duration_seconds)}` : ''}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function DiscoverPage() {
   const { user } = useAuth();
+  const [forYou, setForYou] = useState([]);
+  const [forYouLoading, setForYouLoading] = useState(true);
+  const [forYouReason, setForYouReason] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [channels, setChannels] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [sort, setSort] = useState('popular');
-  const [search, setSearch] = useState('');
-  const [loadingCats, setLoadingCats] = useState(true);
-  const [loadingChannels, setLoadingChannels] = useState(false);
+  const [collections, setCollections] = useState({});
+  const [collectionsLoading, setCollectionsLoading] = useState(true);
+  const forYouRef = useRef(null);
+
+  // Track page view
+  useEffect(() => {
+    trackEvent('discover_viewed', {});
+  }, []);
+
+  // Load For You
+  useEffect(() => {
+    if (!user) { setForYouLoading(false); setForYouReason('unauthenticated'); return; }
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const { data: { session } } = await (await import('../../lib/supabase')).supabase.auth.getSession();
+        if (!session?.access_token) { setForYouLoading(false); return; }
+        const res = await fetch('/api/discover/foryou', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        const data = await res.json();
+        if (!cancelled) {
+          setForYou(data.channels || []);
+          setForYouReason(data.reason || null);
+          setForYouLoading(false);
+        }
+      } catch {
+        if (!cancelled) setForYouLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [user]);
 
   // Load categories
   useEffect(() => {
     fetch('/api/discover/categories')
       .then(r => r.json())
-      .then(data => { setCategories(data.categories || []); setLoadingCats(false); })
-      .catch(() => setLoadingCats(false));
+      .then(data => setCategories(data.categories || []))
+      .catch(() => {});
   }, []);
 
-  // Load channels when category/sort/search/page changes
-  const loadChannels = useCallback(async (cat, sortBy, q, pg) => {
-    setLoadingChannels(true);
-    const params = new URLSearchParams();
-    if (cat) params.set('category', cat);
-    if (sortBy) params.set('sort', sortBy);
-    if (q) params.set('q', q);
-    params.set('page', String(pg));
-    params.set('limit', '20');
-
-    const headers = {};
-    if (user) {
-      const { data: { session } } = await (await import('../../lib/supabase')).supabase.auth.getSession();
-      if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
-    }
-
-    const res = await fetch(`/api/discover/channels?${params}`, { headers });
-    const data = await res.json();
-
-    if (pg === 1) {
-      setChannels(data.channels || []);
-    } else {
-      setChannels(prev => [...prev, ...(data.channels || [])]);
-    }
-    setTotal(data.total || 0);
-    setHasMore(data.has_more || false);
-    setLoadingChannels(false);
-  }, [user]);
-
+  // Load collections
   useEffect(() => {
-    setPage(1);
-    loadChannels(activeCategory, sort, search, 1);
-  }, [activeCategory, sort, search, loadChannels]);
+    let cancelled = false;
+    fetch('/api/discover/collections')
+      .then(r => r.json())
+      .then(data => { if (!cancelled) { setCollections(data); setCollectionsLoading(false); } })
+      .catch(() => { if (!cancelled) setCollectionsLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
 
-  const loadMore = () => {
-    const next = page + 1;
-    setPage(next);
-    loadChannels(activeCategory, sort, search, next);
-  };
-
-  const formatCount = (n) => {
-    if (!n) return '0';
-    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
-    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
-    return n.toLocaleString();
-  };
+  const showForYou = !forYouLoading && forYou.length > 0;
+  const showForYouEmpty = !forYouLoading && forYou.length === 0 && forYouReason === 'insufficient_categories' && user;
 
   return (
     <div className="dsc-page">
@@ -78,109 +209,107 @@ export default function DiscoverPage() {
         <h1 className="dsc-title">Discover</h1>
       </div>
 
-      <div className="dsc-content">
-        {/* Search */}
-        <div className="dsc-search-wrap">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--text-muted)" strokeWidth="1.3"><circle cx="7" cy="7" r="4.5" /><path d="M10.5 10.5l3 3" strokeLinecap="round" /></svg>
-          <input
-            className="dsc-search"
-            type="text"
-            placeholder="Search channels, collections, categories..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-          {search && (
-            <button className="dsc-search-clear" onClick={() => setSearch('')}>
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="var(--text-muted)" strokeWidth="1.3" strokeLinecap="round" /></svg>
-            </button>
-          )}
-        </div>
-
-        {/* Category tabs */}
-        <div className="dsc-cat-tabs">
-          <button className={`dsc-cat-tab${!activeCategory ? ' active' : ''}`} onClick={() => setActiveCategory(null)}>
-            All
-          </button>
-          {categories.map(cat => (
-            <button
-              key={cat.name}
-              className={`dsc-cat-tab${activeCategory === cat.name ? ' active' : ''}`}
-              onClick={() => setActiveCategory(prev => prev === cat.name ? null : cat.name)}
-            >
-              {cat.name} <span className="dsc-cat-tab-count">({cat.count})</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Sort */}
-        <div className="dsc-sort-row">
-          <span className="dsc-result-count">{total} channel{total !== 1 ? 's' : ''} to discover</span>
-          <button className="s2-sort-pill" onClick={() => setSort(s => s === 'popular' ? 'subscribers' : s === 'subscribers' ? 'active' : 'popular')}>
-            Sort: {sort === 'popular' ? 'Most popular' : sort === 'subscribers' ? 'Most subscribers' : 'Most active'}
-          </button>
-        </div>
-
-        {/* Channel grid */}
-        {loadingChannels && channels.length === 0 ? (
-          <div className="home-feed-loading"><span className="spinner" /> Loading channels...</div>
-        ) : channels.length > 0 ? (
-          <>
-            <div className="dsc-channel-grid">
-              {channels.map(ch => (
-                <div key={ch.youtube_channel_id} className="dsc-channel-card">
-                  <div className="dsc-ch-top">
-                    <div className="dsc-ch-avatar">
-                      {ch.thumbnail_url ? <img src={ch.thumbnail_url} alt="" /> : (ch.title || '??').substring(0, 2).toUpperCase()}
-                    </div>
-                    <div className="dsc-ch-info">
-                      <div className="dsc-ch-name">{ch.title}</div>
-                      <div className="dsc-ch-handle">{ch.custom_url ? `@${ch.custom_url}` : ''}</div>
-                    </div>
-                  </div>
-                  <div className="dsc-ch-stats">
-                    {formatCount(ch.subscriber_count)} subscribers &middot; {ch.video_count?.toLocaleString() || 0} videos
-                  </div>
-                  <div className="dsc-ch-meta-row">
-                    {ch.category && <span className="dsc-ch-cat-badge">{ch.category}</span>}
-                    <span className="dsc-ch-users">{ch.subsnub_users} on Subsnub</span>
-                  </div>
-                  <div className="dsc-ch-actions">
-                    <a
-                      className="dsc-ch-btn-yt"
-                      href={`https://youtube.com/channel/${ch.youtube_channel_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      Open on YouTube
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {hasMore && (
-              <div className="dsc-load-more-wrap">
-                <button className="dsc-load-more" onClick={loadMore} disabled={loadingChannels}>
-                  {loadingChannels ? 'Loading...' : 'Load more'}
-                </button>
+      <div className="dsc-content-top">
+        {/* ── For You ── */}
+        {showForYou && (
+          <div className="dsc-section">
+            <div className="dsc-section-header">
+              <div>
+                <div className="dsc-section-title">For you</div>
               </div>
-            )}
-          </>
-        ) : (
-          <div className="dsc-empty">
-            <div className="dsc-empty-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--iris)" strokeWidth="1.5" strokeLinecap="round">
-                <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
-              </svg>
             </div>
-            <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 6 }}>
-              {search ? 'No channels match your search' : activeCategory ? `No suggestions in ${activeCategory} yet` : 'Discover grows as people use Subsnub'}
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--text-muted)', maxWidth: 340, lineHeight: 1.5 }}>
-              {search ? 'Try a different search term' : 'Start by categorising your own subscriptions — your categories will help others find great channels.'}
+            <div className="foryou-scroll" ref={forYouRef}>
+              {forYou.map((ch, idx) => (
+                <a
+                  key={ch.youtube_channel_id}
+                  className="foryou-card"
+                  href={`https://youtube.com/channel/${ch.youtube_channel_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent('foryou_card_clicked', { channel_id: ch.youtube_channel_id, position: idx, subcategory: ch.category })}
+                >
+                  <div className="foryou-avatar">
+                    {ch.thumbnail_url
+                      ? <img src={ch.thumbnail_url} alt="" />
+                      : <span>{(ch.title || '??').substring(0, 2).toUpperCase()}</span>
+                    }
+                  </div>
+                  <div className="foryou-name">{ch.title}</div>
+                  <div className="foryou-subs">{formatCount(ch.subscriber_count)} subscribers</div>
+                  {ch.category && <span className="foryou-badge">{ch.category}</span>}
+                  {ch.subsnub_users > 0 && <div className="foryou-users">{ch.subsnub_users} on Subsnub</div>}
+                </a>
+              ))}
             </div>
           </div>
         )}
+        {showForYouEmpty && (
+          <div className="dsc-foryou-empty">
+            Categorise more of your subscriptions to see personalised recommendations. <Link href="/subscriptions">Go to Subscriptions</Link>
+          </div>
+        )}
+
+        {/* ── Browse by Category ── */}
+        {categories.length > 0 && (
+          <div className="dsc-section">
+            <div className="dsc-section-header">
+              <div>
+                <div className="dsc-section-title">Browse by category</div>
+              </div>
+            </div>
+            <div className="category-grid">
+              {categories.map(cat => {
+                const cls = CATEGORY_CLASSES[cat.name] || 'cat-music';
+                const keywords = CATEGORY_KEYWORDS[cat.name] || '';
+                return (
+                  <Link
+                    key={cat.name}
+                    href={`/discover/category/${encodeURIComponent(cat.name)}`}
+                    className={`category-card ${cls}`}
+                    onClick={() => trackEvent('category_browsed', { category_name: cat.name })}
+                  >
+                    <span className="category-card-count">{cat.count} channels</span>
+                    <div className="category-card-content">
+                      <div className="category-card-name">{cat.name}</div>
+                      {keywords && <div className="category-card-keywords">{keywords}</div>}
+                      <span className="category-card-browse">Browse &rarr;</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Collections ── */}
+      <div className="collections-wrapper">
+        {COLLECTION_TYPES.map(type => {
+          const items = collections[type.key] || [];
+          if (!items.length && !collectionsLoading) return null;
+          return (
+            <div key={type.key} className="collections-subsection">
+              <div className="dsc-section-header">
+                <div>
+                  <div className="dsc-section-title">{type.title}</div>
+                  <div className="dsc-section-subtitle">{type.subtitle}</div>
+                </div>
+                <Link href={type.link} className="dsc-section-link">View all &rarr;</Link>
+              </div>
+              {collectionsLoading && !items.length ? (
+                <div className="home-feed-loading"><span className="spinner" /></div>
+              ) : (
+                <div className="collections-grid">
+                  {items.map((c, idx) => (
+                    <div key={c.id} onClick={() => trackEvent('collection_viewed', { collection_id: c.id, type: c.collection_type, position: idx })}>
+                      <CollectionCard collection={c} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
