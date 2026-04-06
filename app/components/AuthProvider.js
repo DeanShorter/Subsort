@@ -53,33 +53,7 @@ export function AuthProvider({ children }) {
           localStorage.setItem('subsort_user_tier', profile.tier);
         }
 
-        if (!profile && session.provider_token) {
-          // Profile doesn't exist and user just completed OAuth — create profile
-          const meta = session.user.user_metadata || {};
-          // Small delay to ensure auth.users row is fully committed
-          setTimeout(async () => {
-            try {
-              const res = await fetch('/api/ensure-profile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  user_id: session.user.id,
-                  email: session.user.email || '',
-                  display_name: meta.full_name || meta.name || session.user.email?.split('@')[0] || '',
-                  avatar_url: meta.avatar_url || meta.picture || '',
-                }),
-              });
-              if (res.ok) {
-                const result = await res.json();
-                if (result.created) console.log('[Auth] Profile created for', session.user.email);
-              } else {
-                console.error('[Auth] Profile creation failed:', res.status);
-              }
-            } catch (e) {
-              console.error('[Auth] Profile creation request failed:', e);
-            }
-          }, 500);
-        }
+        // Profile creation is deferred to onboarding completion — not here
       } catch (e) {
         // Non-fatal — falls back to cached value
       }

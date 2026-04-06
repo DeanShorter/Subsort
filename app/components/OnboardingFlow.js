@@ -256,10 +256,24 @@ export default function OnboardingFlow({ visible, onComplete }) {
     }
   }, [reload]);
 
-  // Complete onboarding
-  const finish = useCallback(() => {
+  // Complete onboarding — create profile here (not on auth)
+  const finish = useCallback(async () => {
     if (user) {
       localStorage.setItem(`subsort_onboarding_done_${user.id}`, '1');
+      // Ensure profile exists — this is the definitive moment we know which account the user chose
+      const meta = user.user_metadata || {};
+      try {
+        await fetch('/api/ensure-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            email: user.email || '',
+            display_name: meta.full_name || meta.name || user.email?.split('@')[0] || '',
+            avatar_url: meta.avatar_url || meta.picture || '',
+          }),
+        });
+      } catch {}
       supabase.from('profiles').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', user.id);
     }
     onComplete();
