@@ -319,7 +319,14 @@ export default function OnboardingFlow({ visible, onComplete }) {
             </div>
             <h2 className="ob-title">Your subscriptions, organised.</h2>
             <p className="ob-text">Subsnub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.</p>
-            <button className="ob-btn-primary" onClick={() => setStep(accessToken ? 'syncing' : 'connect')}>
+            <button className="ob-btn-primary" onClick={() => {
+              // If we have a token OR user is already authenticated, skip Connect and go straight to syncing
+              if (accessToken || user) {
+                setStep('syncing');
+              } else {
+                setStep('connect');
+              }
+            }}>
               Let&rsquo;s go
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
