@@ -20,11 +20,12 @@ export default function Feeds2Page() {
   const [activeCategory, setActiveCategory] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      return params.get('cat') || 'all';
+      return params.get('cat') || null; // null = not yet determined
     }
-    return 'all';
+    return null;
   });
   const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const defaultSet = useRef(false);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('videos');
@@ -39,6 +40,19 @@ export default function Feeds2Page() {
   }, []);
 
   useDragScroll(catRowRef);
+
+  // Default to Favourites tab if user has favourited channels with recent uploads
+  useEffect(() => {
+    if (defaultSet.current || activeCategory !== null) return;
+    if (!channels.length || !feedVideosLoaded) return;
+    defaultSet.current = true;
+
+    const favChannelIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
+    if (favChannelIds.size === 0) { setActiveCategory('all'); return; }
+
+    const hasFavUploads = feedVideos.some(v => favChannelIds.has(v.channelId));
+    setActiveCategory(hasFavUploads ? '__favs__' : 'all');
+  }, [channels, feedVideos, feedVideosLoaded, activeCategory]);
 
   // ── Build channel lookup ─────────────────────────────
   const channelMap = useMemo(() => {
@@ -104,7 +118,7 @@ export default function Feeds2Page() {
     if (activeCategory === '__favs__') {
       const favIds = new Set(channels.filter(c => c.favourited).map(c => c.channelId));
       result = result.filter(v => favIds.has(v.channelId));
-    } else if (activeCategory !== 'all') {
+    } else if (activeCategory && activeCategory !== 'all') {
       const catIds = new Set(channels.filter(c => {
         if (!chHasCat(c, activeCategory)) return false;
         if (activeSubcategory && c.subcategory !== activeSubcategory) return false;
