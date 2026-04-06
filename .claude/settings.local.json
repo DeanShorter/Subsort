@@ -47,7 +47,8 @@
       "Bash(rm -rf public/dashboard)",
       "Bash(rm -f app/page.old.js app/page.module.old.css app/page.module.css)",
       "Bash(rm -f app/components/DashboardPersonality.js app/components/HeroBg.js app/components/StepPreview.js app/components/SubscriptionCritic.js)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(find /d/Subsort -type f \\\\\\( -name \"*.js\" -o -name \"*.ts\" \\\\\\) -exec grep -l \"tier.*premium\\\\|premium.*tier\\\\|pro.*check\" {} \\\\;)"
     ]
   }
 }

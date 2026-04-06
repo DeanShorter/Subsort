@@ -1,3 +1,51 @@
+// --- Auth UI ---
+
+var APP_ORIGIN = 'https://subsort-git-dev-deanshorters-projects.vercel.app';
+var authBanner = document.getElementById('auth-banner');
+var authNotLoggedIn = document.getElementById('auth-not-logged-in');
+var authFree = document.getElementById('auth-free');
+var authPro = document.getElementById('auth-pro');
+
+function updateAuthUI(state) {
+  authBanner.style.display = 'block';
+  authNotLoggedIn.style.display = 'none';
+  authFree.style.display = 'none';
+  authPro.style.display = 'none';
+
+  if (!state || !state.isAuthenticated) {
+    authNotLoggedIn.style.display = 'flex';
+  } else if (state.tier === 'free') {
+    authFree.style.display = 'flex';
+    document.getElementById('auth-email-free').textContent = state.email || '';
+  } else {
+    authPro.style.display = 'flex';
+    document.getElementById('auth-email-pro').textContent = state.email || '';
+  }
+}
+
+// Request auth state from service worker
+chrome.runtime.sendMessage({ action: 'getAuthState' }, function(response) {
+  if (chrome.runtime.lastError) return;
+  if (response && response.state) updateAuthUI(response.state);
+});
+
+// Listen for auth state changes
+chrome.runtime.onMessage.addListener(function(msg) {
+  if (msg.action === 'authStateChanged' && msg.state) {
+    updateAuthUI(msg.state);
+  }
+});
+
+// Login button
+document.getElementById('auth-login-btn').addEventListener('click', function() {
+  chrome.runtime.sendMessage({ action: 'openSubscrub' });
+});
+
+// Upgrade button
+document.getElementById('auth-upgrade-btn').addEventListener('click', function() {
+  chrome.runtime.sendMessage({ action: 'openSubscrub' });
+});
+
 // --- YouTube URL parsing ---
 
 function extractVideoId(url) {

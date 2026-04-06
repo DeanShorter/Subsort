@@ -251,6 +251,69 @@
       width: 4px;
       height: 40px;
     }
+
+    /* Auth banner */
+    .auth-banner {
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--r-sm);
+    }
+
+    .auth-state {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .auth-msg {
+      font-size: 12px;
+      color: var(--txt-mid);
+      line-height: 1.4;
+    }
+
+    .auth-email {
+      font-weight: 500;
+      color: var(--txt);
+    }
+
+    .auth-btn {
+      padding: 5px 12px;
+      border: 2px solid var(--green);
+      border-radius: var(--r-sm);
+      background: var(--green);
+      color: #fff;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+    .auth-btn:hover { opacity: 0.85; }
+
+    .auth-email-pill {
+      font-size: 12px;
+      color: var(--txt-mid);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .auth-pro-badge {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--green);
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -277,6 +340,22 @@
             <rect x="1" y="9" width="14" height="6" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
           </svg>
         </button>
+      </div>
+    </div>
+
+    <!-- Auth banner -->
+    <div id="auth-banner" class="auth-banner" style="display: none;">
+      <div id="auth-not-logged-in" class="auth-state" style="display: none;">
+        <span class="auth-msg">Sign in at Subscrub to use the extension.</span>
+        <button id="auth-login-btn" class="auth-btn">Open Subscrub</button>
+      </div>
+      <div id="auth-free" class="auth-state" style="display: none;">
+        <span class="auth-msg">The extension is a Pro feature. <span id="auth-email-free" class="auth-email"></span></span>
+        <button id="auth-upgrade-btn" class="auth-btn">View Pro plans</button>
+      </div>
+      <div id="auth-pro" class="auth-state" style="display: none;">
+        <span class="auth-email-pill" id="auth-email-pro"></span>
+        <span class="auth-pro-badge">PRO</span>
       </div>
     </div>
 
