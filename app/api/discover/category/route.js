@@ -14,12 +14,6 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
 
   const categoryName = searchParams.get('category');
-  const subcategory = searchParams.get('subcategory'); // filter grid by subcategory name
-  const search = searchParams.get('q');
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = Math.min(parseInt(searchParams.get('limit') || '30'), 50);
-  const excludeIds = (searchParams.get('exclude') || '').split(',').filter(Boolean); // featured IDs to exclude from grid
-  const section = searchParams.get('section'); // 'featured', 'grid', or null (both)
 
   // Get current user
   let currentUserId = null;
@@ -56,8 +50,8 @@ export async function GET(req) {
   const discoverableIds = [...categoryChannelIds].filter(id => !userSubIds.has(id));
   if (!discoverableIds.length) {
     return NextResponse.json({
-      featured: [], subcategories: [], channels: [],
-      total: 0, page: 1, has_more: false,
+      featured: [], featured_subcategory: null,
+      subcategories: [], channels: [], total: 0,
     });
   }
 
@@ -87,9 +81,8 @@ export async function GET(req) {
     userCountMap[uc.youtube_channel_id] = (userCountMap[uc.youtube_channel_id] || 0) + 1;
   });
 
-  // Get subcategory assignments for discoverable channels from ALL users
-  // (including the current user's assignments — they categorised these channels even though they subscribe to them)
-  const allCategoryChannelIds = [...categoryChannelIds]; // all channels in this category, before exclusion
+  // Get subcategory assignments from ALL users (including current user's)
+  const allCategoryChannelIds = [...categoryChannelIds];
   const [subFromUc, subFromLegacy] = await Promise.all([
     supabase
       .from('user_channels')
@@ -126,19 +119,17 @@ export async function GET(req) {
     if (best) channelSubcategory[ytId] = best[0];
   });
 
-  // Build subcategory counts
+  // Build subcategory counts (from discoverable channels only)
   const subCounts = {};
   discoverableIds.forEach(id => {
     const sub = channelSubcategory[id];
-    if (sub) {
-      subCounts[sub] = (subCounts[sub] || 0) + 1;
-    }
+    if (sub) subCounts[sub] = (subCounts[sub] || 0) + 1;
   });
   const subcategoriesList = Object.entries(subCounts)
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
 
-  // Build enriched channel list
+  // Build enriched channel list (all discoverable, sorted)
   const enrichedChannels = discoverableIds
     .filter(id => scMap[id])
     .map(id => ({
@@ -148,86 +139,49 @@ export async function GET(req) {
     }))
     .sort((a, b) => (b.subsnub_users || 0) - (a.subsnub_users || 0) || (b.subscriber_count || 0) - (a.subscriber_count || 0));
 
-  const result = {};
+  // ── Featured ──
+  let featuredSubcategory = null;
+  let featuredChannels = [];
 
-  // ── Featured section ──
-  if (section !== 'grid') {
-    let featuredSubcategory = null;
-    let featuredChannels = [];
+  if (currentUserId) {
+    const { data: userSubs } = await supabase
+      .from('user_channels')
+      .select('subcategory_id, subcategories!inner(id, name, category_id, categories!inner(name))')
+      .eq('user_id', currentUserId)
+      .not('subcategory_id', 'is', null);
 
-    if (currentUserId) {
-      // Find user's top subcategory in this category
-      const { data: userSubs } = await supabase
-        .from('user_channels')
-        .select('subcategory_id, subcategories!inner(id, name, category_id, categories!inner(name))')
-        .eq('user_id', currentUserId)
-        .not('subcategory_id', 'is', null);
-
-      const subCatCounts = {};
-      (userSubs || []).forEach(us => {
-        const catName = us.subcategories?.categories?.name;
-        const subName = us.subcategories?.name;
-        if (catName === categoryName && subName) {
-          subCatCounts[subName] = (subCatCounts[subName] || 0) + 1;
-        }
-      });
-
-      const topSub = Object.entries(subCatCounts).sort((a, b) => b[1] - a[1])[0];
-      if (topSub) {
-        featuredSubcategory = topSub[0];
-        featuredChannels = enrichedChannels
-          .filter(ch => ch.subcategory === featuredSubcategory)
-          .slice(0, 6);
+    const subCatCounts = {};
+    (userSubs || []).forEach(us => {
+      const catName = us.subcategories?.categories?.name;
+      const subName = us.subcategories?.name;
+      if (catName === categoryName && subName) {
+        subCatCounts[subName] = (subCatCounts[subName] || 0) + 1;
       }
-    }
+    });
 
-    // Fallback: popular channels in this category
-    if (!featuredChannels.length) {
-      featuredSubcategory = null;
-      featuredChannels = enrichedChannels.slice(0, 6);
+    const topSub = Object.entries(subCatCounts).sort((a, b) => b[1] - a[1])[0];
+    if (topSub) {
+      featuredSubcategory = topSub[0];
+      featuredChannels = enrichedChannels
+        .filter(ch => ch.subcategory === featuredSubcategory)
+        .slice(0, 6);
     }
-
-    result.featured = featuredChannels;
-    result.featured_subcategory = featuredSubcategory;
   }
 
-  // ── Subcategories ──
-  if (section !== 'grid') {
-    result.subcategories = subcategoriesList;
+  if (!featuredChannels.length) {
+    featuredSubcategory = null;
+    featuredChannels = enrichedChannels.slice(0, 6);
   }
 
-  // ── Grid section ──
-  if (section !== 'featured') {
-    let gridChannels = enrichedChannels;
+  // Exclude featured from grid channels
+  const featuredIds = new Set(featuredChannels.map(ch => ch.youtube_channel_id));
+  const gridChannels = enrichedChannels.filter(ch => !featuredIds.has(ch.youtube_channel_id));
 
-    // Exclude featured IDs
-    if (excludeIds.length) {
-      const excSet = new Set(excludeIds);
-      gridChannels = gridChannels.filter(ch => !excSet.has(ch.youtube_channel_id));
-    }
-
-    // Filter by subcategory
-    if (subcategory) {
-      gridChannels = gridChannels.filter(ch => ch.subcategory === subcategory);
-    }
-
-    // Search
-    if (search) {
-      const q = search.toLowerCase();
-      gridChannels = gridChannels.filter(ch =>
-        (ch.title || '').toLowerCase().includes(q) ||
-        (ch.description || '').toLowerCase().includes(q)
-      );
-    }
-
-    const total = gridChannels.length;
-    const paged = gridChannels.slice((page - 1) * limit, page * limit);
-
-    result.channels = paged;
-    result.total = total;
-    result.page = page;
-    result.has_more = page * limit < total;
-  }
-
-  return NextResponse.json(result);
+  return NextResponse.json({
+    featured: featuredChannels,
+    featured_subcategory: featuredSubcategory,
+    subcategories: subcategoriesList,
+    channels: gridChannels,
+    total: gridChannels.length,
+  });
 }

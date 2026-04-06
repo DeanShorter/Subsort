@@ -58,6 +58,7 @@ export async function POST(req) {
     await supabase.from('api_usage').delete().eq('user_id', userId);
     await supabase.from('user_plans').delete().eq('user_id', userId);
     await supabase.from('cleanup_settings').delete().eq('user_id', userId);
+    await supabase.from('watch_history').delete().eq('user_id', userId);
     await supabase.from('profiles').delete().eq('id', userId);
 
     // Delete the auth user

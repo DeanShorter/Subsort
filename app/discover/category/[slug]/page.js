@@ -1,11 +1,12 @@
 'use client';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../../../components/AuthContext';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { trackEvent } from '../../../../lib/track';
 import Link from 'next/link';
 
 const SHOW_PROMOTED_SECTION = true;
+const VISIBLE_INCREMENT = 30;
 
 function formatCount(n) {
   if (!n) return '0';
@@ -24,14 +25,10 @@ export default function CategoryDiscoverPage() {
   const [featured, setFeatured] = useState([]);
   const [featuredSub, setFeaturedSub] = useState(null);
   const [subcategories, setSubcategories] = useState([]);
-  const [channels, setChannels] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const [allChannels, setAllChannels] = useState([]); // full grid dataset in memory
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [gridLoading, setGridLoading] = useState(false);
-  const featuredIdsRef = useRef([]);
+  const [visibleCount, setVisibleCount] = useState(VISIBLE_INCREMENT);
 
   const activeSub = searchParams.get('subcategory') || null;
 
@@ -41,19 +38,19 @@ export default function CategoryDiscoverPage() {
     return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
   }, [user]);
 
-  // Load featured + subcategories on mount
+  // Single fetch on mount — everything comes back at once
   useEffect(() => {
     let cancelled = false;
     async function load() {
       const headers = await getAuthHeaders();
-      const p = new URLSearchParams({ category, section: 'featured' });
+      const p = new URLSearchParams({ category });
       const res = await fetch(`/api/discover/category?${p}`, { headers });
       const data = await res.json();
       if (cancelled) return;
       setFeatured(data.featured || []);
       setFeaturedSub(data.featured_subcategory || null);
       setSubcategories(data.subcategories || []);
-      featuredIdsRef.current = (data.featured || []).map(ch => ch.youtube_channel_id);
+      setAllChannels(data.channels || []);
       setLoading(false);
     }
     load();
@@ -61,50 +58,49 @@ export default function CategoryDiscoverPage() {
     return () => { cancelled = true; };
   }, [category, getAuthHeaders]);
 
-  // Load grid when subcategory/search/page changes
-  const loadGrid = useCallback(async (sub, q, pg) => {
-    setGridLoading(true);
-    const headers = await getAuthHeaders();
-    const p = new URLSearchParams({ category, section: 'grid', page: String(pg), limit: '30' });
-    if (sub) p.set('subcategory', sub);
-    if (q) p.set('q', q);
-    if (featuredIdsRef.current.length) p.set('exclude', featuredIdsRef.current.join(','));
-
-    const res = await fetch(`/api/discover/category?${p}`, { headers });
-    const data = await res.json();
-    if (pg === 1) {
-      setChannels(data.channels || []);
-    } else {
-      setChannels(prev => [...prev, ...(data.channels || [])]);
+  // Client-side filtering — instant, no network
+  const filteredChannels = useMemo(() => {
+    let result = allChannels;
+    if (activeSub) {
+      result = result.filter(ch => ch.subcategory === activeSub);
     }
-    setTotal(data.total || 0);
-    setHasMore(data.has_more || false);
-    setGridLoading(false);
-  }, [category, getAuthHeaders]);
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(ch =>
+        (ch.title || '').toLowerCase().includes(q) ||
+        (ch.description || '').toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [allChannels, activeSub, search]);
 
-  // Trigger grid load when featured is done loading or filters change
-  useEffect(() => {
-    if (loading) return;
-    setPage(1);
-    loadGrid(activeSub, search, 1);
-  }, [loading, activeSub, search, loadGrid]);
+  // Subcategory counts from loaded data
+  const subCounts = useMemo(() => {
+    const counts = {};
+    allChannels.forEach(ch => {
+      if (ch.subcategory) counts[ch.subcategory] = (counts[ch.subcategory] || 0) + 1;
+    });
+    return counts;
+  }, [allChannels]);
 
-  const loadMore = () => {
-    const next = page + 1;
-    setPage(next);
-    loadGrid(activeSub, search, next);
-    trackEvent('category_channel_list_more_loaded', { category_name: category, offset: page * 30 });
-  };
+  const visibleChannels = filteredChannels.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredChannels.length;
+  const discoverableCount = featured.length + allChannels.length;
+
+  // Reset visible count when filter changes
+  useEffect(() => { setVisibleCount(VISIBLE_INCREMENT); }, [activeSub, search]);
 
   const setActiveSub = (sub) => {
     const p = new URLSearchParams(searchParams.toString());
     if (sub) { p.set('subcategory', sub); } else { p.delete('subcategory'); }
-    router.push(`/discover/category/${encodeURIComponent(category)}?${p}`, { scroll: false });
+    router.replace(`/discover/category/${encodeURIComponent(category)}?${p}`, { scroll: false });
     if (sub) trackEvent('subcategory_filter_applied', { category_name: category, subcategory_name: sub });
   };
 
-  // Total discoverable count = featured + grid total
-  const discoverableCount = featured.length + total;
+  const loadMore = () => {
+    setVisibleCount(prev => prev + VISIBLE_INCREMENT);
+    trackEvent('category_channel_list_more_loaded', { category_name: category, offset: visibleCount });
+  };
 
   if (loading) {
     return (
@@ -163,7 +159,7 @@ export default function CategoryDiscoverPage() {
               </div>
             </div>
             <div className="catb-featured-scroll">
-              {featured.map((ch, idx) => (
+              {featured.map((ch) => (
                 <div key={ch.youtube_channel_id} className="catb-featured-card">
                   <div className="catb-featured-avatar" style={{ background: 'var(--iris)' }}>
                     {ch.thumbnail_url
@@ -208,7 +204,7 @@ export default function CategoryDiscoverPage() {
           </div>
         )}
 
-        {/* Promoted section (hidden by default) */}
+        {/* Promoted section placeholder */}
         {SHOW_PROMOTED_SECTION && (
           <div className="catb-promoted">
             <div className="catb-promoted-label">
@@ -229,7 +225,7 @@ export default function CategoryDiscoverPage() {
           <div className="catb-chips-section">
             <div className="catb-chips-row">
               <button className={`catb-chip${!activeSub ? ' active' : ''}`} onClick={() => setActiveSub(null)}>
-                All <span className="catb-chip-count">{discoverableCount}</span>
+                All <span className="catb-chip-count">{allChannels.length + featured.length}</span>
               </button>
               {subcategories.map(sub => (
                 <button
@@ -237,7 +233,7 @@ export default function CategoryDiscoverPage() {
                   className={`catb-chip${activeSub === sub.name ? ' active' : ''}`}
                   onClick={() => setActiveSub(activeSub === sub.name ? null : sub.name)}
                 >
-                  {sub.name} <span className="catb-chip-count">{sub.count}</span>
+                  {sub.name} <span className="catb-chip-count">{subCounts[sub.name] || sub.count}</span>
                 </button>
               ))}
             </div>
@@ -253,12 +249,10 @@ export default function CategoryDiscoverPage() {
         </div>
 
         {/* Channel grid */}
-        {gridLoading && channels.length === 0 ? (
-          <div className="home-feed-loading"><span className="spinner" /> Loading channels...</div>
-        ) : channels.length > 0 ? (
+        {visibleChannels.length > 0 ? (
           <>
             <div className="catb-grid">
-              {channels.map((ch, idx) => (
+              {visibleChannels.map((ch, idx) => (
                 <a
                   key={ch.youtube_channel_id}
                   className="catb-ch-card"
@@ -289,8 +283,8 @@ export default function CategoryDiscoverPage() {
             </div>
             {hasMore && (
               <div className="dsc-load-more-wrap">
-                <button className="dsc-load-more" onClick={loadMore} disabled={gridLoading}>
-                  {gridLoading ? 'Loading...' : 'Load more'}
+                <button className="dsc-load-more" onClick={loadMore}>
+                  Load more ({filteredChannels.length - visibleCount} remaining)
                 </button>
               </div>
             )}
