@@ -4909,7 +4909,7 @@ input[type=range]::-webkit-slider-thumb{
 
 .f2-cat-row{
   display:flex;align-items:center;gap:6px;
-  padding:10px 0;overflow-x:auto;scrollbar-width:none;
+  padding:10px 24px;overflow-x:auto;scrollbar-width:none;
 }
 .f2-type-toggles{display:flex;border:2px solid var(--border-subtle);border-radius:8px;overflow:hidden}
 .f2-type-btn{height:30px;padding:0 12px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--text-muted);cursor:pointer;transition:all .15s;font-size:12px;font-weight:500;font-family:var(--font-body);white-space:nowrap}
