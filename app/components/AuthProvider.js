@@ -53,7 +53,26 @@ export function AuthProvider({ children }) {
           localStorage.setItem('subsort_user_tier', profile.tier);
         }
 
-        // Profile creation is deferred to onboarding completion — not here
+        if (!profile) {
+          // No profile — check if this is a real user (has channels) or a ghost (account picker artifact)
+          const { count } = await supabase.from('channels').select('id', { count: 'exact', head: true });
+          if (count > 0 || session.provider_token) {
+            // Real user (returning or just completed OAuth) — create profile
+            const meta = session.user.user_metadata || {};
+            try {
+              await fetch('/api/ensure-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  user_id: session.user.id,
+                  email: session.user.email || '',
+                  display_name: meta.full_name || meta.name || session.user.email?.split('@')[0] || '',
+                  avatar_url: meta.avatar_url || meta.picture || '',
+                }),
+              });
+            } catch {}
+          }
+        }
       } catch (e) {
         // Non-fatal — falls back to cached value
       }
