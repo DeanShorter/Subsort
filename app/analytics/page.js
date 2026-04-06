@@ -7,13 +7,12 @@ import Link from 'next/link';
 
 // ── Archetype calculation ──
 function calculateArchetype(channels, categories, subcategories, chCats, chIsUncategorised) {
-  const activeChannels = channels.filter(c => c.isActive !== false);
-  const total = activeChannels.length;
+  const total = channels.length;
   if (total < 10) return { name: 'The Viewer', description: `A growing library with ${total} channels. Subscribe to more and your viewing personality will take shape.` };
 
   // Category distribution
   const catCounts = {};
-  activeChannels.forEach(c => {
+  channels.forEach(c => {
     const cats = chCats(c);
     if (cats[0]) catCounts[cats[0]] = (catCounts[cats[0]] || 0) + 1;
   });
@@ -24,19 +23,19 @@ function calculateArchetype(channels, categories, subcategories, chCats, chIsUnc
 
   // Tenure
   const now = Date.now();
-  const tenures = activeChannels.filter(c => c.subscribedAt).map(c => (now - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+  const tenures = channels.filter(c => c.subscribedAt).map(c => (now - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
   const avgTenure = tenures.length ? tenures.reduce((a, b) => a + b, 0) / tenures.length : 0;
 
   // Recent additions (last 6 months)
   const sixMonthsAgo = now - 6 * 30 * 24 * 60 * 60 * 1000;
-  const recentPct = activeChannels.filter(c => c.subscribedAt && new Date(c.subscribedAt).getTime() > sixMonthsAgo).length / total * 100;
+  const recentPct = channels.filter(c => c.subscribedAt && new Date(c.subscribedAt).getTime() > sixMonthsAgo).length / total * 100;
 
   // Subcategorised percentage
-  const subcatPct = Math.round(activeChannels.filter(c => c.subcategory).length / total * 100);
+  const subcatPct = Math.round(channels.filter(c => c.subcategory).length / total * 100);
 
   // Burst detection (50%+ in a 3-month window)
   const monthBuckets = {};
-  activeChannels.forEach(c => {
+  channels.forEach(c => {
     if (!c.subscribedAt) return;
     const d = new Date(c.subscribedAt);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -79,19 +78,19 @@ export default function InsightsPage() {
     return calculateArchetype(channels, categories, subcategories, chCats, chIsUncategorised);
   }, [channels, categories, subcategories, chCats, chIsUncategorised]);
 
-  // Stat pills
+  // Stat pills (use ALL channels for personality, not just active)
   const stats = useMemo(() => {
-    if (!activeChannels.length) return null;
+    if (!channels.length) return null;
     const catCounts = {};
-    activeChannels.forEach(c => { const cats = chCats(c); if (cats[0]) catCounts[cats[0]] = (catCounts[cats[0]] || 0) + 1; });
+    channels.forEach(c => { const cats = chCats(c); if (cats[0]) catCounts[cats[0]] = (catCounts[cats[0]] || 0) + 1; });
     const sortedCats = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
     const topCat = sortedCats[0];
-    const topPct = topCat ? Math.round((topCat[1] / activeChannels.length) * 100) : 0;
-    const tenures = activeChannels.filter(c => c.subscribedAt).map(c => (Date.now() - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+    const topPct = topCat ? Math.round((topCat[1] / channels.length) * 100) : 0;
+    const tenures = channels.filter(c => c.subscribedAt).map(c => (Date.now() - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
     const avgTenure = tenures.length ? (tenures.reduce((a, b) => a + b, 0) / tenures.length).toFixed(1) : '—';
-    const catCount = new Set(activeChannels.flatMap(c => chCats(c)).filter(Boolean)).size;
+    const catCount = new Set(channels.flatMap(c => chCats(c)).filter(Boolean)).size;
     return { topCat: topCat?.[0] || '—', topPct, avgTenure, catCount };
-  }, [activeChannels, chCats]);
+  }, [channels, chCats]);
 
   // Category composition
   const composition = useMemo(() => {
@@ -104,16 +103,21 @@ export default function InsightsPage() {
 
   // Subscription timeline
   const timeline = useMemo(() => {
-    const yearCounts = {};
-    activeChannels.forEach(c => {
+    const monthCounts = {};
+    channels.forEach(c => {
       if (!c.subscribedAt) return;
-      const y = new Date(c.subscribedAt).getFullYear();
-      if (!isNaN(y) && y >= 2005) yearCounts[y] = (yearCounts[y] || 0) + 1;
+      const d = new Date(c.subscribedAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      monthCounts[key] = (monthCounts[key] || 0) + 1;
     });
-    const years = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
-    const max = Math.max(...Object.values(yearCounts), 1);
-    return years.map(y => ({ year: y, count: yearCounts[y], pct: (yearCounts[y] / max) * 100 }));
-  }, [activeChannels]);
+    const months = Object.keys(monthCounts).sort();
+    const max = Math.max(...Object.values(monthCounts), 1);
+    const shortMonth = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months.map(m => {
+      const [y, mo] = m.split('-');
+      return { key: m, label: `${shortMonth[parseInt(mo) - 1]} ${y.slice(2)}`, count: monthCounts[m], pct: (monthCounts[m] / max) * 100 };
+    });
+  }, [channels]);
 
   // Channel activity
   const activity = useMemo(() => {
@@ -121,7 +125,24 @@ export default function InsightsPage() {
     const activeIds = new Set(activeChannels.map(c => c.channelId));
     const weeklyVids = feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt).getTime() >= weekAgo && activeIds.has(v.channelId));
     const weeklyChannels = new Set(weeklyVids.map(v => v.channelId)).size;
-    return { vidsThisWeek: weeklyVids.length, channelsThisWeek: weeklyChannels };
+
+    // Day of week analysis
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayCounts = [0, 0, 0, 0, 0, 0, 0];
+    weeklyVids.forEach(v => { const d = new Date(v.publishedAt).getDay(); dayCounts[d]++; });
+    const maxDay = dayCounts.indexOf(Math.max(...dayCounts));
+    const minDay = dayCounts.indexOf(Math.min(...dayCounts));
+    const avgPerDay = weeklyVids.length > 0 ? (weeklyVids.length / 7).toFixed(1) : '0';
+
+    return {
+      channelsThisWeek: weeklyChannels,
+      vidsThisWeek: weeklyVids.length,
+      busiestDay: dayNames[maxDay],
+      busiestDayCount: dayCounts[maxDay],
+      quietestDay: dayNames[minDay],
+      quietestDayCount: dayCounts[minDay],
+      avgPerDay,
+    };
   }, [activeChannels, feedVideos]);
 
   // Upload frequency
@@ -206,7 +227,7 @@ export default function InsightsPage() {
           <div className="ins-archetype-desc">&ldquo;{archetype.description}&rdquo;</div>
           {stats && (
             <div className="ins-personality-stats">
-              <div className="ins-pstat"><div className="ins-pstat-val">{activeChannels.length}</div><div className="ins-pstat-lbl">channels</div></div>
+              <div className="ins-pstat"><div className="ins-pstat-val">{channels.length}</div><div className="ins-pstat-lbl">channels</div></div>
               <div className="ins-pstat"><div className="ins-pstat-val">{stats.topPct}%</div><div className="ins-pstat-lbl">{stats.topCat}</div></div>
               <div className="ins-pstat"><div className="ins-pstat-val">{stats.avgTenure}</div><div className="ins-pstat-lbl">avg years</div></div>
               <div className="ins-pstat"><div className="ins-pstat-val">{stats.catCount}</div><div className="ins-pstat-lbl">categories</div></div>
@@ -233,13 +254,19 @@ export default function InsightsPage() {
         {timeline.length > 0 && (
           <div className="ins-section">
             <div className="ins-section-title">Subscription Timeline</div>
-            <div className="ins-timeline-chart">
-              {timeline.map(t => (
-                <div key={t.year} className="ins-tl-row">
-                  <span className="ins-tl-year">{t.year}</span>
-                  <div className="ins-tl-bar-wrap"><div className="ins-tl-bar" style={{ width: `${t.pct}%` }} /><span className="ins-tl-count">{t.count}</span></div>
-                </div>
-              ))}
+            <div className="ins-tl-vertical">
+              <div className="ins-tl-bars">
+                {timeline.map(t => (
+                  <div key={t.key} className="ins-tl-col" title={`${t.label}: ${t.count}`}>
+                    <div className="ins-tl-vbar" style={{ height: `${t.pct}%` }} />
+                  </div>
+                ))}
+              </div>
+              <div className="ins-tl-labels">
+                {timeline.filter((_, i) => i % Math.max(1, Math.floor(timeline.length / 8)) === 0).map(t => (
+                  <span key={t.key} className="ins-tl-label">{t.label}</span>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -248,8 +275,26 @@ export default function InsightsPage() {
         <div className="ins-section">
           <div className="ins-section-title">Channel Activity</div>
           <div className="ins-activity-stats">
-            <div className="ins-astat"><div className="ins-astat-val">{activity.channelsThisWeek}</div><div className="ins-astat-lbl">channels uploaded this week</div></div>
-            <div className="ins-astat"><div className="ins-astat-val">{activity.vidsThisWeek}</div><div className="ins-astat-lbl">videos this week</div></div>
+            <div className="ins-astat">
+              <div className="ins-astat-val">{activity.channelsThisWeek}</div>
+              <div className="ins-astat-lbl">uploaded this week</div>
+              <div className="ins-astat-detail">of {activeChannels.length} channels</div>
+            </div>
+            <div className="ins-astat">
+              <div className="ins-astat-val">{activity.vidsThisWeek}</div>
+              <div className="ins-astat-lbl">videos this week</div>
+              <div className="ins-astat-detail">avg {activity.avgPerDay} per day</div>
+            </div>
+            <div className="ins-astat">
+              <div className="ins-astat-val">{activity.busiestDay}</div>
+              <div className="ins-astat-lbl">busiest day</div>
+              <div className="ins-astat-detail">{activity.busiestDayCount} uploads on average</div>
+            </div>
+            <div className="ins-astat">
+              <div className="ins-astat-val">{activity.quietestDay}</div>
+              <div className="ins-astat-lbl">quietest day</div>
+              <div className="ins-astat-detail">{activity.quietestDayCount} uploads on average</div>
+            </div>
           </div>
         </div>
 
@@ -293,9 +338,12 @@ export default function InsightsPage() {
           {!isPro && (
             <div className="ins-lock-overlay">
               <div className="ins-lock-icon">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="var(--iris)" strokeWidth="1.3" /><path d="M6 8V6a3 3 0 016 0v2" stroke="var(--iris)" strokeWidth="1.3" strokeLinecap="round" /></svg>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="#fff" strokeWidth="1.3" /><path d="M6 8V6a3 3 0 016 0v2" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" /></svg>
               </div>
-              <div className="ins-lock-text">Upgrade to Pro for detailed loyalty insights</div>
+              <div className="ins-lock-text-wrap">
+                <div className="ins-lock-title">Unlock your full personality profile</div>
+                <div className="ins-lock-sub">Content diet, subscription behaviour, and loyalty insights.</div>
+              </div>
               <Link href="/settings" className="ins-lock-cta">Upgrade to Pro</Link>
             </div>
           )}
