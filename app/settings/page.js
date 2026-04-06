@@ -11,6 +11,32 @@ export default function SettingsPage() {
   const { user, userTier, signOut } = useAuth();
   const { theme, setTheme, mounted } = useTheme();
   const activeTheme = mounted ? theme : null;
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirm !== 'DELETE') return;
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/account/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ confirm: 'DELETE' }),
+      });
+      if (!res.ok) throw new Error('Deletion failed');
+      // Clear all local data
+      Object.keys(localStorage).filter(k => k.startsWith('subsort') || k.startsWith('subsnub')).forEach(k => localStorage.removeItem(k));
+      await supabase.auth.signOut();
+      window.location.href = '/';
+    } catch (e) {
+      setDeleteError('Something went wrong. Please try again.');
+      setIsDeleting(false);
+    }
+  };
 
   const { channels } = useChannelData();
   const fileRef = useRef(null);
@@ -288,6 +314,60 @@ export default function SettingsPage() {
         </div>
       </section>
       <input ref={fileRef} type="file" accept=".json,.html" onChange={handleFile} style={{ display: 'none' }} />
+
+      {/* Danger zone */}
+      <section className="settings-section" style={{ marginTop: 48, paddingTop: 24, borderTop: '1px solid #f0f0f0' }}>
+        <h3 className="settings-section-title" style={{ color: '#dc2626' }}>Danger zone</h3>
+        <div className="settings-card">
+          <div className="settings-row">
+            <div className="settings-row-info">
+              <div className="settings-row-label">Delete your account</div>
+              <div className="settings-row-desc">Permanently delete your account and all associated data. This cannot be undone.</div>
+            </div>
+            <button className="set-delete-btn" onClick={() => setShowDeleteModal(true)}>Delete account</button>
+          </div>
+        </div>
+      </section>
+
+      {/* Delete confirmation modal */}
+      {showDeleteModal && (
+        <div className="set-delete-overlay" onClick={() => !isDeleting && setShowDeleteModal(false)}>
+          <div className="set-delete-modal" onClick={e => e.stopPropagation()}>
+            <h2 className="set-delete-title">Delete your account?</h2>
+            <div className="set-delete-list">
+              This will permanently delete:
+              <ul style={{ marginTop: 8, paddingLeft: 20 }}>
+                <li>Your profile and preferences</li>
+                <li>All subscription categories and favourites</li>
+                <li>Your Stash collections and saved videos</li>
+                <li>Health score history and Critic data</li>
+                <li>All activity and event data</li>
+              </ul>
+            </div>
+            <div className="set-delete-warning">This cannot be undone.</div>
+            <div className="set-delete-label">Type DELETE to confirm:</div>
+            <input
+              className="set-delete-input"
+              type="text"
+              value={deleteConfirm}
+              onChange={e => setDeleteConfirm(e.target.value)}
+              placeholder=""
+              disabled={isDeleting}
+            />
+            {deleteError && <div style={{ fontSize: 13, color: '#dc2626', marginBottom: 12 }}>{deleteError}</div>}
+            <div className="set-delete-actions">
+              <button className="set-delete-cancel" onClick={() => setShowDeleteModal(false)} disabled={isDeleting}>Cancel</button>
+              <button
+                className={`set-delete-confirm${deleteConfirm === 'DELETE' ? ' enabled' : ''}`}
+                disabled={deleteConfirm !== 'DELETE' || isDeleting}
+                onClick={handleDeleteAccount}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </main>
   );

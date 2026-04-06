@@ -5718,6 +5718,27 @@ input[type=range]::-webkit-slider-thumb{
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   ACCOUNT DELETION
+   ═══════════════════════════════════════════════════════════════ */
+.set-delete-btn{padding:8px 20px;border-radius:20px;font-size:13px;font-weight:500;background:#fff;color:#dc2626;border:1px solid #fecaca;cursor:pointer;font-family:var(--font-body)}
+.set-delete-btn:hover{background:#fef2f2;border-color:#dc2626}
+.set-delete-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.set-delete-modal{background:#fff;border-radius:16px;padding:32px;max-width:480px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.set-delete-title{font-family:'Outfit',var(--font-display);font-size:20px;font-weight:600;margin-bottom:16px}
+.set-delete-list{font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:16px}
+.set-delete-list ul{list-style:disc}
+.set-delete-list li{margin-bottom:2px}
+.set-delete-warning{font-size:14px;font-weight:500;color:#dc2626;margin-bottom:20px}
+.set-delete-label{font-size:13px;color:var(--text-secondary);margin-bottom:8px}
+.set-delete-input{width:100%;padding:10px 14px;border:1px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:var(--font-body);margin-bottom:24px;outline:none}
+.set-delete-input:focus{border-color:#dc2626}
+.set-delete-actions{display:flex;justify-content:flex-end;gap:10px}
+.set-delete-cancel{padding:8px 20px;border-radius:20px;font-size:13px;font-weight:500;background:var(--bg-primary);color:var(--text-secondary);border:none;cursor:pointer;font-family:var(--font-body)}
+.set-delete-confirm{padding:8px 20px;border-radius:20px;font-size:13px;font-weight:500;background:#dc2626;color:#fff;border:none;cursor:pointer;font-family:var(--font-body);opacity:.4;pointer-events:none}
+.set-delete-confirm.enabled{opacity:1;pointer-events:auto}
+.set-delete-confirm.enabled:hover{background:#b91c1c}
+
+/* ═══════════════════════════════════════════════════════════════
    AUTH MESSAGE PAGES
    ═══════════════════════════════════════════════════════════════ */
 .auth-msg-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#fff;padding:20px}
