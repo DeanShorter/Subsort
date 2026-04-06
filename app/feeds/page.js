@@ -33,6 +33,7 @@ export default function Feeds2Page() {
   const { collections: stashCollections, addToStash } = useStash(user);
   const contentRef = useRef(null);
   const catRowRef = useRef(null);
+  const [catOverflows, setCatOverflows] = useState(false);
 
   // Get the scrollable container
   useEffect(() => {
@@ -40,6 +41,16 @@ export default function Feeds2Page() {
   }, []);
 
   useDragScroll(catRowRef);
+
+  // Check if category row overflows
+  useEffect(() => {
+    const el = catRowRef.current;
+    if (!el) return;
+    const check = () => setCatOverflows(el.scrollWidth > el.clientWidth);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, [categories, feedVideos]);
 
   // Default to Favourites tab if user has favourited channels with recent uploads
   useEffect(() => {
@@ -231,9 +242,9 @@ export default function Feeds2Page() {
         {/* Category + subcategory nav */}
         <div className="f2-cat-nav">
           <div className="f2-cat-scroll-wrap">
-            <button className="f2-cat-scroll-btn f2-cat-scroll-left" onClick={() => catRowRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}>
+            {catOverflows && <button className="f2-cat-scroll-btn f2-cat-scroll-left" onClick={() => catRowRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}>
               <svg viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" /></svg>
-            </button>
+            </button>}
           <div className="f2-cat-row" ref={catRowRef}>
             <button className={`f2-cat-pill${activeCategory === 'all' ? ' active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory(null); }}>
               All <span className="f2-cat-count">{typeFilteredVideos.length}</span>
@@ -262,9 +273,9 @@ export default function Feeds2Page() {
               );
             })}
           </div>
-            <button className="f2-cat-scroll-btn f2-cat-scroll-right" onClick={() => catRowRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}>
+            {catOverflows && <button className="f2-cat-scroll-btn f2-cat-scroll-right" onClick={() => catRowRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}>
               <svg viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" /></svg>
-            </button>
+            </button>}
           </div>
           {activeCategory !== 'all' && activeCategory !== '__favs__' && (
             <div className="f2-subcat-row">
