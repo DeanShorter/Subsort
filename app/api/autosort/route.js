@@ -23,11 +23,14 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
+    // Check if this is a managed-only sort (manual re-run) or full sort (onboarding)
+    const body = await req.json().catch(() => ({}));
+    const managedOnly = body.managedOnly !== false; // default true for manual re-runs
+
     // Fetch user's channels
-    const { data: chRows } = await supabase
-      .from('channels')
-      .select('*')
-      .eq('user_id', user.id);
+    let query = supabase.from('channels').select('*').eq('user_id', user.id);
+    if (managedOnly) query = query.eq('is_active', true);
+    const { data: chRows } = await query;
 
     if (!chRows?.length) {
       return NextResponse.json({ error: 'No channels found', assigned: 0 });

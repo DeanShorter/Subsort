@@ -12,7 +12,7 @@ import VideoCardPreview from '../components/VideoCardPreview';
 export default function Feeds2Page() {
   const { user, signIn } = useAuth();
   const {
-    channels, categories, subcategories, categoryColours, loading: dataLoading,
+    channels, allChannels, categories, subcategories, categoryColours, loading: dataLoading,
     chCats, chHasCat,
     feedVideos, feedVideosLoaded, setFeedVideos,
   } = useChannelData();
@@ -111,8 +111,8 @@ export default function Feeds2Page() {
   }, [channels, feedVideosLoaded, setFeedVideos, channelMap]);
 
   // ── Filter pipeline ──────────────────────────────────
-  // Only show videos from active (managed) channels
-  const activeChannelIds = useMemo(() => new Set(channels.filter(c => c.isActive !== false).map(c => c.channelId)), [channels]);
+  // Only show videos from managed channels (channels is already filtered by provider)
+  const activeChannelIds = useMemo(() => new Set(channels.map(c => c.channelId)), [channels]);
 
   const filteredVideos = useMemo(() => {
     let result = feedVideos.filter(v => activeChannelIds.has(v.channelId));
@@ -204,7 +204,7 @@ export default function Feeds2Page() {
         <div className="f2-header-top">
           <div className="f2-header-left">
             <h1 className="f2-title">Feed</h1>
-            <span className="ph-count">{filteredVideos.length} videos{channels.some(c => c.isActive === false) ? ` · ${channels.filter(c => c.isActive !== false).length} of ${channels.length} subscriptions` : ''}</span>
+            <span className="ph-count">{filteredVideos.length} videos{allChannels.length > channels.length ? ` · ${channels.length} of ${allChannels.length} subscriptions` : ''}</span>
           </div>
           <div className="f2-header-right">
             <button className="s2-sort-pill" onClick={() => setTypeFilter(f => f === 'all' ? 'videos' : f === 'videos' ? 'shorts' : 'all')}>

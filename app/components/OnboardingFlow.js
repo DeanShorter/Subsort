@@ -254,7 +254,8 @@ export default function OnboardingFlow({ visible, onComplete }) {
 
       const res = await fetch('/api/autosort', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ managedOnly: false }), // Onboarding sorts ALL channels for Discover data
       });
       const data = await res.json();
       clearInterval(progressInterval);

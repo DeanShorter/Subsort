@@ -2,7 +2,8 @@
 import { createContext, useContext } from 'react';
 
 export const ChannelDataContext = createContext({
-  channels: [],
+  channels: [],        // managed channels only (is_active = true) — use this by default
+  allChannels: [],     // ALL channels including locked — only for Discover exclusion, page headers
   categories: [],
   subcategories: {},
   categoryColours: {},

@@ -286,9 +286,14 @@ export function ChannelDataProvider({ children, user }) {
     loadUserData();
   }, [user, loadUserData, channels.length]);
 
+  // Split into managed (active) and all channels
+  const managedChannels = channels.filter(c => c.isActive !== false);
+
   return (
     <ChannelDataContext.Provider value={{
-      channels, categories, subcategories, categoryColours,
+      channels: managedChannels, // default: managed channels only
+      allChannels: channels,     // full set: for Discover exclusion, page headers, insights personality
+      categories, subcategories, categoryColours,
       dbCategories, dbSubcategories, loading,
       reload: () => loadUserData({ silent: true }),
       chCats, chHasCat, chIsUncategorised, formatCount, findDeadChannels, toggleFavourite, getChannelState,

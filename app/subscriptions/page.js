@@ -17,7 +17,7 @@ import { useDragScroll } from '../../hooks/useDragScroll';
 export default function Subscriptions2Page() {
   const { user, signIn } = useAuth();
   const {
-    channels, categories, subcategories, categoryColours, loading,
+    channels, allChannels, categories, subcategories, categoryColours, loading,
     chCats, chHasCat, chIsUncategorised, formatCount, toggleFavourite, getChannelState,
     dbCategories, reload,
   } = useChannelData();
@@ -77,9 +77,9 @@ export default function Subscriptions2Page() {
     document.addEventListener('mouseup', onUp);
   }, []);
 
-  // Split into active and locked channels
-  const activeChannels = useMemo(() => channels.filter(c => c.isActive !== false), [channels]);
-  const lockedChannels = useMemo(() => channels.filter(c => c.isActive === false), [channels]);
+  // channels = managed only (from context), allChannels = full set
+  const activeChannels = channels; // already filtered by provider
+  const lockedChannels = useMemo(() => allChannels.filter(c => c.isActive === false), [allChannels]);
   const isFreeCapped = lockedChannels.length > 0;
 
   // ── Filter + sort (only active channels) ──────────
@@ -298,7 +298,7 @@ export default function Subscriptions2Page() {
       <div className="s2-topbar">
         <div className="s2-topbar-row">
           <div className="s2-topbar-left">
-            <span className="page-title" style={{ fontSize: 21, fontWeight: 500, letterSpacing: '-.3px' }}>Subscriptions <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-muted)', marginLeft: 8 }}>{filtered.length} of {activeChannels.length} channels{isFreeCapped ? ` (${channels.length} total)` : ''}</span></span>
+            <span className="page-title" style={{ fontSize: 21, fontWeight: 500, letterSpacing: '-.3px' }}>Subscriptions <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-muted)', marginLeft: 8 }}>{filtered.length} of {channels.length} channels{isFreeCapped ? ` (${allChannels.length} total)` : ''}</span></span>
           </div>
         </div>
       </div>
