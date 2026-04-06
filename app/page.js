@@ -18,8 +18,8 @@ export default function HomePage() {
           <a href="#features" className="lp-nav-link">Features</a>
           <a href="#critic" className="lp-nav-link">The Critic</a>
           <a href="#pricing" className="lp-nav-link">Pricing</a>
-          <Link href="/signin" className="lp-nav-link">Sign in</Link>
-          <Link href="/signin" className="lp-nav-cta">Sign up free</Link>
+          <Link href="/signin?action=signin" className="lp-nav-link">Sign in</Link>
+          <Link href="/signin?action=signup" className="lp-nav-cta">Sign up free</Link>
         </div>
       </nav>
 
@@ -29,7 +29,7 @@ export default function HomePage() {
         <h1>Your YouTube subscriptions, <em>organised.</em></h1>
         <p>Subsnub helps you manage, categorise, and clean up your YouTube subscriptions. With The Critic watching over your shoulder.</p>
         <div className="lp-hero-actions">
-          <Link href="/signin" className="lp-btn-primary">
+          <Link href="/signin?action=signup" className="lp-btn-primary">
             Sign up free
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </Link>
@@ -202,7 +202,7 @@ export default function HomePage() {
         <div className="lp-cta-inner">
           <h2>Ready to organise your subscriptions?</h2>
           <p>Free to start. Set up in 2 minutes. The Critic is already waiting.</p>
-          <Link href="/signin" className="lp-btn-primary" style={{ marginTop: 8 }}>
+          <Link href="/signin?action=signup" className="lp-btn-primary" style={{ marginTop: 8 }}>
             Sign up free
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </Link>

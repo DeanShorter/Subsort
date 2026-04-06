@@ -39,40 +39,39 @@ export function AuthProvider({ children }) {
         trackEvent('session_start');
       }
 
-      // Ensure profile exists (replaces DB trigger — only creates when user actually loads the app)
+      // Check profile and route based on auth action
       setLoading(false);
       try {
-        const { data: profile, error: profileErr } = await supabase
+        const { data: profile } = await supabase
           .from('profiles')
           .select('tier')
           .eq('id', session.user.id)
           .maybeSingle();
+
+        const hasProfile = !!profile;
+        const authAction = sessionStorage.getItem('subsnub_auth_action');
+        sessionStorage.removeItem('subsnub_auth_action');
 
         if (profile?.tier) {
           setUserTier(profile.tier);
           localStorage.setItem('subsort_user_tier', profile.tier);
         }
 
-        if (!profile) {
-          // No profile — check if this is a real user (has channels) or a ghost (account picker artifact)
-          const { count } = await supabase.from('channels').select('id', { count: 'exact', head: true });
-          if (count > 0 || session.provider_token) {
-            // Real user (returning or just completed OAuth) — create profile
-            const meta = session.user.user_metadata || {};
-            try {
-              await fetch('/api/ensure-profile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  user_id: session.user.id,
-                  email: session.user.email || '',
-                  display_name: meta.full_name || meta.name || session.user.email?.split('@')[0] || '',
-                  avatar_url: meta.avatar_url || meta.picture || '',
-                }),
-              });
-            } catch {}
-          }
+        // Route based on the four scenarios
+        if (authAction === 'signin' && !hasProfile) {
+          // Scenario 2: Sign in but no account — redirect to message page
+          window.location.href = '/auth/no-account';
+          return;
         }
+
+        if (authAction === 'signup' && hasProfile) {
+          // Scenario 4: Sign up but account exists — redirect to message page
+          window.location.href = '/auth/account-exists';
+          return;
+        }
+
+        // Scenario 1 (signin + profile) or Scenario 3 (signup + no profile) or no authAction (returning session)
+        // Profile creation is handled by onboarding completion — not here
       } catch (e) {
         // Non-fatal — falls back to cached value
       }
@@ -125,10 +124,9 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  const signIn = useCallback(async () => {
+  const signIn = useCallback(async (action = 'signin') => {
+    sessionStorage.setItem('subsnub_auth_action', action);
     const redirectTo = window.location.origin + '/home';
-    console.log('[Auth] Sign in redirectTo:', redirectTo);
-    console.log('[Auth] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

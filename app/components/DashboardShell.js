@@ -55,16 +55,16 @@ function DashboardInner({ children }) {
       return;
     }
 
-    // Check DB for existing channels
+    // Check DB for existing profile (not channels — profiles are the source of truth)
     (async () => {
-      const { count } = await (await import('../../lib/supabase')).supabase
-        .from('channels').select('id', { count: 'exact', head: true });
-      if (count > 0) {
-        // Existing user on new device — skip onboarding
+      const { data: profile } = await (await import('../../lib/supabase')).supabase
+        .from('profiles').select('id').eq('id', user.id).maybeSingle();
+      if (profile) {
+        // Existing user — skip onboarding
         localStorage.setItem(doneKey, '1');
         setShowOnboarding(false);
       } else {
-        // New user — show onboarding
+        // No profile — show onboarding (profile created at completion)
         setShowOnboarding(true);
       }
     })();
