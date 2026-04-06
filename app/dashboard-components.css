@@ -5556,7 +5556,7 @@ input[type=range]::-webkit-slider-thumb{
 /* Featured scroll */
 .catb-featured-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 32px 8px 32px;margin:0 -32px;scrollbar-width:none}
 .catb-featured-scroll::-webkit-scrollbar{display:none}
-.catb-featured-card{flex-shrink:0;width:calc((100% - 14px) / 2);min-width:440px;background:#fff;border:.5px solid rgba(0,0,0,.06);border-radius:16px;padding:22px;cursor:default;transition:box-shadow .15s,transform .15s;display:flex;gap:16px;position:relative;overflow:hidden}
+.catb-featured-card{flex-shrink:0;width:calc(50% - 7px);min-width:440px;max-width:600px;background:#fff;border:.5px solid rgba(0,0,0,.06);border-radius:16px;padding:22px;cursor:default;transition:box-shadow .15s,transform .15s;display:flex;gap:16px;position:relative;overflow:hidden}
 .catb-featured-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);transform:translateY(-2px)}
 .catb-featured-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle at top right,rgba(139,111,232,.08),transparent 70%);pointer-events:none}
 .catb-featured-avatar{width:72px;height:72px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:#fff;overflow:hidden}
@@ -5585,8 +5585,9 @@ input[type=range]::-webkit-slider-thumb{
 
 /* Subcategory chips */
 .catb-chips-section{margin-bottom:24px}
-.catb-chips-row{display:flex;gap:8px;flex-wrap:wrap}
-.catb-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;background:#fff;color:#555;border:1px solid #e8e8e8;cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.catb-chips-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.catb-chips-row::-webkit-scrollbar{display:none}
+.catb-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;background:#fff;color:#555;border:1px solid #e8e8e8;cursor:pointer;font-family:var(--font-body);transition:all .15s;flex-shrink:0;white-space:nowrap}
 .catb-chip:hover{background:#f4f4f5;border-color:#d0d0d0}
 .catb-chip.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
 .catb-chip-count{font-size:11px;opacity:.7;padding:1px 6px;border-radius:8px}

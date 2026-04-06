@@ -5,7 +5,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { trackEvent } from '../../../../lib/track';
 import Link from 'next/link';
 
-const SHOW_PROMOTED_SECTION = false;
+const SHOW_PROMOTED_SECTION = true;
 
 function formatCount(n) {
   if (!n) return '0';
