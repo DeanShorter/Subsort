@@ -43,8 +43,16 @@ function DashboardInner({ children }) {
       const { data: profile } = await (await import('../../lib/supabase')).supabase
         .from('profiles').select('id').eq('id', user.id).maybeSingle();
       if (!profile) {
-        // No profile — redirect to onboarding
-        window.location.href = '/onboarding';
+        // No profile — check how the user got here
+        const authAction = sessionStorage.getItem('subsnub_auth_action');
+        if (authAction === 'signin') {
+          // They clicked Sign In but have no account
+          sessionStorage.removeItem('subsnub_auth_action');
+          window.location.href = '/auth/no-account';
+        } else {
+          // They're a new user or came via signup — send to onboarding
+          window.location.href = '/onboarding';
+        }
         return;
       }
       setProfileChecked(true);
