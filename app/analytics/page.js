@@ -2,248 +2,327 @@
 import { useMemo } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useChannelData } from '../components/ChannelDataContext';
-import PageHeader from '../components/PageHeader';
-import PunchCardChart from '../components/PunchCardChart';
-import WatchHistoryUpload from '../components/WatchHistoryUpload';
+import { trackEvent } from '../../lib/track';
+import Link from 'next/link';
 
-export default function AnalyticsPage() {
-  const { user, signIn } = useAuth();
+// ── Archetype calculation ──
+function calculateArchetype(channels, categories, subcategories, chCats, chIsUncategorised) {
+  const activeChannels = channels.filter(c => c.isActive !== false);
+  const total = activeChannels.length;
+  if (total < 10) return { name: 'The Viewer', description: `A growing library with ${total} channels. Subscribe to more and your viewing personality will take shape.` };
+
+  // Category distribution
+  const catCounts = {};
+  activeChannels.forEach(c => {
+    const cats = chCats(c);
+    if (cats[0]) catCounts[cats[0]] = (catCounts[cats[0]] || 0) + 1;
+  });
+  const sortedCats = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+  const topCat = sortedCats[0];
+  const topCatPct = topCat ? Math.round((topCat[1] / total) * 100) : 0;
+  const catCount = sortedCats.length;
+
+  // Tenure
+  const now = Date.now();
+  const tenures = activeChannels.filter(c => c.subscribedAt).map(c => (now - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+  const avgTenure = tenures.length ? tenures.reduce((a, b) => a + b, 0) / tenures.length : 0;
+
+  // Recent additions (last 6 months)
+  const sixMonthsAgo = now - 6 * 30 * 24 * 60 * 60 * 1000;
+  const recentPct = activeChannels.filter(c => c.subscribedAt && new Date(c.subscribedAt).getTime() > sixMonthsAgo).length / total * 100;
+
+  // Subcategorised percentage
+  const subcatPct = Math.round(activeChannels.filter(c => c.subcategory).length / total * 100);
+
+  // Burst detection (50%+ in a 3-month window)
+  const monthBuckets = {};
+  activeChannels.forEach(c => {
+    if (!c.subscribedAt) return;
+    const d = new Date(c.subscribedAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    monthBuckets[key] = (monthBuckets[key] || 0) + 1;
+  });
+
+  // Evaluate in priority order
+  if (topCatPct >= 60) {
+    return { name: 'The Specialist', description: `You know what you like. ${topCat[0]} dominates your library.` };
+  }
+  if (catCount >= 8 && topCatPct <= 25) {
+    return { name: 'The Explorer', description: `Curious about everything. Your library covers ${catCount} categories.` };
+  }
+  if (avgTenure >= 3 && recentPct <= 10) {
+    return { name: 'The Loyalist', description: `You find your channels and you stick with them. Average tenure: ${avgTenure.toFixed(1)} years.` };
+  }
+  if (subcatPct >= 80) {
+    return { name: 'The Curator', description: `Organised down to the detail. ${subcatPct}% of your channels have subcategories.` };
+  }
+  if (total >= 200) {
+    return { name: 'The Collector', description: `You subscribe to a lot — and most of them are still active.` };
+  }
+
+  return { name: 'The Viewer', description: `A balanced library with ${total} channels across ${catCount} categories.` };
+}
+
+export default function InsightsPage() {
+  const { user, userTier } = useAuth();
   const {
-    channels, categories, categoryColours, loading,
-    chCats, chIsUncategorised, formatCount, findDeadChannels,
+    channels, categories, subcategories, categoryColours,
+    chCats, chIsUncategorised, getChannelState, formatCount,
+    feedVideos, loading,
   } = useChannelData();
 
-  // ── Feed health score ──────────────────────────────────
-  const { score, factors, gradeText } = useMemo(() => {
-    if (!channels.length) return { score: 0, factors: [], gradeText: '' };
+  const isPro = userTier === 'pro' || userTier === 'admin';
+  const activeChannels = useMemo(() => channels.filter(c => c.isActive !== false), [channels]);
 
-    let s = 100;
-    const f = [];
+  // Archetype
+  const archetype = useMemo(() => {
+    return calculateArchetype(channels, categories, subcategories, chCats, chIsUncategorised);
+  }, [channels, categories, subcategories, chCats, chIsUncategorised]);
 
-    // Categorisation coverage
-    const categorised = channels.filter(c => !chIsUncategorised(c)).length;
-    const catPct = Math.round((categorised / channels.length) * 100);
-    if (catPct >= 80) f.push({ t: `${catPct}% categorised`, c: 'good' });
-    else if (catPct >= 40) { s -= 15; f.push({ t: `${catPct}% categorised`, c: 'warn' }); }
-    else { s -= 30; f.push({ t: `Only ${catPct}% categorised`, c: 'bad' }); }
-
-    // Dead channels
-    const dead = findDeadChannels();
-    const deadPct = Math.round((dead.length / channels.length) * 100);
-    if (deadPct <= 5) f.push({ t: 'Few inactive channels', c: 'good' });
-    else if (deadPct <= 20) { s -= 10; f.push({ t: `${dead.length} inactive channels`, c: 'warn' }); }
-    else { s -= 25; f.push({ t: `${dead.length} inactive channels`, c: 'bad' }); }
-
-    // Category diversity
-    const catCounts = {};
-    channels.forEach(ch => chCats(ch).forEach(c => catCounts[c] = (catCounts[c] || 0) + 1));
-    const catKeys = Object.keys(catCounts);
-    if (catKeys.length >= 5) f.push({ t: `${catKeys.length} categories — diverse`, c: 'good' });
-    else if (catKeys.length >= 2) { s -= 5; f.push({ t: `${catKeys.length} categories`, c: 'warn' }); }
-    else { s -= 15; f.push({ t: 'Needs more categories', c: 'bad' }); }
-
-    // Balance
-    if (catKeys.length > 1) {
-      const max = Math.max(...Object.values(catCounts));
-      const concentration = max / channels.length;
-      if (concentration > 0.5) { s -= 10; f.push({ t: `${Math.round(concentration * 100)}% in one category`, c: 'warn' }); }
-      else f.push({ t: 'Balanced distribution', c: 'good' });
-    }
-
-    // Sub count
-    if (channels.length > 500) { s -= 10; f.push({ t: `${channels.length} subs — consider pruning`, c: 'warn' }); }
-    else f.push({ t: `${channels.length} subscriptions`, c: 'good' });
-
-    s = Math.max(0, Math.min(100, s));
-    const g = s >= 80 ? 'Excellent — your feed is well organised!' :
-              s >= 60 ? 'Good — a few improvements could help.' :
-              s >= 40 ? 'Fair — your feed needs some attention.' :
-              'Needs work — time for a subscription audit.';
-
-    return { score: s, factors: f, gradeText: g };
-  }, [channels, chCats, chIsUncategorised, findDeadChannels]);
-
-  // ── Stats ──────────────────────────────────────────────
+  // Stat pills
   const stats = useMemo(() => {
-    const totalSubs = channels.reduce((s, c) => s + (c.subscriberCount || 0), 0);
-    const totalViews = channels.reduce((s, c) => s + (c.viewCount || 0), 0);
-    const avgSubs = channels.length ? Math.round(totalSubs / channels.length) : 0;
-    const dead = findDeadChannels();
-    return [
-      { n: channels.length, l: 'Subscriptions' },
-      { n: formatCount(totalSubs), l: 'Combined Subs' },
-      { n: formatCount(totalViews), l: 'Combined Views' },
-      { n: formatCount(avgSubs), l: 'Avg Subs/Channel' },
-      { n: categories.length, l: 'Categories' },
-      { n: dead.length, l: 'Inactive' },
-    ];
-  }, [channels, categories, formatCount, findDeadChannels]);
+    if (!activeChannels.length) return null;
+    const catCounts = {};
+    activeChannels.forEach(c => { const cats = chCats(c); if (cats[0]) catCounts[cats[0]] = (catCounts[cats[0]] || 0) + 1; });
+    const sortedCats = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+    const topCat = sortedCats[0];
+    const topPct = topCat ? Math.round((topCat[1] / activeChannels.length) * 100) : 0;
+    const tenures = activeChannels.filter(c => c.subscribedAt).map(c => (Date.now() - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+    const avgTenure = tenures.length ? (tenures.reduce((a, b) => a + b, 0) / tenures.length).toFixed(1) : '—';
+    const catCount = new Set(activeChannels.flatMap(c => chCats(c)).filter(Boolean)).size;
+    return { topCat: topCat?.[0] || '—', topPct, avgTenure, catCount };
+  }, [activeChannels, chCats]);
 
-  // ── Category bars ──────────────────────────────────────
-  const catBars = useMemo(() => {
-    const counts = {};
-    channels.forEach(ch => chCats(ch).forEach(c => counts[c] = (counts[c] || 0) + 1));
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    const uncatCount = channels.filter(c => chIsUncategorised(c)).length;
-    if (uncatCount) sorted.push(['Uncategorised', uncatCount]);
-    return sorted.map(([name, count]) => ({
-      name, count,
-      pct: Math.round((count / channels.length) * 100),
-      colour: name === 'Uncategorised' ? '#666' : (categoryColours[name] || 'var(--accent)'),
-    }));
-  }, [channels, chCats, chIsUncategorised, categoryColours]);
+  // Category composition
+  const composition = useMemo(() => {
+    const catCounts = {};
+    activeChannels.forEach(c => { const cats = chCats(c); const cat = cats[0] || 'Unsorted'; catCounts[cat] = (catCounts[cat] || 0) + 1; });
+    const sorted = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+    const max = sorted[0]?.[1] || 1;
+    return sorted.map(([name, count]) => ({ name, count, pct: Math.round((count / activeChannels.length) * 100), barPct: (count / max) * 100, color: categoryColours[name] || 'var(--accent)' }));
+  }, [activeChannels, chCats, categoryColours]);
 
-  // ── Dead channels ──────────────────────────────────────
-  const deadChannels = useMemo(() => findDeadChannels(), [findDeadChannels]);
+  // Subscription timeline
+  const timeline = useMemo(() => {
+    const yearCounts = {};
+    activeChannels.forEach(c => {
+      if (!c.subscribedAt) return;
+      const y = new Date(c.subscribedAt).getFullYear();
+      if (!isNaN(y) && y >= 2005) yearCounts[y] = (yearCounts[y] || 0) + 1;
+    });
+    const years = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
+    const max = Math.max(...Object.values(yearCounts), 1);
+    return years.map(y => ({ year: y, count: yearCounts[y], pct: (yearCounts[y] / max) * 100 }));
+  }, [activeChannels]);
 
-  // ── Top channels ───────────────────────────────────────
-  const topChannels = useMemo(() => {
-    return [...channels].sort((a, b) => (b.subscriberCount || 0) - (a.subscriberCount || 0)).slice(0, 10);
-  }, [channels]);
+  // Channel activity
+  const activity = useMemo(() => {
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const activeIds = new Set(activeChannels.map(c => c.channelId));
+    const weeklyVids = feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt).getTime() >= weekAgo && activeIds.has(v.channelId));
+    const weeklyChannels = new Set(weeklyVids.map(v => v.channelId)).size;
+    return { vidsThisWeek: weeklyVids.length, channelsThisWeek: weeklyChannels };
+  }, [activeChannels, feedVideos]);
 
-  // Score ring SVG
-  const circumference = 2 * Math.PI * 52;
-  const scoreOffset = circumference - (score / 100) * circumference;
-  const scoreColour = score >= 70 ? 'var(--color-success)' : score >= 40 ? 'var(--color-warning)' : 'var(--color-error)';
+  // Upload frequency
+  const frequency = useMemo(() => {
+    const buckets = { Daily: 0, 'Several/week': 0, Weekly: 0, Fortnightly: 0, Monthly: 0, Rarely: 0, Inactive: 0 };
+    activeChannels.forEach(c => {
+      const state = getChannelState(c);
+      if (state === 'dead') { buckets.Inactive++; return; }
+      const vids = feedVideos.filter(v => v.channelId === c.channelId && v.publishedAt);
+      if (vids.length < 2) { buckets.Rarely++; return; }
+      const sorted = vids.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+      const newest = new Date(sorted[0].publishedAt);
+      const oldest = new Date(sorted[sorted.length - 1].publishedAt);
+      const days = (newest - oldest) / (1000 * 60 * 60 * 24);
+      if (days <= 0) { buckets.Rarely++; return; }
+      const perWeek = (vids.length - 1) / (days / 7);
+      if (perWeek >= 5) buckets.Daily++;
+      else if (perWeek >= 2) buckets['Several/week']++;
+      else if (perWeek >= 0.8) buckets.Weekly++;
+      else if (perWeek >= 0.4) buckets.Fortnightly++;
+      else if (perWeek >= 0.1) buckets.Monthly++;
+      else buckets.Rarely++;
+    });
+    const max = Math.max(...Object.values(buckets), 1);
+    return Object.entries(buckets).filter(([, v]) => v > 0).map(([name, count]) => ({ name, count, pct: (count / max) * 100 }));
+  }, [activeChannels, feedVideos, getChannelState]);
 
-  if (loading) {
-    return <div className="home-feed-loading"><span className="spinner" /> Loading insights…</div>;
-  }
+  // Content balance (this week)
+  const contentBalance = useMemo(() => {
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const activeIds = new Set(activeChannels.map(c => c.channelId));
+    const weeklyVids = feedVideos.filter(v => v.publishedAt && new Date(v.publishedAt).getTime() >= weekAgo && activeIds.has(v.channelId));
+    const catCounts = {};
+    weeklyVids.forEach(v => {
+      const ch = activeChannels.find(c => c.channelId === v.channelId);
+      if (ch) { const cat = chCats(ch)[0] || 'Unsorted'; catCounts[cat] = (catCounts[cat] || 0) + 1; }
+    });
+    const sorted = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+    const total = weeklyVids.length || 1;
+    return sorted.map(([name, count]) => ({ name, count, pct: Math.round((count / total) * 100), color: categoryColours[name] || '#888' }));
+  }, [activeChannels, feedVideos, chCats, categoryColours]);
 
-  if (!user) {
-    return (
-      <main className="home-main">
-        <PageHeader title="Insights" />
-        <div className="home-feed-empty">
-          <p className="home-feed-empty-text">Sign in to see your insights.</p>
-          <button className="btn-accent" onClick={signIn}>Sign in with Google</button>
-        </div>
-      </main>
-    );
-  }
+  // Loyalty profile
+  const loyalty = useMemo(() => {
+    const now = Date.now();
+    const tiers = { OG: 0, Veteran: 0, Established: 0, Recent: 0, New: 0 };
+    activeChannels.forEach(c => {
+      if (!c.subscribedAt) return;
+      const years = (now - new Date(c.subscribedAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+      if (years >= 5) tiers.OG++;
+      else if (years >= 2) tiers.Veteran++;
+      else if (years >= 1) tiers.Established++;
+      else if (years >= 0.25) tiers.Recent++;
+      else tiers.New++;
+    });
+    const longest = [...activeChannels].filter(c => c.subscribedAt).sort((a, b) => new Date(a.subscribedAt) - new Date(b.subscribedAt)).slice(0, 5);
+    const newest = [...activeChannels].filter(c => c.subscribedAt).sort((a, b) => new Date(b.subscribedAt) - new Date(a.subscribedAt)).slice(0, 5);
+    return { tiers, longest, newest };
+  }, [activeChannels]);
 
-  if (!channels.length) {
-    return (
-      <main className="home-main">
-        <PageHeader title="Insights" />
-        <p className="home-feed-empty-text">Sync your subscriptions to see insights.</p>
-      </main>
-    );
-  }
+  if (loading) return <div className="home-feed-loading"><span className="spinner" /> Loading insights...</div>;
+
+  if (!user) return (
+    <div className="ins-page">
+      <div className="ins-header"><h1 className="ins-title">Insights</h1></div>
+      <div className="home-feed-empty"><button className="btn-accent" onClick={() => {}}>Sign in</button></div>
+    </div>
+  );
+
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : '—';
+  const yearsSince = (d) => d ? Math.floor((Date.now() - new Date(d).getTime()) / (365.25 * 24 * 60 * 60 * 1000)) : 0;
 
   return (
-    <main className="home-main">
-      <PageHeader title="Insights" />
+    <div className="ins-page">
+      <div className="ins-header"><h1 className="ins-title">Insights</h1></div>
 
-      <div className="main-content">
-      {/* Feed Health Score */}
-      <div className="analytics-card" style={{ marginBottom: '1.5rem' }}>
-        <h3 className="analytics-card-title">Feed Health</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <div style={{ position: 'relative', width: 120, height: 120, flexShrink: 0 }}>
-            <svg viewBox="0 0 120 120" style={{ width: 120, height: 120, transform: 'rotate(-90deg)' }}>
-              <circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg-surface-raised)" strokeWidth="8" />
-              <circle cx="60" cy="60" r="52" fill="none" stroke={scoreColour} strokeWidth="8"
-                strokeDasharray={circumference} strokeDashoffset={scoreOffset}
-                strokeLinecap="round" style={{ transition: 'stroke-dashoffset .6s ease' }} />
-            </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 800, color: scoreColour }}>
-              {score}
+      <div className="ins-content">
+        {/* Personality Card */}
+        <div className="ins-personality">
+          <div className="ins-personality-label">YOUR VIEWING PERSONALITY</div>
+          <div className="ins-archetype">{archetype.name}</div>
+          <div className="ins-archetype-desc">&ldquo;{archetype.description}&rdquo;</div>
+          {stats && (
+            <div className="ins-personality-stats">
+              <div className="ins-pstat"><div className="ins-pstat-val">{activeChannels.length}</div><div className="ins-pstat-lbl">channels</div></div>
+              <div className="ins-pstat"><div className="ins-pstat-val">{stats.topPct}%</div><div className="ins-pstat-lbl">{stats.topCat}</div></div>
+              <div className="ins-pstat"><div className="ins-pstat-val">{stats.avgTenure}</div><div className="ins-pstat-lbl">avg years</div></div>
+              <div className="ins-pstat"><div className="ins-pstat-val">{stats.catCount}</div><div className="ins-pstat-lbl">categories</div></div>
             </div>
+          )}
+        </div>
+
+        {/* Subscription Composition */}
+        <div className="ins-section">
+          <div className="ins-section-title">Subscription Composition</div>
+          <div className="ins-comp-chart">
+            {composition.map(c => (
+              <div key={c.name} className="ins-comp-row">
+                <span className="ins-comp-label">{c.name}</span>
+                <div className="ins-comp-bar-wrap"><div className="ins-comp-bar" style={{ width: `${c.barPct}%`, background: c.color }} /></div>
+                <span className="ins-comp-pct">{c.pct}%</span>
+                <span className="ins-comp-count">{c.count}</span>
+              </div>
+            ))}
           </div>
-          <div>
-            <div style={{ fontSize: '.875rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '.5rem' }}>{gradeText}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '.25rem' }}>
-              {factors.map((f, i) => (
-                <span key={i} className={`score-factor ${f.c}`}>
-                  {f.c === 'good' ? '✓' : f.c === 'warn' ? '⚠' : '✗'} {f.t}
-                </span>
+        </div>
+
+        {/* Subscription Timeline */}
+        {timeline.length > 0 && (
+          <div className="ins-section">
+            <div className="ins-section-title">Subscription Timeline</div>
+            <div className="ins-timeline-chart">
+              {timeline.map(t => (
+                <div key={t.year} className="ins-tl-row">
+                  <span className="ins-tl-year">{t.year}</span>
+                  <div className="ins-tl-bar-wrap"><div className="ins-tl-bar" style={{ width: `${t.pct}%` }} /><span className="ins-tl-count">{t.count}</span></div>
+                </div>
               ))}
             </div>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Stats row */}
-      <div className="an-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '.75rem', marginBottom: '1.5rem' }}>
-        {stats.map((s, i) => (
-          <div key={i} className="an-stat-card">
-            <div className="an-stat-num">{s.n}</div>
-            <div className="an-stat-lbl">{s.l}</div>
+        {/* Channel Activity */}
+        <div className="ins-section">
+          <div className="ins-section-title">Channel Activity</div>
+          <div className="ins-activity-stats">
+            <div className="ins-astat"><div className="ins-astat-val">{activity.channelsThisWeek}</div><div className="ins-astat-lbl">channels uploaded this week</div></div>
+            <div className="ins-astat"><div className="ins-astat-val">{activity.vidsThisWeek}</div><div className="ins-astat-lbl">videos this week</div></div>
           </div>
-        ))}
-      </div>
-
-      {/* Viewing Activity Punch Card */}
-      <PunchCardChart />
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
-        {/* Category breakdown */}
-        <div className="analytics-card">
-          <h3 className="analytics-card-title">Category Breakdown</h3>
-          {catBars.map(({ name, count, pct, colour }) => (
-            <div key={name} className="analytics-bar-row">
-              <span className="analytics-bar-label">{name}</span>
-              <div className="analytics-bar-track">
-                <div className="analytics-bar-fill" style={{ width: `${pct}%`, background: colour }}>
-                  <span>{pct}%</span>
-                </div>
-              </div>
-              <span className="analytics-bar-count">{count}</span>
-            </div>
-          ))}
         </div>
 
-        {/* Inactive channels */}
-        <div className="analytics-card">
-          <h3 className="analytics-card-title">Inactive Channels</h3>
-          {deadChannels.length ? deadChannels.slice(0, 15).map(d => (
-            <div key={d.ch.id} className="dead-channel-row">
-              <div className="dead-channel-avatar">
-                {d.ch.thumbnail ? <img src={d.ch.thumbnail} alt="" /> : null}
-              </div>
-              <div className="dead-channel-info">
-                <div className="dead-channel-name">{d.ch.name}</div>
-                <div className="dead-channel-reason">{d.reason}</div>
-              </div>
-              <span className={`dead-channel-tag ${d.severity}`}>
-                {d.severity === 'high' ? 'Inactive' : 'Low'}
-              </span>
+        {/* Upload Frequency */}
+        {frequency.length > 0 && (
+          <div className="ins-section">
+            <div className="ins-section-title">Upload Frequency</div>
+            <div className="ins-freq-chart">
+              {frequency.map(f => (
+                <div key={f.name} className="ins-freq-row">
+                  <span className="ins-freq-label">{f.name}</span>
+                  <div className="ins-freq-bar-wrap"><div className="ins-freq-bar" style={{ width: `${f.pct}%` }} /></div>
+                  <span className="ins-freq-count">{f.count}</span>
+                </div>
+              ))}
             </div>
-          )) : (
-            <p className="analytics-empty">No inactive channels detected — nice!</p>
+          </div>
+        )}
+
+        {/* Content Balance */}
+        {contentBalance.length > 0 && (
+          <div className="ins-section">
+            <div className="ins-section-title">Content Balance (This Week)</div>
+            <div className="ins-balance">
+              {contentBalance.map(c => (
+                <div key={c.name} className="ins-balance-row">
+                  <span className="ins-balance-dot" style={{ background: c.color }} />
+                  <span className="ins-balance-name">{c.name}</span>
+                  <span className="ins-balance-pct">{c.pct}%</span>
+                  <span className="ins-balance-count">{c.count} videos</span>
+                </div>
+              ))}
+              {contentBalance[0]?.pct >= 70 && <div className="ins-balance-note">{contentBalance[0].name} made up {contentBalance[0].pct}% of your feed this week.</div>}
+            </div>
+          </div>
+        )}
+
+        {/* Loyalty Profile (Pro) */}
+        <div className={`ins-section${!isPro ? ' ins-locked' : ''}`}>
+          <div className="ins-section-title">Loyalty Profile {!isPro && <span className="ins-pro-badge">PRO</span>}</div>
+          {!isPro && (
+            <div className="ins-lock-overlay">
+              <div className="ins-lock-icon">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="var(--iris)" strokeWidth="1.3" /><path d="M6 8V6a3 3 0 016 0v2" stroke="var(--iris)" strokeWidth="1.3" strokeLinecap="round" /></svg>
+              </div>
+              <div className="ins-lock-text">Upgrade to Pro for detailed loyalty insights</div>
+              <Link href="/settings" className="ins-lock-cta">Upgrade to Pro</Link>
+            </div>
           )}
+          <div className={!isPro ? 'ins-blurred' : ''}>
+            <div className="ins-loyalty-tiers">
+              {Object.entries(loyalty.tiers).filter(([, v]) => v > 0).map(([name, count]) => (
+                <div key={name} className="ins-loyalty-tier">
+                  <div className="ins-loyalty-tier-val">{count}</div>
+                  <div className="ins-loyalty-tier-lbl">{name}</div>
+                </div>
+              ))}
+            </div>
+            {loyalty.longest.length > 0 && (
+              <>
+                <div className="ins-loyalty-subtitle">Longest subscriptions</div>
+                {loyalty.longest.map(ch => (
+                  <div key={ch.id} className="ins-loyalty-ch">
+                    <div className="ins-loyalty-av">{ch.thumbnail ? <img src={ch.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : (ch.name || '??').substring(0, 2).toUpperCase()}</div>
+                    <span className="ins-loyalty-name">{ch.name}</span>
+                    <span className="ins-loyalty-date">{fmtDate(ch.subscribedAt)} &middot; {yearsSince(ch.subscribedAt)} years</span>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Top channels */}
-      <div className="analytics-card" style={{ marginTop: '1.5rem' }}>
-        <h3 className="analytics-card-title">Top Channels by Subscribers</h3>
-        {topChannels.map((ch, i) => {
-          const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-          return (
-            <div key={ch.id} className="top-channel-row">
-              <span className={`top-channel-rank ${rankClass}`}>{i + 1}</span>
-              <div className="dead-channel-avatar">
-                {ch.thumbnail ? <img src={ch.thumbnail} alt="" /> : null}
-              </div>
-              <div className="dead-channel-info">
-                <div className="dead-channel-name">{ch.name}</div>
-                <div className="dead-channel-reason">
-                  {formatCount(ch.subscriberCount)} subs · {formatCount(ch.videoCount)} videos
-                  {chCats(ch).length ? ` · ${chCats(ch).join(', ')}` : ''}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      </div>
-
-      {/* Watch History Upload */}
-      <div style={{ marginTop: 24 }}>
-        <WatchHistoryUpload />
-      </div>
-    </main>
+    </div>
   );
 }
