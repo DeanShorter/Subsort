@@ -144,7 +144,6 @@ export default function DiscoverPage() {
   const { user } = useAuth();
   const [forYou, setForYou] = useState([]);
   const [forYouLoading, setForYouLoading] = useState(true);
-  const [forYouReason, setForYouReason] = useState(null);
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState({});
   const [collectionsLoading, setCollectionsLoading] = useState(true);
@@ -157,7 +156,7 @@ export default function DiscoverPage() {
 
   // Load For You
   useEffect(() => {
-    if (!user) { setForYouLoading(false); setForYouReason('unauthenticated'); return; }
+    if (!user) { setForYouLoading(false); return; }
     let cancelled = false;
 
     async function load() {
@@ -170,7 +169,6 @@ export default function DiscoverPage() {
         const data = await res.json();
         if (!cancelled) {
           setForYou(data.channels || []);
-          setForYouReason(data.reason || null);
           setForYouLoading(false);
         }
       } catch {
@@ -199,9 +197,6 @@ export default function DiscoverPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const showForYou = !forYouLoading && forYou.length > 0;
-  const showForYouEmpty = !forYouLoading && forYou.length === 0 && user;
-
   return (
     <div className="dsc-page">
       {/* Header */}
@@ -211,41 +206,44 @@ export default function DiscoverPage() {
 
       <div className="dsc-content-top">
         {/* ── For You ── */}
-        {showForYou && (
+        {user && (
           <div className="dsc-section">
             <div className="dsc-section-header">
               <div>
                 <div className="dsc-section-title">For you</div>
               </div>
             </div>
-            <div className="foryou-scroll" ref={forYouRef}>
-              {forYou.map((ch, idx) => (
-                <a
-                  key={ch.youtube_channel_id}
-                  className="foryou-card"
-                  href={`https://youtube.com/channel/${ch.youtube_channel_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackEvent('foryou_card_clicked', { channel_id: ch.youtube_channel_id, position: idx, subcategory: ch.category })}
-                >
-                  <div className="foryou-avatar">
-                    {ch.thumbnail_url
-                      ? <img src={ch.thumbnail_url} alt="" />
-                      : <span>{(ch.title || '??').substring(0, 2).toUpperCase()}</span>
-                    }
-                  </div>
-                  <div className="foryou-name">{ch.title}</div>
-                  <div className="foryou-subs">{formatCount(ch.subscriber_count)} subscribers</div>
-                  {ch.category && <span className="foryou-badge">{ch.category}</span>}
-                  {ch.subsnub_users > 0 && <div className="foryou-users">{ch.subsnub_users} on Subsnub</div>}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-        {showForYouEmpty && (
-          <div className="dsc-foryou-empty">
-            Categorise more of your subscriptions to see personalised recommendations. <Link href="/subscriptions">Go to Subscriptions</Link>
+            {forYouLoading ? (
+              <div className="home-feed-loading"><span className="spinner" /></div>
+            ) : forYou.length > 0 ? (
+              <div className="foryou-scroll" ref={forYouRef}>
+                {forYou.map((ch, idx) => (
+                  <a
+                    key={ch.youtube_channel_id}
+                    className="foryou-card"
+                    href={`https://youtube.com/channel/${ch.youtube_channel_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEvent('foryou_card_clicked', { channel_id: ch.youtube_channel_id, position: idx, subcategory: ch.category })}
+                  >
+                    <div className="foryou-avatar">
+                      {ch.thumbnail_url
+                        ? <img src={ch.thumbnail_url} alt="" />
+                        : <span>{(ch.title || '??').substring(0, 2).toUpperCase()}</span>
+                      }
+                    </div>
+                    <div className="foryou-name">{ch.title}</div>
+                    <div className="foryou-subs">{formatCount(ch.subscriber_count)} subscribers</div>
+                    {ch.category && <span className="foryou-badge">{ch.category}</span>}
+                    {ch.subsnub_users > 0 && <div className="foryou-users">{ch.subsnub_users} on Subsnub</div>}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div className="dsc-foryou-empty">
+                Categorise more of your subscriptions to see personalised recommendations. <Link href="/subscriptions">Go to Subscriptions</Link>
+              </div>
+            )}
           </div>
         )}
 
