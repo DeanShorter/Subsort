@@ -1,0 +1,143 @@
+'use client';
+
+import Link from 'next/link';
+import { trackEvent } from '../../../lib/track';
+
+const COLLECTION_TYPES = [
+  {
+    key: 'learning',
+    title: 'Learning paths',
+    subtitle: 'Structured courses built from free YouTube content. Start at video one and work through.',
+    link: '/discover/collections?type=learning',
+  },
+  {
+    key: 'playlist',
+    title: 'Playlists',
+    subtitle: 'Casual channel and video lists. Browse, fork, or build your own.',
+    link: '/discover/collections?type=playlist',
+  },
+  {
+    key: 'rabbithole',
+    title: 'Rabbit holes',
+    subtitle: 'Themed deep-dives for when you want to disappear into one specific niche for hours.',
+    link: '/discover/collections?type=rabbithole',
+  },
+];
+
+function formatDuration(seconds) {
+  if (!seconds) return '';
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.round((seconds % 3600) / 60);
+  if (hrs > 0) return `~${hrs} hr${hrs > 1 ? 's' : ''}`;
+  return `~${mins} min`;
+}
+
+function RatingStars({ rating, collectionId }) {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (i <= Math.floor(rating)) {
+      stars.push(
+        <svg key={i} className="rating-star" viewBox="0 0 14 14">
+          <path d="M7 1l1.8 4 4.2.6-3 3 .8 4.2L7 11l-3.8 1.8.8-4.2-3-3 4.2-.6z" fill="#FF8C42" />
+        </svg>
+      );
+    } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+      const pct = Math.round((rating % 1) * 100);
+      const gradId = `half-star-${collectionId}-${i}`;
+      stars.push(
+        <svg key={i} className="rating-star" viewBox="0 0 14 14">
+          <defs>
+            <linearGradient id={gradId}>
+              <stop offset={`${pct}%`} stopColor="#FF8C42" />
+              <stop offset={`${pct}%`} stopColor="#e0e0e0" />
+            </linearGradient>
+          </defs>
+          <path d="M7 1l1.8 4 4.2.6-3 3 .8 4.2L7 11l-3.8 1.8.8-4.2-3-3 4.2-.6z" fill={`url(#${gradId})`} />
+        </svg>
+      );
+    } else {
+      stars.push(
+        <svg key={i} className="rating-star" viewBox="0 0 14 14">
+          <path d="M7 1l1.8 4 4.2.6-3 3 .8 4.2L7 11l-3.8 1.8.8-4.2-3-3 4.2-.6z" fill="#e0e0e0" />
+        </svg>
+      );
+    }
+  }
+  return <div className="rating-stars">{stars}</div>;
+}
+
+function CollectionCard({ collection }) {
+  const initials = (collection.author_name || '??').substring(0, 2).toUpperCase();
+  return (
+    <Link href={`/discover/collections/${collection.slug}`} className={`collection-card type-${collection.collection_type}`}>
+      <div className="collection-card-header" />
+      <div className="collection-card-body">
+        {collection.tags?.length > 0 && (
+          <div className="collection-tags">
+            {collection.tags.slice(0, 3).map(tag => (
+              <span key={tag} className="collection-tag">{tag}</span>
+            ))}
+          </div>
+        )}
+        <div className="collection-title">{collection.title}</div>
+        <div className="collection-description">{collection.description}</div>
+        {collection.average_rating > 0 && (
+          <div className="collection-rating">
+            <RatingStars rating={collection.average_rating} collectionId={collection.id} />
+            <span className="rating-value">{collection.average_rating}</span>
+            <span className="rating-count">({collection.review_count} review{collection.review_count !== 1 ? 's' : ''})</span>
+          </div>
+        )}
+        <div className="collection-footer">
+          <div className="collection-author">
+            <div className="collection-author-avatar">
+              {collection.author_avatar
+                ? <img src={collection.author_avatar} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                : initials
+              }
+            </div>
+            <span className="collection-author-name">{collection.author_name}</span>
+            <span className="collection-meta">
+              {collection.video_count ? `\u00b7 ${collection.video_count} vids` : ''}
+              {collection.estimated_duration_seconds ? ` \u00b7 ${formatDuration(collection.estimated_duration_seconds)}` : ''}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export function CollectionsSectionClient({ collections }) {
+  return (
+    <>
+      {COLLECTION_TYPES.map(type => {
+        const items = collections[type.key] || [];
+        return (
+          <div key={type.key} className="collections-subsection">
+            <div className="dsc-section-header">
+              <div>
+                <div className="dsc-section-title">{type.title}</div>
+                <div className="dsc-section-subtitle">{type.subtitle}</div>
+              </div>
+              {items.length > 0 && <Link href={type.link} className="dsc-section-link">View all &rarr;</Link>}
+            </div>
+            {items.length > 0 ? (
+              <div className="collections-grid">
+                {items.map((c, idx) => (
+                  <div key={c.id} onClick={() => trackEvent('collection_viewed', { collection_id: c.id, type: c.collection_type, position: idx })}>
+                    <CollectionCard collection={c} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="collections-empty">
+                No {type.title.toLowerCase()} yet. Be the first to create one.
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
+}
