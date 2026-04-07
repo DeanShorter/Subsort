@@ -60,7 +60,7 @@ export default function VibeTestPage() {
 
       <button
         onClick={runTest}
-        disabled={loading || !user}
+        disabled={loading}
         style={{ padding: '10px 24px', borderRadius: 20, fontSize: 14, fontWeight: 500, background: 'var(--iris)', color: '#fff', border: 'none', cursor: 'pointer', marginBottom: 24 }}
       >
         {loading ? 'Running...' : 'Run Tag Test'}
