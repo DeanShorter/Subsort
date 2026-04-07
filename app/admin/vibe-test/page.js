@@ -90,6 +90,7 @@ export default function VibeTestPage() {
               <th style={{ padding: '8px 12px' }}>Category</th>
               <th style={{ padding: '8px 12px' }}>Subcategory</th>
               <th style={{ padding: '8px 12px' }}>Video</th>
+              <th style={{ padding: '8px 12px' }}>YT Category</th>
               <th style={{ padding: '8px 12px' }}>Duration</th>
               <th style={{ padding: '8px 12px' }}>Length</th>
               <th style={{ padding: '8px 12px' }}>Content Tags</th>
@@ -108,6 +109,7 @@ export default function VibeTestPage() {
                     {v.title}
                   </a>
                 </td>
+                <td style={{ padding: '8px 12px', whiteSpace: 'nowrap', fontSize: 12 }}>{v.youtube_category_id || '\u2014'}</td>
                 <td style={{ padding: '8px 12px', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatDuration(v.duration_seconds)}</td>
                 <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>{v.length_bucket}</td>
                 <td style={{ padding: '8px 12px' }}>{v.content_tags?.join(', ') || '\u2014'}</td>

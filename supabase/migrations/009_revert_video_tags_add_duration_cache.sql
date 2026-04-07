@@ -17,10 +17,11 @@ ALTER TABLE cached_videos
   DROP COLUMN IF EXISTS format,
   DROP COLUMN IF EXISTS tags_generated_at;
 
--- New lean approach: duration cache only
+-- New lean approach: video metadata cache (duration + YouTube category)
 CREATE TABLE IF NOT EXISTS video_duration_cache (
   youtube_video_id text PRIMARY KEY,
   duration_seconds integer NOT NULL,
+  youtube_category_id text,
   cached_at timestamptz DEFAULT now()
 );
 
