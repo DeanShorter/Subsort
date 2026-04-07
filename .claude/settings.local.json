@@ -50,7 +50,9 @@
       "Bash(xargs grep:*)",
       "Bash(find /d/Subsort -type f \\\\\\( -name \"*.js\" -o -name \"*.ts\" \\\\\\) -exec grep -l \"tier.*premium\\\\|premium.*tier\\\\|pro.*check\" {} \\\\;)",
       "Bash(ls -la /d/Subsort/*.js /d/Subsort/*.ts)",
-      "Bash(grep -r \"SUPABASE\\\\|supabase\" /d/Subsort/.env*)"
+      "Bash(grep -r \"SUPABASE\\\\|supabase\" /d/Subsort/.env*)",
+      "Bash(cat /d/Subsort/supabase/migrations/*.sql)",
+      "Bash(find /d/Subsort -type f \\\\\\( -name \"*.sql\" -o -name \"*.js\" -o -name \"*.ts\" \\\\\\) ! -path \"*/node_modules/*\" ! -path \"*/.next/*\" -exec grep -l \"cached_videos\" {} \\\\;)"
     ]
   }
 }
