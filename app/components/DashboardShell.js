@@ -18,6 +18,7 @@ const DASHBOARD_ROUTES = [
   '/critic',
   '/analytics',
   '/settings',
+  '/admin',
   '/blog',
 ];
 
