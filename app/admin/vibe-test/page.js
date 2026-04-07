@@ -13,13 +13,13 @@ function formatDuration(seconds) {
 }
 
 export default function VibeTestPage() {
-  const { user, accessToken } = useAuth();
+  const { user } = useAuth();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState(null);
 
   async function runTest() {
-    if (!user || !accessToken) return;
+    if (!user) return;
     setLoading(true);
 
     try {
