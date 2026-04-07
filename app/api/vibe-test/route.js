@@ -24,13 +24,32 @@ export async function GET(req) {
     // YouTube OAuth token for duration API calls
     const ytToken = req.headers.get('x-youtube-token') || '';
 
-    // Fetch recent cached videos for the user's channels
+    // Fetch user's channels with category/subcategory info
     const { data: channels } = await supabase
       .from('channels')
-      .select('channel_id')
+      .select('channel_id, name, subcategory_id, subcategories(name)')
       .eq('user_id', user.id);
 
     const channelIds = (channels || []).map(c => c.channel_id).filter(Boolean);
+
+    // Build channel info map
+    const channelMap = {};
+    (channels || []).forEach(c => {
+      if (c.channel_id) channelMap[c.channel_id] = { name: c.name, subcategory: c.subcategories?.name || null };
+    });
+
+    // Get category assignments for user's channels
+    const { data: catAssignments } = await supabase
+      .from('channel_categories')
+      .select('youtube_channel_id, categories!inner(name)')
+      .eq('user_id', user.id);
+
+    const channelCatMap = {};
+    (catAssignments || []).forEach(ca => {
+      if (ca.youtube_channel_id && ca.categories?.name) {
+        channelCatMap[ca.youtube_channel_id] = ca.categories.name;
+      }
+    });
     if (!channelIds.length) {
       return NextResponse.json({ videos: [], stats: { total: 0, cached: 0, fetched: 0, tagged: 0 } });
     }
@@ -77,10 +96,18 @@ export async function GET(req) {
     // Enrich with durations + tags (uses YouTube token for API calls)
     const enriched = await enrichFeed(supabase, ytToken, feedVideos);
 
-    const taggedCount = enriched.filter(v => v.content_tags?.length > 0).length;
+    // Attach channel name, category, subcategory
+    const results = enriched.map(v => ({
+      ...v,
+      channelName: channelMap[v.channelId]?.name || '',
+      category: channelCatMap[v.channelId] || '',
+      subcategory: channelMap[v.channelId]?.subcategory || '',
+    }));
+
+    const taggedCount = results.filter(v => v.content_tags?.length > 0).length;
 
     return NextResponse.json({
-      videos: enriched,
+      videos: results,
       stats: {
         total: enriched.length,
         cached: cachedCount,

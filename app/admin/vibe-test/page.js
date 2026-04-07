@@ -82,10 +82,14 @@ export default function VibeTestPage() {
       )}
 
       {videos.length > 0 && (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 1100 }}>
           <thead>
             <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
-              <th style={{ padding: '8px 12px' }}>Title</th>
+              <th style={{ padding: '8px 12px' }}>Channel</th>
+              <th style={{ padding: '8px 12px' }}>Category</th>
+              <th style={{ padding: '8px 12px' }}>Subcategory</th>
+              <th style={{ padding: '8px 12px' }}>Video</th>
               <th style={{ padding: '8px 12px' }}>Duration</th>
               <th style={{ padding: '8px 12px' }}>Length</th>
               <th style={{ padding: '8px 12px' }}>Content Tags</th>
@@ -96,16 +100,24 @@ export default function VibeTestPage() {
           <tbody>
             {videos.map(v => (
               <tr key={v.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                <td style={{ padding: '8px 12px', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.title}</td>
-                <td style={{ padding: '8px 12px', fontVariantNumeric: 'tabular-nums' }}>{formatDuration(v.duration_seconds)}</td>
-                <td style={{ padding: '8px 12px' }}>{v.length_bucket}</td>
+                <td style={{ padding: '8px 12px', whiteSpace: 'nowrap', fontSize: 12, color: '#555' }}>{v.channelName || '\u2014'}</td>
+                <td style={{ padding: '8px 12px', whiteSpace: 'nowrap', fontSize: 12 }}>{v.category || '\u2014'}</td>
+                <td style={{ padding: '8px 12px', whiteSpace: 'nowrap', fontSize: 12 }}>{v.subcategory || '\u2014'}</td>
+                <td style={{ padding: '8px 12px', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <a href={`https://youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--iris)', textDecoration: 'none' }}>
+                    {v.title}
+                  </a>
+                </td>
+                <td style={{ padding: '8px 12px', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatDuration(v.duration_seconds)}</td>
+                <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>{v.length_bucket}</td>
                 <td style={{ padding: '8px 12px' }}>{v.content_tags?.join(', ') || '\u2014'}</td>
-                <td style={{ padding: '8px 12px' }}>{v.energy}</td>
-                <td style={{ padding: '8px 12px' }}>{v.format}</td>
+                <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>{v.energy}</td>
+                <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>{v.format}</td>
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );
