@@ -21,38 +21,43 @@ export async function GET(req) {
     const { data: { user }, error } = await supabase.auth.getUser(token);
     if (error || !user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-    // YouTube OAuth token for duration API calls
     const ytToken = req.headers.get('x-youtube-token') || '';
 
-    // Fetch user's channels with category/subcategory info
+    // Fetch user's channels with subcategory
     const { data: channels } = await supabase
       .from('channels')
       .select('channel_id, name, subcategory_id, subcategories(name)')
       .eq('user_id', user.id);
 
     const channelIds = (channels || []).map(c => c.channel_id).filter(Boolean);
+    if (!channelIds.length) {
+      return NextResponse.json({ videos: [], stats: { total: 0, cached: 0, fetched: 0, tagged: 0 } });
+    }
 
-    // Build channel info map
-    const channelMap = {};
+    // Build channel context map (category + subcategory per channel)
+    const channelNameMap = {};
+    const channelContexts = {};
     (channels || []).forEach(c => {
-      if (c.channel_id) channelMap[c.channel_id] = { name: c.name, subcategory: c.subcategories?.name || null };
+      if (c.channel_id) {
+        channelNameMap[c.channel_id] = c.name;
+        channelContexts[c.channel_id] = {
+          category_name: null, // filled below
+          subcategory_name: c.subcategories?.name || null,
+        };
+      }
     });
 
-    // Get category assignments for user's channels
+    // Get category assignments
     const { data: catAssignments } = await supabase
       .from('channel_categories')
       .select('youtube_channel_id, categories!inner(name)')
       .eq('user_id', user.id);
 
-    const channelCatMap = {};
     (catAssignments || []).forEach(ca => {
-      if (ca.youtube_channel_id && ca.categories?.name) {
-        channelCatMap[ca.youtube_channel_id] = ca.categories.name;
+      if (ca.youtube_channel_id && ca.categories?.name && channelContexts[ca.youtube_channel_id]) {
+        channelContexts[ca.youtube_channel_id].category_name = ca.categories.name;
       }
     });
-    if (!channelIds.length) {
-      return NextResponse.json({ videos: [], stats: { total: 0, cached: 0, fetched: 0, tagged: 0 } });
-    }
 
     // Get recent videos from cache
     const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -71,7 +76,6 @@ export async function GET(req) {
       if (data) allVideos.push(...data);
     }
 
-    // Map to feed video shape
     const feedVideos = allVideos.slice(0, 50).map(v => ({
       id: v.video_id,
       title: v.title,
@@ -82,7 +86,7 @@ export async function GET(req) {
       description: '',
     }));
 
-    // Check how many durations are already cached
+    // Check cached count before enrichment
     const videoIds = feedVideos.map(v => v.id);
     let cachedCount = 0;
     if (videoIds.length) {
@@ -93,15 +97,15 @@ export async function GET(req) {
       cachedCount = (cachedBefore || []).length;
     }
 
-    // Enrich with durations + tags (uses YouTube token for API calls)
-    const enriched = await enrichFeed(supabase, ytToken, feedVideos);
+    // Enrich with debug info
+    const enriched = await enrichFeed(supabase, ytToken, feedVideos, channelContexts, { includeDebug: true });
 
-    // Attach channel name, category, subcategory
+    // Attach channel name for display
     const results = enriched.map(v => ({
       ...v,
-      channelName: channelMap[v.channelId]?.name || '',
-      category: channelCatMap[v.channelId] || '',
-      subcategory: channelMap[v.channelId]?.subcategory || '',
+      channelName: channelNameMap[v.channelId] || '',
+      category: channelContexts[v.channelId]?.category_name || '',
+      subcategory: channelContexts[v.channelId]?.subcategory_name || '',
     }));
 
     const taggedCount = results.filter(v => v.content_tags?.length > 0).length;
@@ -109,7 +113,7 @@ export async function GET(req) {
     return NextResponse.json({
       videos: results,
       stats: {
-        total: enriched.length,
+        total: results.length,
         cached: cachedCount,
         fetched: Math.max(0, videoIds.length - cachedCount),
         tagged: taggedCount,
