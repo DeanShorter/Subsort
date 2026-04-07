@@ -18,16 +18,21 @@ export default function VibeTestPage() {
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState(null);
 
+  const [error, setError] = useState(null);
+
   async function runTest() {
-    if (!user) return;
+    setError(null);
     setLoading(true);
 
     try {
+      if (!user) { setError('No user from useAuth()'); setLoading(false); return; }
+
       const { supabase } = await import('../../../lib/supabase');
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) { setLoading(false); return; }
+      if (!session?.access_token) { setError('No Supabase session'); setLoading(false); return; }
 
       const ytToken = localStorage.getItem('subsort_yt_token') || session.provider_token || '';
+
       const res = await fetch('/api/vibe-test', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -35,10 +40,13 @@ export default function VibeTestPage() {
         },
       });
       const data = await res.json();
+
+      if (!res.ok) { setError(`API ${res.status}: ${data.error || JSON.stringify(data)}`); setLoading(false); return; }
+
       setVideos(data.videos || []);
       setStats(data.stats || null);
     } catch (err) {
-      console.error('Test failed:', err);
+      setError(err.message);
     }
     setLoading(false);
   }
@@ -57,6 +65,12 @@ export default function VibeTestPage() {
       >
         {loading ? 'Running...' : 'Run Tag Test'}
       </button>
+
+      {error && (
+        <div style={{ padding: '12px 16px', background: '#fff0f0', border: '1px solid #fcc', borderRadius: 8, marginBottom: 16, fontSize: 13, color: '#c00' }}>
+          {error}
+        </div>
+      )}
 
       {stats && (
         <div style={{ fontSize: 13, color: '#555', marginBottom: 20, display: 'flex', gap: 24 }}>
