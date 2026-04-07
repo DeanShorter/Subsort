@@ -21,12 +21,8 @@ export async function GET(req) {
     const { data: { user }, error } = await supabase.auth.getUser(token);
     if (error || !user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-    // Get user's YouTube access token from session
-    const anonClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    );
-    const { data: { session } } = await anonClient.auth.getUser(token);
+    // YouTube OAuth token for duration API calls
+    const ytToken = req.headers.get('x-youtube-token') || '';
 
     // Fetch recent cached videos for the user's channels
     const { data: channels } = await supabase
@@ -69,14 +65,17 @@ export async function GET(req) {
 
     // Check how many durations are already cached
     const videoIds = feedVideos.map(v => v.id);
-    const { data: cachedBefore } = await supabase
-      .from('video_duration_cache')
-      .select('youtube_video_id')
-      .in('youtube_video_id', videoIds.slice(0, 300));
-    const cachedCount = (cachedBefore || []).length;
+    let cachedCount = 0;
+    if (videoIds.length) {
+      const { data: cachedBefore } = await supabase
+        .from('video_duration_cache')
+        .select('youtube_video_id')
+        .in('youtube_video_id', videoIds.slice(0, 300));
+      cachedCount = (cachedBefore || []).length;
+    }
 
-    // Enrich with durations + tags
-    const enriched = await enrichFeed(supabase, token, feedVideos);
+    // Enrich with durations + tags (uses YouTube token for API calls)
+    const enriched = await enrichFeed(supabase, ytToken, feedVideos);
 
     const taggedCount = enriched.filter(v => v.content_tags?.length > 0).length;
 
@@ -85,7 +84,7 @@ export async function GET(req) {
       stats: {
         total: enriched.length,
         cached: cachedCount,
-        fetched: videoIds.length - cachedCount,
+        fetched: Math.max(0, videoIds.length - cachedCount),
         tagged: taggedCount,
       },
     });

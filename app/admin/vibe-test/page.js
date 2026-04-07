@@ -27,8 +27,12 @@ export default function VibeTestPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) { setLoading(false); return; }
 
+      const ytToken = localStorage.getItem('subsort_yt_token') || session.provider_token || '';
       const res = await fetch('/api/vibe-test', {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'X-YouTube-Token': ytToken,
+        },
       });
       const data = await res.json();
       setVideos(data.videos || []);
